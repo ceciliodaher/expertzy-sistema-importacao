@@ -1,0 +1,199 @@
+{
+  "versao": "2025.1",
+  "data_atualizacao": "2025-09-05",
+  "fonte": "IBGE - Estados e Regiões do Brasil",
+  
+  "estados": [
+    {
+      "codigo": "AC",
+      "nome": "Acre",
+      "regiao": "Norte",
+      "capital": "Rio Branco"
+    },
+    {
+      "codigo": "AL",
+      "nome": "Alagoas",
+      "regiao": "Nordeste",
+      "capital": "Maceió"
+    },
+    {
+      "codigo": "AP",
+      "nome": "Amapá",
+      "regiao": "Norte",
+      "capital": "Macapá"
+    },
+    {
+      "codigo": "AM",
+      "nome": "Amazonas",
+      "regiao": "Norte",
+      "capital": "Manaus"
+    },
+    {
+      "codigo": "BA",
+      "nome": "Bahia",
+      "regiao": "Nordeste",
+      "capital": "Salvador"
+    },
+    {
+      "codigo": "CE",
+      "nome": "Ceará",
+      "regiao": "Nordeste",
+      "capital": "Fortaleza"
+    },
+    {
+      "codigo": "DF",
+      "nome": "Distrito Federal",
+      "regiao": "Centro-Oeste",
+      "capital": "Brasília"
+    },
+    {
+      "codigo": "ES",
+      "nome": "Espírito Santo",
+      "regiao": "Sudeste",
+      "capital": "Vitória"
+    },
+    {
+      "codigo": "GO",
+      "nome": "Goiás",
+      "regiao": "Centro-Oeste",
+      "capital": "Goiânia"
+    },
+    {
+      "codigo": "MA",
+      "nome": "Maranhão",
+      "regiao": "Nordeste",
+      "capital": "São Luís"
+    },
+    {
+      "codigo": "MT",
+      "nome": "Mato Grosso",
+      "regiao": "Centro-Oeste",
+      "capital": "Cuiabá"
+    },
+    {
+      "codigo": "MS",
+      "nome": "Mato Grosso do Sul",
+      "regiao": "Centro-Oeste",
+      "capital": "Campo Grande"
+    },
+    {
+      "codigo": "MG",
+      "nome": "Minas Gerais",
+      "regiao": "Sudeste",
+      "capital": "Belo Horizonte"
+    },
+    {
+      "codigo": "PA",
+      "nome": "Pará",
+      "regiao": "Norte",
+      "capital": "Belém"
+    },
+    {
+      "codigo": "PB",
+      "nome": "Paraíba",
+      "regiao": "Nordeste",
+      "capital": "João Pessoa"
+    },
+    {
+      "codigo": "PR",
+      "nome": "Paraná",
+      "regiao": "Sul",
+      "capital": "Curitiba"
+    },
+    {
+      "codigo": "PE",
+      "nome": "Pernambuco",
+      "regiao": "Nordeste",
+      "capital": "Recife"
+    },
+    {
+      "codigo": "PI",
+      "nome": "Piauí",
+      "regiao": "Nordeste",
+      "capital": "Teresina"
+    },
+    {
+      "codigo": "RJ",
+      "nome": "Rio de Janeiro",
+      "regiao": "Sudeste",
+      "capital": "Rio de Janeiro"
+    },
+    {
+      "codigo": "RN",
+      "nome": "Rio Grande do Norte",
+      "regiao": "Nordeste",
+      "capital": "Natal"
+    },
+    {
+      "codigo": "RS",
+      "nome": "Rio Grande do Sul",
+      "regiao": "Sul",
+      "capital": "Porto Alegre"
+    },
+    {
+      "codigo": "RO",
+      "nome": "Rondônia",
+      "regiao": "Norte",
+      "capital": "Porto Velho"
+    },
+    {
+      "codigo": "RR",
+      "nome": "Roraima",
+      "regiao": "Norte",
+      "capital": "Boa Vista"
+    },
+    {
+      "codigo": "SC",
+      "nome": "Santa Catarina",
+      "regiao": "Sul",
+      "capital": "Florianópolis"
+    },
+    {
+      "codigo": "SP",
+      "nome": "São Paulo",
+      "regiao": "Sudeste",
+      "capital": "São Paulo"
+    },
+    {
+      "codigo": "SE",
+      "nome": "Sergipe",
+      "regiao": "Nordeste",
+      "capital": "Aracaju"
+    },
+    {
+      "codigo": "TO",
+      "nome": "Tocantins",
+      "regiao": "Norte",
+      "capital": "Palmas"
+    }
+  ],
+  
+  "regioes": [
+    {
+      "nome": "Norte",
+      "estados": ["AC", "AL", "AP", "AM", "PA", "RO", "RR", "TO"]
+    },
+    {
+      "nome": "Nordeste", 
+      "estados": ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"]
+    },
+    {
+      "nome": "Centro-Oeste",
+      "estados": ["DF", "GO", "MT", "MS"]
+    },
+    {
+      "nome": "Sudeste",
+      "estados": ["ES", "MG", "RJ", "SP"]
+    },
+    {
+      "nome": "Sul",
+      "estados": ["PR", "RS", "SC"]
+    }
+  ],
+  
+  "observacoes": {
+    "uso": "Lista completa de estados brasileiros para seleção em formulários",
+    "ordenacao": "Estados ordenados alfabeticamente por código",
+    "formato": "Código de 2 letras conforme IBGE"
+  }
+}

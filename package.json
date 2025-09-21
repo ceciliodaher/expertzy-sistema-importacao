@@ -1,0 +1,47 @@
+{
+  "name": "expertzy-sistema-importacao",
+  "version": "1.0.0",
+  "description": "Sistema Brasileiro de Tributação e Precificação de Importação - Expertzy",
+  "main": "index.html",
+  "scripts": {
+    "dev": "node server.js",
+    "test": "npm run test:e2e",
+    "test:e2e": "playwright test",
+    "test:compliance": "playwright test tests/e2e/compliance",
+    "test:pricing": "playwright test tests/e2e/pricing",
+    "test:memory": "playwright test tests/e2e/memory",
+    "test:incentives": "playwright test tests/e2e/incentives",
+    "build": "echo 'Building production version...' && npm run test:e2e",
+    "lint": "echo 'Running lint checks...'",
+    "serve": "python3 -m http.server 8000",
+    "setup": "npm install && npx playwright install"
+  },
+  "dependencies": {
+    "dexie": "^3.2.4",
+    "exceljs": "^4.4.0",
+    "jspdf": "^2.5.1",
+    "chart.js": "^4.4.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "express": "^4.18.2"
+  },
+  "keywords": [
+    "importacao",
+    "tributacao",
+    "brasil",
+    "icms",
+    "precificacao",
+    "fiscal",
+    "incentivos"
+  ],
+  "author": "Expertzy System",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ceciliodaher/expertzy-sistema-importacao.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

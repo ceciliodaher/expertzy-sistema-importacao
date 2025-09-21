@@ -1,0 +1,117 @@
+{
+  "versao": "2025.1",
+  "data_atualizacao": "2025-09-05",
+  "fonte": "Legislação Federal - Regimes Tributários",
+  
+  "lucro_real": {
+    "pis": {
+      "aliquota_padrao": 1.65,
+      "cumulatividade": "nao_cumulativo",
+      "permite_credito": true
+    },
+    "cofins": {
+      "aliquota_padrao": 7.60,
+      "cumulatividade": "nao_cumulativo",
+      "permite_credito": true,
+      "adicional_importacao": 1.00
+    },
+    "creditos_permitidos": {
+      "icms": true,
+      "ipi_industria": true,
+      "ipi_comercio": false,
+      "pis_cofins": true
+    }
+  },
+  
+  "lucro_presumido": {
+    "pis": {
+      "aliquota_padrao": 0.65,
+      "cumulatividade": "cumulativo",
+      "permite_credito": false
+    },
+    "cofins": {
+      "aliquota_padrao": 3.00,
+      "cumulatividade": "cumulativo",
+      "permite_credito": false
+    },
+    "creditos_permitidos": {
+      "icms": true,
+      "ipi_industria": true,
+      "ipi_comercio": false,
+      "pis_cofins": false
+    }
+  },
+  
+  "simples_nacional": {
+    "creditos_permitidos": {
+      "icms": false,
+      "ipi": false,
+      "pis_cofins": false
+    },
+    "tabela_das": {
+      "anexo_I": {
+        "nome": "Comércio",
+        "faixas": [
+          { "faixa": 1, "receita_ate": 180000, "aliquota": 4.00, "deducao": 0 },
+          { "faixa": 2, "receita_ate": 360000, "aliquota": 4.48, "deducao": 810 },
+          { "faixa": 3, "receita_ate": 720000, "aliquota": 5.20, "deducao": 3060 },
+          { "faixa": 4, "receita_ate": 1800000, "aliquota": 5.87, "deducao": 7803 },
+          { "faixa": 5, "receita_ate": 3600000, "aliquota": 7.13, "deducao": 22680 },
+          { "faixa": 6, "receita_ate": 4800000, "aliquota": 8.19, "deducao": 60840 }
+        ]
+      },
+      "anexo_II": {
+        "nome": "Indústria",
+        "faixas": [
+          { "faixa": 1, "receita_ate": 180000, "aliquota": 4.50, "deducao": 0 },
+          { "faixa": 2, "receita_ate": 360000, "aliquota": 5.47, "deducao": 1746 },
+          { "faixa": 3, "receita_ate": 720000, "aliquota": 6.20, "deducao": 4374 },
+          { "faixa": 4, "receita_ate": 1800000, "aliquota": 6.95, "deducao": 9774 },
+          { "faixa": 5, "receita_ate": 3600000, "aliquota": 8.18, "deducao": 33984 },
+          { "faixa": 6, "receita_ate": 4800000, "aliquota": 9.24, "deducao": 72144 }
+        ]
+      },
+      "anexo_III": {
+        "nome": "Serviços",
+        "faixas": [
+          { "faixa": 1, "receita_ate": 180000, "aliquota": 6.00, "deducao": 0 },
+          { "faixa": 2, "receita_ate": 360000, "aliquota": 8.21, "deducao": 3978 },
+          { "faixa": 3, "receita_ate": 720000, "aliquota": 10.00, "deducao": 10422 },
+          { "faixa": 4, "receita_ate": 1800000, "aliquota": 11.20, "deducao": 22032 },
+          { "faixa": 5, "receita_ate": 3600000, "aliquota": 13.50, "deducao": 72912 },
+          { "faixa": 6, "receita_ate": 4800000, "aliquota": 15.00, "deducao": 126912 }
+        ]
+      },
+      "anexo_IV": {
+        "nome": "Serviços",
+        "faixas": [
+          { "faixa": 1, "receita_ate": 180000, "aliquota": 4.50, "deducao": 0 },
+          { "faixa": 2, "receita_ate": 360000, "aliquota": 6.00, "deducao": 2700 },
+          { "faixa": 3, "receita_ate": 720000, "aliquota": 8.50, "deducao": 11700 },
+          { "faixa": 4, "receita_ate": 1800000, "aliquota": 10.00, "deducao": 27900 },
+          { "faixa": 5, "receita_ate": 3600000, "aliquota": 11.50, "deducao": 81900 },
+          { "faixa": 6, "receita_ate": 4800000, "aliquota": 12.50, "deducao": 117900 }
+        ]
+      },
+      "anexo_V": {
+        "nome": "Serviços",
+        "faixas": [
+          { "faixa": 1, "receita_ate": 180000, "aliquota": 15.50, "deducao": 0 },
+          { "faixa": 2, "receita_ate": 360000, "aliquota": 18.00, "deducao": 4500 },
+          { "faixa": 3, "receita_ate": 720000, "aliquota": 19.50, "deducao": 14900 },
+          { "faixa": 4, "receita_ate": 1800000, "aliquota": 20.50, "deducao": 30100 },
+          { "faixa": 5, "receita_ate": 3600000, "aliquota": 21.50, "deducao": 54100 },
+          { "faixa": 6, "receita_ate": 4800000, "aliquota": 23.00, "deducao": 108100 }
+        ]
+      }
+    }
+  },
+  
+  "observacoes": {
+    "lucro_real": "Regime não cumulativo permite aproveitamento de créditos de PIS/COFINS sobre insumos e importações",
+    "lucro_presumido": "Regime cumulativo não permite créditos de PIS/COFINS, apenas ICMS e IPI quando aplicável",
+    "simples_nacional": "Tributação unificada via DAS, sem direito a créditos tributários na apuração",
+    "ipi_credito": "Crédito de IPI apenas para estabelecimentos industriais ou equiparados",
+    "cofins_adicional": "Adicional de 1% na COFINS-Importação não gera direito a crédito"
+  }
+}

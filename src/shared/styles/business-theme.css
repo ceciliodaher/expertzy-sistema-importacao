@@ -1,0 +1,588 @@
+/**
+ * business-theme.css - Tema Verde para Sistema de Precificação
+ * 
+ * Tema específico para Fase 2: Estratégias de Precificação
+ * Cores: Verde business integrado com brand Expertzy
+ */
+
+/* ========================================
+   BUSINESS THEME - FASE 2 PRICING STRATEGY
+   ======================================== */
+
+:root {
+    /* Business Theme Colors */
+    --business-primary: #28a745;
+    --business-secondary: #1e7e34;
+    --business-accent: #5cb85c;
+    --business-light: #e6f7e6;
+    --business-lighter: #f0f9f0;
+    --business-dark: #155724;
+    
+    /* Business Specific Colors */
+    --business-profit: #20c997;
+    --business-cost: #fd7e14;
+    --business-margin: #6f42c1;
+    --business-competitive: #17a2b8;
+    
+    /* Status Colors for Business */
+    --business-success: #28a745;
+    --business-warning: #ffc107;
+    --business-danger: #dc3545;
+    --business-info: #17a2b8;
+}
+
+/* ========================================
+   BUSINESS SPECIFIC COMPONENTS
+   ======================================== */
+
+/* Business Header */
+.business-header {
+    background: linear-gradient(135deg, var(--business-primary), var(--business-secondary));
+    color: var(--expertzy-white);
+    padding: 2rem 0;
+    box-shadow: var(--expertzy-shadow-lg);
+    border-bottom: 3px solid var(--business-accent);
+}
+
+.business-header h1 {
+    color: var(--expertzy-white);
+    font-family: var(--expertzy-font-secondary);
+    font-weight: 600;
+}
+
+.business-header .lead {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+}
+
+/* Business Cards */
+.business-card {
+    background: var(--expertzy-white);
+    border-left: 4px solid var(--business-primary);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    box-shadow: var(--expertzy-shadow);
+    transition: var(--expertzy-transition);
+}
+
+.business-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--expertzy-shadow-lg);
+    border-left-color: var(--business-accent);
+}
+
+.business-card h5 {
+    color: var(--business-primary);
+    font-family: var(--expertzy-font-secondary);
+    font-weight: 600;
+    margin-bottom: var(--expertzy-spacing);
+}
+
+/* Business Buttons */
+.btn-business {
+    background: linear-gradient(135deg, var(--business-primary), var(--business-secondary));
+    border: none;
+    color: var(--expertzy-white);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--expertzy-radius);
+    transition: var(--expertzy-transition);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.btn-business:hover {
+    background: linear-gradient(135deg, var(--business-secondary), var(--business-dark));
+    transform: translateY(-2px);
+    box-shadow: var(--expertzy-shadow-lg);
+    color: var(--expertzy-white);
+}
+
+.btn-business:active {
+    transform: translateY(0);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.btn-business-outline {
+    background: transparent;
+    border: 2px solid var(--business-primary);
+    color: var(--business-primary);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--expertzy-radius);
+    transition: var(--expertzy-transition);
+}
+
+.btn-business-outline:hover {
+    background: var(--business-primary);
+    color: var(--expertzy-white);
+    transform: translateY(-2px);
+}
+
+/* Strategy Steps */
+.strategy-step {
+    background: var(--business-lighter);
+    border: 2px solid var(--business-light);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    margin: var(--expertzy-spacing) 0;
+    position: relative;
+    transition: var(--expertzy-transition);
+}
+
+.strategy-step.active {
+    border-color: var(--business-primary);
+    background: var(--expertzy-white);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
+}
+
+.strategy-step.completed {
+    border-color: var(--business-secondary);
+    background: var(--business-lighter);
+}
+
+.strategy-step.analysis {
+    border-color: var(--business-competitive);
+    background: #e6f9ff;
+}
+
+.step-number {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background: var(--business-primary);
+    color: var(--expertzy-white);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9rem;
+    box-shadow: var(--expertzy-shadow-sm);
+}
+
+.step-number.completed {
+    background: var(--business-secondary);
+}
+
+.step-number.analysis {
+    background: var(--business-competitive);
+}
+
+/* Scenario Cards */
+.scenario-card {
+    background: var(--expertzy-white);
+    border: 1px solid #dee2e6;
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    margin: 0.5rem 0;
+    transition: var(--expertzy-transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.scenario-card:hover {
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
+    transform: translateY(-2px);
+}
+
+.scenario-card.best-option {
+    border-left: 4px solid var(--business-primary);
+    background: linear-gradient(135deg, var(--business-lighter), var(--expertzy-white));
+}
+
+.scenario-card.competitive {
+    border-left: 4px solid var(--business-competitive);
+}
+
+.scenario-card.profitable {
+    border-left: 4px solid var(--business-profit);
+}
+
+/* Pricing Analysis */
+.pricing-summary {
+    background: linear-gradient(135deg, var(--business-lighter), var(--expertzy-white));
+    border: 1px solid var(--business-light);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.pricing-summary h6 {
+    color: var(--business-primary);
+    font-family: var(--expertzy-font-secondary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--business-light);
+    padding-bottom: 0.5rem;
+    margin-bottom: var(--expertzy-spacing);
+}
+
+.pricing-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(40, 167, 69, 0.1);
+}
+
+.pricing-item:last-child {
+    border-bottom: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--business-primary);
+}
+
+.pricing-item.profit {
+    color: var(--business-profit);
+}
+
+.pricing-item.cost {
+    color: var(--business-cost);
+}
+
+.pricing-item.margin {
+    color: var(--business-margin);
+}
+
+/* State Comparison */
+.state-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--expertzy-spacing);
+    margin: var(--expertzy-spacing-lg) 0;
+}
+
+.state-card {
+    background: var(--expertzy-white);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    box-shadow: var(--expertzy-shadow);
+    transition: var(--expertzy-transition);
+    text-align: center;
+}
+
+.state-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--expertzy-shadow-xl);
+}
+
+.state-card.best {
+    border: 2px solid var(--business-primary);
+    background: linear-gradient(135deg, var(--business-lighter), var(--expertzy-white));
+}
+
+.state-card.second-best {
+    border: 2px solid var(--business-accent);
+}
+
+.state-header {
+    background: var(--business-primary);
+    color: var(--expertzy-white);
+    padding: 0.5rem;
+    margin: -1.5rem -1.5rem 1rem -1.5rem;
+    border-radius: var(--expertzy-radius-lg) var(--expertzy-radius-lg) 0 0;
+    font-weight: 600;
+}
+
+/* Status Badges */
+.status-business {
+    background: var(--business-primary);
+    color: var(--expertzy-white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.status-profitable {
+    background: var(--business-profit);
+    color: var(--expertzy-white);
+}
+
+.status-competitive {
+    background: var(--business-competitive);
+    color: var(--expertzy-white);
+}
+
+.status-high-margin {
+    background: var(--business-margin);
+    color: var(--expertzy-white);
+}
+
+.status-optimal {
+    background: var(--business-secondary);
+    color: var(--expertzy-white);
+}
+
+/* Chart Container */
+.chart-container {
+    background: var(--expertzy-white);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    box-shadow: var(--expertzy-shadow);
+    margin: var(--expertzy-spacing) 0;
+}
+
+.chart-title {
+    color: var(--business-primary);
+    font-family: var(--expertzy-font-secondary);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: var(--expertzy-spacing);
+}
+
+/* Progress Bar Business */
+.progress-business {
+    height: 8px;
+    background: var(--business-light);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-business .progress-bar {
+    background: linear-gradient(90deg, var(--business-primary), var(--business-accent));
+    transition: width 0.6s ease;
+}
+
+/* Profit Metrics */
+.profit-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--expertzy-spacing);
+    margin: var(--expertzy-spacing-lg) 0;
+}
+
+.metric-card {
+    background: var(--expertzy-white);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    text-align: center;
+    box-shadow: var(--expertzy-shadow);
+    transition: var(--expertzy-transition);
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--expertzy-shadow-lg);
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.metric-value.profit {
+    color: var(--business-profit);
+}
+
+.metric-value.margin {
+    color: var(--business-margin);
+}
+
+.metric-value.cost {
+    color: var(--business-cost);
+}
+
+/* Alert Business */
+.alert-business {
+    background: var(--business-lighter);
+    border-left: 4px solid var(--business-primary);
+    color: var(--expertzy-navy);
+    padding: var(--expertzy-spacing);
+    border-radius: var(--expertzy-radius-sm);
+    border: 1px solid var(--business-light);
+}
+
+.alert-business .alert-heading {
+    color: var(--business-primary);
+    font-weight: 600;
+}
+
+/* Navigation Enhancement for Business */
+.business-nav {
+    background: var(--business-primary);
+}
+
+.business-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9);
+    transition: var(--expertzy-transition);
+}
+
+.business-nav .nav-link:hover {
+    color: var(--expertzy-white);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.business-nav .nav-link.active {
+    color: var(--expertzy-white);
+    background: var(--business-accent);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .business-header {
+        padding: 1.5rem 0;
+    }
+    
+    .strategy-step {
+        padding: var(--expertzy-spacing);
+    }
+    
+    .pricing-summary {
+        padding: var(--expertzy-spacing);
+    }
+    
+    .btn-business {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .state-comparison {
+        grid-template-columns: 1fr;
+    }
+    
+    .profit-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Additional Pricing System Specific Styles */
+.hidden {
+    display: none !important;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    background: var(--expertzy-white);
+    padding: 2rem;
+    border-radius: var(--expertzy-radius-lg);
+    text-align: center;
+    box-shadow: var(--expertzy-shadow-xl);
+}
+
+.process-indicator {
+    opacity: 0.6;
+    transition: var(--expertzy-transition);
+}
+
+.process-indicator.active {
+    opacity: 1;
+}
+
+/* Enhanced Scenario Cards */
+.scenario-card.best {
+    border-color: var(--business-primary);
+    border-width: 2px;
+    position: relative;
+}
+
+.scenario-card.best::before {
+    content: "RECOMENDADO";
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: var(--business-primary);
+    color: var(--expertzy-white);
+    padding: 5px 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 20px;
+}
+
+/* Pricing Cards */
+.pricing-card {
+    background: var(--expertzy-light-gray);
+    border: 1px solid #dee2e6;
+    border-radius: var(--expertzy-radius);
+    padding: var(--expertzy-spacing);
+    margin: 0.5rem 0;
+    transition: var(--expertzy-transition);
+}
+
+.pricing-card:hover {
+    background: var(--expertzy-white);
+    box-shadow: var(--expertzy-shadow-sm);
+}
+
+.competitive-price {
+    border-left: 4px solid var(--business-warning);
+}
+
+.standard-price {
+    border-left: 4px solid var(--business-primary);
+}
+
+.premium-price {
+    border-left: 4px solid var(--business-margin);
+}
+
+/* Business Processing Header Override */
+.business-processing-header {
+    background: linear-gradient(135deg, var(--business-primary), var(--business-secondary));
+    color: var(--expertzy-white);
+    padding: 2rem 0;
+    box-shadow: var(--expertzy-shadow-lg);
+    border-bottom: 3px solid var(--business-accent);
+    padding-top: 100px; /* Account for fixed navbar */
+}
+
+.business-processing-header .display-4 {
+    color: var(--expertzy-white);
+    font-family: var(--expertzy-font-secondary);
+    font-weight: 600;
+}
+
+.business-processing-header .lead {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+}
+
+.business-processing-header .bi {
+    color: var(--expertzy-white);
+}
+
+.business-processing-header .hero-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: var(--expertzy-white);
+}
+
+/* Print Styles */
+@media print {
+    .business-header,
+    .business-processing-header {
+        background: var(--business-primary) !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .business-card,
+    .scenario-card,
+    .state-card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #dee2e6;
+    }
+    
+    .btn-business {
+        display: none;
+    }
+    
+    .chart-container {
+        break-inside: avoid;
+    }
+}

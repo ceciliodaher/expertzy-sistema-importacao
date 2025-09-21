@@ -1,0 +1,251 @@
+{
+  "versao": "2025.1",
+  "nome_sistema": "Sistema Expertzy de Importação e Precificação",
+  "data_atualizacao": "2025-08-17",
+  
+  "configuracoes_gerais": {
+    "moeda_padrao": "BRL",
+    "moeda_secundaria": "USD",
+    "precisao_decimal": 2,
+    "precisao_calculo": 6,
+    "formato_data": "DD/MM/AAAA",
+    "formato_numero": "pt-BR"
+  },
+
+  "validacao_xml": {
+    "tamanho_maximo_mb": 50,
+    "extensoes_permitidas": [".xml"],
+    "encoding_esperado": "UTF-8",
+    "estrutura_obrigatoria": [
+      "declaracaoImportacao",
+      "adicao",
+      "mercadoria"
+    ]
+  },
+
+  "incoterms_suportados": {
+    "EXW": "Ex Works",
+    "FCA": "Free Carrier", 
+    "CPT": "Carriage Paid To",
+    "CIP": "Carriage and Insurance Paid",
+    "DAT": "Delivered at Terminal",
+    "DAP": "Delivered at Place",
+    "DDP": "Delivered Duty Paid",
+    "FAS": "Free Alongside Ship",
+    "FOB": "Free on Board",
+    "CFR": "Cost and Freight",
+    "CIF": "Cost, Insurance and Freight"
+  },
+
+  "categorias_custos_extras": {
+    "portuarios": {
+      "nome": "Custos Portuários",
+      "incluir_icms": true,
+      "tipos": [
+        "Capatazia",
+        "Armazenagem",
+        "Movimentação",
+        "THC - Terminal Handling Charge"
+      ]
+    },
+    "bancarios": {
+      "nome": "Custos Bancários",
+      "incluir_icms": false,
+      "tipos": [
+        "Taxa de Câmbio",
+        "Remessa",
+        "Swift",
+        "Conta Gráfica"
+      ]
+    },
+    "logisticos": {
+      "nome": "Custos Logísticos",
+      "incluir_icms": true,
+      "tipos": [
+        "Frete Interno",
+        "Seguro Interno",
+        "Armazenagem",
+        "Transporte"
+      ]
+    },
+    "administrativos": {
+      "nome": "Custos Administrativos",
+      "incluir_icms": false,
+      "tipos": [
+        "Honorários Despachante",
+        "Taxas Administrativas",
+        "Consultorias",
+        "Documentação"
+      ]
+    }
+  },
+
+  "criterios_rateio": {
+    "valor_fob": {
+      "nome": "Valor FOB",
+      "descricao": "Rateio proporcional ao valor FOB da adição",
+      "campo_base": "valor_moeda_negociacao"
+    },
+    "peso_liquido": {
+      "nome": "Peso Líquido", 
+      "descricao": "Rateio proporcional ao peso líquido da adição",
+      "campo_base": "peso_liquido"
+    },
+    "peso_bruto": {
+      "nome": "Peso Bruto",
+      "descricao": "Rateio proporcional ao peso bruto da adição", 
+      "campo_base": "peso_bruto"
+    },
+    "quantidade": {
+      "nome": "Quantidade",
+      "descricao": "Rateio proporcional à quantidade estatística",
+      "campo_base": "quantidade_estatistica"
+    }
+  },
+
+  "regimes_tributarios": {
+    "real": {
+      "nome": "Lucro Real",
+      "pis_cofins": "nao_cumulativo",
+      "pis_saida": 1.65,
+      "cofins_saida": 7.60,
+      "credito_pis_cofins_entrada": true,
+      "icms_credito_entrada": true,
+      "ipi_credito_entrada": true
+    },
+    "presumido": {
+      "nome": "Lucro Presumido",
+      "pis_cofins": "cumulativo",
+      "pis_saida": 0.65,
+      "cofins_saida": 3.00,
+      "credito_pis_cofins_entrada": false,
+      "icms_credito_entrada": true,
+      "ipi_credito_entrada": true
+    },
+    "simples": {
+      "nome": "Simples Nacional",
+      "pis_cofins": "incluido_das",
+      "pis_saida": 0.00,
+      "cofins_saida": 0.00,
+      "credito_pis_cofins_entrada": false,
+      "icms_credito_entrada": false,
+      "ipi_credito_entrada": false,
+      "observacao": "Tributação unificada via DAS"
+    }
+  },
+
+  "perfis_operacao": {
+    "venda_consumidor_mesmo_estado": {
+      "nome": "Venda para Consumidor - Mesmo Estado",
+      "icms_fonte": "aliquota_interna_estado",
+      "ipi_fonte": "aliquota_da_di",
+      "fcp_aplicavel": true,
+      "difal": false,
+      "substituicao_tributaria": "avaliar_posteriormente"
+    },
+    "venda_consumidor_outro_estado": {
+      "nome": "Venda para Consumidor - Outro Estado", 
+      "icms_fonte": "aliquota_interna_estado_destino",
+      "ipi_fonte": "aliquota_da_di",
+      "fcp_aplicavel": true,
+      "difal": true,
+      "observacao": "Sujeito ao DIFAL - diferencial de alíquota"
+    },
+    "venda_revenda": {
+      "nome": "Venda para Revenda",
+      "icms_fonte": "sem_icms_ou_aliquota_interestadual",
+      "ipi_fonte": "aliquota_da_di",
+      "fcp_aplicavel": false,
+      "difal": false,
+      "substituicao_tributaria": "avaliar_posteriormente"
+    },
+    "venda_industria": {
+      "nome": "Venda para Indústria",
+      "icms_fonte": "sem_icms_ou_aliquota_interestadual", 
+      "ipi_fonte": "aliquota_da_di",
+      "fcp_aplicavel": false,
+      "difal": false,
+      "substituicao_tributaria": "avaliar_posteriormente"
+    }
+  },
+
+  "difal": {
+    "base_calculo": "valor_operacao",
+    "formula": "(aliquota_interna_destino - aliquota_interestadual) × base_calculo",
+    "partilha": {
+      "estado_origem": "0%",
+      "estado_destino": "100%"
+    },
+    "fcp_destino": "aplicar_fcp_estado_destino_se_houver",
+    "observacao": "Partilha atual: 100% para o estado de destino"
+  },
+
+  "exportacao": {
+    "formatos_suportados": {
+      "excel": {
+        "extensao": ".xlsx",
+        "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "biblioteca": "SheetJS"
+      },
+      "pdf": {
+        "extensao": ".pdf", 
+        "mime_type": "application/pdf",
+        "biblioteca": "jsPDF"
+      },
+      "json": {
+        "extensao": ".json",
+        "mime_type": "application/json",
+        "nativo": true
+      }
+    },
+    "templates": {
+      "espelho_di": "Espelho da Declaração de Importação",
+      "croqui_nf": "Croqui da Nota Fiscal",
+      "relatorio_precificacao": "Relatório de Precificação",
+      "comparativo_estados": "Comparativo de Estados"
+    }
+  },
+
+  "armazenamento_local": {
+    "prefixo_chave": "expertzy_",
+    "duracao_sessao_horas": 24,
+    "auto_save": true,
+    "compressao": false,
+    "chaves": {
+      "di_processada": "di_data",
+      "custos_extras": "custos_config", 
+      "configuracoes_usuario": "user_config",
+      "historico_operacoes": "operation_history"
+    }
+  },
+
+  "interface": {
+    "tema": "expertzy",
+    "cores": {
+      "primaria": "#FF002D",
+      "secundaria": "#091A30", 
+      "sucesso": "#28a745",
+      "aviso": "#ffc107",
+      "erro": "#dc3545",
+      "info": "#17a2b8"
+    },
+    "animacoes": true,
+    "tooltips": true,
+    "confirmacoes": true
+  },
+
+  "observacoes_implementacao": {
+    "substituicao_tributaria": "A ser implementado em versão posterior",
+    "ipi_saida": "Sempre usar alíquota extraída da DI para o item específico",
+    "icms_credito": "Considerar regime tributário para cálculo de créditos",
+    "validacao_ncm": "Verificar NCMs vedados para benefícios fiscais",
+    "difal_2025": "Partilha atual: 100% para o estado de destino"
+  },
+
+  "desenvolvimento": {
+    "debug": false,
+    "logs_detalhados": false,
+    "validacao_rigorosa": true,
+    "mock_data": false
+  }
+}

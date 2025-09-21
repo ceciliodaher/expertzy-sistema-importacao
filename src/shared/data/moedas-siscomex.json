@@ -1,0 +1,460 @@
+{
+  "versao": "2025.1",
+  "data_atualizacao": "2025-09-06",
+  "fonte": "SISCOMEX/ISO 4217 - Códigos de Moeda Internacional",
+  
+  "moedas": [
+    {
+      "codigo_siscomex": "220",
+      "codigo_iso": "USD",
+      "nome": "Dólar dos Estados Unidos",
+      "simbolo": "$",
+      "pais": "Estados Unidos",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "978",
+      "codigo_iso": "EUR",
+      "nome": "Euro",
+      "simbolo": "€",
+      "pais": "União Europeia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "790",
+      "codigo_iso": "BRL",
+      "nome": "Real Brasileiro",
+      "simbolo": "R$",
+      "pais": "Brasil",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "000",
+      "codigo_iso": "BRL",
+      "nome": "Real Brasileiro (Valor já em BRL)",
+      "simbolo": "R$",
+      "pais": "Brasil",
+      "decimais": 2,
+      "observacao": "Código especial para valores já convertidos"
+    },
+    {
+      "codigo_siscomex": "540",
+      "codigo_iso": "GBP",
+      "nome": "Libra Esterlina",
+      "simbolo": "£",
+      "pais": "Reino Unido",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "660",
+      "codigo_iso": "JPY",
+      "nome": "Iene Japonês",
+      "simbolo": "¥",
+      "pais": "Japão",
+      "decimais": 0
+    },
+    {
+      "codigo_siscomex": "156",
+      "codigo_iso": "CNY",
+      "nome": "Yuan Chinês",
+      "simbolo": "¥",
+      "pais": "China",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "860",
+      "codigo_iso": "INR",
+      "nome": "Rupia Indiana",
+      "simbolo": "₹",
+      "pais": "Índia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "124",
+      "codigo_iso": "CAD",
+      "nome": "Dólar Canadense",
+      "simbolo": "C$",
+      "pais": "Canadá",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "036",
+      "codigo_iso": "AUD",
+      "nome": "Dólar Australiano",
+      "simbolo": "A$",
+      "pais": "Austrália",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "756",
+      "codigo_iso": "CHF",
+      "nome": "Franco Suíço",
+      "simbolo": "CHF",
+      "pais": "Suíça",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "032",
+      "codigo_iso": "ARS",
+      "nome": "Peso Argentino",
+      "simbolo": "$",
+      "pais": "Argentina",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "152",
+      "codigo_iso": "CLP",
+      "nome": "Peso Chileno",
+      "simbolo": "$",
+      "pais": "Chile",
+      "decimais": 0
+    },
+    {
+      "codigo_siscomex": "170",
+      "codigo_iso": "COP",
+      "nome": "Peso Colombiano",
+      "simbolo": "$",
+      "pais": "Colômbia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "484",
+      "codigo_iso": "MXN",
+      "nome": "Peso Mexicano",
+      "simbolo": "$",
+      "pais": "México",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "604",
+      "codigo_iso": "PEN",
+      "nome": "Sol Peruano",
+      "simbolo": "S/",
+      "pais": "Peru",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "858",
+      "codigo_iso": "UYU",
+      "nome": "Peso Uruguaio",
+      "simbolo": "$U",
+      "pais": "Uruguai",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "600",
+      "codigo_iso": "PYG",
+      "nome": "Guarani Paraguaio",
+      "simbolo": "₲",
+      "pais": "Paraguai",
+      "decimais": 0
+    },
+    {
+      "codigo_siscomex": "068",
+      "codigo_iso": "BOB",
+      "nome": "Boliviano",
+      "simbolo": "Bs",
+      "pais": "Bolívia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "710",
+      "codigo_iso": "ZAR",
+      "nome": "Rand Sul-Africano",
+      "simbolo": "R",
+      "pais": "África do Sul",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "410",
+      "codigo_iso": "KRW",
+      "nome": "Won Sul-Coreano",
+      "simbolo": "₩",
+      "pais": "Coreia do Sul",
+      "decimais": 0
+    },
+    {
+      "codigo_siscomex": "702",
+      "codigo_iso": "SGD",
+      "nome": "Dólar de Singapura",
+      "simbolo": "S$",
+      "pais": "Singapura",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "344",
+      "codigo_iso": "HKD",
+      "nome": "Dólar de Hong Kong",
+      "simbolo": "HK$",
+      "pais": "Hong Kong",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "901",
+      "codigo_iso": "TWD",
+      "nome": "Novo Dólar Taiwanês",
+      "simbolo": "NT$",
+      "pais": "Taiwan",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "554",
+      "codigo_iso": "NZD",
+      "nome": "Dólar Neozelandês",
+      "simbolo": "NZ$",
+      "pais": "Nova Zelândia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "578",
+      "codigo_iso": "NOK",
+      "nome": "Coroa Norueguesa",
+      "simbolo": "kr",
+      "pais": "Noruega",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "752",
+      "codigo_iso": "SEK",
+      "nome": "Coroa Sueca",
+      "simbolo": "kr",
+      "pais": "Suécia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "208",
+      "codigo_iso": "DKK",
+      "nome": "Coroa Dinamarquesa",
+      "simbolo": "kr",
+      "pais": "Dinamarca",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "643",
+      "codigo_iso": "RUB",
+      "nome": "Rublo Russo",
+      "simbolo": "₽",
+      "pais": "Rússia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "949",
+      "codigo_iso": "TRY",
+      "nome": "Lira Turca",
+      "simbolo": "₺",
+      "pais": "Turquia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "784",
+      "codigo_iso": "AED",
+      "nome": "Dirham dos Emirados Árabes",
+      "simbolo": "د.إ",
+      "pais": "Emirados Árabes Unidos",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "682",
+      "codigo_iso": "SAR",
+      "nome": "Riyal Saudita",
+      "simbolo": "﷼",
+      "pais": "Arábia Saudita",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "376",
+      "codigo_iso": "ILS",
+      "nome": "Novo Shekel Israelense",
+      "simbolo": "₪",
+      "pais": "Israel",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "818",
+      "codigo_iso": "EGP",
+      "nome": "Libra Egípcia",
+      "simbolo": "£",
+      "pais": "Egito",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "566",
+      "codigo_iso": "NGN",
+      "nome": "Naira Nigeriana",
+      "simbolo": "₦",
+      "pais": "Nigéria",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "985",
+      "codigo_iso": "PLN",
+      "nome": "Zloty Polonês",
+      "simbolo": "zł",
+      "pais": "Polônia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "203",
+      "codigo_iso": "CZK",
+      "nome": "Coroa Tcheca",
+      "simbolo": "Kč",
+      "pais": "República Tcheca",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "348",
+      "codigo_iso": "HUF",
+      "nome": "Florim Húngaro",
+      "simbolo": "Ft",
+      "pais": "Hungria",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "946",
+      "codigo_iso": "RON",
+      "nome": "Leu Romeno",
+      "simbolo": "lei",
+      "pais": "Romênia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "975",
+      "codigo_iso": "BGN",
+      "nome": "Lev Búlgaro",
+      "simbolo": "лв",
+      "pais": "Bulgária",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "980",
+      "codigo_iso": "UAH",
+      "nome": "Hryvnia Ucraniana",
+      "simbolo": "₴",
+      "pais": "Ucrânia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "764",
+      "codigo_iso": "THB",
+      "nome": "Baht Tailandês",
+      "simbolo": "฿",
+      "pais": "Tailândia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "458",
+      "codigo_iso": "MYR",
+      "nome": "Ringgit Malaio",
+      "simbolo": "RM",
+      "pais": "Malásia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "360",
+      "codigo_iso": "IDR",
+      "nome": "Rupia Indonésia",
+      "simbolo": "Rp",
+      "pais": "Indonésia",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "608",
+      "codigo_iso": "PHP",
+      "nome": "Peso Filipino",
+      "simbolo": "₱",
+      "pais": "Filipinas",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "704",
+      "codigo_iso": "VND",
+      "nome": "Dong Vietnamita",
+      "simbolo": "₫",
+      "pais": "Vietnã",
+      "decimais": 0
+    },
+    {
+      "codigo_siscomex": "586",
+      "codigo_iso": "PKR",
+      "nome": "Rupia Paquistanesa",
+      "simbolo": "₨",
+      "pais": "Paquistão",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "050",
+      "codigo_iso": "BDT",
+      "nome": "Taka de Bangladesh",
+      "simbolo": "৳",
+      "pais": "Bangladesh",
+      "decimais": 2
+    },
+    {
+      "codigo_siscomex": "144",
+      "codigo_iso": "LKR",
+      "nome": "Rupia do Sri Lanka",
+      "simbolo": "Rs",
+      "pais": "Sri Lanka",
+      "decimais": 2
+    }
+  ],
+  
+  "mapeamento_rapido": {
+    "220": "USD",
+    "978": "EUR",
+    "790": "BRL",
+    "000": "BRL",
+    "540": "GBP",
+    "660": "JPY",
+    "156": "CNY",
+    "860": "INR",
+    "124": "CAD",
+    "036": "AUD",
+    "756": "CHF",
+    "032": "ARS",
+    "152": "CLP",
+    "170": "COP",
+    "484": "MXN",
+    "604": "PEN",
+    "858": "UYU",
+    "600": "PYG",
+    "068": "BOB",
+    "710": "ZAR",
+    "410": "KRW",
+    "702": "SGD",
+    "344": "HKD",
+    "901": "TWD",
+    "554": "NZD",
+    "578": "NOK",
+    "752": "SEK",
+    "208": "DKK",
+    "643": "RUB",
+    "949": "TRY",
+    "784": "AED",
+    "682": "SAR",
+    "376": "ILS",
+    "818": "EGP",
+    "566": "NGN",
+    "985": "PLN",
+    "203": "CZK",
+    "348": "HUF",
+    "946": "RON",
+    "975": "BGN",
+    "980": "UAH",
+    "764": "THB",
+    "458": "MYR",
+    "360": "IDR",
+    "608": "PHP",
+    "704": "VND",
+    "586": "PKR",
+    "050": "BDT",
+    "144": "LKR"
+  },
+  
+  "observacoes": {
+    "uso": "Mapeamento de códigos SISCOMEX para ISO 4217",
+    "atualizacao": "Lista completa com principais moedas usadas em importação brasileira",
+    "fonte_oficial": "Sistema Integrado de Comércio Exterior (SISCOMEX)",
+    "codigo_000": "Código especial '000' indica valores já em BRL, não requer conversão"
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "versao": "2025.1",
+  "data_atualizacao": "2025-08-17",
+  "fonte": "Especificação Técnica Expertzy - Dados Oficiais 2025",
+  
+  "aliquotas_icms_2025": {
+    "AC": {
+      "aliquota_interna": 19.00,
+      "fcp": null,
+      "observacoes": "Sem FCP"
+    },
+    "AL": {
+      "aliquota_interna": 20.00,
+      "fcp": {
+        "min": 1.00,
+        "max": 2.00
+      },
+      "observacoes": "19% + 1% FECOEP"
+    },
+    "AP": {
+      "aliquota_interna": 18.00,
+      "fcp": null,
+      "observacoes": "Sem FCP"
+    },
+    "AM": {
+      "aliquota_interna": 20.00,
+      "fcp": {
+        "min": 1.50,
+        "max": 2.00
+      },
+      "observacoes": "FCP variável"
+    },
+    "BA": {
+      "aliquota_interna": 20.50,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "CE": {
+      "aliquota_interna": 20.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "DF": {
+      "aliquota_interna": 20.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "ES": {
+      "aliquota_interna": 17.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "GO": {
+      "aliquota_interna": 19.00,
+      "fcp": {
+        "min": 0.00,
+        "max": 2.00
+      },
+      "observacoes": "Não cobra FCP atualmente"
+    },
+    "MA": {
+      "aliquota_interna": 23.00,
+      "fcp": 2.00,
+      "observacoes": "Nova alíquota desde 23/02/2025"
+    },
+    "MT": {
+      "aliquota_interna": 17.00,
+      "fcp": {
+        "min": 0.00,
+        "max": 2.00
+      },
+      "observacoes": "FCP facultativo"
+    },
+    "MS": {
+      "aliquota_interna": 17.00,
+      "fcp": {
+        "min": 0.00,
+        "max": 2.00
+      },
+      "observacoes": "FCP facultativo"
+    },
+    "MG": {
+      "aliquota_interna": 18.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "PA": {
+      "aliquota_interna": 19.00,
+      "fcp": null,
+      "observacoes": "Sem FCP"
+    },
+    "PB": {
+      "aliquota_interna": 20.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "PR": {
+      "aliquota_interna": 19.50,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "PE": {
+      "aliquota_interna": 20.50,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "PI": {
+      "aliquota_interna": 22.50,
+      "fcp": 2.00,
+      "observacoes": "Nova alíquota desde 01/04/2025"
+    },
+    "RJ": {
+      "aliquota_interna": 22.00,
+      "fcp": {
+        "min": 0.00,
+        "max": 4.00
+      },
+      "observacoes": "20% + 2% FECP"
+    },
+    "RN": {
+      "aliquota_interna": 20.00,
+      "fcp": 2.00,
+      "observacoes": "Nova alíquota desde 20/03/2025"
+    },
+    "RS": {
+      "aliquota_interna": 17.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "RO": {
+      "aliquota_interna": 19.50,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "RR": {
+      "aliquota_interna": 20.00,
+      "fcp": {
+        "min": 0.00,
+        "max": 2.00
+      },
+      "observacoes": "FCP facultativo"
+    },
+    "SC": {
+      "aliquota_interna": 17.00,
+      "fcp": null,
+      "observacoes": "Sem FCP"
+    },
+    "SP": {
+      "aliquota_interna": 18.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    },
+    "SE": {
+      "aliquota_interna": 20.00,
+      "fcp": {
+        "min": 1.00,
+        "max": 2.00
+      },
+      "observacoes": "19% + 1% FECOEP"
+    },
+    "TO": {
+      "aliquota_interna": 20.00,
+      "fcp": 2.00,
+      "observacoes": "FCP fixo 2%"
+    }
+  },
+
+  "aliquotas_interestaduais": {
+    "mercadoria_importada_com_similar_nacional": 4.00,
+    "normal": {
+      "sul_sudeste_para_norte_nordeste_co": 7.00,
+      "norte_nordeste_co_para_sul_sudeste": 12.00,
+      "dentro_mesma_regiao": 12.00
+    },
+    "regioes": {
+      "norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
+      "nordeste": ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
+      "centro_oeste": ["DF", "GO", "MT", "MS"],
+      "sudeste": ["ES", "MG", "RJ", "SP"],
+      "sul": ["PR", "RS", "SC"]
+    }
+  },
+
+  "tributos_federais": {
+    "observacao": "II, IPI, PIS e COFINS devem ser extraídos da DI - valores variam constantemente",
+    "pis_cofins_base": {
+      "pis_aliquota_basica": 2.10,
+      "cofins_aliquota_basica": 9.65,
+      "base_calculo": "valor_aduaneiro",
+      "adicional_cofins": {
+        "vigencia_atual": "01/04/2024 a 31/12/2027",
+        "percentual": 1.00,
+        "aplicacao": "NCMs específicos conforme lei",
+        "observacao": "Consultar lista completa de NCMs sujeitos ao adicional"
+      }
+    },
+    "cofins_adicional_ncms": {
+      "observacao": "Lista parcial - verificar documento completo para todos os NCMs",
+      "exemplos_ncms_com_adicional": [
+        "3926.20.00", "40.15", "42.03", "43.03", "4818.50.00", "6505.00", 
+        "6812.91.00", "8804.00.00", "capítulos 61 a 63", "64.01 a 64.06",
+        "41.04", "41.05", "41.06", "41.07", "41.14", "8308.10.00", 
+        "8308.20.00", "96.06", "96.07", "87.02", "87.07", "84.02",
+        "84.03", "84.04", "84.05", "84.06", "84.07", "84.08", "84.09"
+      ]
+    },
+    "ii_base": {
+      "base_calculo": "valor_aduaneiro",
+      "aliquota_variavel": true,
+      "observacao": "Extrair da DI - alíquota varia por NCM conforme TEC"
+    },
+    "ipi_base": {
+      "base_calculo": "valor_aduaneiro_mais_ii",
+      "aliquota_variavel": true,
+      "observacao": "Extrair da DI - alíquota varia por NCM conforme TIPI"
+    }
+  },
+
+  "regras_fcp": {
+    "aplicacao": {
+      "entre_x_e_y": "usar_valor_minimo",
+      "ate_x": "usar_zero",
+      "observacao": "Conforme orientação técnica fornecida"
+    }
+  },
+
+  "instrucoes_sistema": {
+    "extração_di": {
+      "ii": "Extrair ii_aliquota_ad_valorem, ii_valor_devido, ii_valor_recolher da DI",
+      "ipi": "Extrair ipi_aliquota_ad_valorem, ipi_valor_devido, ipi_valor_recolher da DI",
+      "pis": "Extrair pis_aliquota_ad_valorem, pis_valor_devido, pis_valor_recolher da DI",
+      "cofins": "Extrair cofins_aliquota_ad_valorem, cofins_valor_devido, cofins_valor_recolher da DI - verificar adicional de 1%",
+      "observacao": "Valores podem variar por operação - sempre usar dados da DI como fonte principal"
+    },
+    "validacao_cofins": {
+      "verificar_adicional": true,
+      "periodo_vigencia": "01/04/2024 a 31/12/2027",
+      "percentual_adicional": 1.00,
+      "metodo_verificacao": "Comparar NCM da adição com lista de códigos sujeitos ao adicional"
+    }
+  }
+}

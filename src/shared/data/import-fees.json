@@ -1,0 +1,110 @@
+{
+  "metadata": {
+    "version": "2025.1",
+    "lastUpdate": "2025-09-04",
+    "description": "Taxas e custos de importação"
+  },
+  
+  "afrmm": {
+    "description": "Adicional de Frete para Renovação da Marinha Mercante",
+    "rate": 0.25,
+    "percentage": 25,
+    "calculationBase": "Valor do frete internacional",
+    "exemptions": [
+      "Navegação de cabotagem",
+      "Navegação fluvial e lacustre"
+    ],
+    "notes": "Aplicado sobre o valor do frete marítimo internacional"
+  },
+  
+  "siscomex": {
+    "description": "Taxa de utilização do SISCOMEX",
+    "perDI": 185.00,
+    "perAddition": {
+      "first10": 29.50,
+      "from11to20": 23.60,
+      "from21to50": 17.70,
+      "above50": 11.80
+    },
+    "notes": "Valores em R$ conforme IN RFB",
+    "lastUpdate": "2024-01-01"
+  },
+  
+  "capatazia": {
+    "description": "Movimentação e armazenagem portuária",
+    "averageRate": 0.015,
+    "percentage": 1.5,
+    "calculationBase": "Valor CIF",
+    "notes": "Taxa média - varia por porto e terminal",
+    "typical_ranges": {
+      "minimum": 0.01,
+      "average": 0.015,
+      "maximum": 0.025
+    }
+  },
+  
+  "customsBroker": {
+    "description": "Honorários do despachante aduaneiro",
+    "typical_ranges": {
+      "fixed_minimum": 500.00,
+      "percentage_of_cif": 0.005,
+      "percentage_typical": 0.5,
+      "fixed_maximum": 5000.00
+    },
+    "notes": "Valores negociáveis com o despachante"
+  },
+  
+  "storage": {
+    "description": "Armazenagem em terminal",
+    "freeTime": {
+      "days": 7,
+      "description": "Período sem cobrança após descarga"
+    },
+    "dailyRates": {
+      "container20": 150.00,
+      "container40": 250.00,
+      "perTon": 25.00
+    },
+    "notes": "Valores médios - variam por terminal e localização"
+  },
+  
+  "transport": {
+    "description": "Transporte interno (porto ao destino)",
+    "averagePerKm": 3.50,
+    "minimumCharge": 500.00,
+    "notes": "Valores variam por região, tipo de carga e modal"
+  },
+  
+  "insurance": {
+    "description": "Seguro internacional de carga",
+    "typical_rate": 0.003,
+    "percentage": 0.3,
+    "calculationBase": "110% do valor CIF",
+    "notes": "Taxa varia por tipo de mercadoria e modalidade"
+  },
+  
+  "bankFees": {
+    "description": "Taxas bancárias para câmbio",
+    "swift": 150.00,
+    "exchangeSpread": 0.004,
+    "iof": {
+      "rate": 0.0038,
+      "percentage": 0.38,
+      "description": "IOF sobre operações de câmbio"
+    }
+  },
+  
+  "inspectionFees": {
+    "anvisa": {
+      "description": "Taxa de fiscalização ANVISA",
+      "small": 500.00,
+      "medium": 2000.00,
+      "large": 10000.00
+    },
+    "mapa": {
+      "description": "Taxa de fiscalização MAPA",
+      "perContainer": 130.00,
+      "perTon": 15.00
+    }
+  }
+}

@@ -1,0 +1,589 @@
+/**
+ * expertzy-brand.css - Expertzy Brand Identity System
+ * 
+ * Central brand guidelines and design system
+ * Colors from official brand palette
+ * Typography: Gadeg thin + BRFirma-Medium
+ */
+
+/* Import Official Expertzy Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700&display=swap');
+
+/* Fallback fonts - using Inter as close equivalent to official fonts */
+@font-face {
+    font-family: 'gadeg thin';
+    src: url('https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap');
+    font-weight: 300;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'BRFirma-Medium';
+    src: url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+    font-weight: 500;
+    font-display: swap;
+}
+
+/* ========================================
+   EXPERTZY BRAND IDENTITY
+   ======================================== */
+
+:root {
+    /* Primary Brand Colors */
+    --expertzy-red: #FF002D;
+    --expertzy-navy: #091A30;
+    
+    /* Neutral Colors */
+    --expertzy-white: #FFFFFF;
+    --expertzy-light-gray: #F8F9FA;
+    --expertzy-gray: #6C757D;
+    --expertzy-dark-gray: #495057;
+    
+    /* Brand Color Variations */
+    --expertzy-red-dark: #cc0024;
+    --expertzy-red-light: #ff3d5c;
+    --expertzy-red-lighter: #fff0f3;
+    
+    --expertzy-navy-dark: #061220;
+    --expertzy-navy-light: #1a2d4a;
+    --expertzy-navy-lighter: #f0f2f5;
+    
+    /* Typography - Official Expertzy Fonts */
+    --expertzy-font-primary: 'gadeg thin', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --expertzy-font-secondary: 'BRFirma-Medium', 'gadeg thin', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --expertzy-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+    
+    /* Spacing */
+    --expertzy-spacing-xs: 0.25rem;
+    --expertzy-spacing-sm: 0.5rem;
+    --expertzy-spacing: 1rem;
+    --expertzy-spacing-lg: 1.5rem;
+    --expertzy-spacing-xl: 2rem;
+    --expertzy-spacing-xxl: 3rem;
+    
+    /* Borders & Radius */
+    --expertzy-radius: 8px;
+    --expertzy-radius-sm: 4px;
+    --expertzy-radius-lg: 12px;
+    --expertzy-radius-xl: 16px;
+    
+    /* Shadows */
+    --expertzy-shadow-sm: 0 2px 4px rgba(9, 26, 48, 0.08);
+    --expertzy-shadow: 0 4px 12px rgba(9, 26, 48, 0.12);
+    --expertzy-shadow-lg: 0 8px 24px rgba(9, 26, 48, 0.16);
+    --expertzy-shadow-xl: 0 12px 36px rgba(9, 26, 48, 0.20);
+    
+    /* Transitions */
+    --expertzy-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+
+body {
+    font-family: var(--expertzy-font-primary);
+    color: var(--expertzy-navy);
+    background-color: var(--expertzy-light-gray);
+    font-weight: 300;
+    line-height: 1.6;
+}
+
+/* Headings with BRFirma-Medium */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--expertzy-font-secondary);
+    font-weight: 500;
+    color: var(--expertzy-navy);
+    line-height: 1.3;
+}
+
+/* Logo Classes */
+.expertzy-logo {
+    height: 50px;
+    width: auto;
+}
+
+.expertzy-complete-logo {
+    height: 35px;
+    width: auto;
+}
+
+.expertzy-hero-logo {
+    height: 60px;
+    width: auto;
+    margin-bottom: 1rem;
+}
+
+.footer-logo {
+    height: 35px;
+    width: auto;
+}
+
+/* ========================================
+   BRAND COMPONENTS
+   ======================================== */
+
+/* Buttons */
+.btn-expertzy-primary {
+    background: linear-gradient(135deg, var(--expertzy-red), var(--expertzy-red-dark));
+    border: none;
+    color: var(--expertzy-white);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--expertzy-radius);
+    transition: var(--expertzy-transition);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.btn-expertzy-primary:hover {
+    background: linear-gradient(135deg, var(--expertzy-red-dark), var(--expertzy-red));
+    transform: translateY(-2px);
+    box-shadow: var(--expertzy-shadow-lg);
+    color: var(--expertzy-white);
+}
+
+.btn-expertzy-secondary {
+    background: linear-gradient(135deg, var(--expertzy-navy), var(--expertzy-navy-dark));
+    border: none;
+    color: var(--expertzy-white);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--expertzy-radius);
+    transition: var(--expertzy-transition);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.btn-expertzy-secondary:hover {
+    background: linear-gradient(135deg, var(--expertzy-navy-dark), var(--expertzy-navy));
+    transform: translateY(-2px);
+    box-shadow: var(--expertzy-shadow-lg);
+    color: var(--expertzy-white);
+}
+
+.btn-expertzy-outline {
+    background: transparent;
+    border: 2px solid var(--expertzy-red);
+    color: var(--expertzy-red);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--expertzy-radius);
+    transition: var(--expertzy-transition);
+}
+
+.btn-expertzy-outline:hover {
+    background: var(--expertzy-red);
+    color: var(--expertzy-white);
+    transform: translateY(-2px);
+}
+
+/* Phase-specific Buttons */
+.btn-phase-1 {
+    background: linear-gradient(135deg, #0066cc, #004499);
+    border: none;
+    color: var(--expertzy-white);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--expertzy-radius);
+    transition: var(--expertzy-transition);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.btn-phase-1:hover {
+    background: linear-gradient(135deg, #004499, #003366);
+    transform: translateY(-2px);
+    box-shadow: var(--expertzy-shadow-lg);
+    color: var(--expertzy-white);
+}
+
+.btn-phase-2 {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    border: none;
+    color: var(--expertzy-white);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: var(--expertzy-radius);
+    transition: var(--expertzy-transition);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.btn-phase-2:hover {
+    background: linear-gradient(135deg, #1e7e34, #155724);
+    transform: translateY(-2px);
+    box-shadow: var(--expertzy-shadow-lg);
+    color: var(--expertzy-white);
+}
+
+/* Headers */
+.expertzy-header {
+    background: linear-gradient(135deg, var(--expertzy-navy), var(--expertzy-red));
+    color: var(--expertzy-white);
+    padding: 2rem 0;
+    box-shadow: var(--expertzy-shadow-lg);
+}
+
+.expertzy-navbar {
+    background-color: var(--expertzy-navy);
+    box-shadow: var(--expertzy-shadow);
+}
+
+.expertzy-hero {
+    background: linear-gradient(135deg, var(--expertzy-navy) 0%, #0d1a3d 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Cards */
+.expertzy-card {
+    background: var(--expertzy-white);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-lg);
+    box-shadow: var(--expertzy-shadow);
+    transition: var(--expertzy-transition);
+}
+
+.expertzy-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--expertzy-shadow-xl);
+}
+
+.expertzy-card-primary {
+    border-left: 4px solid var(--expertzy-red);
+}
+
+.expertzy-card-secondary {
+    border-left: 4px solid var(--expertzy-navy);
+}
+
+/* Phase Cards */
+.phase-card {
+    background: var(--expertzy-white);
+    border-radius: var(--expertzy-radius-lg);
+    padding: var(--expertzy-spacing-xl);
+    box-shadow: var(--expertzy-shadow);
+    transition: var(--expertzy-transition);
+    height: 100%;
+    border: 2px solid transparent;
+}
+
+.phase-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--expertzy-shadow-xl);
+}
+
+.phase-card.phase-1 {
+    border-color: #0066cc;
+    background: linear-gradient(135deg, #f0f7ff, var(--expertzy-white));
+}
+
+.phase-card.phase-2 {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f0f9f0, var(--expertzy-white));
+}
+
+.phase-icon {
+    font-size: 3rem;
+    margin-bottom: var(--expertzy-spacing);
+}
+
+.phase-1 .phase-icon {
+    color: #0066cc;
+}
+
+.phase-2 .phase-icon {
+    color: #28a745;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-active {
+    background: #0066cc;
+    color: var(--expertzy-white);
+}
+
+.status-optional {
+    background: #28a745;
+    color: var(--expertzy-white);
+}
+
+/* Feature Lists */
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: var(--expertzy-radius-sm);
+    transition: var(--expertzy-transition);
+}
+
+.feature-list li:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(4px);
+}
+
+.feature-list li i {
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+/* Badges */
+.badge-expertzy {
+    background: var(--expertzy-red);
+    color: var(--expertzy-white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.badge-expertzy-navy {
+    background: var(--expertzy-navy);
+    color: var(--expertzy-white);
+}
+
+/* Forms */
+.form-control-expertzy {
+    border: 1px solid var(--expertzy-gray);
+    border-radius: var(--expertzy-radius-sm);
+    padding: 0.75rem 1rem;
+    transition: var(--expertzy-transition);
+}
+
+.form-control-expertzy:focus {
+    border-color: var(--expertzy-red);
+    box-shadow: 0 0 0 3px rgba(255, 0, 45, 0.1);
+    outline: none;
+}
+
+/* Alerts */
+.alert-expertzy {
+    background: var(--expertzy-red-lighter);
+    border-left: 4px solid var(--expertzy-red);
+    color: var(--expertzy-navy);
+    padding: var(--expertzy-spacing);
+    border-radius: var(--expertzy-radius-sm);
+}
+
+/* Background Utilities */
+.bg-expertzy-red {
+    background-color: var(--expertzy-red) !important;
+}
+
+.bg-expertzy-navy {
+    background-color: var(--expertzy-navy) !important;
+}
+
+.bg-expertzy-gradient {
+    background: linear-gradient(135deg, var(--expertzy-navy), var(--expertzy-red)) !important;
+}
+
+/* Text Utilities */
+.text-expertzy-red {
+    color: var(--expertzy-red) !important;
+}
+
+.text-expertzy-navy {
+    color: var(--expertzy-navy) !important;
+}
+
+/* Hero Section Styles */
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: var(--expertzy-white);
+    margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--expertzy-red);
+    margin-bottom: 1rem;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.hero-cta .btn {
+    margin: 0.5rem;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+}
+
+/* Section Styles */
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--expertzy-navy);
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Workflow Elements */
+.workflow-arrow {
+    font-size: 2rem;
+    color: var(--expertzy-gray);
+    margin: 2rem 0;
+}
+
+.workflow-explanation {
+    background: linear-gradient(135deg, var(--expertzy-navy-lighter), var(--expertzy-white));
+    border: 1px solid var(--expertzy-navy-light);
+}
+
+.workflow-step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--expertzy-white);
+    margin-bottom: 1rem;
+}
+
+/* Info Section */
+.info-section {
+    background: var(--expertzy-white);
+    padding: 4rem 0;
+}
+
+.info-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Footer */
+.expertzy-footer {
+    background: var(--expertzy-navy);
+    color: var(--expertzy-white);
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.expertzy-footer .footer-logo {
+    height: 35px;
+    width: auto;
+}
+
+/* Loading */
+.expertzy-spinner {
+    border: 3px solid var(--expertzy-red-lighter);
+    border-top: 3px solid var(--expertzy-red);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: expertzy-spin 1s linear infinite;
+}
+
+@keyframes expertzy-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Sidebar */
+.expertzy-sidebar {
+    background: var(--expertzy-navy);
+    min-height: 100vh;
+    box-shadow: var(--expertzy-shadow-lg);
+}
+
+.expertzy-sidebar .nav-link {
+    color: var(--expertzy-white);
+    padding: 0.75rem 1.25rem;
+    transition: var(--expertzy-transition);
+}
+
+.expertzy-sidebar .nav-link:hover {
+    background: rgba(255, 0, 45, 0.1);
+    color: var(--expertzy-white);
+    transform: translateX(4px);
+}
+
+.expertzy-sidebar .nav-link.active {
+    background: var(--expertzy-red);
+    color: var(--expertzy-white);
+}
+
+/* Status Indicators */
+.status-success {
+    color: #28a745;
+}
+
+.status-warning {
+    color: #ffc107;
+}
+
+.status-danger {
+    color: #dc3545;
+}
+
+.status-info {
+    color: #17a2b8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .expertzy-header {
+        padding: 1.5rem 0;
+    }
+    
+    .expertzy-card {
+        padding: var(--expertzy-spacing);
+    }
+    
+    .btn-expertzy-primary,
+    .btn-expertzy-secondary {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .workflow-arrow {
+        margin: 1rem 0;
+    }
+    
+    .phase-card {
+        padding: var(--expertzy-spacing-lg);
+    }
+}
