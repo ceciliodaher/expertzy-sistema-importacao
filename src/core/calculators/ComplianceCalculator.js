@@ -1,5 +1,6 @@
 /**
  * ComplianceCalculator.js - Phase 1: Compliance Tax Calculator
+ * Migrated from legacy system to new ES6 module architecture
  * 
  * Handles ONLY mandatory tax calculations for import compliance
  * Focus: II, IPI, PIS, COFINS, ICMS with correct expense inclusion
@@ -9,17 +10,58 @@
  * PERFORMANCE FIX: Single calculation execution (no repetitions)
  */
 
-class ComplianceCalculator {
+export class ComplianceCalculator {
     constructor() {
         this.configuracoes = null;
-        this.estadoDestino = null; // Estado deve ser fornecido explicitamente - sem default
+        this.estadoDestino = null;
         this.calculationMemory = [];
         this.lastCalculation = null;
-        this.itemCalculator = new ItemCalculator(); // NOVO: Integração para cálculos por item
+        this.aliquotasData = null;
+        this.codigosReceita = null;
         
-        // NOVA INTEGRAÇÃO: ProductMemoryManager para sistema de precificação
-        this.productMemory = null;
-        this.initializeProductMemory();
+        this.loadConfigurations();
+    }
+    
+    /**
+     * Carrega configurações externas (sem hardcoded data)
+     */
+    async loadConfigurations() {
+        try {
+            // Carrega alíquotas ICMS
+            const response = await fetch('/src/shared/data/aliquotas.json');
+            this.aliquotasData = await response.json();
+            
+            // Carrega códigos de receita
+            const codigosResponse = await fetch('/src/shared/data/codigos-receita.json');
+            this.codigosReceita = await codigosResponse.json();
+            
+            // Estruturar configurações para acesso unificado
+            this.configuracoes = {
+                aliquotas: this.aliquotasData
+            };
+            
+            console.log('[ComplianceCalculator] Configurações carregadas com sucesso');
+        } catch (error) {
+            console.error('[ComplianceCalculator] Erro ao carregar configurações:', error);
+            throw new Error('Configurações obrigatórias não disponíveis - sistema não pode prosseguir');
+        }
+    }
+    
+    /**
+     * Inicializa ItemCalculator se disponível
+     */
+    initializeItemCalculator() {
+        try {
+            if (typeof ItemCalculator !== 'undefined') {
+                this.itemCalculator = new ItemCalculator();
+                console.log('[ComplianceCalculator] ItemCalculator integrado');
+            } else {
+                console.warn('[ComplianceCalculator] ItemCalculator não disponível - cálculos por item não funcionarão');
+            }
+        } catch (error) {
+            console.error('[ComplianceCalculator] Erro ao inicializar ItemCalculator:', error);
+            this.itemCalculator = null;
+        }
     }
     
     /**
@@ -29,12 +71,12 @@ class ComplianceCalculator {
         try {
             if (typeof ProductMemoryManager !== 'undefined') {
                 this.productMemory = new ProductMemoryManager();
-                console.log('✅ ProductMemoryManager integrado ao ComplianceCalculator');
+                console.log('[ComplianceCalculator] ProductMemoryManager integrado');
             } else {
-                console.log('ℹ️ ProductMemoryManager não disponível - produtos não serão salvos para precificação');
+                console.log('[ComplianceCalculator] ProductMemoryManager não disponível - produtos não serão salvos para precificação');
             }
         } catch (error) {
-            console.error('❌ Erro ao inicializar ProductMemoryManager:', error);
+            console.error('[ComplianceCalculator] Erro ao inicializar ProductMemory:', error);
             this.productMemory = null;
         }
     }
@@ -55,6 +97,11 @@ class ComplianceCalculator {
         // Validar que estado foi configurado (deve ser feito externamente antes de chamar este método)
         if (!this.estadoDestino) {
             throw new Error('Estado destino não configurado - ComplianceCalculator requer estado definido via setEstadoDestino()');
+        }
+        
+        // Verificar se ItemCalculator está disponível antes do uso
+        if (!this.itemCalculator) {
+            throw new Error('ItemCalculator não disponível - obrigatório para cálculos por item');
         }
         
         // Configurar DI data para ItemCalculator usar em rateios
