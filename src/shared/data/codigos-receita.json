@@ -1,0 +1,74 @@
+{
+  "codigosReceita": {
+    "SISCOMEX": {
+      "codigo": "7811",
+      "descricao": "Taxa de Utilização do SISCOMEX",
+      "tipo": "TAXA_FEDERAL"
+    },
+    "AFRMM": {
+      "codigo": "7770",
+      "descricao": "Adicional ao Frete para Renovação da Marinha Mercante",
+      "tipo": "ADICIONAL"
+    },
+    "CAPATAZIA": {
+      "codigo": null,
+      "descricao": "Taxa de Capatazia",
+      "tipo": "TAXA_PORTUARIA",
+      "observacao": "Não possui código de receita federal específico"
+    },
+    "ARMAZENAGEM": {
+      "codigo": null,
+      "descricao": "Taxa de Armazenagem",
+      "tipo": "TAXA_PORTUARIA"
+    },
+    "II": {
+      "codigo": "0086",
+      "descricao": "Imposto de Importação",
+      "tipo": "IMPOSTO"
+    },
+    "IPI": {
+      "codigo": "1038",
+      "descricao": "IPI - Vinculado à Importação",
+      "tipo": "IMPOSTO"
+    },
+    "PIS": {
+      "codigo": "5110",
+      "descricao": "PIS/PASEP - Importação",
+      "tipo": "CONTRIBUICAO"
+    },
+    "COFINS": {
+      "codigo": "5123",
+      "descricao": "COFINS - Importação",
+      "tipo": "CONTRIBUICAO"
+    },
+    "ICMS": {
+      "codigo": null,
+      "descricao": "ICMS - Importação",
+      "tipo": "IMPOSTO_ESTADUAL",
+      "observacao": "Código varia por estado"
+    },
+    "ANTIDUMPING": {
+      "codigo": "7825",
+      "descricao": "Direito Antidumping",
+      "tipo": "DIREITO"
+    },
+    "COMPENSATORIO": {
+      "codigo": "7832",
+      "descricao": "Direito Compensatório",
+      "tipo": "DIREITO"
+    }
+  },
+  "tiposDespesas": {
+    "FEDERAIS": ["SISCOMEX", "AFRMM", "II", "IPI", "PIS", "COFINS", "ANTIDUMPING", "COMPENSATORIO"],
+    "ESTADUAIS": ["ICMS"],
+    "PORTUARIAS": ["CAPATAZIA", "ARMAZENAGEM"],
+    "ADUANEIRAS": ["SISCOMEX", "AFRMM", "CAPATAZIA", "ARMAZENAGEM"]
+  },
+  "ultimaAtualizacao": "2025-01-01",
+  "versao": "1.0.0",
+  "observacoes": {
+    "atualizacao": "Códigos de receita devem ser verificados periodicamente no site da Receita Federal",
+    "fonte": "Tabela de Códigos de Receita da RFB",
+    "validacao": "Sempre validar com a legislação vigente antes de usar em produção"
+  }
+}

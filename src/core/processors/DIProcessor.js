@@ -2,7 +2,18 @@
  * DIProcessor - Parser XML para Declarações de Importação (DI)
  * Baseado no parser legado funcional e testado
  * Migrado do sistema que estava funcionando corretamente
+ * 
+ * ETAPA 1.2 TRANSFORM INTEGRADA:
+ * - Transform de dados extraídos para IndexedDB
+ * - Validação fail-fast obrigatória
+ * - Persistência automática com auditoria
  */
+
+import DataTransformer from '../../services/transform/DataTransformer.js';
+import DataValidator from '../../services/validation/DataValidator.js';
+import indexedDBManager from '../../services/database/IndexedDBManager.js';
+import Logger from '../../utils/Logger.js';
+
 class DIProcessor {
     constructor() {
         this.diData = {};
@@ -60,12 +71,28 @@ class DIProcessor {
 
     /**
      * Método principal para parsing do XML
+     * ETAPA 1.2 TRANSFORM: Integração completa ETL Pipeline
      * @param {string} xmlContent - Conteúdo do arquivo XML
-     * @returns {Object} Dados estruturados da DI
+     * @returns {Object} Dados estruturados e persistidos da DI
      */
     async parseXML(xmlContent) {
+        const startTime = performance.now();
+        Logger.time('DIProcessor', 'parseXML');
+        
         try {
+            if (!xmlContent) {
+                throw new Error('Conteúdo XML é obrigatório');
+            }
+
             this.originalXmlContent = xmlContent;
+            
+            Logger.info('DIProcessor', 'parseXML_start', {
+                xml_size: xmlContent.length,
+                xml_hash: this.generateXMLHash(xmlContent)
+            });
+
+            // ===== EXTRACT PHASE =====
+            Logger.info('DIProcessor', 'extract_phase_start');
             
             // Parse do XML usando DOMParser
             const parser = new DOMParser();
@@ -107,12 +134,128 @@ class DIProcessor {
             // Adicionar incoterm identificado aos dados gerais
             this.diData.incoterm_identificado = this.incotermIdentificado;
             
-            return this.diData;
+            Logger.info('DIProcessor', 'extract_phase_complete', {
+                numero_di: this.diData.numero_di,
+                total_adicoes: this.diData.total_adicoes
+            });
+
+            // ===== TRANSFORM PHASE =====
+            Logger.info('DIProcessor', 'transform_phase_start');
+            
+            const transformer = new DataTransformer();
+            const transformedData = transformer.transformDIData(this.diData);
+            
+            Logger.info('DIProcessor', 'transform_phase_complete', {
+                numero_di: transformedData.numero_di,
+                taxa_cambio: transformedData.taxa_cambio
+            });
+
+            // ===== VALIDATE PHASE =====
+            Logger.info('DIProcessor', 'validate_phase_start');
+            
+            const validator = new DataValidator();
+            const isValid = validator.validate(transformedData);
+            
+            if (validator.hasWarnings()) {
+                Logger.warn('DIProcessor', 'validation_warnings', 
+                    'Dados contêm warnings', 
+                    { warnings: validator.getWarnings() }
+                );
+            }
+            
+            Logger.info('DIProcessor', 'validate_phase_complete', {
+                is_valid: isValid,
+                warnings_count: validator.getWarnings().length
+            });
+
+            // ===== LOAD PHASE =====
+            Logger.info('DIProcessor', 'load_phase_start');
+            
+            const diId = await indexedDBManager.saveDI(transformedData);
+            transformedData.id = diId;
+            
+            Logger.critical('DIProcessor', 'DI_PERSISTED', {
+                numero_di: transformedData.numero_di,
+                di_id: diId,
+                importador_cnpj: transformedData.importador.cnpj
+            }, 'SUCCESS');
+            
+            Logger.info('DIProcessor', 'load_phase_complete', {
+                di_id: diId,
+                numero_di: transformedData.numero_di
+            });
+
+            // ===== PERFORMANCE METRICS =====
+            const endTime = performance.now();
+            Logger.timeEnd('DIProcessor', 'parseXML', {
+                xml_size: xmlContent.length,
+                total_adicoes: transformedData.total_adicoes,
+                di_id: diId
+            });
+
+            Logger.info('DIProcessor', 'parseXML_complete', {
+                numero_di: transformedData.numero_di,
+                di_id: diId,
+                processing_time_ms: endTime - startTime,
+                etl_pipeline: 'SUCCESS'
+            });
+
+            return transformedData;
             
         } catch (error) {
-            console.error('Erro no parsing XML:', error);
-            throw new Error(`Erro ao processar XML: ${error.message}`);
+            // Log estruturado de erro
+            Logger.error('DIProcessor', 'parseXML', error, {
+                xml_size: xmlContent?.length,
+                numero_di: this.diData?.numero_di,
+                phase: this.getCurrentPhase(error.message)
+            });
+
+            throw error; // Re-lançar para manter comportamento original
         }
+    }
+
+    /**
+     * Gera hash do XML para integridade
+     * @param {string} xmlContent - Conteúdo XML
+     * @returns {string} Hash SHA-256
+     */
+    generateXMLHash(xmlContent) {
+        // Usar crypto nativo se disponível, senão fallback simples
+        if (typeof crypto !== 'undefined' && crypto.subtle) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(xmlContent);
+            return crypto.subtle.digest('SHA-256', data).then(hashBuffer => {
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            });
+        } else {
+            // Fallback simples para hash
+            let hash = 0;
+            for (let i = 0; i < xmlContent.length; i++) {
+                const char = xmlContent.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return Math.abs(hash).toString(16);
+        }
+    }
+
+    /**
+     * Identifica fase atual baseada na mensagem de erro
+     * @param {string} errorMessage - Mensagem de erro
+     * @returns {string} Fase atual
+     */
+    getCurrentPhase(errorMessage) {
+        if (errorMessage.includes('parse') || errorMessage.includes('XML')) {
+            return 'EXTRACT';
+        } else if (errorMessage.includes('transform') || errorMessage.includes('convert')) {
+            return 'TRANSFORM';
+        } else if (errorMessage.includes('valid') || errorMessage.includes('obrigatório')) {
+            return 'VALIDATE';
+        } else if (errorMessage.includes('IndexedDB') || errorMessage.includes('save')) {
+            return 'LOAD';
+        }
+        return 'UNKNOWN';
     }
 
     /**

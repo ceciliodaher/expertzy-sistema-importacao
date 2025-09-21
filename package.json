@@ -17,10 +17,10 @@
     "setup": "npm install && npx playwright install"
   },
   "dependencies": {
-    "dexie": "^3.2.4",
+    "chart.js": "^4.4.1",
+    "dexie": "^3.2.7",
     "exceljs": "^4.4.0",
-    "jspdf": "^2.5.1",
-    "chart.js": "^4.4.1"
+    "jspdf": "^2.5.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
