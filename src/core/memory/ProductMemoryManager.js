@@ -143,11 +143,11 @@ class ProductMemoryManager {
         const savedProducts = [];
         
         try {
-            additions.forEach((addition, index) => {
+            for (const [index, addition] of additions.entries()) {
                 // Para cada produto na adição
                 const products = addition.produtos || [addition]; // Se não tiver produtos, usa a própria adição
                 
-                products.forEach((product, prodIndex) => {
+                for (const [prodIndex, product] of products.entries()) {
                     const productData = {
                         di_number: diNumber,
                         addition_number: addition.numero_adicao || index + 1,
@@ -189,8 +189,8 @@ class ProductMemoryManager {
                     
                     const saved = await this.saveProduct(productData);
                     savedProducts.push(saved);
-                });
-            });
+                }
+            }
 
             console.log(`✅ ${savedProducts.length} produtos salvos da DI ${diNumber}`);
             return savedProducts;
