@@ -264,7 +264,7 @@
                 console.log('📊 DI processada:', {
                     adicoes: diData.adicoes.length,
                     incoterm: diData.adicoes[0]?.condicao_venda_incoterm,
-                    ncm: diData.adicoes[0]?.codigo_mercadoria_ncm
+                    ncm: diData.adicoes[0]?.ncm
                 });
             });
 
@@ -280,7 +280,7 @@
                 
                 const primeiraAdicao = diData.adicoes[0];
                 if (primeiraAdicao.condicao_venda_incoterm !== 'CPT') throw new Error('Incoterm incorreto');
-                if (primeiraAdicao.codigo_mercadoria_ncm !== '29420000') throw new Error('NCM incorreto');
+                if (primeiraAdicao.ncm !== '29420000') throw new Error('NCM incorreto');
                 
                 console.log('✅ Dados validados: Incoterm CPT, NCM 29420000');
             });

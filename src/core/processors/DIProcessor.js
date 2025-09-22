@@ -277,7 +277,7 @@ export class DIProcessor {
             data_chegada: this.formatDate(this.getTextContent(diNode, 'cargaDataChegada')),
             via_transporte_codigo: this.getTextContent(diNode, 'viaTransporteCodigo'),
             via_transporte_nome: this.getTextContent(diNode, 'viaTransporteNome'),
-            nome_veiculo: this.getTextContent(diNode, 'viaTransporteNomeVeiculo'),
+            nome_veiculo: this.getTextContent(diNode, 'viaTransporteNomeTransportador'), // Corrigido: campo era incorreto
             nome_transportador: this.getTextContent(diNode, 'viaTransporteNomeTransportador')
         };
     }
@@ -398,45 +398,51 @@ export class DIProcessor {
     }
 
     /**
-     * Extrai tributos da adição conforme XSD array structure
-     * Cada tributo é um elemento com 20 campos específicos
+     * Extrai tributos da adição usando campos diretos do XML real
+     * Substitui estrutura XSD array por extração direta compatível com ComplianceCalculator
      */
     extractTributos(adicaoNode) {
-        const tributos = [];
-        const tributoNodes = adicaoNode.querySelectorAll('tributo');
+        const tributos = {
+            // II - Imposto de Importação
+            ii_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaAdValorem'), 'percentage'),
+            ii_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaValorDevido'), 'monetary'),
+            ii_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaValorRecolher'), 'monetary'),
+            ii_base_calculo: this.convertValue(this.getTextContent(adicaoNode, 'iiBaseCalculo'), 'monetary'),
+            ii_regime_nome: this.getTextContent(adicaoNode, 'iiRegimeTributacaoNome'),
+            ii_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaReduzida'), 'percentage'),
+            
+            // IPI - Imposto sobre Produtos Industrializados
+            ipi_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaAdValorem'), 'percentage'),
+            ipi_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaValorDevido'), 'monetary'),
+            ipi_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaValorRecolher'), 'monetary'),
+            ipi_regime_nome: this.getTextContent(adicaoNode, 'ipiRegimeTributacaoNome'),
+            ipi_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaReduzida'), 'percentage'),
+            
+            // PIS/PASEP
+            pis_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaAdValorem'), 'percentage'),
+            pis_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaValorDevido'), 'monetary'),
+            pis_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaValorRecolher'), 'monetary'),
+            pis_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaReduzida'), 'percentage'),
+            
+            // COFINS
+            cofins_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaAdValorem'), 'percentage'),
+            cofins_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaValorDevido'), 'monetary'),
+            cofins_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaValorRecolher'), 'monetary'),
+            cofins_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaReduzida'), 'percentage'),
+            
+            // CIDE (Contribuição de Intervenção no Domínio Econômico)
+            cide_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'cideValorDevido'), 'monetary'),
+            cide_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'cideValorRecolher'), 'monetary'),
+            cide_valor_aliquota_especifica: this.convertValue(this.getTextContent(adicaoNode, 'cideValorAliquotaEspecifica'), 'monetary'),
+            
+            // Base cálculo compartilhada PIS/COFINS
+            pis_cofins_base_calculo: this.convertValue(this.getTextContent(adicaoNode, 'pisCofinsBaseCalculoValor'), 'monetary')
+        };
         
-        tributoNodes.forEach((tributoNode, index) => {
-            // Extrair todos os 20 campos conforme XSD specification
-            const tributo = {
-                codigoReceitaImposto: this.getTextContent(tributoNode, 'codigoReceitaImposto'),
-                codigoTipoAliquotaIPT: this.getTextContent(tributoNode, 'codigoTipoAliquotaIPT'),
-                codigoTipoBeneficioIPI: this.getTextContent(tributoNode, 'codigoTipoBeneficioIPI'),
-                codigoTipoDireito: this.getTextContent(tributoNode, 'codigoTipoDireito'),
-                codigoTipoRecipiente: this.getTextContent(tributoNode, 'codigoTipoRecipiente'),
-                nomeUnidadeEspecificaAliquotaIPT: this.getTextContent(tributoNode, 'nomeUnidadeEspecificaAliquotaIPT'),
-                numeroNotaComplementarTIPI: this.getTextContent(tributoNode, 'numeroNotaComplementarTIPI'),
-                percentualAliquotaAcordoTarifario: this.convertValue(this.getTextContent(tributoNode, 'percentualAliquotaAcordoTarifario'), 'percentage'),
-                percentualAliquotaNormalAdval: this.convertValue(this.getTextContent(tributoNode, 'percentualAliquotaNormalAdval'), 'percentage'),
-                percentualAliquotaReduzida: this.convertValue(this.getTextContent(tributoNode, 'percentualAliquotaReduzida'), 'percentage'),
-                percentualReducaoIPT: this.convertValue(this.getTextContent(tributoNode, 'percentualReducaoIPT'), 'percentage'),
-                quantidadeMLRecipiente: this.convertValue(this.getTextContent(tributoNode, 'quantidadeMLRecipiente'), 'integer'),
-                quantidadeMercadoriaUnidadeAliquotaEspecifica: this.convertValue(this.getTextContent(tributoNode, 'quantidadeMercadoriaUnidadeAliquotaEspecifica'), 'weight'),
-                valorAliquotaEspecificaIPT: this.convertValue(this.getTextContent(tributoNode, 'valorAliquotaEspecificaIPT'), 'monetary'),
-                valorBaseCalculoAdval: this.convertValue(this.getTextContent(tributoNode, 'valorBaseCalculoAdval'), 'monetary'),
-                valorCalculadoIIACTarifario: this.convertValue(this.getTextContent(tributoNode, 'valorCalculadoIIACTarifario'), 'monetary'),
-                valorCalculoIPTEspecifica: this.convertValue(this.getTextContent(tributoNode, 'valorCalculoIPTEspecifica'), 'monetary'),
-                valorCalculoIptAdval: this.convertValue(this.getTextContent(tributoNode, 'valorCalculoIptAdval'), 'monetary'),
-                valorIPTaRecolher: this.convertValue(this.getTextContent(tributoNode, 'valorIPTaRecolher'), 'monetary'),
-                valorImpostoDevido: this.convertValue(this.getTextContent(tributoNode, 'valorImpostoDevido'), 'monetary')
-            };
-            
-            // NO FALLBACKS validation - required field check
-            if (!tributo.codigoReceitaImposto) {
-                throw new Error(`Código receita imposto obrigatório ausente no tributo ${index + 1} da adição`);
-            }
-            
-            tributos.push(tributo);
-        });
+        // NO FALLBACKS validation - verificar se pelo menos II tem dados básicos
+        if (tributos.ii_aliquota_ad_valorem === null && tributos.ii_valor_devido === null) {
+            throw new Error('Dados básicos de II obrigatórios não encontrados na DI - verificar estrutura XML');
+        }
         
         return tributos;
     }
@@ -825,9 +831,9 @@ export class DIProcessor {
         };
 
         this.diData.adicoes.forEach(adicao => {
-            // Validar estrutura tributos (sem totalizar - manter individuais)
-            if (!adicao.tributos || !Array.isArray(adicao.tributos)) {
-                throw new Error(`Estrutura tributos inválida na adição ${adicao.numero_adicao} - deve ser array`);
+            // Validar estrutura tributos (objeto com impostos diretos)
+            if (!adicao.tributos || typeof adicao.tributos !== 'object') {
+                throw new Error(`Estrutura tributos inválida na adição ${adicao.numero_adicao} - deve ser objeto com impostos`);
             }
             
             // NO FALLBACKS - valores obrigatórios
@@ -1178,7 +1184,7 @@ export class DIProcessor {
      */
     async calcularDespesasAutomaticas(xmlDoc, despesas) {
         // ===== AFRMM = 25% do frete marítimo =====
-        const viaTransporte = this.getTextContent(xmlDoc, 'dadosCargaViaTransporteCodigo');
+        const viaTransporte = this.getTextContent(xmlDoc, 'viaTransporteCodigo');
         
         if (viaTransporte === '10') { // Via marítima
             const freteValorReais = this.convertValue(this.getTextContent(xmlDoc, 'freteValorReais'), 'monetary');
