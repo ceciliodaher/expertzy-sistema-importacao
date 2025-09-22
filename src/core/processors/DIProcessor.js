@@ -1,26 +1,34 @@
 /**
  * DIProcessor - Parser XML para Declarações de Importação (DI)
- * Baseado no parser legado funcional e testado
- * Migrado do sistema que estava funcionando corretamente
- * 
- * ETAPA 1.2 TRANSFORM INTEGRADA:
- * - Transform de dados extraídos para IndexedDB
- * - Validação fail-fast obrigatória
- * - Persistência automática com auditoria
+ * Migrated from legacy system to new ES6 module architecture
  */
 
-import DataTransformer from '../../services/transform/DataTransformer.js';
-import DataValidator from '../../services/validation/DataValidator.js';
-import indexedDBManager from '../../services/database/IndexedDBManager.js';
-import Logger from '../../utils/Logger.js';
+import { ConfigLoader } from '../../shared/utils/ConfigLoader.js';
 
-class DIProcessor {
+export class DIProcessor {
     constructor() {
         this.diData = {};
         this.originalXmlContent = null;
         this.incotermIdentificado = null;
-        this.configLoader = new ConfigLoader();
         this.configsLoaded = false;
+        this.loadConfigurations();
+    }
+    
+    /**
+     * Carrega configurações necessárias
+     */
+    async loadConfigurations() {
+        try {
+            // Carrega códigos de receita
+            const codigosResponse = await fetch('./src/shared/data/codigos-receita.json');
+            this.codigosReceita = await codigosResponse.json();
+            
+            this.configsLoaded = true;
+            console.log('[DIProcessor] Configurações carregadas com sucesso');
+        } catch (error) {
+            console.error('[DIProcessor] Erro ao carregar configurações:', error);
+            throw new Error('Configurações obrigatórias não disponíveis - sistema não pode prosseguir');
+        }
     }
 
     /**
@@ -28,8 +36,7 @@ class DIProcessor {
      */
     async ensureConfigsLoaded() {
         if (!this.configsLoaded) {
-            await this.configLoader.loadAll();
-            this.configsLoaded = true;
+            await this.loadConfigurations();
         }
     }
 
@@ -71,28 +78,12 @@ class DIProcessor {
 
     /**
      * Método principal para parsing do XML
-     * ETAPA 1.2 TRANSFORM: Integração completa ETL Pipeline
      * @param {string} xmlContent - Conteúdo do arquivo XML
-     * @returns {Object} Dados estruturados e persistidos da DI
+     * @returns {Object} Dados estruturados da DI
      */
     async parseXML(xmlContent) {
-        const startTime = performance.now();
-        Logger.time('DIProcessor', 'parseXML');
-        
         try {
-            if (!xmlContent) {
-                throw new Error('Conteúdo XML é obrigatório');
-            }
-
             this.originalXmlContent = xmlContent;
-            
-            Logger.info('DIProcessor', 'parseXML_start', {
-                xml_size: xmlContent.length,
-                xml_hash: this.generateXMLHash(xmlContent)
-            });
-
-            // ===== EXTRACT PHASE =====
-            Logger.info('DIProcessor', 'extract_phase_start');
             
             // Parse do XML usando DOMParser
             const parser = new DOMParser();
@@ -126,7 +117,7 @@ class DIProcessor {
             await this.extractDespesasAduaneiras(xmlDoc);
             
             // Processar múltiplas moedas e taxas de câmbio
-            this.processarMultiplasMoedas(xmlDoc);
+            await this.processarMultiplasMoedas(xmlDoc);
             
             // Calcular totais
             this.calculateTotals();
@@ -134,128 +125,12 @@ class DIProcessor {
             // Adicionar incoterm identificado aos dados gerais
             this.diData.incoterm_identificado = this.incotermIdentificado;
             
-            Logger.info('DIProcessor', 'extract_phase_complete', {
-                numero_di: this.diData.numero_di,
-                total_adicoes: this.diData.total_adicoes
-            });
-
-            // ===== TRANSFORM PHASE =====
-            Logger.info('DIProcessor', 'transform_phase_start');
-            
-            const transformer = new DataTransformer();
-            const transformedData = transformer.transformDIData(this.diData);
-            
-            Logger.info('DIProcessor', 'transform_phase_complete', {
-                numero_di: transformedData.numero_di,
-                taxa_cambio: transformedData.taxa_cambio
-            });
-
-            // ===== VALIDATE PHASE =====
-            Logger.info('DIProcessor', 'validate_phase_start');
-            
-            const validator = new DataValidator();
-            const isValid = validator.validate(transformedData);
-            
-            if (validator.hasWarnings()) {
-                Logger.warn('DIProcessor', 'validation_warnings', 
-                    'Dados contêm warnings', 
-                    { warnings: validator.getWarnings() }
-                );
-            }
-            
-            Logger.info('DIProcessor', 'validate_phase_complete', {
-                is_valid: isValid,
-                warnings_count: validator.getWarnings().length
-            });
-
-            // ===== LOAD PHASE =====
-            Logger.info('DIProcessor', 'load_phase_start');
-            
-            const diId = await indexedDBManager.saveDI(transformedData);
-            transformedData.id = diId;
-            
-            Logger.critical('DIProcessor', 'DI_PERSISTED', {
-                numero_di: transformedData.numero_di,
-                di_id: diId,
-                importador_cnpj: transformedData.importador.cnpj
-            }, 'SUCCESS');
-            
-            Logger.info('DIProcessor', 'load_phase_complete', {
-                di_id: diId,
-                numero_di: transformedData.numero_di
-            });
-
-            // ===== PERFORMANCE METRICS =====
-            const endTime = performance.now();
-            Logger.timeEnd('DIProcessor', 'parseXML', {
-                xml_size: xmlContent.length,
-                total_adicoes: transformedData.total_adicoes,
-                di_id: diId
-            });
-
-            Logger.info('DIProcessor', 'parseXML_complete', {
-                numero_di: transformedData.numero_di,
-                di_id: diId,
-                processing_time_ms: endTime - startTime,
-                etl_pipeline: 'SUCCESS'
-            });
-
-            return transformedData;
+            return this.diData;
             
         } catch (error) {
-            // Log estruturado de erro
-            Logger.error('DIProcessor', 'parseXML', error, {
-                xml_size: xmlContent?.length,
-                numero_di: this.diData?.numero_di,
-                phase: this.getCurrentPhase(error.message)
-            });
-
-            throw error; // Re-lançar para manter comportamento original
+            console.error('Erro no parsing XML:', error);
+            throw new Error(`Erro ao processar XML: ${error.message}`);
         }
-    }
-
-    /**
-     * Gera hash do XML para integridade
-     * @param {string} xmlContent - Conteúdo XML
-     * @returns {string} Hash SHA-256
-     */
-    generateXMLHash(xmlContent) {
-        // Usar crypto nativo se disponível, senão fallback simples
-        if (typeof crypto !== 'undefined' && crypto.subtle) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(xmlContent);
-            return crypto.subtle.digest('SHA-256', data).then(hashBuffer => {
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            });
-        } else {
-            // Fallback simples para hash
-            let hash = 0;
-            for (let i = 0; i < xmlContent.length; i++) {
-                const char = xmlContent.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32bit integer
-            }
-            return Math.abs(hash).toString(16);
-        }
-    }
-
-    /**
-     * Identifica fase atual baseada na mensagem de erro
-     * @param {string} errorMessage - Mensagem de erro
-     * @returns {string} Fase atual
-     */
-    getCurrentPhase(errorMessage) {
-        if (errorMessage.includes('parse') || errorMessage.includes('XML')) {
-            return 'EXTRACT';
-        } else if (errorMessage.includes('transform') || errorMessage.includes('convert')) {
-            return 'TRANSFORM';
-        } else if (errorMessage.includes('valid') || errorMessage.includes('obrigatório')) {
-            return 'VALIDATE';
-        } else if (errorMessage.includes('IndexedDB') || errorMessage.includes('save')) {
-            return 'LOAD';
-        }
-        return 'UNKNOWN';
     }
 
     /**
@@ -523,36 +398,47 @@ class DIProcessor {
     }
 
     /**
-     * Extrai tributos da adição
+     * Extrai tributos da adição conforme XSD array structure
+     * Cada tributo é um elemento com 20 campos específicos
      */
     extractTributos(adicaoNode) {
-        return {
-            // Imposto de Importação (II)
-            ii_regime_codigo: this.getTextContent(adicaoNode, 'iiRegimeTributacaoCodigo'),
-            ii_regime_nome: this.getTextContent(adicaoNode, 'iiRegimeTributacaoNome'),
-            ii_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaAdValorem'), 'percentage'),
-            ii_base_calculo: this.convertValue(this.getTextContent(adicaoNode, 'iiBaseCalculo'), 'monetary'),
-            ii_valor_calculado: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaValorCalculado'), 'monetary'),
-            ii_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaValorDevido'), 'monetary'),
-            ii_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaValorRecolher'), 'monetary'),
+        const tributos = [];
+        const tributoNodes = adicaoNode.querySelectorAll('tributo');
+        
+        tributoNodes.forEach((tributoNode, index) => {
+            // Extrair todos os 20 campos conforme XSD specification
+            const tributo = {
+                codigoReceitaImposto: this.getTextContent(tributoNode, 'codigoReceitaImposto'),
+                codigoTipoAliquotaIPT: this.getTextContent(tributoNode, 'codigoTipoAliquotaIPT'),
+                codigoTipoBeneficioIPI: this.getTextContent(tributoNode, 'codigoTipoBeneficioIPI'),
+                codigoTipoDireito: this.getTextContent(tributoNode, 'codigoTipoDireito'),
+                codigoTipoRecipiente: this.getTextContent(tributoNode, 'codigoTipoRecipiente'),
+                nomeUnidadeEspecificaAliquotaIPT: this.getTextContent(tributoNode, 'nomeUnidadeEspecificaAliquotaIPT'),
+                numeroNotaComplementarTIPI: this.getTextContent(tributoNode, 'numeroNotaComplementarTIPI'),
+                percentualAliquotaAcordoTarifario: this.convertValue(this.getTextContent(tributoNode, 'percentualAliquotaAcordoTarifario'), 'percentage'),
+                percentualAliquotaNormalAdval: this.convertValue(this.getTextContent(tributoNode, 'percentualAliquotaNormalAdval'), 'percentage'),
+                percentualAliquotaReduzida: this.convertValue(this.getTextContent(tributoNode, 'percentualAliquotaReduzida'), 'percentage'),
+                percentualReducaoIPT: this.convertValue(this.getTextContent(tributoNode, 'percentualReducaoIPT'), 'percentage'),
+                quantidadeMLRecipiente: this.convertValue(this.getTextContent(tributoNode, 'quantidadeMLRecipiente'), 'integer'),
+                quantidadeMercadoriaUnidadeAliquotaEspecifica: this.convertValue(this.getTextContent(tributoNode, 'quantidadeMercadoriaUnidadeAliquotaEspecifica'), 'weight'),
+                valorAliquotaEspecificaIPT: this.convertValue(this.getTextContent(tributoNode, 'valorAliquotaEspecificaIPT'), 'monetary'),
+                valorBaseCalculoAdval: this.convertValue(this.getTextContent(tributoNode, 'valorBaseCalculoAdval'), 'monetary'),
+                valorCalculadoIIACTarifario: this.convertValue(this.getTextContent(tributoNode, 'valorCalculadoIIACTarifario'), 'monetary'),
+                valorCalculoIPTEspecifica: this.convertValue(this.getTextContent(tributoNode, 'valorCalculoIPTEspecifica'), 'monetary'),
+                valorCalculoIptAdval: this.convertValue(this.getTextContent(tributoNode, 'valorCalculoIptAdval'), 'monetary'),
+                valorIPTaRecolher: this.convertValue(this.getTextContent(tributoNode, 'valorIPTaRecolher'), 'monetary'),
+                valorImpostoDevido: this.convertValue(this.getTextContent(tributoNode, 'valorImpostoDevido'), 'monetary')
+            };
             
-            // IPI
-            ipi_regime_codigo: this.getTextContent(adicaoNode, 'ipiRegimeTributacaoCodigo'),
-            ipi_regime_nome: this.getTextContent(adicaoNode, 'ipiRegimeTributacaoNome'),
-            ipi_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaAdValorem'), 'percentage'),
-            ipi_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaValorDevido'), 'monetary'),
-            ipi_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaValorRecolher'), 'monetary'),
+            // NO FALLBACKS validation - required field check
+            if (!tributo.codigoReceitaImposto) {
+                throw new Error(`Código receita imposto obrigatório ausente no tributo ${index + 1} da adição`);
+            }
             
-            // PIS
-            pis_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaAdValorem'), 'percentage'),
-            pis_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaValorDevido'), 'monetary'),
-            pis_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaValorRecolher'), 'monetary'),
-            
-            // COFINS
-            cofins_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaAdValorem'), 'percentage'),
-            cofins_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaValorDevido'), 'monetary'),
-            cofins_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaValorRecolher'), 'monetary')
-        };
+            tributos.push(tributo);
+        });
+        
+        return tributos;
     }
 
     /**
@@ -776,7 +662,7 @@ class DIProcessor {
     /**
      * Processa moedas da DI de forma DATA-DRIVEN
      */
-    processarMultiplasMoedas(xmlDoc) {
+    async processarMultiplasMoedas(xmlDoc) {
         // MÉTODO DATA-DRIVEN: Obter dados direto da DI
         const moedaVmle = this.obterMoedaVmleVmld(xmlDoc);
         
@@ -784,24 +670,17 @@ class DIProcessor {
         let moedaDetalhada;
         try {
             const configLoader = new ConfigLoader();
-            if (configLoader.isLoaded()) {
-                const moedaInfo = configLoader.getCurrencyInfo(moedaVmle.codigo);
-                moedaDetalhada = {
-                    codigo: moedaVmle.codigo,
-                    nome: moedaInfo.nome,
-                    sigla: moedaInfo.codigo_iso,
-                    taxa: moedaVmle.taxa
-                };
-            } else {
-                moedaDetalhada = {
-                    codigo: moedaVmle.codigo,
-                    nome: `Moeda ${moedaVmle.codigo}`,
-                    sigla: moedaVmle.codigo,
-                    taxa: moedaVmle.taxa
-                };
-            }
+            await configLoader.loadAll(); // Inicializar ConfigLoader corretamente
+            
+            const moedaInfo = configLoader.getCurrencyInfo(moedaVmle.codigo);
+            moedaDetalhada = {
+                codigo: moedaVmle.codigo,
+                nome: moedaInfo.nome,
+                sigla: moedaInfo.codigo_iso,
+                taxa: moedaVmle.taxa
+            };
         } catch (error) {
-            console.warn(`ConfigLoader não disponível ou moeda ${moedaVmle.codigo} não cadastrada`);
+            console.warn(`ConfigLoader não disponível ou moeda ${moedaVmle.codigo} não cadastrada:`, error.message);
             moedaDetalhada = {
                 codigo: moedaVmle.codigo,
                 nome: `Moeda ${moedaVmle.codigo}`,
@@ -942,40 +821,157 @@ class DIProcessor {
         let totals = {
             valor_total_fob_usd: 0,
             valor_total_fob_brl: 0,
-            valor_total_frete_usd: 0,
-            valor_total_frete_brl: 0,
-            valor_total_seguro_usd: 0,
-            valor_total_seguro_brl: 0,
-            tributos_totais: {
-                ii_total: 0,
-                ipi_total: 0,
-                pis_total: 0,
-                cofins_total: 0
-            }
+            valor_total_mercadorias: 0
         };
 
         this.diData.adicoes.forEach(adicao => {
-            totals.valor_total_fob_usd += adicao.valor_moeda_negociacao || 0;
-            totals.valor_total_fob_brl += adicao.valor_reais || 0;
-            totals.valor_total_frete_usd += adicao.frete_valor_moeda_negociada || 0;
-            totals.valor_total_frete_brl += adicao.frete_valor_reais || 0;
-            totals.valor_total_seguro_usd += adicao.seguro_valor_moeda_negociada || 0;
-            totals.valor_total_seguro_brl += adicao.seguro_valor_reais || 0;
-
-            // Tributos
-            totals.tributos_totais.ii_total += adicao.tributos.ii_valor_devido || 0;
-            totals.tributos_totais.ipi_total += adicao.tributos.ipi_valor_devido || 0;
-            totals.tributos_totais.pis_total += adicao.tributos.pis_valor_devido || 0;
-            totals.tributos_totais.cofins_total += adicao.tributos.cofins_valor_devido || 0;
+            // Validar estrutura tributos (sem totalizar - manter individuais)
+            if (!adicao.tributos || !Array.isArray(adicao.tributos)) {
+                throw new Error(`Estrutura tributos inválida na adição ${adicao.numero_adicao} - deve ser array`);
+            }
+            
+            // NO FALLBACKS - valores obrigatórios
+            if (adicao.valor_moeda_negociacao === undefined || adicao.valor_moeda_negociacao === null) {
+                throw new Error(`Valor moeda negociação obrigatório ausente na adição ${adicao.numero_adicao}`);
+            }
+            if (adicao.valor_reais === undefined || adicao.valor_reais === null) {
+                throw new Error(`Valor reais obrigatório ausente na adição ${adicao.numero_adicao}`);
+            }
+            
+            totals.valor_total_fob_usd += adicao.valor_moeda_negociacao;
+            totals.valor_total_fob_brl += adicao.valor_reais;
+            
+            // Ratear frete e seguro pelos produtos desta adição
+            this.ratearFreteSeguroPorItens(adicao);
+            
+            // Somar valor total dos produtos após rateio
+            if (adicao.produtos && adicao.produtos.length > 0) {
+                adicao.produtos.forEach(produto => {
+                    if (produto.valor_total_brl === undefined || produto.valor_total_brl === null) {
+                        throw new Error(`Valor total BRL obrigatório ausente no produto ${produto.numero_sequencial_item} da adição ${adicao.numero_adicao}`);
+                    }
+                    totals.valor_total_mercadorias += produto.valor_total_brl;
+                });
+            }
         });
 
         this.diData.totais = totals;
+    }
+
+    /**
+     * Rateia frete e seguro pelos produtos de uma adição baseado no incoterm
+     * Incoterm determina se frete/seguro já estão inclusos ou devem ser rateados
+     */
+    ratearFreteSeguroPorItens(adicao) {
+        if (!adicao.produtos || adicao.produtos.length === 0) {
+            return; // Não há produtos para ratear
+        }
+
+        // Validar incoterm obrigatório
+        if (!adicao.condicao_venda_incoterm) {
+            throw new Error(`Incoterm obrigatório ausente na adição ${adicao.numero_adicao} - necessário para rateio frete/seguro`);
+        }
+
+        const incoterm = adicao.condicao_venda_incoterm;
         
-        // Mapear totais para campos que ComplianceCalculator/ExportManager esperam
-        this.diData.frete_brl = totals.valor_total_frete_brl;
-        this.diData.seguro_brl = totals.valor_total_seguro_brl;
-        this.diData.frete_usd = totals.valor_total_frete_usd;
-        this.diData.seguro_usd = totals.valor_total_seguro_usd;
+        // Verificar se frete está incluso no preço (baseado no incoterm)
+        const freteIncluso = this.isFreteIncluidoIncoterm(incoterm);
+        const seguroIncluso = this.isSeguroIncluidoIncoterm(incoterm);
+
+        // Validar valores obrigatórios se precisam ser rateados
+        if (!freteIncluso) {
+            if (adicao.frete_valor_reais === undefined || adicao.frete_valor_reais === null) {
+                throw new Error(`Valor frete reais obrigatório ausente na adição ${adicao.numero_adicao} - incoterm ${incoterm} exige rateio`);
+            }
+        }
+        
+        if (!seguroIncluso) {
+            if (adicao.seguro_valor_reais === undefined || adicao.seguro_valor_reais === null) {
+                throw new Error(`Valor seguro reais obrigatório ausente na adição ${adicao.numero_adicao} - incoterm ${incoterm} exige rateio`);
+            }
+        }
+
+        const valorTotalAdicao = adicao.valor_reais;
+        if (valorTotalAdicao <= 0) {
+            throw new Error(`Valor total da adição ${adicao.numero_adicao} deve ser maior que zero para rateio`);
+        }
+
+        // Processar cada produto
+        adicao.produtos.forEach(produto => {
+            if (produto.valor_total_brl === undefined || produto.valor_total_brl === null) {
+                throw new Error(`Valor total BRL obrigatório ausente no produto ${produto.numero_sequencial_item} da adição ${adicao.numero_adicao}`);
+            }
+
+            const percentualProduto = produto.valor_total_brl / valorTotalAdicao;
+            
+            // Ratear frete conforme incoterm
+            if (freteIncluso) {
+                produto.frete_rateado_brl = 0; // Já incluso no preço FOB
+                produto.frete_status = 'incluso_preco';
+            } else {
+                produto.frete_rateado_brl = adicao.frete_valor_reais * percentualProduto;
+                produto.frete_status = 'rateado';
+            }
+            
+            // Ratear seguro conforme incoterm
+            if (seguroIncluso) {
+                produto.seguro_rateado_brl = 0; // Já incluso no preço FOB
+                produto.seguro_status = 'incluso_preco';
+            } else {
+                produto.seguro_rateado_brl = adicao.seguro_valor_reais * percentualProduto;
+                produto.seguro_status = 'rateado';
+            }
+            
+            // Valor CIF do produto (FOB + frete + seguro rateados)
+            produto.valor_cif_brl = produto.valor_total_brl + produto.frete_rateado_brl + produto.seguro_rateado_brl;
+            
+            // Registrar incoterm para auditoria
+            produto.incoterm_aplicado = incoterm;
+        });
+    }
+
+    // ========== HELPER METHODS FOR TRIBUTOS ARRAY ACCESS ==========
+    
+    /**
+     * Encontra tributo por código de receita - NO FALLBACKS
+     * @param {Array} tributos - Array de tributos
+     * @param {string} codigoReceita - Código de receita a procurar
+     * @returns {Object} Tributo encontrado
+     * @throws {Error} Se tributo não for encontrado
+     */
+    getTributoByCodigoReceita(tributos, codigoReceita) {
+        if (!Array.isArray(tributos)) {
+            throw new Error('Tributos deve ser um array - estrutura inválida');
+        }
+        
+        if (!codigoReceita) {
+            throw new Error('Código de receita obrigatório para busca');
+        }
+        
+        const tributo = tributos.find(t => t.codigoReceitaImposto === codigoReceita);
+        if (!tributo) {
+            throw new Error(`Tributo com código ${codigoReceita} não encontrado nos tributos da adição`);
+        }
+        
+        return tributo;
+    }
+    
+    /**
+     * Obtém valor específico de um tributo - NO FALLBACKS
+     * @param {Array} tributos - Array de tributos
+     * @param {string} tipoImposto - Tipo do imposto
+     * @param {string} campo - Campo a extrair (valorImpostoDevido, percentualAliquotaNormalAdval, etc.)
+     * @returns {number} Valor do campo
+     * @throws {Error} Se tributo não for encontrado
+     */
+    getTributoValue(tributos, tipoImposto, campo) {
+        const tributo = this.getTributoByTipo(tributos, tipoImposto);
+        
+        if (tributo[campo] === undefined || tributo[campo] === null) {
+            throw new Error(`Campo ${campo} não encontrado no tributo ${tipoImposto}`);
+        }
+        
+        return tributo[campo];
     }
 
     // ========== MÉTODOS AUXILIARES ==========

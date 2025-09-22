@@ -1,10 +1,10 @@
 /**
  * Excel Professional Styles - Formatação Corporativa Expertzy
- * Migrado para ExcelJS para suporte completo de formatação
+ * Migrated from legacy system to new ES6 module architecture
  * Cores corporativas, formatação condicional e zebra striping
  */
 
-class ExcelProfessionalStyles {
+export class ExcelProfessionalStyles {
     constructor() {
         // Estilos corporativos Expertzy para ExcelJS
         this.estilosExpertzy = {

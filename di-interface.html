@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processador de DI - Sistema Expertzy</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Expertzy Brand System -->
+    <link href="src/shared/styles/expertzy-brand.css" rel="stylesheet">
+    <link href="src/shared/styles/compliance-theme.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="expertzy-spinner mb-3"></div>
+            <h5 id="loadingMessage">Processando DI...</h5>
+            <p id="loadingDetail" class="text-muted">Aguarde enquanto processamos os dados</p>
+        </div>
+    </div>
+
+    <!-- Professional Navigation -->
+    <nav class="navbar navbar-expand-lg expertzy-navbar fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="https://expertzy.com.br" target="_blank">
+                <img src="images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="index.html">
+                            <i class="bi bi-house"></i> Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white fw-bold" href="di-interface.html">
+                            <i class="bi bi-file-earmark-text"></i> Processamento DI
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="pricing-strategy/pricing-system.html">
+                            <i class="bi bi-graph-up-arrow"></i> Precificação
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-compliance ms-3" href="#step1">
+                            <i class="bi bi-play-fill"></i> Começar
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Compliance Header -->
+    <header class="compliance-header" style="margin-top: 60px;">
+        <div class="container">
+            <div class="row align-items-center text-center">
+                <div class="col-12">
+                    <i class="bi bi-file-earmark-text" style="font-size: 4rem; color: var(--expertzy-red);"></i>
+                    <h1 class="display-4 fw-bold mb-3">Processador de DI</h1>
+                    <p class="lead mb-4">Sistema de Compliance para Importações</p>
+                    <p class="mb-0 opacity-75">Fase 1 • Processamento de Declarações • Cálculo de Impostos • Relatórios de Compliance</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Process Flow -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between mb-4">
+                    <div class="process-indicator active">
+                        <span class="badge badge-compliance">1</span>
+                        <span>Upload DI</span>
+                        <i class="bi bi-arrow-right mx-3 text-muted"></i>
+                    </div>
+                    <div class="process-indicator">
+                        <span class="badge badge-compliance-secondary">2</span>
+                        <span>Configurar Despesas</span>
+                        <i class="bi bi-arrow-right mx-3 text-muted"></i>
+                    </div>
+                    <div class="process-indicator">
+                        <span class="badge badge-compliance-secondary">3</span>
+                        <span>Calcular Impostos</span>
+                        <i class="bi bi-arrow-right mx-3 text-muted"></i>
+                    </div>
+                    <div class="process-indicator">
+                        <span class="badge badge-compliance-secondary">4</span>
+                        <span>Exportar Compliance</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 1: Upload DI -->
+        <div id="step1" class="process-step active">
+            <div class="step-number">1</div>
+            <h3 class="text-center mb-4"><i class="bi bi-file-earmark-check"></i> Iniciar Processamento de DI</h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Opção 1: Nova Importação -->
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">
+                                <i class="bi bi-cloud-upload"></i> Nova Importação
+                            </h5>
+                            
+                            <!-- Drag & Drop Upload Area -->
+                            <div class="upload-area mb-3" id="dropZone">
+                                <div class="upload-content text-center">
+                                    <i class="bi bi-file-earmark-xml" style="font-size: 3rem; color: var(--expertzy-red);"></i>
+                                    <h6 class="mt-3">Arraste o arquivo XML aqui</h6>
+                                    <p class="text-muted mb-3">ou clique para selecionar</p>
+                                    <input type="file" id="xmlFile" accept=".xml" style="display: none;">
+                                    <button type="button" class="btn btn-compliance" onclick="document.getElementById('xmlFile').click()">
+                                        <i class="bi bi-folder2-open"></i> Selecionar XML
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- File Info Display -->
+                            <div class="file-info mt-3 d-none" id="fileInfo">
+                                <div class="alert alert-success">
+                                    <h6><i class="bi bi-check-circle"></i> Arquivo Selecionado:</h6>
+                                    <p class="mb-1"><strong>Nome:</strong> <span id="fileName">-</span></p>
+                                    <p class="mb-1"><strong>Tamanho:</strong> <span id="fileSize">-</span></p>
+                                    <p class="mb-0"><strong>Tipo:</strong> <span id="fileType">-</span></p>
+                                </div>
+                                <button type="button" class="btn btn-compliance btn-lg w-100" id="processarBtn">
+                                    <i class="bi bi-play-fill"></i> Processar DI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <!-- Opção 2: Recuperar Trabalho Salvo -->
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">
+                                <i class="bi bi-folder-open"></i> Continuar Trabalho
+                            </h5>
+                            
+                            <div class="text-center p-4">
+                                <i class="bi bi-archive" style="font-size: 3rem; color: var(--bs-info);"></i>
+                                <p class="mt-3">Carregue um arquivo .expertzy salvo anteriormente para continuar de onde parou</p>
+                                
+                                <input type="file" id="loadSavedFile" accept=".json,.expertzy" style="display: none;" onchange="carregarArquivoSalvo(this)">
+                                <button type="button" class="btn btn-info btn-lg w-100 mt-3" onclick="document.getElementById('loadSavedFile').click()">
+                                    <i class="bi bi-upload"></i> Carregar Arquivo Salvo
+                                </button>
+                                
+                                <small class="text-muted d-block mt-2">Formatos aceitos: .expertzy.json</small>
+                            </div>
+                            
+                            <div class="alert alert-info mt-3">
+                                <h6><i class="bi bi-lightbulb"></i> Benefícios</h6>
+                                <ul class="mb-0 small">
+                                    <li>Continue exatamente de onde parou</li>
+                                    <li>Todos os cálculos preservados</li>
+                                    <li>Sem necessidade de reprocessar XML</li>
+                                    <li>Pronto para fase de precificação</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-12">
+                    <div class="alert alert-secondary">
+                        <h6><i class="bi bi-info-circle"></i> Sobre o Sistema</h6>
+                        <p class="mb-0 small">O sistema processa Declarações de Importação (DI) do SISCOMEX, calcula impostos e permite salvar o trabalho para continuação posterior ou integração com o módulo de precificação.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Review and Configure Expenses -->
+        <div id="step2" class="process-step hidden">
+            <div class="step-number">2</div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3><i class="bi bi-receipt"></i> Revisão e Configuração de Despesas</h3>
+                <button type="button" class="btn btn-outline-primary btn-sm" onclick="mostrarModalICMS()">
+                    <i class="bi bi-percent"></i> Configurar Alíquotas ICMS
+                </button>
+            </div>
+            
+            <!-- DI Basic Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card compliance-card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="bi bi-file-text"></i> Dados da DI</h6>
+                            <div id="diBasicInfo">
+                                <p><strong>Número:</strong> <span id="diNumber">-</span></p>
+                                <p><strong>Data:</strong> <span id="diDate">-</span></p>
+                                <p><strong>Incoterm:</strong> <span id="diIncoterm">-</span></p>
+                                <p class="mb-0"><strong>Valor CIF:</strong> <span id="diCifValue">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card compliance-card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="bi bi-building"></i> Empresa/Produto</h6>
+                            <div id="diProductInfo">
+                                <p><strong>NCM:</strong> <span id="productNCM">-</span></p>
+                                <p><strong>Descrição:</strong> <span id="productDesc">-</span></p>
+                                <p><strong>Peso:</strong> <span id="productWeight">-</span></p>
+                                <p class="mb-0"><strong>Fornecedor:</strong> <span id="supplierName">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Automatic Expenses -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5><i class="bi bi-gear-fill"></i> Despesas Automáticas (Extraídas da DI)</h5>
+                    <div id="automaticExpenses" class="row">
+                        <!-- Preenchido dinamicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual Extra Expenses -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h5><i class="bi bi-plus-square"></i> Despesas Extras (Configuração Manual)</h5>
+                    <p class="text-muted">Configure despesas adicionais e marque quais devem compor a base de cálculo do ICMS.</p>
+                    
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped" id="expensesTable">
+                                            <thead>
+                                                <tr>
+                                                    <th width="5%"><i class="bi bi-tag"></i></th>
+                                                    <th width="35%">Descrição da Despesa</th>
+                                                    <th width="25%">Valor (R$)</th>
+                                                    <th width="20%" class="text-center">Base ICMS</th>
+                                                    <th width="15%" class="text-center">Ações</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="expensesTableBody">
+                                                <!-- Despesas pré-determinadas -->
+                                                <tr data-expense-id="storage" data-predefined="true">
+                                                    <td><i class="bi bi-box-seam text-primary"></i></td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent" value="Armazenagem" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group input-group-sm">
+                                                            <span class="input-group-text">R$</span>
+                                                            <input type="text" class="form-control expense-value" data-expense="storage" placeholder="0,00">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="form-check d-flex justify-content-center">
+                                                            <input class="form-check-input expense-icms" type="checkbox" data-expense="storage">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled title="Item padrão">
+                                                            <i class="bi bi-lock"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr data-expense-id="transport" data-predefined="true">
+                                                    <td><i class="bi bi-truck text-info"></i></td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent" value="Transporte Interno" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group input-group-sm">
+                                                            <span class="input-group-text">R$</span>
+                                                            <input type="text" class="form-control expense-value" data-expense="transport" placeholder="0,00">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="form-check d-flex justify-content-center">
+                                                            <input class="form-check-input expense-icms" type="checkbox" data-expense="transport">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled title="Item padrão">
+                                                            <i class="bi bi-lock"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr data-expense-id="agent" data-predefined="true">
+                                                    <td><i class="bi bi-person-badge text-success"></i></td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm border-0 bg-transparent" value="Despachante Aduaneiro" readonly>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group input-group-sm">
+                                                            <span class="input-group-text">R$</span>
+                                                            <input type="text" class="form-control expense-value" data-expense="agent" placeholder="0,00">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="form-check d-flex justify-content-center">
+                                                            <input class="form-check-input expense-icms" type="checkbox" data-expense="agent">
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button class="btn btn-sm btn-outline-secondary" disabled title="Item padrão">
+                                                            <i class="bi bi-lock"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="addExpenseRow()">
+                                                            <i class="bi bi-plus-circle"></i> Adicionar Despesa
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr class="table-info">
+                                                    <td colspan="2" class="text-end"><strong>Total Despesas Extras:</strong></td>
+                                                    <td><strong id="totalExtraExpenses">R$ 0,00</strong></td>
+                                                    <td colspan="2"></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title"><i class="bi bi-calculator"></i> Preview do Impacto</h6>
+                                    <div id="expensePreview">
+                                        <table class="table table-sm">
+                                            <tr>
+                                                <td>Total Despesas Extras:</td>
+                                                <td class="text-end"><strong id="previewTotalExtra">R$ 0,00</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Despesas com ICMS:</td>
+                                                <td class="text-end"><span id="previewICMSExpenses">R$ 0,00</span></td>
+                                            </tr>
+                                            <tr class="table-warning">
+                                                <td>Base ICMS (antes):</td>
+                                                <td class="text-end"><span id="previewICMSBefore">R$ 0,00</span></td>
+                                            </tr>
+                                            <tr class="table-success">
+                                                <td>Base ICMS (depois):</td>
+                                                <td class="text-end"><strong id="previewICMSAfter">R$ 0,00</strong></td>
+                                            </tr>
+                                            <tr class="table-primary">
+                                                <td>Diferença ICMS:</td>
+                                                <td class="text-end"><strong id="previewICMSDiff">R$ 0,00</strong></td>
+                                            </tr>
+                                        </table>
+                                        <div class="alert alert-info small mt-3">
+                                            <i class="bi bi-info-circle"></i> As despesas marcadas para ICMS serão adicionadas à base de cálculo do imposto.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end">
+                <button type="button" class="btn btn-outline-compliance me-2" onclick="voltarStep(1)">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </button>
+                <button type="button" class="btn btn-compliance" onclick="calcularImpostos()">
+                    <i class="bi bi-calculator"></i> Calcular Impostos
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 3: Tax Calculation Results -->
+        <div id="step3" class="process-step hidden">
+            <div class="step-number">3</div>
+            <h3><i class="bi bi-receipt-cutoff"></i> Resultados do Cálculo de Impostos</h3>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="tax-summary">
+                        <h5><i class="bi bi-pie-chart"></i> Resumo Fiscal</h5>
+                        <div id="taxResults" class="row">
+                            <!-- Preenchido dinamicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="bi bi-list-check"></i> Detalhamento Completo</h6>
+                            <div id="taxDetails">
+                                <!-- Preenchido dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card compliance-card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="bi bi-check-circle"></i> Status da Compliance</h6>
+                            <div id="complianceStatus">
+                                <div class="alert alert-success">
+                                    <i class="bi bi-shield-check"></i> 
+                                    <strong>Compliance OK</strong><br>
+                                    <small>Todos os impostos calculados conforme legislação vigente</small>
+                                </div>
+                            </div>
+                            
+                            <h6 class="mt-4"><i class="bi bi-info-circle"></i> Próximos Passos</h6>
+                            <ul class="list-unstyled small">
+                                <li><i class="bi bi-check2"></i> DI processada com sucesso</li>
+                                <li><i class="bi bi-check2"></i> Impostos calculados</li>
+                                <li><i class="bi bi-arrow-right"></i> Exportar relatórios de compliance</li>
+                                <li><i class="bi bi-arrow-right"></i> Opcional: Analisar cenários de precificação</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-end mt-4">
+                <button type="button" class="btn btn-outline-compliance me-2" onclick="voltarStep(2)">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </button>
+                <button type="button" class="btn btn-compliance" onclick="avancarStep(4)">
+                    <i class="bi bi-arrow-right"></i> Exportar Compliance
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 4: Export Compliance -->
+        <div id="step4" class="process-step hidden">
+            <div class="step-number">4</div>
+            <h3><i class="bi bi-download"></i> Exportar Relatórios de Compliance</h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card compliance-card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="bi bi-file-earmark-excel"></i> Relatórios Disponíveis</h6>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-compliance-secondary" onclick="exportarPlanilhaCustos()">
+                                    <i class="bi bi-file-earmark-spreadsheet"></i> Planilha de Custos de Importação
+                                </button>
+                                
+                                <button type="button" class="btn btn-compliance-secondary" onclick="exportarRelatórioImpostos()">
+                                    <i class="bi bi-file-earmark-text"></i> Relatório Detalhado de Impostos
+                                </button>
+                                
+                                <button type="button" class="btn btn-compliance-secondary" onclick="exportarCroquiNF()">
+                                    <i class="bi bi-file-earmark-pdf"></i> Croqui para Nota Fiscal
+                                </button>
+                                
+                                <button type="button" class="btn btn-compliance-secondary" onclick="exportarMemoriaCalculo()">
+                                    <i class="bi bi-journal-text"></i> Memória de Cálculo
+                                </button>
+                                
+                                <button type="button" class="btn btn-success" onclick="salvarDadosEmArquivo()">
+                                    <i class="bi bi-save"></i> Salvar Trabalho (.expertzy)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title"><i class="bi bi-arrow-right-circle"></i> Próximas Ações</h6>
+                            
+                            <div class="alert alert-compliance">
+                                <h6><i class="bi bi-check-circle"></i> DI Processada com Sucesso!</h6>
+                                <p class="mb-2">Sua Declaração de Importação foi processada e todos os cálculos de compliance foram realizados.</p>
+                            </div>
+                            
+                            <p><strong>Você pode agora:</strong></p>
+                            <ul>
+                                <li>Exportar os relatórios necessários para compliance</li>
+                                <li>Arquivar os dados para auditoria</li>
+                                <li>Prosseguir para análise de precificação (opcional)</li>
+                                <li>Processar uma nova DI</li>
+                            </ul>
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="button" class="btn btn-primary btn-lg" onclick="prepararParaPrecificacao()">
+                                    <i class="bi bi-graph-up-arrow"></i> Continuar para Precificação
+                                </button>
+                                
+                                <button type="button" class="btn btn-outline-compliance" onclick="confirmarProcessarNovaDI()">
+                                    <i class="bi bi-arrow-clockwise"></i> Processar Nova DI
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div id="alertContainer" class="mt-4">
+            <!-- Mensagens dinâmicas -->
+        </div>
+    </div>
+
+    <!-- Modal para Gerenciar Dados Salvos -->
+    <div class="modal fade" id="modalDadosSalvos" tabindex="-1" aria-labelledby="modalDadosSalvosLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-compliance text-white">
+                    <h5 class="modal-title" id="modalDadosSalvosLabel">
+                        <i class="bi bi-folder-open"></i> Dados Salvos de DI
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="searchDISalva" placeholder="Buscar por número de DI...">
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Número DI</th>
+                                    <th>Data Salvamento</th>
+                                    <th>Valor Total</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyDadosSalvos">
+                                <!-- Dados serão inseridos dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="mensagemSemDados" class="text-center text-muted d-none">
+                        <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                        <p>Nenhum dado salvo encontrado</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação para Processar Nova DI -->
+    <div class="modal fade" id="modalConfirmarNovaDI" tabindex="-1" aria-labelledby="modalConfirmarNovaDILabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning">
+                    <h5 class="modal-title" id="modalConfirmarNovaDILabel">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmar Nova Importação
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Você está prestes a iniciar uma nova importação de DI.</p>
+                    <p><strong>Deseja salvar os dados da DI atual antes de continuar?</strong></p>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> Os dados salvos poderão ser recuperados posteriormente.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" onclick="salvarEProcessarNovaDI()">
+                        <i class="bi bi-save"></i> Salvar e Continuar
+                    </button>
+                    <button type="button" class="btn btn-warning" onclick="processarNovaDISemSalvar()">
+                        <i class="bi bi-arrow-clockwise"></i> Continuar sem Salvar
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="expertzy-footer">
+        <div class="container">
+            <div class="row align-items-center py-4">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <img src="images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="footer-logo me-3">
+                        <div>
+                            <p class="mb-0 fw-bold">Sistema Expertzy v2.0</p>
+                            <small class="text-light opacity-75">Fase 1: Processamento de DI</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 small text-light opacity-75">
+                        Compliance • Cálculo de Impostos • Relatórios Oficiais
+                    </p>
+                    <p class="mb-0 small text-light opacity-50 mt-1">
+                        © 2025 Expertzy. Todos os direitos reservados.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal: Configuração de Alíquotas ICMS por NCM -->
+    <div class="modal fade" id="icmsConfigModal" tabindex="-1" aria-labelledby="icmsConfigModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="icmsConfigModalLabel">
+                        <i class="bi bi-percent"></i> Configuração de Alíquotas ICMS por NCM
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info mb-4">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Configuração de Alíquotas:</strong> Defina a alíquota de ICMS específica para cada NCM. 
+                        A alíquota padrão (19% - Goiás) será aplicada automaticamente, mas você pode configurar alíquotas específicas para NCMs que necessitam de tratamento diferenciado.
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Estado de Destino:</label>
+                            <select class="form-select" id="estadoDestinoSelect">
+                                <!-- Preenchido dinamicamente via JavaScript -->
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Alíquota Padrão:</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="aliquotaPadraoInput" readonly>
+                                <span class="input-group-text">%</span>
+                            </div>
+                            <small class="text-muted">Baseada no estado selecionado</small>
+                        </div>
+                    </div>
+                    
+                    <h6 class="fw-bold mb-3">NCMs Identificados na DI:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th width="15%">NCM</th>
+                                    <th width="45%">Descrição</th>
+                                    <th width="15%">Valor (R$)</th>
+                                    <th width="25%">Alíquota ICMS (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ncmConfigTableBody">
+                                <!-- Preenchido dinamicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" id="salvarAliquotasBtn">
+                        <i class="bi bi-check-circle"></i> Salvar Configurações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Detailed Calculation Memory -->
+    <div class="modal fade" id="calculationMemoryModal" tabindex="-1" aria-labelledby="calculationMemoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="calculationMemoryModalLabel">
+                        <i class="bi bi-calculator"></i> Memória de Cálculo Detalhada
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="calculationMemoryContent">
+                        <!-- Preenchido dinamicamente -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Fechar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="exportCalculationMemory()">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                    </button>
+                    <button type="button" class="btn btn-info" onclick="exportCalculationMemoryPDF()">
+                        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Multi-Addition Summary -->
+    <div class="modal fade" id="multiAdditionSummaryModal" tabindex="-1" aria-labelledby="multiAdditionSummaryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xxl">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="multiAdditionSummaryModalLabel">
+                        <i class="bi bi-collection"></i> Resumo Completo de Todas as Adições
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="multiAdditionSummaryContent">
+                        <!-- Preenchido dinamicamente -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Fechar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="exportMultiAdditionSummary()">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar Resumo Completo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://unpkg.com/exceljs@4.4.0/dist/exceljs.min.js"></script>
+    <!-- jsPDF for PDF export -->
+    <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.5.23/dist/jspdf.plugin.autotable.min.js"></script>
+    <!-- Cleave.js for currency formatting -->
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+    
+    <!-- Dexie.js for IndexedDB -->
+    <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+    
+    <!-- Main ES6 Module -->
+    <script type="module" src="src/di-interface.js"></script>
+</body>
+</html>

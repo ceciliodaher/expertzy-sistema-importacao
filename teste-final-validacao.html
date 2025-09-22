@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ TESTE FINAL - Validação Completa Sistema</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .info { color: #007bff; }
+        .warning { color: #ffc107; }
+        .test-result { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 5px solid #ccc; }
+        .test-pass { border-left-color: #28a745; }
+        .test-fail { border-left-color: #dc3545; }
+        .test-running { border-left-color: #007bff; }
+        .log-entry { background: #fff; border: 1px solid #dee2e6; padding: 8px; margin: 2px 0; border-radius: 3px; font-family: monospace; font-size: 12px; }
+        .log-error { border-left: 4px solid #dc3545; }
+        .log-clean { border-left: 4px solid #28a745; }
+        .progress { background: #e9ecef; height: 20px; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-bar { background: #007bff; height: 100%; transition: width 0.3s ease; }
+        h1 { color: #333; text-align: center; }
+        h2 { color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .final-verdict { padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center; font-size: 18px; }
+        .verdict-pass { background: #d4edda; border: 2px solid #28a745; color: #155724; }
+        .verdict-fail { background: #f8d7da; border: 2px solid #dc3545; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ TESTE FINAL - Validação Completa do Sistema Expertzy</h1>
+        <p class="info text-center">Teste definitivo: XML real → Processamento → Logs limpos → Sistema 100% funcional</p>
+        
+        <div class="progress">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+        <p class="text-center" id="progressText">Preparando teste...</p>
+
+        <h2>📊 Estatísticas em Tempo Real</h2>
+        <div class="stats">
+            <div class="stat-card">
+                <h4>Testes Executados</h4>
+                <span id="testsExecuted" class="success">0</span>/<span id="totalTests">10</span>
+            </div>
+            <div class="stat-card">
+                <h4>Logs Capturados</h4>
+                <span id="logsCount" class="info">0</span>
+            </div>
+            <div class="stat-card">
+                <h4>Erros Críticos</h4>
+                <span id="criticalErrors" class="error">0</span>
+            </div>
+            <div class="stat-card">
+                <h4>Sistema Status</h4>
+                <span id="systemStatus" class="warning">Testando...</span>
+            </div>
+        </div>
+
+        <h2>🧪 Execução dos Testes</h2>
+        <div id="testResults"></div>
+
+        <h2>📄 Logs do Sistema</h2>
+        <div id="systemLogs" style="max-height: 300px; overflow-y: auto;"></div>
+
+        <h2>🎯 Veredicto Final</h2>
+        <div id="finalVerdict" class="final-verdict" style="display: none;"></div>
+    </div>
+
+    <script type="module">
+        const logs = [];
+        const testResults = [];
+        let currentTest = 0;
+        const totalTests = 10;
+        let criticalErrorCount = 0;
+
+        // Intercept console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        console.log = (...args) => {
+            logs.push({ type: 'log', message: args.join(' '), timestamp: Date.now() });
+            originalLog.apply(console, args);
+            updateLogs();
+        };
+
+        console.error = (...args) => {
+            const message = args.join(' ');
+            logs.push({ type: 'error', message, timestamp: Date.now() });
+            
+            // Check for critical patterns
+            const criticalPatterns = ['DataMigration', 'null', 'undefined', 'is not a function'];
+            if (criticalPatterns.some(pattern => message.includes(pattern))) {
+                criticalErrorCount++;
+                updateStats();
+            }
+            
+            originalError.apply(console, args);
+            updateLogs();
+        };
+
+        console.warn = (...args) => {
+            logs.push({ type: 'warn', message: args.join(' '), timestamp: Date.now() });
+            originalWarn.apply(console, args);
+            updateLogs();
+        };
+
+        function updateProgress(percent, text) {
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressText').textContent = text;
+        }
+
+        function updateStats() {
+            document.getElementById('testsExecuted').textContent = currentTest;
+            document.getElementById('logsCount').textContent = logs.length;
+            document.getElementById('criticalErrors').textContent = criticalErrorCount;
+        }
+
+        function addTestResult(name, status, details = '') {
+            const result = { name, status, details, timestamp: Date.now() };
+            testResults.push(result);
+            
+            const resultsDiv = document.getElementById('testResults');
+            const testDiv = document.createElement('div');
+            testDiv.className = `test-result test-${status}`;
+            
+            const statusIcon = status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⏳';
+            testDiv.innerHTML = `
+                <strong>${statusIcon} ${name}</strong>
+                ${details ? `<div style="margin-top: 5px; font-size: 14px;">${details}</div>` : ''}
+            `;
+            
+            resultsDiv.appendChild(testDiv);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        function updateLogs() {
+            const logsDiv = document.getElementById('systemLogs');
+            const recentLogs = logs.slice(-20); // Show last 20 logs
+            
+            logsDiv.innerHTML = recentLogs.map(log => {
+                const logClass = log.type === 'error' ? 'log-error' : 'log-clean';
+                return `<div class="${logClass} log-entry">[${log.type.toUpperCase()}] ${log.message}</div>`;
+            }).join('');
+            
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            updateStats();
+        }
+
+        function showFinalVerdict() {
+            const errors = logs.filter(log => log.type === 'error');
+            const passedTests = testResults.filter(test => test.status === 'pass').length;
+            const failedTests = testResults.filter(test => test.status === 'fail').length;
+            
+            const verdictDiv = document.getElementById('finalVerdict');
+            verdictDiv.style.display = 'block';
+            
+            if (criticalErrorCount === 0 && failedTests === 0 && passedTests >= 8) {
+                verdictDiv.className = 'final-verdict verdict-pass';
+                verdictDiv.innerHTML = `
+                    <h3>🎉 SISTEMA 100% FUNCIONAL!</h3>
+                    <p><strong>✅ Aprovado em todos os critérios:</strong></p>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li>✅ ${passedTests} testes passaram</li>
+                        <li>✅ 0 erros críticos detectados</li>
+                        <li>✅ XML real processado com sucesso</li>
+                        <li>✅ Logs limpos validados</li>
+                        <li>✅ DataMigration completamente removida</li>
+                    </ul>
+                `;
+                document.getElementById('systemStatus').textContent = '🎉 FUNCIONAL';
+                document.getElementById('systemStatus').className = 'success';
+            } else {
+                verdictDiv.className = 'final-verdict verdict-fail';
+                verdictDiv.innerHTML = `
+                    <h3>❌ Sistema com problemas</h3>
+                    <p><strong>Problemas detectados:</strong></p>
+                    <ul style="text-align: left; display: inline-block;">
+                        <li>❌ ${failedTests} testes falharam</li>
+                        <li>❌ ${criticalErrorCount} erros críticos</li>
+                        <li>❌ ${errors.length} erros no console</li>
+                    </ul>
+                `;
+                document.getElementById('systemStatus').textContent = '❌ COM PROBLEMAS';
+                document.getElementById('systemStatus').className = 'error';
+            }
+        }
+
+        async function runTest(name, testFunction) {
+            try {
+                currentTest++;
+                updateProgress((currentTest/totalTests) * 100, `Executando: ${name}`);
+                addTestResult(name, 'running');
+                
+                await testFunction();
+                
+                // Update result to pass
+                const resultElements = document.querySelectorAll('.test-result');
+                const lastResult = resultElements[resultElements.length - 1];
+                lastResult.className = 'test-result test-pass';
+                lastResult.querySelector('strong').innerHTML = `✅ ${name}`;
+                
+                console.log(`✅ TESTE PASSOU: ${name}`);
+                
+            } catch (error) {
+                console.error(`❌ TESTE FALHOU: ${name} - ${error.message}`);
+                
+                // Update result to fail
+                const resultElements = document.querySelectorAll('.test-result');
+                const lastResult = resultElements[resultElements.length - 1];
+                lastResult.className = 'test-result test-fail';
+                lastResult.querySelector('strong').innerHTML = `❌ ${name}`;
+                lastResult.innerHTML += `<div style="margin-top: 5px; color: #dc3545;">${error.message}</div>`;
+            }
+        }
+
+        async function runCompleteTest() {
+            console.log('🚀 INICIANDO VALIDAÇÃO FINAL DO SISTEMA EXPERTZY');
+            
+            // Test 1: Module imports
+            await runTest('Importação de Módulos', async () => {
+                const { DIProcessor } = await import('./src/core/processors/DIProcessor.js');
+                const { IndexedDBManager } = await import('./src/services/database/IndexedDBManager.js');
+                if (!DIProcessor || !IndexedDBManager) throw new Error('Módulos não importados');
+            });
+
+            // Test 2: IndexedDB initialization
+            await runTest('Inicialização IndexedDB', async () => {
+                const { IndexedDBManager } = await import('./src/services/database/IndexedDBManager.js');
+                const dbManager = new IndexedDBManager();
+                await dbManager.initializeDatabase();
+            });
+
+            // Test 3: DIProcessor initialization
+            await runTest('Inicialização DIProcessor', async () => {
+                const { DIProcessor } = await import('./src/core/processors/DIProcessor.js');
+                const diProcessor = new DIProcessor();
+                await diProcessor.ensureConfigsLoaded();
+            });
+
+            // Test 4: Load real XML
+            await runTest('Carregamento XML Real', async () => {
+                const response = await fetch('./uploads/2518173187.xml');
+                const xmlContent = await response.text();
+                if (!xmlContent.includes('declaracaoImportacao')) throw new Error('XML inválido');
+                console.log('📄 XML carregado - tamanho:', xmlContent.length);
+            });
+
+            // Test 5: Process real XML
+            await runTest('Processamento XML Real', async () => {
+                const { DIProcessor } = await import('./src/core/processors/DIProcessor.js');
+                const diProcessor = new DIProcessor();
+                await diProcessor.ensureConfigsLoaded();
+                
+                const response = await fetch('./uploads/2518173187.xml');
+                const xmlContent = await response.text();
+                
+                const diData = await diProcessor.parseXML(xmlContent);
+                if (!diData.adicoes || diData.adicoes.length === 0) throw new Error('Nenhuma adição extraída');
+                
+                console.log('📊 DI processada:', {
+                    adicoes: diData.adicoes.length,
+                    incoterm: diData.adicoes[0]?.condicao_venda_incoterm,
+                    ncm: diData.adicoes[0]?.codigo_mercadoria_ncm
+                });
+            });
+
+            // Test 6: Validate specific XML data
+            await runTest('Validação Dados Específicos', async () => {
+                const { DIProcessor } = await import('./src/core/processors/DIProcessor.js');
+                const diProcessor = new DIProcessor();
+                await diProcessor.ensureConfigsLoaded();
+                
+                const response = await fetch('./uploads/2518173187.xml');
+                const xmlContent = await response.text();
+                const diData = await diProcessor.parseXML(xmlContent);
+                
+                const primeiraAdicao = diData.adicoes[0];
+                if (primeiraAdicao.condicao_venda_incoterm !== 'CPT') throw new Error('Incoterm incorreto');
+                if (primeiraAdicao.codigo_mercadoria_ncm !== '29420000') throw new Error('NCM incorreto');
+                
+                console.log('✅ Dados validados: Incoterm CPT, NCM 29420000');
+            });
+
+            // Test 7: Log validation
+            await runTest('Validação Logs Limpos', async () => {
+                const errorLogs = logs.filter(log => log.type === 'error');
+                const migrationLogs = logs.filter(log => 
+                    log.message.includes('DataMigration') || 
+                    log.message.includes('Migration')
+                );
+                
+                if (migrationLogs.length > 0) throw new Error(`${migrationLogs.length} logs DataMigration encontrados`);
+                console.log('🧹 Logs limpos confirmados - 0 referências DataMigration');
+            });
+
+            // Test 8: Critical errors check
+            await runTest('Verificação Erros Críticos', async () => {
+                if (criticalErrorCount > 0) throw new Error(`${criticalErrorCount} erros críticos detectados`);
+                console.log('🛡️ Nenhum erro crítico detectado');
+            });
+
+            // Test 9: System components availability
+            await runTest('Componentes do Sistema', async () => {
+                const { ComplianceCalculator } = await import('./src/core/calculators/ComplianceCalculator.js');
+                const { ExportManager } = await import('./src/core/exporters/ExportManager.js');
+                if (!ComplianceCalculator || !ExportManager) throw new Error('Componentes não disponíveis');
+            });
+
+            // Test 10: Final system health
+            await runTest('Saúde Geral do Sistema', async () => {
+                const errorCount = logs.filter(log => log.type === 'error').length;
+                if (errorCount > 0) throw new Error(`${errorCount} erros encontrados no sistema`);
+                console.log('💚 Sistema completamente saudável');
+            });
+
+            updateProgress(100, 'Testes concluídos - gerando veredicto final...');
+            setTimeout(showFinalVerdict, 1000);
+        }
+
+        // Start testing
+        window.addEventListener('load', () => {
+            setTimeout(runCompleteTest, 1000);
+        });
+    </script>
+</body>
+</html>

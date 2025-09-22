@@ -87,7 +87,7 @@ export class ComplianceCalculator {
      * @param {object} despesasConsolidadas - Despesas totais da DI
      * @returns {object} Cálculo consolidado de todas as adições
      */
-    calcularTodasAdicoes(di, despesasConsolidadas = null) {
+    async calcularTodasAdicoes(di, despesasConsolidadas = null) {
         console.log('📋 ComplianceCalculator: Processando DI completa com múltiplas adições...');
         
         if (!di || !di.adicoes || di.adicoes.length === 0) {
@@ -238,8 +238,8 @@ export class ComplianceCalculator {
         // NOVA FUNCIONALIDADE: Salvar produtos na memória para sistema de precificação
         this.salvarProdutosNaMemoria(di, totaisConsolidados, despesasConsolidadas);
         
-        // INTEGRAÇÃO: Atualizar dados salvos no localStorage com cálculos completos
-        this.atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas);
+        // INTEGRAÇÃO: Salvar no IndexedDB (NO FALLBACKS)
+        await this.atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas);
         
         return totaisConsolidados;
     }
@@ -1082,80 +1082,83 @@ export class ComplianceCalculator {
     }
     
     /**
-     * INTEGRAÇÃO: Atualiza DI salva no localStorage com cálculos completos - NO FALLBACKS
+     * INTEGRAÇÃO: Atualiza DI salva no IndexedDB com cálculos completos - NO FALLBACKS
      * @param {Object} di - Dados da DI processada
      * @param {Object} totaisConsolidados - Totais calculados
      * @param {Object} despesasConsolidadas - Despesas consolidadas
      */
-    atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas) {
+    async atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas) {
         if (!di || !di.numero_di) {
-            throw new Error('DI inválida para atualização no localStorage');
+            throw new Error('DI inválida para atualização no IndexedDB');
         }
         
         if (!totaisConsolidados) {
-            throw new Error('Totais consolidados ausentes para atualização no localStorage');
+            throw new Error('Totais consolidados ausentes para atualização no IndexedDB');
         }
         
         if (!despesasConsolidadas) {
-            throw new Error('Despesas consolidadas ausentes para atualização no localStorage');
+            throw new Error('Despesas consolidadas ausentes para atualização no IndexedDB');
+        }
+        
+        // IndexedDB é obrigatório - NO FALLBACKS
+        if (!window.dbManager) {
+            throw new Error('IndexedDB não disponível - obrigatório para persistência de dados');
         }
         
         try {
-            console.log('🔄 Atualizando DI salva com cálculos completos...');
+            console.log('🔄 Atualizando DI salva com cálculos completos no IndexedDB...');
             
-            // Recuperar DI salva anteriormente
-            const dadosSalvos = localStorage.getItem('expertzy_processed_di');
-            if (!dadosSalvos) {
-                console.warn('⚠️ DI não encontrada no localStorage para atualização - dados salvos após processamento podem ter se perdido');
-                return;
+            // Recuperar DI salva anteriormente do IndexedDB
+            const diSalva = await window.dbManager.getDI(di.numero_di);
+            if (!diSalva) {
+                throw new Error(`DI ${di.numero_di} não encontrada no IndexedDB - obrigatória para atualização de cálculos`);
             }
-            
-            const diSalva = JSON.parse(dadosSalvos);
             
             // Validar que é a mesma DI
-            if (diSalva.di_numero !== di.numero_di) {
-                throw new Error(`DI no localStorage (${diSalva.di_numero}) não corresponde à DI calculada (${di.numero_di})`);
+            if (diSalva.numero_di !== di.numero_di) {
+                throw new Error(`DI no IndexedDB (${diSalva.numero_di}) não corresponde à DI calculada (${di.numero_di})`);
             }
             
-            // Atualizar com cálculos completos
-            diSalva.integration.phase1_completed = true;
-            diSalva.integration.calculations_pending = false;
-            diSalva.integration.calculations_completed_at = new Date().toISOString();
-            
-            // Adicionar cálculos de impostos
-            diSalva.calculoImpostos = totaisConsolidados;
-            
-            // Adicionar despesas consolidadas
-            diSalva.despesas = despesasConsolidadas;
+            // Preparar dados de atualização com cálculos completos
+            const dadosAtualizacao = {
+                ...diSalva,
+                integration: {
+                    phase1_completed: true,
+                    calculations_pending: false,
+                    calculations_completed_at: new Date().toISOString()
+                },
+                calculoImpostos: totaisConsolidados,
+                despesas: despesasConsolidadas
+            };
             
             // Atualizar valores base com dados finais
             if (totaisConsolidados.valores_base) {
-                diSalva.valores_base_finais = {
+                dadosAtualizacao.valores_base_finais = {
                     cif_brl: totaisConsolidados.valores_base.cif_brl,
                     peso_liquido: totaisConsolidados.valores_base.peso_liquido,
                     taxa_cambio: di.taxa_cambio
                 };
             }
             
-            // Salvar dados atualizados
-            localStorage.setItem('expertzy_processed_di', JSON.stringify(diSalva));
+            // Salvar configuração de DI processada
+            await window.dbManager.saveConfig(`di_processed_${di.numero_di}`, dadosAtualizacao);
             
-            // Validar que atualização funcionou
-            const verificacao = localStorage.getItem('expertzy_processed_di');
+            // Validar que atualização funcionou - NO FALLBACKS
+            const verificacao = await window.dbManager.getConfig(`di_processed_${di.numero_di}`);
             if (!verificacao) {
-                throw new Error('Falha ao atualizar DI no localStorage');
+                throw new Error('Falha crítica ao atualizar DI no IndexedDB - dados não persistidos');
             }
             
-            const dadosVerificados = JSON.parse(verificacao);
-            if (!dadosVerificados.integration.phase1_completed) {
-                throw new Error('Atualização de DI no localStorage não foi aplicada corretamente');
+            if (!verificacao.integration?.phase1_completed) {
+                throw new Error('Atualização de DI no IndexedDB não foi aplicada corretamente - estado inconsistente');
             }
             
-            console.log(`✅ DI ${di.numero_di} atualizada no localStorage com cálculos completos - pronta para precificação`);
+            console.log(`✅ DI ${di.numero_di} atualizada no IndexedDB com cálculos completos - pronta para precificação`);
             
         } catch (error) {
-            console.error('❌ Erro ao atualizar DI salva com cálculos:', error);
-            // Não lança exceção para não quebrar fluxo principal
+            console.error('❌ Erro crítico ao atualizar DI salva com cálculos:', error);
+            // NO FALLBACKS - sempre lançar exceção para falhas de persistência
+            throw new Error(`Falha na persistência de cálculos para DI ${di.numero_di}: ${error.message}`);
         }
     }
 }

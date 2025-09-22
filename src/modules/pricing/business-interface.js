@@ -4,7 +4,10 @@
  * Handles UI interactions for the Business Strategy Phase
  * Coordinates between PricingEngine and ScenarioAnalysis
  * Manages business workflow and strategic decision interface
+ * Utiliza IndexedDBManager para persistência - NO FALLBACKS
  */
+
+import indexedDBManager from '../../services/database/IndexedDBManager.js';
 
 // Global instances
 let pricingEngine = null;
@@ -15,11 +18,16 @@ let currentRecommendations = null;
 let currentStep = 1;
 
 // Initialize when page loads
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Business Interface: Inicializando sistema de precificação...');
-    initializeBusinessSystem();
-    setupBusinessEventListeners();
-    checkForLoadedDI();
+    try {
+        await initializeBusinessSystem();
+        setupBusinessEventListeners();
+        await checkForLoadedDI();
+    } catch (error) {
+        console.error('❌ Erro na inicialização:', error);
+        showAlert('Erro ao inicializar sistema: ' + error.message, 'danger');
+    }
 });
 
 /**
@@ -120,15 +128,21 @@ async function loadStates() {
 /**
  * INTEGRAÇÃO RIGOROSA: Validar e carregar DI da Fase 1 - NO FALLBACKS
  */
-function checkForLoadedDI() {
+async function checkForLoadedDI() {
     try {
-        console.log('🔍 Verificando dados da DI no localStorage...');
+        console.log('🔍 Verificando dados da DI no IndexedDB...');
         
-        // Tentar recuperar dados OBRIGATÓRIOS do localStorage
-        const storedDI = localStorage.getItem('expertzy_processed_di');
+        if (!indexedDBManager) {
+            throw new Error('IndexedDBManager não disponível - obrigatório para carregar DI');
+        }
+        
+        await indexedDBManager.initialize();
+        
+        // Tentar recuperar dados OBRIGATÓRIOS do IndexedDB
+        const storedDI = await indexedDBManager.getConfig('expertzy_processed_di');
         
         if (!storedDI) {
-            console.log('❌ Nenhuma DI encontrada no localStorage');
+            console.log('❌ Nenhuma DI encontrada no IndexedDB');
             mostrarErroIntegracao('NENHUMA_DI', 
                 'Nenhuma DI processada encontrada',
                 'Processe uma DI na Fase 1 (Sistema de Compliance) antes de acessar a precificação.'
@@ -136,12 +150,11 @@ function checkForLoadedDI() {
             return;
         }
         
-        // Validar estrutura JSON
-        let diData;
-        try {
-            diData = JSON.parse(storedDI);
-        } catch (parseError) {
-            console.error('❌ Dados da DI corrompidos:', parseError);
+        // Dados já vem do IndexedDB como objeto (não precisa JSON.parse)
+        const diData = storedDI;
+        
+        if (!diData || typeof diData !== 'object') {
+            console.error('❌ Dados da DI inválidos no IndexedDB');
             mostrarErroIntegracao('DADOS_CORROMPIDOS', 
                 'Dados da DI estão corrompidos no armazenamento', 
                 'Processe a DI novamente na Fase 1.'
@@ -199,7 +212,7 @@ function checkForLoadedDI() {
 
 /**
  * Validar estrutura rigorosa da DI carregada - NO FALLBACKS
- * @param {Object} diData - Dados da DI carregados do localStorage
+ * @param {Object} diData - Dados da DI carregados do IndexedDB
  * @returns {String|null} - Erro de validação ou null se válida
  */
 function validarEstruturaDICarregada(diData) {

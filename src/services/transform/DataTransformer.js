@@ -8,14 +8,33 @@
  * - FAIL-FAST: Validar antes de transformar
  */
 
-import codigosReceita from '../../shared/data/codigos-receita.json';
-import crypto from 'crypto';
+// Códigos de receita serão carregados via fetch
+// crypto não disponível em browser - usar Web Crypto API
 
 class DataTransformer {
     constructor() {
-        this.codigosReceita = codigosReceita.codigosReceita;
-        if (!this.codigosReceita) {
-            throw new Error('Códigos de receita não carregados - configuração ausente');
+        this.codigosReceita = null;
+    }
+
+    /**
+     * Inicializa o transformer carregando configurações
+     */
+    async initialize() {
+        try {
+            const response = await fetch('./src/shared/data/codigos-receita.json');
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar códigos de receita: ${response.status}`);
+            }
+            const codigosReceita = await response.json();
+            this.codigosReceita = codigosReceita.codigos;
+            
+            if (!this.codigosReceita) {
+                throw new Error('Códigos de receita não encontrados na configuração');
+            }
+            
+            return true;
+        } catch (error) {
+            throw new Error(`Erro ao inicializar DataTransformer: ${error.message}`);
         }
     }
 
@@ -24,7 +43,7 @@ class DataTransformer {
      * @param {Object} xmlData - Dados extraídos do XML pelo DIProcessor
      * @returns {Object} Dados transformados para IndexedDB
      */
-    transformDIData(xmlData) {
+    async transformDIData(xmlData) {
         if (!xmlData) {
             throw new Error('Dados XML são obrigatórios para transformação');
         }
@@ -34,7 +53,7 @@ class DataTransformer {
         }
 
         // Gerar hash do XML para validação de integridade
-        const xmlHash = this.generateXMLHash(xmlData);
+        const xmlHash = await this.generateXMLHash(xmlData);
 
         // Transformar dados principais
         const transformedData = {
@@ -83,9 +102,13 @@ class DataTransformer {
      * @param {Object} xmlData - Dados do XML
      * @returns {string} Hash SHA-256
      */
-    generateXMLHash(xmlData) {
+    async generateXMLHash(xmlData) {
         const dataString = JSON.stringify(xmlData);
-        return crypto.createHash('sha256').update(dataString).digest('hex');
+        const encoder = new TextEncoder();
+        const data = encoder.encode(dataString);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     /**

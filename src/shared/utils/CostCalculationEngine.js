@@ -3,10 +3,13 @@
  * 
  * Calcula custos líquidos aplicando créditos conforme regime tributário
  * Integra com ProductMemoryManager e RegimeConfigManager
+ * Utiliza IndexedDBManager para persistência - NO FALLBACKS
  * 
- * @version 1.0.0
+ * @version 2.0.0
  * @author Expertzy System
  */
+
+import indexedDBManager from '../../services/database/IndexedDBManager.js';
 
 class CostCalculationEngine {
     constructor() {
@@ -14,6 +17,7 @@ class CostCalculationEngine {
         this.regimeConfig = null;
         this.calculatedCosts = [];
         this.storageKey = 'expertzy_calculated_costs';
+        this.initialized = false;
         this.initializeEngine();
     }
 
@@ -22,62 +26,88 @@ class CostCalculationEngine {
      */
     async initializeEngine() {
         try {
+            if (!indexedDBManager) {
+                throw new Error('IndexedDBManager não disponível - obrigatório para CostCalculationEngine');
+            }
+            
+            await indexedDBManager.initialize();
+            
             // Aguardar instâncias dos managers
             this.productMemory = new ProductMemoryManager();
+            await this.productMemory.initializeStorage();
+            
             this.regimeConfig = new RegimeConfigManager();
+            await this.regimeConfig.initializeConfig();
             
             // Aguardar carregamento das alíquotas
             await this.regimeConfig.loadRegimeAliquotas();
             
             // Carregar cálculos salvos
-            this.loadCalculatedCosts();
+            await this.loadCalculatedCosts();
             
+            this.initialized = true;
             console.log('✅ CostCalculationEngine inicializado');
             
         } catch (error) {
             console.error('❌ Erro ao inicializar CostCalculationEngine:', error);
+            throw new Error(`CostCalculationEngine initialization failed: ${error.message}`);
         }
     }
 
     /**
-     * Carrega custos calculados do storage
+     * Carrega custos calculados do IndexedDB
      */
-    loadCalculatedCosts() {
+    async loadCalculatedCosts() {
         try {
-            const stored = localStorage.getItem(this.storageKey);
+            if (!indexedDBManager) {
+                throw new Error('IndexedDBManager não disponível - obrigatório para carregar custos');
+            }
+            
+            const stored = await indexedDBManager.getConfig(this.storageKey);
             if (stored) {
-                const data = JSON.parse(stored);
-                this.calculatedCosts = data.calculations || [];
+                this.calculatedCosts = stored.calculations || [];
                 console.log(`✅ ${this.calculatedCosts.length} custos calculados carregados`);
             }
         } catch (error) {
             console.error('❌ Erro ao carregar custos calculados:', error);
-            this.calculatedCosts = [];
+            throw new Error(`Falha ao carregar custos calculados: ${error.message}`);
         }
     }
 
     /**
-     * Salva custos calculados no storage
+     * Salva custos calculados no IndexedDB
      */
-    saveCalculatedCosts() {
+    async saveCalculatedCosts() {
         try {
+            if (!indexedDBManager) {
+                throw new Error('IndexedDBManager não disponível - obrigatório para salvar custos');
+            }
+            
+            if (!this.initialized) {
+                throw new Error('CostCalculationEngine não inicializado - chame initializeEngine() primeiro');
+            }
+            
             const data = {
                 calculations: this.calculatedCosts,
                 lastUpdated: new Date().toISOString(),
-                version: '1.0.0'
+                version: '2.0.0'
             };
             
-            localStorage.setItem(this.storageKey, JSON.stringify(data));
+            await indexedDBManager.saveConfig(this.storageKey, data);
             
         } catch (error) {
             console.error('❌ Erro ao salvar custos calculados:', error);
+            throw new Error(`Falha ao salvar custos calculados: ${error.message}`);
         }
     }
 
     /**
      * Calcula custos para um produto específico em um regime
      */
-    calculateProductCost(productId, regime = null) {
+    async calculateProductCost(productId, regime = null) {
+        if (!this.initialized) {
+            throw new Error('CostCalculationEngine não inicializado - chame initializeEngine() primeiro');
+        }
         try {
             // Obter produto da memória
             const product = this.productMemory.getProductById(productId);
@@ -138,7 +168,7 @@ class CostCalculationEngine {
             };
 
             // Salvar cálculo
-            this.saveCalculation(calculatedCost);
+            await this.saveCalculation(calculatedCost);
             
             console.log(`✅ Custo calculado para ${productId} no regime ${targetRegime}`);
             return calculatedCost;
@@ -242,18 +272,21 @@ class CostCalculationEngine {
     /**
      * Calcula custos para todos os regimes de um produto
      */
-    calculateForAllRegimes(productId) {
+    async calculateForAllRegimes(productId) {
+        if (!this.initialized) {
+            throw new Error('CostCalculationEngine não inicializado - chame initializeEngine() primeiro');
+        }
         const regimes = ['lucro_real', 'lucro_presumido', 'simples_nacional'];
         const results = {};
 
-        regimes.forEach(regime => {
+        for (const regime of regimes) {
             try {
-                results[regime] = this.calculateProductCost(productId, regime);
+                results[regime] = await this.calculateProductCost(productId, regime);
             } catch (error) {
                 console.error(`❌ Erro ao calcular ${regime} para produto ${productId}:`, error);
                 results[regime] = null;
             }
-        });
+        }
 
         return results;
     }
@@ -261,7 +294,10 @@ class CostCalculationEngine {
     /**
      * Calcula custos para todos os produtos de uma DI
      */
-    calculateDICosts(diNumber, regime = null) {
+    async calculateDICosts(diNumber, regime = null) {
+        if (!this.initialized) {
+            throw new Error('CostCalculationEngine não inicializado - chame initializeEngine() primeiro');
+        }
         try {
             const products = this.productMemory.getProductsByDI(diNumber);
             if (!products || products.length === 0) {
@@ -269,14 +305,14 @@ class CostCalculationEngine {
             }
 
             const results = [];
-            products.forEach(product => {
+            for (const product of products) {
                 try {
-                    const calculation = this.calculateProductCost(product.id, regime);
+                    const calculation = await this.calculateProductCost(product.id, regime);
                     results.push(calculation);
                 } catch (error) {
                     console.error(`❌ Erro no produto ${product.id}:`, error);
                 }
-            });
+            }
 
             console.log(`✅ ${results.length} produtos calculados para DI ${diNumber}`);
             return results;
@@ -290,7 +326,10 @@ class CostCalculationEngine {
     /**
      * Salva cálculo realizado
      */
-    saveCalculation(calculation) {
+    async saveCalculation(calculation) {
+        if (!this.initialized) {
+            throw new Error('CostCalculationEngine não inicializado - chame initializeEngine() primeiro');
+        }
         // Remover cálculo anterior para o mesmo produto/regime
         this.calculatedCosts = this.calculatedCosts.filter(
             c => !(c.product_id === calculation.product_id && c.regime === calculation.regime)
@@ -299,8 +338,8 @@ class CostCalculationEngine {
         // Adicionar novo cálculo
         this.calculatedCosts.push(calculation);
         
-        // Salvar no storage
-        this.saveCalculatedCosts();
+        // Salvar no IndexedDB
+        await this.saveCalculatedCosts();
     }
 
     /**
@@ -391,9 +430,13 @@ class CostCalculationEngine {
     /**
      * Limpa todos os cálculos
      */
-    clearAllCalculations() {
+    async clearAllCalculations() {
+        if (!this.initialized) {
+            throw new Error('CostCalculationEngine não inicializado - chame initializeEngine() primeiro');
+        }
+        
         this.calculatedCosts = [];
-        this.saveCalculatedCosts();
+        await this.saveCalculatedCosts();
         console.log('✅ Todos os cálculos foram limpos');
     }
 
@@ -423,7 +466,10 @@ class CostCalculationEngine {
     }
 }
 
-// Exportar para uso global se não estiver em ambiente de módulos
+// Export ES6 para compatibilidade com importação IndexedDBManager
+export default CostCalculationEngine;
+
+// Exportar para uso global se não estiver em ambiente de módulos (backward compatibility)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = CostCalculationEngine;
 }

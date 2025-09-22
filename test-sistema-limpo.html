@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧹 Teste Sistema Limpo - Sem DataMigration</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+        .info { color: blue; }
+        .log { background: #f5f5f5; padding: 10px; margin: 5px 0; border-left: 4px solid #ccc; }
+        .clean-log { border-left-color: green; }
+        .dirty-log { border-left-color: red; }
+        pre { background: #f9f9f9; padding: 10px; overflow: auto; max-height: 300px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>🧹 Teste Sistema Limpo - DataMigration Removida</h1>
+    
+    <div>
+        <h2>📋 Status Inicialização</h2>
+        <div id="init-status">⏳ Aguardando...</div>
+    </div>
+
+    <div>
+        <h2>📄 Teste XML Real</h2>
+        <div id="xml-status">⏳ Aguardando...</div>
+    </div>
+
+    <div>
+        <h2>📊 Logs Capturados</h2>
+        <div id="logs-display"></div>
+    </div>
+
+    <script type="module">
+        const logs = [];
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        // Capturar logs
+        console.log = (...args) => {
+            logs.push({ type: 'log', message: args.join(' '), timestamp: Date.now() });
+            originalLog.apply(console, args);
+            updateLogsDisplay();
+        };
+
+        console.error = (...args) => {
+            logs.push({ type: 'error', message: args.join(' '), timestamp: Date.now() });
+            originalError.apply(console, args);
+            updateLogsDisplay();
+        };
+
+        console.warn = (...args) => {
+            logs.push({ type: 'warn', message: args.join(' '), timestamp: Date.now() });
+            originalWarn.apply(console, args);
+            updateLogsDisplay();
+        };
+
+        function updateStatus(id, message, type = 'info') {
+            const element = document.getElementById(id);
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            element.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+
+        function updateLogsDisplay() {
+            const logsDiv = document.getElementById('logs-display');
+            let html = '';
+            
+            logs.slice(-10).forEach(log => { // Mostrar apenas últimos 10 logs
+                const logClass = log.type === 'error' ? 'dirty-log' : 'clean-log';
+                html += `<div class="log ${logClass}">
+                    <strong>[${log.type.toUpperCase()}]</strong> ${log.message}
+                </div>`;
+            });
+            
+            logsDiv.innerHTML = html || '<div class="info">Nenhum log ainda</div>';
+        }
+
+        async function testSystemInitialization() {
+            try {
+                updateStatus('init-status', '🚀 Testando inicialização do sistema...');
+                
+                // Teste 1: Importar módulos básicos
+                const { DIProcessor } = await import('./src/core/processors/DIProcessor.js');
+                const { IndexedDBManager } = await import('./src/services/database/IndexedDBManager.js');
+                
+                console.log('✅ Módulos importados sem erro');
+                
+                // Teste 2: Inicializar IndexedDB
+                const dbManager = new IndexedDBManager();
+                await dbManager.initializeDatabase();
+                console.log('✅ IndexedDB inicializado');
+                
+                // Teste 3: Inicializar DIProcessor
+                const diProcessor = new DIProcessor();
+                await diProcessor.ensureConfigsLoaded();
+                console.log('✅ DIProcessor inicializado');
+                
+                updateStatus('init-status', '✅ Sistema inicializado com sucesso - SEM DataMigration!', 'success');
+                
+                return { diProcessor, dbManager };
+                
+            } catch (error) {
+                console.error('❌ Erro na inicialização:', error.message);
+                updateStatus('init-status', `❌ Falha na inicialização: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function testRealXMLProcessing(diProcessor) {
+            try {
+                updateStatus('xml-status', '📄 Carregando XML real...');
+                
+                const response = await fetch('./uploads/2518173187.xml');
+                const xmlContent = await response.text();
+                console.log('✅ XML real carregado - tamanho:', xmlContent.length);
+                
+                updateStatus('xml-status', '🔍 Processando XML real...');
+                
+                const diData = await diProcessor.parseXML(xmlContent);
+                console.log('✅ XML processado com sucesso');
+                console.log('📊 Dados extraídos:', {
+                    adicoes: diData.adicoes?.length || 0,
+                    incoterm: diData.adicoes?.[0]?.condicao_venda_incoterm || 'N/A',
+                    tributos: diData.adicoes?.[0]?.tributos?.length || 0
+                });
+                
+                updateStatus('xml-status', '✅ XML real processado com sucesso!', 'success');
+                
+                return diData;
+                
+            } catch (error) {
+                console.error('❌ Erro no processamento XML:', error.message);
+                updateStatus('xml-status', `❌ Falha no XML: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function runCompleteTest() {
+            try {
+                console.log('🧪 INICIANDO TESTE COMPLETO DO SISTEMA LIMPO');
+                
+                const { diProcessor } = await testSystemInitialization();
+                await testRealXMLProcessing(diProcessor);
+                
+                // Verificar logs limpos
+                const errors = logs.filter(log => log.type === 'error');
+                const migrationLogs = logs.filter(log => 
+                    log.message.includes('DataMigration') || 
+                    log.message.includes('Migration') ||
+                    log.message.includes('migração')
+                );
+                
+                if (errors.length === 0 && migrationLogs.length === 0) {
+                    console.log('🎉 TESTE PASSOU - Sistema 100% funcional e logs limpos!');
+                } else {
+                    console.error(`❌ TESTE FALHOU - ${errors.length} erros, ${migrationLogs.length} logs de migração`);
+                }
+                
+            } catch (error) {
+                console.error('❌ TESTE GERAL FALHOU:', error.message);
+            }
+        }
+
+        // Auto-executar
+        window.addEventListener('load', () => {
+            setTimeout(runCompleteTest, 500);
+        });
+    </script>
+</body>
+</html>

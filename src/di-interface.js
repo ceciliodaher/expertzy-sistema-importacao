@@ -9,6 +9,7 @@
 
 // ES6 Module Imports
 import indexedDBManager from './services/database/IndexedDBManager.js';
+// DataMigration removida - não há dados legados para migrar
 import { DIProcessor } from './core/processors/DIProcessor.js';
 import { ComplianceCalculator } from './core/calculators/ComplianceCalculator.js';
 import { CalculationValidator } from './core/validators/CalculationValidator.js';
@@ -44,6 +45,12 @@ async function initializeSystem() {
         dbManager = indexedDBManager;
         await dbManager.initialize();
         console.log('✅ IndexedDB inicializado');
+        
+        // Make dbManager available globally for other modules
+        window.dbManager = dbManager;
+        
+        // IndexedDB inicializado diretamente - sem migração necessária
+        console.log('ℹ️ Sistema novo - sem dados legados para migrar');
         
         // Initialize processor instances
         diProcessor = new DIProcessor();
@@ -814,7 +821,7 @@ async function calcularImpostos() {
         complianceCalculator.setEstadoDestino(estadoImportador);
         
         // Use the modular method to calculate taxes for ALL additions
-        const taxCalculation = complianceCalculator.calcularTodasAdicoes(currentDI, despesasConsolidadas);
+        const taxCalculation = await complianceCalculator.calcularTodasAdicoes(currentDI, despesasConsolidadas);
         
         // Store calculation results with individual products
         currentDI.calculoImpostos = taxCalculation;

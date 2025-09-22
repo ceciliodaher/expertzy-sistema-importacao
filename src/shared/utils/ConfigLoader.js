@@ -24,12 +24,12 @@ class ConfigLoader {
 
             // Load existing working configurations + estados e moedas
             const configs = await Promise.all([
-                fetch('../shared/data/aliquotas.json').then(r => r.json()),
-                fetch('../shared/data/beneficios.json').then(r => r.json()),
-                fetch('../shared/data/config.json').then(r => r.json()),
-                fetch('../shared/data/import-fees.json').then(r => r.json()),
-                fetch('../shared/data/estados-brasil.json').then(r => r.json()),
-                fetch('../shared/data/moedas-siscomex.json').then(r => r.json())
+                fetch('./src/shared/data/aliquotas.json').then(r => r.json()),
+                fetch('./src/shared/data/beneficios.json').then(r => r.json()),
+                fetch('./src/shared/data/config.json').then(r => r.json()),
+                fetch('./src/shared/data/import-fees.json').then(r => r.json()),
+                fetch('./src/shared/data/estados-brasil.json').then(r => r.json()),
+                fetch('./src/shared/data/moedas-siscomex.json').then(r => r.json())
             ]);
 
             this.cache = {
@@ -245,3 +245,5 @@ class ConfigLoader {
         return this.cache.moedas.mapeamento_rapido.hasOwnProperty(codigoSiscomex);
     }
 }
+
+export { ConfigLoader };

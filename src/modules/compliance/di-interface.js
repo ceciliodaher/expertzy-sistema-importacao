@@ -759,7 +759,7 @@ async function calcularImpostos() {
         complianceCalculator.setEstadoDestino(estadoImportador);
         
         // Use the modular method to calculate taxes for ALL additions
-        const taxCalculation = complianceCalculator.calcularTodasAdicoes(currentDI, despesasConsolidadas);
+        const taxCalculation = await complianceCalculator.calcularTodasAdicoes(currentDI, despesasConsolidadas);
         
         // Store calculation results with individual products
         currentDI.calculoImpostos = taxCalculation;

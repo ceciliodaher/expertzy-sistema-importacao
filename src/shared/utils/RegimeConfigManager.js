@@ -3,16 +3,20 @@
  * 
  * Gerencia as configurações de regime tributário da empresa
  * Define créditos aplicáveis e alíquotas de saída por regime
+ * Utiliza IndexedDBManager para persistência - NO FALLBACKS
  * 
- * @version 1.0.0
+ * @version 2.0.0
  * @author Expertzy System
  */
+
+import indexedDBManager from '../../services/database/IndexedDBManager.js';
 
 class RegimeConfigManager {
     constructor() {
         this.storageKey = 'expertzy_regime_config';
         this.config = null;
         this.regimeAliquotas = null;
+        this.initialized = false;
         this.initializeConfig();
         this.loadRegimeAliquotas();
     }
@@ -71,39 +75,55 @@ class RegimeConfigManager {
     }
 
     /**
-     * Inicializa configuração do storage ou usa padrão
+     * Inicializa configuração do IndexedDB ou usa padrão
      */
-    initializeConfig() {
+    async initializeConfig() {
         try {
-            const stored = localStorage.getItem(this.storageKey);
+            if (!indexedDBManager) {
+                throw new Error('IndexedDBManager não disponível - obrigatório para RegimeConfigManager');
+            }
+            
+            await indexedDBManager.initialize();
+            
+            const stored = await indexedDBManager.getConfig(this.storageKey);
             if (stored) {
-                this.config = JSON.parse(stored);
+                this.config = stored;
                 console.log('✅ RegimeConfigManager: Configuração carregada');
                 console.log(`   Regime: ${this.config.company_settings.regime_tributario}`);
                 console.log(`   Tipo: ${this.config.company_settings.tipo_empresa}`);
             } else {
                 this.config = this.getDefaultConfig();
-                this.saveConfig();
+                await this.saveConfig();
                 console.log('🆕 RegimeConfigManager: Configuração padrão inicializada');
             }
+            
+            this.initialized = true;
         } catch (error) {
             console.error('❌ Erro ao inicializar RegimeConfigManager:', error);
-            this.config = this.getDefaultConfig();
+            throw new Error(`RegimeConfigManager initialization failed: ${error.message}`);
         }
     }
 
     /**
-     * Salva configuração atual no storage
+     * Salva configuração atual no IndexedDB
      */
-    saveConfig() {
+    async saveConfig() {
         try {
+            if (!indexedDBManager) {
+                throw new Error('IndexedDBManager não disponível - obrigatório para salvar configuração');
+            }
+            
+            if (!this.initialized) {
+                throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+            }
+            
             this.config.metadata.updated_at = new Date().toISOString();
-            localStorage.setItem(this.storageKey, JSON.stringify(this.config));
+            await indexedDBManager.saveConfig(this.storageKey, this.config);
             console.log('✅ Configuração de regime salva');
             return true;
         } catch (error) {
             console.error('❌ Erro ao salvar configuração:', error);
-            return false;
+            throw new Error(`Falha ao salvar configuração: ${error.message}`);
         }
     }
 
@@ -124,14 +144,17 @@ class RegimeConfigManager {
     /**
      * Define novo regime tributário
      */
-    setRegime(regime) {
+    async setRegime(regime) {
+        if (!this.initialized) {
+            throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+        }
         const validRegimes = ['lucro_real', 'lucro_presumido', 'simples_nacional'];
         if (!validRegimes.includes(regime)) {
             throw new Error(`Regime inválido: ${regime}`);
         }
         
         this.config.company_settings.regime_tributario = regime;
-        this.saveConfig();
+        await this.saveConfig();
         console.log(`✅ Regime alterado para: ${regime}`);
         return this.config;
     }
@@ -139,7 +162,10 @@ class RegimeConfigManager {
     /**
      * Define tipo de empresa
      */
-    setCompanyType(tipo) {
+    async setCompanyType(tipo) {
+        if (!this.initialized) {
+            throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+        }
         const validTypes = ['comercio', 'industria', 'servicos', 'misto'];
         if (!validTypes.includes(tipo)) {
             throw new Error(`Tipo de empresa inválido: ${tipo}`);
@@ -154,7 +180,7 @@ class RegimeConfigManager {
             this.config.company_settings.contribuinte_ipi = false;
         }
         
-        this.saveConfig();
+        await this.saveConfig();
         console.log(`✅ Tipo de empresa alterado para: ${tipo}`);
         return this.config;
     }
@@ -162,9 +188,13 @@ class RegimeConfigManager {
     /**
      * Define estado sede da empresa
      */
-    setEstadoSede(estado) {
+    async setEstadoSede(estado) {
+        if (!this.initialized) {
+            throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+        }
+        
         this.config.company_settings.estado_sede = estado;
-        this.saveConfig();
+        await this.saveConfig();
         console.log(`✅ Estado sede alterado para: ${estado}`);
         return this.config;
     }
@@ -172,7 +202,10 @@ class RegimeConfigManager {
     /**
      * Configura parâmetros do Simples Nacional
      */
-    configureSimplesNacional(anexo, faixa, receitaBruta = 0) {
+    async configureSimplesNacional(anexo, faixa, receitaBruta = 0) {
+        if (!this.initialized) {
+            throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+        }
         if (this.config.company_settings.regime_tributario !== 'simples_nacional') {
             console.warn('⚠️ Empresa não está no Simples Nacional');
             return;
@@ -182,7 +215,7 @@ class RegimeConfigManager {
         this.config.company_settings.simples_config.faixa_faturamento = faixa;
         this.config.company_settings.simples_config.receita_bruta_anual = receitaBruta;
         
-        this.saveConfig();
+        await this.saveConfig();
         console.log(`✅ Simples configurado: Anexo ${anexo}, Faixa ${faixa}`);
         return this.config;
     }
@@ -339,7 +372,10 @@ class RegimeConfigManager {
     /**
      * Atualiza configuração completa
      */
-    updateConfig(newConfig) {
+    async updateConfig(newConfig) {
+        if (!this.initialized) {
+            throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+        }
         try {
             // Validar estrutura básica
             if (!newConfig.regime_tributario || !newConfig.tipo_empresa) {
@@ -352,7 +388,7 @@ class RegimeConfigManager {
                 ...newConfig
             };
             
-            this.saveConfig();
+            await this.saveConfig();
             console.log('✅ Configuração atualizada com sucesso');
             return this.config;
             
@@ -365,9 +401,13 @@ class RegimeConfigManager {
     /**
      * Reseta para configuração padrão
      */
-    resetToDefault() {
+    async resetToDefault() {
+        if (!this.initialized) {
+            throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+        }
+        
         this.config = this.getDefaultConfig();
-        this.saveConfig();
+        await this.saveConfig();
         console.log('✅ Configuração resetada para padrão');
         return this.config;
     }
@@ -398,7 +438,10 @@ class RegimeConfigManager {
     /**
      * Importa configuração de JSON
      */
-    importConfig(jsonData) {
+    async importConfig(jsonData) {
+        if (!this.initialized) {
+            throw new Error('RegimeConfigManager não inicializado - chame initializeConfig() primeiro');
+        }
         try {
             const data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
             
@@ -408,7 +451,7 @@ class RegimeConfigManager {
             }
             
             this.config = data;
-            this.saveConfig();
+            await this.saveConfig();
             
             console.log('✅ Configuração importada com sucesso');
             return this.config;
@@ -446,7 +489,10 @@ class RegimeConfigManager {
     }
 }
 
-// Exportar para uso global se não estiver em ambiente de módulos
+// Export ES6 para compatibilidade com importação IndexedDBManager
+export default RegimeConfigManager;
+
+// Exportar para uso global se não estiver em ambiente de módulos (backward compatibility)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = RegimeConfigManager;
 }

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste DIProcessor - Array Tributos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        pre { background: #f5f5f5; padding: 10px; overflow: auto; }
+    </style>
+</head>
+<body>
+    <h1>Teste DIProcessor - Correções Implementadas</h1>
+    
+    <div class="test-section">
+        <h2>1. Teste extractTributos() - Array XSD</h2>
+        <button onclick="testExtractTributos()">Testar extractTributos()</button>
+        <div id="tributos-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Teste Validação NO FALLBACKS</h2>
+        <button onclick="testNoFallbacks()">Testar NO FALLBACKS</button>
+        <div id="fallbacks-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Teste Rateio Frete/Seguro por Incoterm</h2>
+        <button onclick="testRateioIncoterm()">Testar Rateio</button>
+        <div id="rateio-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Teste IndexedDB Integration</h2>
+        <button onclick="testIndexedDB()">Testar IndexedDB</button>
+        <div id="indexeddb-result"></div>
+    </div>
+
+    <script type="module">
+        import { DIProcessor } from './src/core/processors/DIProcessor.js';
+        import { IndexedDBManager } from './src/services/database/IndexedDBManager.js';
+
+        window.diProcessor = new DIProcessor();
+        window.dbManager = new IndexedDBManager();
+
+        // XML de teste com estrutura de tributos array
+        window.testXML = `<?xml version="1.0" encoding="UTF-8"?>
+        <declaracao>
+            <adicao>
+                <numeroAdicao>001</numeroAdicao>
+                <codigoMercadoriaNCM>12345678</codigoMercadoriaNCM>
+                <incotermsVendaCodigo>FOB</incotermsVendaCodigo>
+                <valorMercadoriaEmbarqueMoedaNacional>10000</valorMercadoriaEmbarqueMoedaNacional>
+                <valorMercadoriaCondicaoVenda>8000</valorMercadoriaCondicaoVenda>
+                <freteValorMoedaNacional>500</freteValorMoedaNacional>
+                <seguroValorMoedaNacional>200</seguroValorMoedaNacional>
+                
+                <!-- Múltiplos tributos (array) -->
+                <tributo>
+                    <codigoReceitaImposto>0086</codigoReceitaImposto>
+                    <percentualAliquotaNormalAdval>1500</percentualAliquotaNormalAdval>
+                    <valorImpostoDevido>120000</valorImpostoDevido>
+                    <valorBaseCalculoAdval>800000</valorBaseCalculoAdval>
+                </tributo>
+                <tributo>
+                    <codigoReceitaImposto>1038</codigoReceitaImposto>
+                    <percentualAliquotaNormalAdval>1000</percentualAliquotaNormalAdval>
+                    <valorImpostoDevido>80000</valorImpostoDevido>
+                    <valorBaseCalculoAdval>800000</valorBaseCalculoAdval>
+                </tributo>
+                <tributo>
+                    <codigoReceitaImposto>5110</codigoReceitaImposto>
+                    <percentualAliquotaNormalAdval>165</percentualAliquotaNormalAdval>
+                    <valorImpostoDevido>13200</valorImpostoDevido>
+                    <valorBaseCalculoAdval>800000</valorBaseCalculoAdval>
+                </tributo>
+                
+                <mercadoria>
+                    <numeroSequencialItem>001</numeroSequencialItem>
+                    <descricaoMercadoria>Produto Teste</descricaoMercadoria>
+                    <quantidade>10000</quantidade>
+                    <unidadeMedida>KG</unidadeMedida>
+                    <valorUnitario>80000000</valorUnitario>
+                </mercadoria>
+            </adicao>
+        </declaracao>`;
+
+        window.testExtractTributos = async function() {
+            const resultDiv = document.getElementById('tributos-result');
+            resultDiv.innerHTML = '<div class="info">Testando extractTributos()...</div>';
+            
+            try {
+                await window.diProcessor.ensureConfigsLoaded();
+                
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(window.testXML, "text/xml");
+                const adicaoNode = xmlDoc.querySelector('adicao');
+                
+                const tributos = window.diProcessor.extractTributos(adicaoNode);
+                
+                let html = '<div class="success">✅ extractTributos() funcionando!</div>';
+                html += `<div class="info">Tributos extraídos: ${tributos.length}</div>`;
+                html += '<pre>' + JSON.stringify(tributos, null, 2) + '</pre>';
+                
+                // Verificar se é array
+                if (Array.isArray(tributos)) {
+                    html += '<div class="success">✅ Retorna array (correto)</div>';
+                } else {
+                    html += '<div class="error">❌ Não retorna array (bug)</div>';
+                }
+                
+                // Verificar campos XSD
+                if (tributos.length > 0 && tributos[0].codigoReceitaImposto) {
+                    html += '<div class="success">✅ Campos XSD mapeados</div>';
+                } else {
+                    html += '<div class="error">❌ Campos XSD não mapeados</div>';
+                }
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+            }
+        };
+
+        window.testNoFallbacks = async function() {
+            const resultDiv = document.getElementById('fallbacks-result');
+            resultDiv.innerHTML = '<div class="info">Testando validação NO FALLBACKS...</div>';
+            
+            try {
+                await window.diProcessor.ensureConfigsLoaded();
+                
+                // Teste 1: XML sem codigoReceitaImposto (deve falhar)
+                const xmlSemCodigo = `<?xml version="1.0" encoding="UTF-8"?>
+                <declaracao>
+                    <adicao>
+                        <numeroAdicao>001</numeroAdicao>
+                        <tributo>
+                            <valorImpostoDevido>120000</valorImpostoDevido>
+                        </tributo>
+                    </adicao>
+                </declaracao>`;
+                
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlSemCodigo, "text/xml");
+                const adicaoNode = xmlDoc.querySelector('adicao');
+                
+                try {
+                    window.diProcessor.extractTributos(adicaoNode);
+                    resultDiv.innerHTML = '<div class="error">❌ Deveria ter falhado com NO FALLBACKS</div>';
+                } catch (validationError) {
+                    let html = '<div class="success">✅ NO FALLBACKS funcionando!</div>';
+                    html += `<div class="info">Erro esperado: ${validationError.message}</div>`;
+                    
+                    // Teste 2: calculateTotals com valores null
+                    window.diProcessor.diData = {
+                        adicoes: [{
+                            numero_adicao: '001',
+                            tributos: [],
+                            valor_moeda_negociacao: null, // valor null deve falhar
+                            valor_reais: 1000
+                        }]
+                    };
+                    
+                    try {
+                        window.diProcessor.calculateTotals();
+                        html += '<div class="error">❌ calculateTotals deveria ter falhado</div>';
+                    } catch (totalsError) {
+                        html += '<div class="success">✅ calculateTotals falha com valores null</div>';
+                        html += `<div class="info">Erro: ${totalsError.message}</div>`;
+                    }
+                    
+                    resultDiv.innerHTML = html;
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+            }
+        };
+
+        window.testRateioIncoterm = async function() {
+            const resultDiv = document.getElementById('rateio-result');
+            resultDiv.innerHTML = '<div class="info">Testando rateio baseado em incoterm...</div>';
+            
+            try {
+                await window.diProcessor.ensureConfigsLoaded();
+                
+                const adicaoTeste = {
+                    numero_adicao: '001',
+                    condicao_venda_incoterm: 'FOB', // Frete não incluso
+                    frete_valor_reais: 500,
+                    seguro_valor_reais: 200,
+                    valor_reais: 10000,
+                    produtos: [
+                        {
+                            numero_sequencial_item: '001',
+                            valor_total_brl: 6000
+                        },
+                        {
+                            numero_sequencial_item: '002',
+                            valor_total_brl: 4000
+                        }
+                    ]
+                };
+                
+                window.diProcessor.ratearFreteSeguroPorItens(adicaoTeste);
+                
+                let html = '<div class="success">✅ Rateio por incoterm funcionando!</div>';
+                html += '<h4>Resultados do Rateio:</h4>';
+                
+                adicaoTeste.produtos.forEach((produto, index) => {
+                    html += `<div><strong>Produto ${index + 1}:</strong></div>`;
+                    html += `<div>- Frete rateado: R$ ${produto.frete_rateado_brl.toFixed(2)}</div>`;
+                    html += `<div>- Seguro rateado: R$ ${produto.seguro_rateado_brl.toFixed(2)}</div>`;
+                    html += `<div>- Valor CIF: R$ ${produto.valor_cif_brl.toFixed(2)}</div>`;
+                    html += `<div>- Status frete: ${produto.frete_status}</div>`;
+                    html += `<div>- Incoterm aplicado: ${produto.incoterm_aplicado}</div><br>`;
+                });
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+            }
+        };
+
+        window.testIndexedDB = async function() {
+            const resultDiv = document.getElementById('indexeddb-result');
+            resultDiv.innerHTML = '<div class="info">Testando integração IndexedDB...</div>';
+            
+            try {
+                await window.dbManager.initializeDatabase();
+                
+                const testDI = {
+                    identificacaoDeclaracaoImportacao: 'TEST123456789',
+                    numeroImportador: '12345678000123',
+                    adicoes: [{
+                        numeroAdicao: '001',
+                        codigoMercadoriaNCM: '12345678',
+                        tributos: [
+                            {
+                                codigoReceitaImposto: '0086',
+                                valorImpostoDevido: 1200,
+                                percentualAliquotaNormalAdval: 15
+                            },
+                            {
+                                codigoReceitaImposto: '1038',
+                                valorImpostoDevido: 800,
+                                percentualAliquotaNormalAdval: 10
+                            }
+                        ]
+                    }],
+                    xml_original: btoa(window.testXML)
+                };
+                
+                const diId = await window.dbManager.saveDIComplete(testDI);
+                
+                let html = '<div class="success">✅ IndexedDB funcionando!</div>';
+                html += `<div class="info">DI salva com ID: ${diId}</div>`;
+                
+                // Recuperar dados
+                const diRecuperada = await window.dbManager.getDIComplete('TEST123456789');
+                html += `<div class="success">✅ DI recuperada: ${diRecuperada.declaracao.identificacaoDeclaracaoImportacao}</div>`;
+                html += `<div class="info">Tributos salvos: ${diRecuperada.tributos.length}</div>`;
+                
+                resultDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Erro: ${error.message}</div>`;
+            }
+        };
+    </script>
+</body>
+</html>
