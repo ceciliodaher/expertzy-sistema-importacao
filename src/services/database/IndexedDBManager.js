@@ -63,7 +63,7 @@ class IndexedDBManager {
     initializeSchema() {
         // Versão 1 - Schema original (mantido para compatibilidade)
         this.db.version(1).stores({
-            declaracoes: '++id, numero_di, importador_cnpj, data_processamento, *ncms, xml_hash, [importador_cnpj+data_processamento]',
+            declaracoes: '++id, numero_di, importador_cnpj, data_processamento, *ncms, xml_hash, xml_content, [importador_cnpj+data_processamento]',
             adicoes: '++id, di_id, numero_adicao, ncm, [di_id+numero_adicao]',
             produtos: '++id, adicao_id, codigo, descricao, ncm, valor_unitario, [adicao_id+codigo]',
             despesas_aduaneiras: '++id, di_id, tipo, valor, codigo_receita, [di_id+tipo]',
@@ -78,60 +78,8 @@ class IndexedDBManager {
             configuracoes_usuario: 'chave, valor, timestamp, validado'
         });
 
-        // Versão 2 - Schema expandido conforme XSD oficial RFB (declaracaoimportacaotransmissao.xsd)
-        // 237+ campos mapeados em 9 tabelas oficiais
-        this.db.version(2).stores({
-            // Tabela principal - declaracaoImportacaoTransmissao (87+ campos XSD)
-            declaracoes: '++id, identificacaoDeclaracaoImportacao, numeroImportador, nomeImportador, enderecoUfImportador, dataProcessamento, xmlHash, [numeroImportador+dataProcessamento], codigoUrfDespacho, codigoModalidadeDespacho, totalAdicoes',
-            
-            // Adições - adicao[] (150+ campos por adição)
-            adicoes: '++id, di_id, numeroAdicao, codigoMercadoriaNCM, nomeFornecedorEstrangeiro, nomeFabricanteMercadoria, codigoMoedaNegociada, [di_id+numeroAdicao], codigoPaisOrigemMercadoria, valorMercadoriaCondicaoVenda',
-            
-            // Mercadorias - mercadoria[] (detalhamento por item)
-            mercadorias: '++id, adicao_id, textoDetalhamentoMercadoria, quantidadeMercadoriaUnidadeComercializada, nomeUnidadeMedidaComercializada, [adicao_id+nomeUnidadeMedidaComercializada]',
-            
-            // Tributos - tributo[] (impostos detalhados por adição)
-            tributos: '++id, adicao_id, codigoReceitaImposto, percentualAliquotaNormalAdval, valorImpostoDevido, valorIPTaRecolher, [adicao_id+codigoReceitaImposto]',
-            
-            // Pagamentos - pagamento[] (pagamentos de tributos)
-            pagamentos: '++id, di_id, codigoReceitaPagamento, valorTributoPago, dataPagamentoTributo, [di_id+codigoReceitaPagamento]',
-            
-            // Acréscimos/Deduções - acrescimo[]/deducao[]
-            acrescimos_deducoes: '++id, adicao_id, tipo_operacao, codigoMetodo, valorMoedaNacional, [adicao_id+tipo_operacao]',
-            
-            // Documentos vinculados (documentos, processos, instruções, MERCOSUL)
-            documentos_vinculados: '++id, entidade_id, entidade_tipo, tipo_documento, numeroDocumento, [entidade_id+entidade_tipo+tipo_documento]',
-            
-            // Compensações crédito
-            compensacoes_creditos: '++id, di_id, codigoReceitaCredito, valorCompensarCredito, [di_id+codigoReceitaCredito]',
-            
-            // Metadados sistema para controle e auditoria
-            metadados_sistema: '++id, di_id, operacao, status, timestamp, version, [di_id+operacao], xmlHashOriginal',
-            
-            // Tabelas de negócio preservadas da v1
-            produtos: '++id, adicao_id, codigo, descricao, ncm, valor_unitario, [adicao_id+codigo]',
-            despesas_aduaneiras: '++id, di_id, tipo, valor, codigo_receita, [di_id+tipo]',
-            dados_carga: '++id, di_id, peso_bruto, peso_liquido, via_transporte',
-            incentivos_entrada: '++id, di_id, estado, tipo_beneficio, percentual_reducao, economia_calculada, [di_id+estado]',
-            incentivos_saida: '++id, di_id, estado, operacao, credito_aplicado, contrapartidas, [di_id+estado+operacao]',
-            elegibilidade_ncm: '++id, ncm, estado, incentivo_codigo, elegivel, motivo_rejeicao, [ncm+estado+incentivo_codigo]',
-            metricas_dashboard: '++id, periodo, tipo_metrica, valor, breakdown_estados, [periodo+tipo_metrica]',
-            cenarios_precificacao: '++id, di_id, nome_cenario, configuracao, resultados_comparativos, [di_id+nome_cenario]',
-            historico_operacoes: '++id, timestamp, operacao, modulo, detalhes, resultado',
-            snapshots: '++id, di_id, nome_customizado, timestamp, dados_completos',
-            configuracoes_usuario: 'chave, valor, timestamp, validado'
-        }).upgrade(async tx => {
-            // Migração v1 → v2: Preservar dados existentes e expandir estrutura
-            console.log('[IndexedDB] Iniciando migração v1 → v2: Expansão para conformidade XSD completa');
-            
-            // As tabelas novas serão criadas automaticamente
-            // Vamos migrar os dados existentes para o novo formato se necessário
-            
-            // Nota: Implementar lógica de migração de dados aqui se necessário
-            // Por enquanto, as tabelas antigas serão preservadas e as novas criadas
-            
-            console.log('[IndexedDB] Migração v1 → v2 concluída com sucesso');
-        });
+        // Schema v1 é a única versão suportada - consolidação completa
+        // Mantém compatibilidade total com sistema atual funcional
     }
 
     /**
@@ -415,562 +363,6 @@ class IndexedDBManager {
         }
     }
 
-    /**
-     * Salva uma DI completa com TODOS os campos XSD oficiais (237+ campos)
-     * Implementação conforme declaracaoimportacaotransmissao.xsd da RFB
-     * @param {Object} diData - Dados completos da DI extraídos do XML
-     * @returns {Promise<number>} ID da DI salva
-     */
-    async saveDIComplete(diData) {
-        // Validações críticas NO FALLBACKS
-        if (!diData) {
-            throw new Error('[saveDIComplete] Dados da DI são obrigatórios');
-        }
-        
-        // Campos obrigatórios do XSD que NÃO podem ser null
-        const camposObrigatoriosDeclaracao = [
-            'identificacaoDeclaracaoImportacao', // numero_di no DIProcessor
-            'numeroImportador', // importador.cnpj
-            'nomeImportador', // importador.nome
-            'enderecoUfImportador' // importador.endereco_uf
-        ];
-        
-        // Mapear campos do DIProcessor para nomenclatura XSD
-        const declaracaoXSD = {
-            // IDENTIFICAÇÃO
-            identificacaoDeclaracaoImportacao: diData.numero_di,
-            codigoMotivoTransmissao: diData.motivo_transmissao,
-            codigoMotivoRetificacao: diData.motivo_retificacao,
-            numeroDeclaracaoRetificacao: diData.numero_di_retificacao,
-            numeroSequencialRetificacao: diData.sequencial_retificacao,
-            
-            // IMPORTADOR (12 campos)
-            numeroImportador: diData.importador?.cnpj,
-            nomeImportador: diData.importador?.nome,
-            enderecoBairroImportador: diData.importador?.endereco_bairro,
-            enderecoCepImportador: diData.importador?.endereco_cep,
-            enderecoComplementoImportador: diData.importador?.endereco_complemento,
-            enderecoLogradouroImportador: diData.importador?.endereco_logradouro,
-            enderecoMunicipioImportador: diData.importador?.endereco_municipio,
-            enderecoNumeroImportador: diData.importador?.endereco_numero,
-            enderecoUfImportador: diData.importador?.endereco_uf,
-            numeroCpfRepresentanteLegal: diData.importador?.cpf_representante,
-            numeroTelefoneImportador: diData.importador?.telefone,
-            
-            // URF E DESPACHO
-            codigoUrfDespacho: diData.urf_despacho,
-            codigoUrfCargaEntrada: diData.urf_entrada,
-            codigoModalidadeDespacho: diData.modalidade,
-            codigoOrigemDI: diData.origem_di,
-            codigoTipoDeclaracao: diData.tipo_declaracao,
-            
-            // CARGA E TRANSPORTE
-            cargaPesoBruto: diData.carga?.peso_bruto,
-            cargaPesoLiquido: diData.carga?.peso_liquido,
-            codigoViaTransporte: diData.carga?.via_transporte,
-            codigoBandeiraTranspote: diData.carga?.bandeira_transporte,
-            nomeVeiculoViaTransporte: diData.carga?.nome_veiculo,
-            numeroVeiculoViaTransporte: diData.carga?.numero_veiculo,
-            nomeTransportadorViaTransporte: diData.carga?.nome_transportador,
-            indicadorMultimodalViaTransporte: diData.carga?.multimodal,
-            dataChegadaCarga: diData.carga?.data_chegada,
-            dataEmbarque: diData.carga?.data_embarque,
-            nomeLocalEmbarque: diData.carga?.local_embarque,
-            
-            // PAÍSES
-            codigoPaisImportador: diData.pais_importador,
-            codigoPaisProcedenciaCarga: diData.carga?.pais_procedencia,
-            
-            // DOCUMENTOS CARGA
-            codigoTipoDocumentoCarga: diData.documento_carga?.tipo,
-            numeroDocumentoCarga: diData.documento_carga?.numero,
-            numeroDocumentoCargaMaster: diData.documento_carga?.numero_master,
-            codigoUtilizacaoDocumentoCarga: diData.documento_carga?.utilizacao,
-            codigoTipoManifesto: diData.manifesto?.tipo,
-            numeroManifesto: diData.manifesto?.numero,
-            
-            // CONSIGNATÁRIO E AGENTE
-            codigoTipoConsignatario: diData.consignatario?.tipo,
-            numeroConsignatario: diData.consignatario?.numero,
-            nomeConsignatario: diData.consignatario?.nome,
-            codigoTipoAgenteCarga: diData.agente_carga?.tipo,
-            numeroAgenteCarga: diData.agente_carga?.numero,
-            
-            // ARMAZENAGEM
-            codigoRecintoAlfandegado: diData.recinto_alfandegado,
-            codigoSetorArmazenamento: diData.setor_armazenamento,
-            
-            // MOEDAS
-            codigoMoedaFrete: diData.moeda_frete,
-            codigoMoedaSeguro: diData.moeda_seguro,
-            codigoMoedaDespesas: diData.moeda_despesas,
-            
-            // VALORES TOTAIS (todos convertidos de /100)
-            valorTotalMLEMoedaNacional: diData.valor_total_mle_brl,
-            valorTotalFreteMoedaNacional: diData.valor_total_frete_brl,
-            valorTotalFretePrepaid: diData.valor_frete_prepaid,
-            valorTotalFreteCollect: diData.valor_frete_collect,
-            valorFreteTerritorioNacionalMoedaNegociada: diData.valor_frete_territorio_nacional,
-            valorTotalSeguroMoedaNacional: diData.valor_total_seguro_brl,
-            valorTotalSeguroMoedaNegociada: diData.valor_total_seguro_moeda,
-            valorTotalDespesasMoedaNacional: diData.valor_total_despesas_brl,
-            valorTotalDespesasMoedaNegociada: diData.valor_total_despesas_moeda,
-            
-            // CONTROLE
-            totalAdicoes: diData.total_adicoes,
-            codigoTipoImportador: diData.tipo_importador,
-            indicadorOperacaoFundap: diData.operacao_fundap,
-            
-            // PAGAMENTOS
-            codigoTipoPagamentoTributario: diData.tipo_pagamento,
-            numeroContaPagamentoTributario: diData.conta_pagamento,
-            
-            // INFORMAÇÕES ADICIONAIS
-            informacoesComplementares: diData.informacao_complementar,
-            
-            // METADADOS SISTEMA
-            xmlContent: diData.xml_content, // XML original em Base64
-            xmlHash: diData.xml_hash, // SHA-256 do XML
-            dataProcessamento: new Date(),
-            statusProcessamento: 'COMPLETO'
-        };
-        
-        // Validar campos obrigatórios
-        for (const campo of camposObrigatoriosDeclaracao) {
-            if (!declaracaoXSD[campo]) {
-                throw new Error(`[saveDIComplete] Campo obrigatório XSD ausente: ${campo}`);
-            }
-        }
-        
-        try {
-            return await this.db.transaction('rw',
-                // Todas as 9 tabelas XSD + tabelas de negócio
-                this.db.declaracoes,
-                this.db.adicoes,
-                this.db.mercadorias,
-                this.db.tributos,
-                this.db.pagamentos,
-                this.db.acrescimos_deducoes,
-                this.db.documentos_vinculados,
-                this.db.compensacoes_creditos,
-                this.db.metadados_sistema,
-                this.db.produtos,
-                this.db.despesas_aduaneiras,
-                this.db.dados_carga,
-                this.db.historico_operacoes,
-                async () => {
-                    console.log('[saveDIComplete] Iniciando salvamento completo XSD');
-                    
-                    // Verificar se DI já existe
-                    const existingDI = await this.db.declaracoes
-                        .where('identificacaoDeclaracaoImportacao')
-                        .equals(declaracaoXSD.identificacaoDeclaracaoImportacao)
-                        .first();
-                    
-                    if (existingDI) {
-                        throw new Error(`DI ${declaracaoXSD.identificacaoDeclaracaoImportacao} já existe no banco de dados`);
-                    }
-                    
-                    // 1. SALVAR DECLARAÇÃO PRINCIPAL (87+ campos)
-                    const diId = await this.db.declaracoes.add(declaracaoXSD);
-                    console.log(`[saveDIComplete] Declaração salva com ID ${diId}`);
-                    
-                    // 2. SALVAR ADIÇÕES (150+ campos cada)
-                    if (!diData.adicoes || diData.adicoes.length === 0) {
-                        throw new Error('[saveDIComplete] DI deve ter pelo menos uma adição');
-                    }
-                    
-                    for (const adicao of diData.adicoes) {
-                        // Validações obrigatórias da adição
-                        if (!adicao.numero_adicao) {
-                            throw new Error('[saveDIComplete] numeroAdicao é obrigatório');
-                        }
-                        if (!adicao.ncm) {
-                            throw new Error(`[saveDIComplete] codigoMercadoriaNCM é obrigatório para adição ${adicao.numero_adicao}`);
-                        }
-                        
-                        // Mapear campos da adição para XSD
-                        const adicaoXSD = {
-                            di_id: diId,
-                            // IDENTIFICAÇÃO
-                            numeroAdicao: adicao.numero_adicao,
-                            
-                            // NCM E CLASSIFICAÇÃO
-                            codigoMercadoriaNCM: adicao.ncm,
-                            codigoMercadoriaNBMSH: adicao.nbm_sh,
-                            codigoMercadoriaNaladiSH: adicao.naladi_sh,
-                            codigoMercadoriaNaladiNCC: adicao.naladi_ncc,
-                            quantidadeUnidadeEstatistica: adicao.quantidade_estatistica,
-                            
-                            // APLICAÇÃO E MATERIAL
-                            codigoAplicacaoMercadoria: adicao.aplicacao,
-                            indicadorMaterialUsado: adicao.material_usado,
-                            indicadorBemEncomenda: adicao.bem_encomenda,
-                            
-                            // PAÍSES
-                            codigoPaisOrigemMercadoria: adicao.pais_origem,
-                            codigoPaisAquisicaoMercadoria: adicao.pais_aquisicao,
-                            codigoPaisProcedenciaMercadoria: adicao.pais_procedencia,
-                            
-                            // FORNECEDOR ESTRANGEIRO
-                            nomeFornecedorEstrangeiro: adicao.fornecedor?.nome,
-                            enderecoLogradouroFornecedorEstrangeiro: adicao.fornecedor?.endereco_logradouro,
-                            enderecoNumeroFornecedorEstrangeiro: adicao.fornecedor?.endereco_numero,
-                            enderecoComplementoFornecedorEstrangeiro: adicao.fornecedor?.endereco_complemento,
-                            enderecoCidadeFornecedorEstrangeiro: adicao.fornecedor?.endereco_cidade,
-                            enderecoEstadoFornecedorEstrangeiro: adicao.fornecedor?.endereco_estado,
-                            
-                            // FABRICANTE
-                            nomeFabricanteMercadoria: adicao.fabricante?.nome,
-                            enderecoLogradouroFabricante: adicao.fabricante?.endereco_logradouro,
-                            enderecoNumeroFabricante: adicao.fabricante?.endereco_numero,
-                            enderecoComplementoFabricante: adicao.fabricante?.endereco_complemento,
-                            enderecoCidadeFabricante: adicao.fabricante?.endereco_cidade,
-                            enderecoEstadoFabricante: adicao.fabricante?.endereco_estado,
-                            codigoAusenciaFabricante: adicao.fabricante?.codigo_ausencia,
-                            
-                            // MOEDAS
-                            codigoMoedaNegociada: adicao.moeda_negociada,
-                            codigoMoedaFreteMercadoria: adicao.moeda_frete,
-                            codigoMoedaSeguroMercadoria: adicao.moeda_seguro,
-                            
-                            // VALORES DA ADIÇÃO (convertidos de /100)
-                            valorMercadoriaCondicaoVenda: adicao.valor_moeda_negociacao,
-                            valorMercadoriaEmbarqueMoedaNacional: adicao.valor_mle_brl,
-                            valorMercadoriaVendaMoedaNacional: adicao.valor_reais,
-                            valorFreteMercadoriaMoedaNacional: adicao.frete_valor_reais,
-                            valorFreteMercadoriaMoedaNegociada: adicao.frete_valor_moeda,
-                            valorSeguroMercadoriaMoedaNacional: adicao.seguro_valor_reais,
-                            valorSeguroMercadoriaMoedaNegociada: adicao.seguro_valor_moeda,
-                            
-                            // INCOTERMS E CONDIÇÕES
-                            codigoIncotermsVenda: adicao.condicao_venda_incoterm,
-                            nomeLocalCondicaoVenda: adicao.condicao_venda_local,
-                            
-                            // MÉTODO VALORAÇÃO
-                            codigoMetodoValoracao: adicao.metodo_valoracao,
-                            textoComplementoValorAduaneiro: adicao.complemento_valor_aduaneiro,
-                            
-                            // PESO
-                            pesoLiquidoMercadoria: adicao.peso_liquido,
-                            
-                            // REGIMES TRIBUTÁRIOS
-                            codigoRegimeTributacao: adicao.regime_tributacao,
-                            codigoRegimeTriburarioPisCofins: adicao.regime_pis_cofins,
-                            codigoFundamentoLegalRegime: adicao.fundamento_legal,
-                            codigoFundamentoLegalRegimePisCofins: adicao.fundamento_pis_cofins,
-                            codigoFundamentoLegalReduzido: adicao.fundamento_reduzido,
-                            
-                            // ACORDOS TARIFÁRIOS
-                            codigoTipoAcordoTarifario: adicao.tipo_acordo,
-                            codigoAcordoAladi: adicao.acordo_aladi,
-                            percentualCoeficienteReducaoII: adicao.coeficiente_reducao_ii,
-                            
-                            // ICMS
-                            valorAliquotaIcms: adicao.icms_aliquota,
-                            
-                            // DCR/DRAWBACK
-                            valorCalculoDCRDolar: adicao.dcr_valor_usd,
-                            valorIICalculadoDCRMoedaNacional: adicao.dcr_ii_brl,
-                            valorIIDevidoZFM: adicao.ii_devido_zfm,
-                            valorIIaReceberZFM: adicao.ii_receber_zfm,
-                            
-                            // DOCUMENTOS E LICENÇAS
-                            numeroIdentificacaoLI: adicao.numero_li,
-                            numeroROF: adicao.numero_rof,
-                            numeroDocumentoReducao: adicao.documento_reducao,
-                            
-                            // TRANSPORTE
-                            codigoViaTransporte: adicao.via_transporte,
-                            indicadorMultimodal: adicao.multimodal,
-                            
-                            // OUTROS
-                            tipoAgente: adicao.tipo_agente,
-                            codigoCoberturaCambial: adicao.cobertura_cambial,
-                            codigoMotivoSemCobertura: adicao.motivo_sem_cobertura,
-                            codigoMotivoAdmissaoTemporaria: adicao.motivo_admissao_temporaria,
-                            codigoOrgaoFinanciamentoInternacional: adicao.orgao_financiamento,
-                            valorFinanciadoSuperior360: adicao.valor_financiado_360,
-                            codigoVinculoImportadorExportador: adicao.vinculo_importador_exportador,
-                            indicadorTipoCertificado: adicao.tipo_certificado,
-                            
-                            // URF ENTRADA
-                            codigoURFEntradaMercadoria: adicao.urf_entrada
-                        };
-                        
-                        const adicaoId = await this.db.adicoes.add(adicaoXSD);
-                        console.log(`[saveDIComplete] Adição ${adicao.numero_adicao} salva com ID ${adicaoId}`);
-                        
-                        // 3. SALVAR MERCADORIAS (detalhamento de produtos)
-                        if (adicao.mercadorias && adicao.mercadorias.length > 0) {
-                            for (const mercadoria of adicao.mercadorias) {
-                                const mercadoriaXSD = {
-                                    adicao_id: adicaoId,
-                                    textoDetalhamentoMercadoria: mercadoria.descricao,
-                                    quantidadeMercadoriaUnidadeComercializada: mercadoria.quantidade,
-                                    nomeUnidadeMedidaComercializada: mercadoria.unidade_medida,
-                                    valorUnidadeLocalEmbarque: mercadoria.valor_unitario_fob,
-                                    valorUnidadeMedidaCondicaoVenda: mercadoria.valor_unitario
-                                };
-                                
-                                await this.db.mercadorias.add(mercadoriaXSD);
-                            }
-                        }
-                        
-                        // 4. SALVAR TRIBUTOS (impostos detalhados)
-                        if (adicao.tributos && adicao.tributos.length > 0) {
-                            for (const tributo of adicao.tributos) {
-                                const tributoXSD = {
-                                    adicao_id: adicaoId,
-                                    codigoReceitaImposto: tributo.codigo_receita,
-                                    codigoTipoDireito: tributo.tipo_direito,
-                                    percentualAliquotaNormalAdval: tributo.aliquota_normal,
-                                    percentualAliquotaReduzida: tributo.aliquota_reduzida,
-                                    percentualAliquotaAcordoTarifario: tributo.aliquota_acordo,
-                                    percentualReducaoIPT: tributo.reducao_ipt,
-                                    valorBaseCalculoAdval: tributo.base_calculo,
-                                    valorImpostoDevido: tributo.valor_devido,
-                                    valorIPTaRecolher: tributo.valor_recolher,
-                                    valorCalculadoIIACTarifario: tributo.ii_acordo,
-                                    codigoTipoAliquotaIPT: tributo.tipo_aliquota,
-                                    valorAliquotaEspecificaIPT: tributo.aliquota_especifica,
-                                    nomeUnidadeEspecificaAliquotaIPT: tributo.unidade_aliquota,
-                                    quantidadeMercadoriaUnidadeAliquotaEspecifica: tributo.quantidade_aliquota,
-                                    valorCalculoIPTEspecifica: tributo.ipt_especifica,
-                                    valorCalculoIptAdval: tributo.ipt_adval,
-                                    codigoTipoBeneficioIPI: tributo.beneficio_ipi,
-                                    numeroNotaComplementarTIPI: tributo.nota_tipi,
-                                    codigoTipoRecipiente: tributo.tipo_recipiente,
-                                    quantidadeMLRecipiente: tributo.quantidade_ml
-                                };
-                                
-                                await this.db.tributos.add(tributoXSD);
-                            }
-                        } else {
-                            // Se não há array tributos, criar a partir dos campos diretos
-                            // Mapear impostos básicos (II, IPI, PIS, COFINS)
-                            const tributosPadrao = [
-                                { codigo: '0107', nome: 'II', aliquota: adicao.ii_aliquota, valor: adicao.ii_valor_devido },
-                                { codigo: '0121', nome: 'IPI', aliquota: adicao.ipi_aliquota, valor: adicao.ipi_valor_devido },
-                                { codigo: '5602', nome: 'PIS', aliquota: adicao.pis_aliquota, valor: adicao.pis_valor_devido },
-                                { codigo: '5629', nome: 'COFINS', aliquota: adicao.cofins_aliquota, valor: adicao.cofins_valor_devido }
-                            ];
-                            
-                            for (const trib of tributosPadrao) {
-                                if (trib.valor !== undefined && trib.valor !== null) {
-                                    await this.db.tributos.add({
-                                        adicao_id: adicaoId,
-                                        codigoReceitaImposto: trib.codigo,
-                                        percentualAliquotaNormalAdval: trib.aliquota,
-                                        valorImpostoDevido: trib.valor,
-                                        valorIPTaRecolher: trib.valor
-                                    });
-                                }
-                            }
-                        }
-                        
-                        // 5. SALVAR ACRÉSCIMOS E DEDUÇÕES
-                        if (adicao.acrescimos && adicao.acrescimos.length > 0) {
-                            for (const acrescimo of adicao.acrescimos) {
-                                await this.db.acrescimos_deducoes.add({
-                                    adicao_id: adicaoId,
-                                    tipo_operacao: 'ACRESCIMO',
-                                    codigoMetodo: acrescimo.metodo,
-                                    codigoMoedaNegociada: acrescimo.moeda,
-                                    valorMoedaNacional: acrescimo.valor_brl,
-                                    valorMoedaNegociada: acrescimo.valor_moeda
-                                });
-                            }
-                        }
-                        
-                        if (adicao.deducoes && adicao.deducoes.length > 0) {
-                            for (const deducao of adicao.deducoes) {
-                                await this.db.acrescimos_deducoes.add({
-                                    adicao_id: adicaoId,
-                                    tipo_operacao: 'DEDUCAO',
-                                    codigoMetodo: deducao.metodo,
-                                    codigoMoedaNegociada: deducao.moeda,
-                                    valorMoedaNacional: deducao.valor_brl,
-                                    valorMoedaNegociada: deducao.valor_moeda
-                                });
-                            }
-                        }
-                        
-                        // 6. SALVAR DOCUMENTOS VINCULADOS DA ADIÇÃO
-                        if (adicao.documentos && adicao.documentos.length > 0) {
-                            for (const doc of adicao.documentos) {
-                                await this.db.documentos_vinculados.add({
-                                    entidade_id: adicaoId,
-                                    entidade_tipo: 'ADICAO',
-                                    tipo_documento: 'VINCULADO',
-                                    codigoTipoDocumentoVinculado: doc.tipo,
-                                    numeroDocumentoVinculado: doc.numero
-                                });
-                            }
-                        }
-                    }
-                    
-                    // 7. SALVAR PAGAMENTOS (nível declaração)
-                    if (diData.pagamentos && diData.pagamentos.length > 0) {
-                        for (const pagamento of diData.pagamentos) {
-                            const pagamentoXSD = {
-                                di_id: diId,
-                                codigoReceitaPagamento: pagamento.codigo_receita,
-                                codigoTipoPagamentoTributo: pagamento.tipo_pagamento,
-                                valorTributoPago: pagamento.valor_pago,
-                                valorJurosPagamentoTributo: pagamento.valor_juros,
-                                valorMultaPagamentoTributo: pagamento.valor_multa,
-                                dataPagamentoTributo: pagamento.data_pagamento,
-                                codigoBancoPagamentoTributo: pagamento.codigo_banco,
-                                numeroAgenciaPagamentoTributo: pagamento.agencia,
-                                numeroContaPagamentoTributo: pagamento.conta,
-                                numeroSequencialRetificacaoTributo: pagamento.sequencial_retificacao
-                            };
-                            
-                            await this.db.pagamentos.add(pagamentoXSD);
-                        }
-                    }
-                    
-                    // 8. SALVAR PROCESSOS E DOCUMENTOS (nível declaração)
-                    if (diData.processos && diData.processos.length > 0) {
-                        for (const processo of diData.processos) {
-                            await this.db.documentos_vinculados.add({
-                                entidade_id: diId,
-                                entidade_tipo: 'DI',
-                                tipo_documento: 'PROCESSO',
-                                codigoTipoProcesso: processo.tipo,
-                                numeroProcesso: processo.numero
-                            });
-                        }
-                    }
-                    
-                    if (diData.documentos_instrucao && diData.documentos_instrucao.length > 0) {
-                        for (const doc of diData.documentos_instrucao) {
-                            await this.db.documentos_vinculados.add({
-                                entidade_id: diId,
-                                entidade_tipo: 'DI',
-                                tipo_documento: 'INSTRUCAO',
-                                codigoTipoDocumentoInstrucaoDespacho: doc.tipo,
-                                numeroDocumentoInstrucaoDespacho: doc.numero
-                            });
-                        }
-                    }
-                    
-                    // 9. SALVAR COMPENSAÇÕES DE CRÉDITO
-                    if (diData.compensacoes && diData.compensacoes.length > 0) {
-                        for (const compensacao of diData.compensacoes) {
-                            await this.db.compensacoes_creditos.add({
-                                di_id: diId,
-                                codigoReceitaCredito: compensacao.codigo_receita,
-                                numeroDocumentoGeradorCredito: compensacao.documento_gerador,
-                                valorCompensarCredito: compensacao.valor_compensar
-                            });
-                        }
-                    }
-                    
-                    // 10. SALVAR METADADOS DO SISTEMA
-                    await this.db.metadados_sistema.add({
-                        di_id: diId,
-                        operacao: 'PARSE_AND_SAVE',
-                        status: 'SUCCESS',
-                        timestamp: new Date(),
-                        detalhes: {
-                            total_adicoes: diData.total_adicoes,
-                            total_tributos: diData.adicoes.reduce((sum, a) => sum + (a.tributos?.length || 4), 0),
-                            total_mercadorias: diData.adicoes.reduce((sum, a) => sum + (a.mercadorias?.length || 0), 0)
-                        },
-                        usuario: 'SYSTEM',
-                        duracao_ms: 0, // Será calculado
-                        xmlHashOriginal: diData.xml_hash,
-                        version: '2.0.0'
-                    });
-                    
-                    // 11. SALVAR DADOS DE CARGA (compatibilidade)
-                    if (diData.carga) {
-                        await this.db.dados_carga.add({
-                            di_id: diId,
-                            peso_bruto: diData.carga.peso_bruto,
-                            peso_liquido: diData.carga.peso_liquido,
-                            via_transporte: diData.carga.via_transporte,
-                            nome_veiculo: diData.carga.nome_veiculo,
-                            nome_transportador: diData.carga.nome_transportador,
-                            pais_procedencia: diData.carga.pais_procedencia,
-                            data_chegada: diData.carga.data_chegada
-                        });
-                    }
-                    
-                    // 12. SALVAR DESPESAS ADUANEIRAS (compatibilidade)
-                    if (diData.despesas) {
-                        // SISCOMEX
-                        if (diData.despesas.siscomex > 0) {
-                            await this.db.despesas_aduaneiras.add({
-                                di_id: diId,
-                                tipo: 'SISCOMEX',
-                                valor: diData.despesas.siscomex,
-                                codigo_receita: this.getCodigoReceita('SISCOMEX')
-                            });
-                        }
-                        
-                        // AFRMM
-                        if (diData.despesas.afrmm > 0) {
-                            await this.db.despesas_aduaneiras.add({
-                                di_id: diId,
-                                tipo: 'AFRMM',
-                                valor: diData.despesas.afrmm,
-                                codigo_receita: this.getCodigoReceita('AFRMM')
-                            });
-                        }
-                        
-                        // CAPATAZIA
-                        if (diData.despesas.capatazia > 0) {
-                            await this.db.despesas_aduaneiras.add({
-                                di_id: diId,
-                                tipo: 'CAPATAZIA',
-                                valor: diData.despesas.capatazia,
-                                codigo_receita: this.getCodigoReceita('CAPATAZIA')
-                            });
-                        }
-                    }
-                    
-                    // REGISTRAR NO HISTÓRICO
-                    await this.db.historico_operacoes.add({
-                        timestamp: new Date(),
-                        operacao: 'SAVE_DI_COMPLETE',
-                        modulo: 'IndexedDBManager',
-                        detalhes: {
-                            numero_di: declaracaoXSD.identificacaoDeclaracaoImportacao,
-                            total_adicoes: diData.total_adicoes,
-                            total_campos_salvos: Object.keys(declaracaoXSD).length,
-                            conformidade_xsd: true
-                        },
-                        resultado: 'SUCCESS'
-                    });
-                    
-                    console.log(`[saveDIComplete] DI ${declaracaoXSD.identificacaoDeclaracaoImportacao} salva com sucesso - 100% XSD compliance`);
-                    return diId;
-                }
-            );
-        } catch (error) {
-            // Registrar erro no histórico
-            try {
-                await this.db.historico_operacoes.add({
-                    timestamp: new Date(),
-                    operacao: 'SAVE_DI_COMPLETE',
-                    modulo: 'IndexedDBManager',
-                    detalhes: {
-                        numero_di: diData.numero_di,
-                        erro: error.message,
-                        stack: error.stack
-                    },
-                    resultado: 'ERROR'
-                });
-            } catch (logError) {
-                console.error('[saveDIComplete] Erro ao registrar falha no histórico:', logError);
-            }
-            
-            throw error;
-        }
-    }
 
     /**
      * Busca uma DI pelo número
@@ -1020,130 +412,6 @@ class IndexedDBManager {
         return di;
     }
 
-    /**
-     * Busca uma DI completa com TODOS os campos XSD (237+ campos)
-     * Recupera dados de todas as 9 tabelas relacionadas
-     * @param {string} numeroDI - Número da DI (identificacaoDeclaracaoImportacao)
-     * @returns {Promise<Object>} Dados completos da DI conforme XSD
-     */
-    async getDIComplete(numeroDI) {
-        if (!numeroDI) {
-            throw new Error('[getDIComplete] Número da DI é obrigatório para busca');
-        }
-        
-        // Buscar declaração principal
-        const di = await this.db.declaracoes
-            .where('identificacaoDeclaracaoImportacao')
-            .equals(numeroDI)
-            .first();
-        
-        if (!di) {
-            return null;
-        }
-        
-        console.log(`[getDIComplete] DI ${numeroDI} encontrada, recuperando dados relacionados`);
-        
-        // 1. Buscar adições (150+ campos cada)
-        di.adicoes = await this.db.adicoes
-            .where('di_id')
-            .equals(di.id)
-            .toArray();
-        
-        console.log(`[getDIComplete] ${di.adicoes.length} adições encontradas`);
-        
-        // Para cada adição, buscar dados relacionados
-        for (const adicao of di.adicoes) {
-            // 2. Buscar mercadorias (detalhamento de produtos)
-            adicao.mercadorias = await this.db.mercadorias
-                .where('adicao_id')
-                .equals(adicao.id)
-                .toArray();
-            
-            // 3. Buscar tributos (impostos detalhados)
-            adicao.tributos = await this.db.tributos
-                .where('adicao_id')
-                .equals(adicao.id)
-                .toArray();
-            
-            // 4. Buscar acréscimos e deduções
-            const acrescimosDeducoes = await this.db.acrescimos_deducoes
-                .where('adicao_id')
-                .equals(adicao.id)
-                .toArray();
-            
-            adicao.acrescimos = acrescimosDeducoes.filter(item => item.tipo_operacao === 'ACRESCIMO');
-            adicao.deducoes = acrescimosDeducoes.filter(item => item.tipo_operacao === 'DEDUCAO');
-            
-            // 5. Buscar documentos vinculados da adição
-            adicao.documentos = await this.db.documentos_vinculados
-                .where(['entidade_id', 'entidade_tipo'])
-                .equals([adicao.id, 'ADICAO'])
-                .toArray();
-            
-            // 6. Buscar produtos (compatibilidade com schema antigo)
-            adicao.produtos = await this.db.produtos
-                .where('adicao_id')
-                .equals(adicao.id)
-                .toArray();
-        }
-        
-        // 7. Buscar pagamentos (nível declaração)
-        di.pagamentos = await this.db.pagamentos
-            .where('di_id')
-            .equals(di.id)
-            .toArray();
-        
-        // 8. Buscar documentos vinculados da DI (processos, instruções, etc)
-        const documentosDI = await this.db.documentos_vinculados
-            .where(['entidade_id', 'entidade_tipo'])
-            .equals([di.id, 'DI'])
-            .toArray();
-        
-        di.processos = documentosDI.filter(doc => doc.tipo_documento === 'PROCESSO');
-        di.documentos_instrucao = documentosDI.filter(doc => doc.tipo_documento === 'INSTRUCAO');
-        di.documentos_vinculados = documentosDI.filter(doc => doc.tipo_documento === 'VINCULADO');
-        
-        // 9. Buscar compensações de crédito
-        di.compensacoes = await this.db.compensacoes_creditos
-            .where('di_id')
-            .equals(di.id)
-            .toArray();
-        
-        // 10. Buscar metadados do sistema
-        di.metadados = await this.db.metadados_sistema
-            .where('di_id')
-            .equals(di.id)
-            .toArray();
-        
-        // 11. Buscar despesas aduaneiras (compatibilidade)
-        di.despesas_aduaneiras = await this.db.despesas_aduaneiras
-            .where('di_id')
-            .equals(di.id)
-            .toArray();
-        
-        // 12. Buscar dados de carga (compatibilidade)
-        di.dados_carga = await this.db.dados_carga
-            .where('di_id')
-            .equals(di.id)
-            .first();
-        
-        // Calcular estatísticas
-        const estatisticas = {
-            total_adicoes: di.adicoes.length,
-            total_mercadorias: di.adicoes.reduce((sum, a) => sum + (a.mercadorias?.length || 0), 0),
-            total_tributos: di.adicoes.reduce((sum, a) => sum + (a.tributos?.length || 0), 0),
-            total_pagamentos: di.pagamentos?.length || 0,
-            total_documentos: documentosDI.length,
-            total_compensacoes: di.compensacoes?.length || 0,
-            campos_xsd_preenchidos: this.countFilledFields(di)
-        };
-        
-        di.estatisticas = estatisticas;
-        
-        console.log(`[getDIComplete] DI ${numeroDI} recuperada com sucesso:`, estatisticas);
-        
-        return di;
-    }
     
     /**
      * Conta quantos campos XSD estão preenchidos na DI
@@ -1531,6 +799,73 @@ class IndexedDBManager {
         console.log(`[restoreFromSnapshot] DI restaurada do snapshot ${snapshotId}`);
         
         return di;
+    }
+
+    /**
+     * Verifica o status do banco de dados e retorna estatísticas
+     * @returns {Promise<Object>} Status e estatísticas do banco
+     */
+    async checkDatabaseStatus() {
+        try {
+            const stats = await this.getDataStatistics();
+            
+            // Verificar se há dados em qualquer tabela
+            const hasData = stats.total > 0;
+            
+            return {
+                hasData,
+                stats,
+                isHealthy: true,
+                version: this.db.verno,
+                dbName: this.db.name
+            };
+        } catch (error) {
+            console.error('Erro ao verificar status do banco:', error);
+            return {
+                hasData: false,
+                stats: null,
+                isHealthy: false,
+                error: error.message
+            };
+        }
+    }
+
+    /**
+     * Obtém estatísticas detalhadas do banco de dados
+     * @returns {Promise<Object>} Estatísticas por tabela
+     */
+    async getDataStatistics() {
+        const stats = {
+            declaracoes: await this.db.declaracoes.count(),
+            adicoes: await this.db.adicoes.count(),
+            produtos: await this.db.produtos.count(),
+            despesas_aduaneiras: await this.db.despesas_aduaneiras.count(),
+            dados_carga: await this.db.dados_carga.count(),
+            incentivos_entrada: await this.db.incentivos_entrada.count(),
+            incentivos_saida: await this.db.incentivos_saida.count(),
+            elegibilidade_ncm: await this.db.elegibilidade_ncm.count(),
+            metricas_dashboard: await this.db.metricas_dashboard.count(),
+            cenarios_precificacao: await this.db.cenarios_precificacao.count(),
+            historico_operacoes: await this.db.historico_operacoes.count(),
+            snapshots: await this.db.snapshots.count(),
+            configuracoes_usuario: await this.db.configuracoes_usuario.count()
+        };
+        
+        // Calcular total
+        stats.total = Object.values(stats).reduce((sum, count) => sum + count, 0);
+        
+        // Adicionar informações úteis
+        stats.ultimaDI = null;
+        if (stats.declaracoes > 0) {
+            const ultimaDI = await this.db.declaracoes.orderBy('data_processamento').last();
+            stats.ultimaDI = {
+                numero: ultimaDI.numero_di,
+                data: ultimaDI.data_processamento,
+                empresa: ultimaDI.importador_nome
+            };
+        }
+        
+        return stats;
     }
 
     /**

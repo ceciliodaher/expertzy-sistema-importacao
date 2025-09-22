@@ -181,6 +181,26 @@
                 </div>
             </div>
             
+            <!-- Nova linha com botões de gerenciamento -->
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-primary btn-lg w-100" onclick="showDataViewerModal()">
+                        <i class="bi bi-database"></i> Ver DIs Importadas
+                        <span id="diCountBadge" class="badge bg-light text-dark ms-2">0</span>
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-success btn-lg w-100" onclick="startNewImport()">
+                        <i class="bi bi-plus-circle"></i> Iniciar Importação
+                    </button>
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-warning btn-lg w-100" onclick="showDatabaseManagement()">
+                        <i class="bi bi-gear"></i> Gerenciar Banco
+                    </button>
+                </div>
+            </div>
+            
             <div class="row mt-3">
                 <div class="col-12">
                     <div class="alert alert-secondary">
@@ -643,24 +663,24 @@
                 <div class="modal-body">
                     <div class="alert alert-info mb-4">
                         <i class="bi bi-info-circle"></i>
-                        <strong>Configuração de Alíquotas:</strong> Defina a alíquota de ICMS específica para cada NCM. 
-                        A alíquota padrão (19% - Goiás) será aplicada automaticamente, mas você pode configurar alíquotas específicas para NCMs que necessitam de tratamento diferenciado.
+                        <strong>Configuração de Alíquotas por NCM:</strong> Configure alíquotas específicas para NCMs que diferem da alíquota geral do estado. 
+                        O estado e alíquota padrão são extraídos automaticamente da DI.
                     </div>
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Estado de Destino:</label>
-                            <select class="form-select" id="estadoDestinoSelect">
-                                <!-- Preenchido dinamicamente via JavaScript -->
-                            </select>
+                            <label class="form-label fw-bold">Estado (extraído da DI):</label>
+                            <div class="form-control bg-light" id="estadoExtraido">
+                                <!-- Preenchido automaticamente da DI -->
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Alíquota Padrão:</label>
+                            <label class="form-label fw-bold">Alíquota Padrão do Estado:</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="aliquotaPadraoInput" readonly>
+                                <input type="number" class="form-control bg-light" id="aliquotaPadraoExtraida" readonly>
                                 <span class="input-group-text">%</span>
                             </div>
-                            <small class="text-muted">Baseada no estado selecionado</small>
+                            <small class="text-muted">Aplicada automaticamente para todos os NCMs</small>
                         </div>
                     </div>
                     
@@ -745,6 +765,285 @@
                     <button type="button" class="btn btn-primary" onclick="exportMultiAdditionSummary()">
                         <i class="bi bi-file-earmark-excel"></i> Exportar Resumo Completo
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Visualização de DIs Importadas -->
+    <div class="modal fade" id="modalDataViewer" tabindex="-1" aria-labelledby="modalDataViewerLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalDataViewerLabel">
+                        <i class="bi bi-database"></i> DIs Importadas no Banco de Dados
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Barra de busca e filtros -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="searchDI" placeholder="Buscar por DI, CNPJ ou empresa...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="filterPeriod">
+                                <option value="">Todos os períodos</option>
+                                <option value="today">Hoje</option>
+                                <option value="week">Última semana</option>
+                                <option value="month">Último mês</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-primary w-100" onclick="searchDIs()">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabela de DIs -->
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>DI</th>
+                                    <th>Data Import.</th>
+                                    <th>Empresa</th>
+                                    <th>CNPJ</th>
+                                    <th>Valor Total</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="diListTableBody">
+                                <!-- Dados dinâmicos -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginação -->
+                    <nav aria-label="DI pagination">
+                        <ul class="pagination justify-content-center" id="diPagination">
+                            <!-- Paginação dinâmica -->
+                        </ul>
+                    </nav>
+                    
+                    <!-- Mensagem quando não há dados -->
+                    <div id="noDataMessage" class="text-center text-muted d-none">
+                        <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                        <p>Nenhuma DI importada encontrada</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" onclick="exportAllDIs()">
+                        <i class="bi bi-download"></i> Exportar Todas
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Gerenciamento do Banco de Dados -->
+    <div class="modal fade" id="modalDatabaseManagement" tabindex="-1" aria-labelledby="modalDatabaseManagementLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalDatabaseManagementLabel">
+                        <i class="bi bi-gear"></i> Gerenciamento do Banco de Dados
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Estatísticas do Banco -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h6><i class="bi bi-bar-chart"></i> Estatísticas do Banco</h6>
+                            <div class="row" id="dbStatistics">
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title" id="statTotalDIs">0</h5>
+                                            <p class="card-text">DIs Importadas</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title" id="statTotalAdicoes">0</h5>
+                                            <p class="card-text">Adições</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title" id="statTotalProdutos">0</h5>
+                                            <p class="card-text">Produtos</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title" id="statTotalRecords">0</h5>
+                                            <p class="card-text">Total Registros</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Última DI Importada -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-info" id="lastDIInfo">
+                                <h6><i class="bi bi-clock-history"></i> Última DI Importada</h6>
+                                <div id="lastDIDetails">
+                                    <p class="mb-0">Nenhuma DI importada ainda</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Ações do Banco -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h6><i class="bi bi-tools"></i> Ações de Manutenção</h6>
+                            <div class="d-grid gap-2">
+                                <button type="button" class="btn btn-success" onclick="exportBackup()">
+                                    <i class="bi bi-cloud-download"></i> Fazer Backup Completo
+                                </button>
+                                <button type="button" class="btn btn-primary" onclick="importBackup()">
+                                    <i class="bi bi-cloud-upload"></i> Restaurar Backup
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="confirmClearDatabase()">
+                                    <i class="bi bi-trash3"></i> Limpar Banco de Dados
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Aviso -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                <strong>Atenção:</strong> Limpar o banco de dados removerá permanentemente todas as DIs importadas. 
+                                Faça um backup antes de prosseguir.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação para Limpar Banco -->
+    <div class="modal fade" id="modalConfirmClearDB" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle"></i> Confirmar Limpeza do Banco
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <h6>Você tem certeza?</h6>
+                        <p>Esta ação irá remover permanentemente:</p>
+                        <ul>
+                            <li><strong id="confirmDICount">0</strong> DIs importadas</li>
+                            <li><strong id="confirmAdicaoCount">0</strong> adições</li>
+                            <li><strong id="confirmProdutoCount">0</strong> produtos</li>
+                            <li>Todas as despesas e configurações</li>
+                        </ul>
+                        <p class="mb-0"><strong>Esta ação NÃO pode ser desfeita!</strong></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" onclick="clearDatabase()">
+                        <i class="bi bi-trash3"></i> Limpar Tudo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Detalhes da DI -->
+    <div class="modal fade" id="modalDIDetails" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-file-text"></i> Detalhes da DI
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tabs -->
+                    <ul class="nav nav-tabs" id="diDetailTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button">
+                                Visão Geral
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="adicoes-tab" data-bs-toggle="tab" data-bs-target="#adicoes" type="button">
+                                Adições
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="produtos-tab" data-bs-toggle="tab" data-bs-target="#produtos" type="button">
+                                Produtos
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="despesas-tab" data-bs-toggle="tab" data-bs-target="#despesas" type="button">
+                                Despesas
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="diDetailTabContent">
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                            <div id="diOverviewContent" class="mt-3">
+                                <!-- Conteúdo dinâmico -->
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="adicoes" role="tabpanel">
+                            <div id="diAdicoesContent" class="mt-3">
+                                <!-- Conteúdo dinâmico -->
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="produtos" role="tabpanel">
+                            <div id="diProdutosContent" class="mt-3">
+                                <!-- Conteúdo dinâmico -->
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="despesas" role="tabpanel">
+                            <div id="diDespesasContent" class="mt-3">
+                                <!-- Conteúdo dinâmico -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" id="btnLoadDIForProcessing">
+                        <i class="bi bi-play"></i> Continuar Processamento
+                    </button>
+                    <button type="button" class="btn btn-success" id="btnExportDI">
+                        <i class="bi bi-download"></i> Exportar
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>

@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "exportDate": "2025-09-22T17:26:17.640Z",
+  "data": [
+    {
+      "numero_di": "2300120746",
+      "importador_cnpj": "40.462.206/0001-58",
+      "importador_nome": "WPX IMPORTACAO E EXPORTACAO DE PECAS LTDA",
+      "importador_endereco_uf": "GO",
+      "data_processamento": "2025-09-22T17:25:25.973Z",
+      "data_registro": "02/01/2023",
+      "situacao": "ENTREGA NAO AUTORIZADA",
+      "total_adicoes": 16,
+      "taxa_cambio": 5.217739455850448,
+      "ncms": [
+        "73181500",
+        "73181600",
+        "73182200",
+        "73202010",
+        "73249000",
+        "84099111",
+        "84099114",
+        "84099117",
+        "84099118",
+        "84561190",
+        "84831020",
+        "87141000",
+        "87141000",
+        "90271000",
+        "90299010",
+        "84099120"
+      ],
+      "id": 1
+    }
+  ]
+}

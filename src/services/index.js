@@ -14,5 +14,4 @@ export { default as DataValidator } from './validation/DataValidator.js';
 
 // Migration - removida (código morto sem dados legados)
 
-// Utils
-export { default as Logger } from '../utils/Logger.js';
+// Utils - Logger removido, usando console nativo

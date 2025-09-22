@@ -28,7 +28,7 @@ export class ComplianceCalculator {
     async loadConfigurations() {
         try {
             // Carrega alíquotas ICMS
-            const response = await fetch('/src/shared/data/aliquotas.json');
+            const response = await fetch('./src/shared/data/aliquotas.json');
             this.aliquotasData = await response.json();
             
             // Carrega códigos de receita
@@ -517,7 +517,7 @@ export class ComplianceCalculator {
             
             // Carregar arquivos de configuração existentes (como no sistema legado)
             const [aliquotasResponse, beneficiosResponse, configResponse] = await Promise.all([
-                fetch('../shared/data/aliquotas.json'),
+                fetch('./src/shared/data/aliquotas.json'),
                 fetch('../shared/data/beneficios.json'),
                 fetch('../shared/data/config.json')
             ]);

@@ -2364,7 +2364,7 @@ async function carregarAliquotasICMS() {
     if (aliquotasCache) return aliquotasCache;
     
     try {
-        const response = await fetch('../data/aliquotas.json');
+        const response = await fetch('./src/shared/data/aliquotas.json');
         aliquotasCache = await response.json();
         console.log('✅ Alíquotas ICMS carregadas:', aliquotasCache);
         return aliquotasCache;

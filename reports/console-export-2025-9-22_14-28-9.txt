@@ -1,0 +1,14 @@
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+Erro ao exportar resumo multi-adição: ReferenceError: MultiAdditionExporter is not defined
+    exportMultiAdditionSummary https://importa-precifica.local/src/di-interface.js:2433
+    onclick https://importa-precifica.local/di-interface.html:1
+di-interface.js:2443:17
+Erro na exportação: Error: Frete BRL ausente na DI para export
+    validateExportData https://importa-precifica.local/src/core/exporters/ExportManager.js:131
+    export https://importa-precifica.local/src/core/exporters/ExportManager.js:23
+    exportarPlanilhaCustos https://importa-precifica.local/src/di-interface.js:1063
+    onclick https://importa-precifica.local/di-interface.html:1
+di-interface.js:1066:17
+Of the table content, 18 units width could not fit page jspdf.plugin.autotable.min.js:10:33023
+Of the table content, 45 units width could not fit page jspdf.plugin.autotable.min.js:10:33023

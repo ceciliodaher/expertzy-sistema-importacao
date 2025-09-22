@@ -25,7 +25,7 @@ class ItemCalculator {
         if (this.aliquotasCache) return this.aliquotasCache;
         
         try {
-            const response = await fetch('../data/aliquotas.json');
+            const response = await fetch('./src/shared/data/aliquotas.json');
             this.aliquotasCache = await response.json();
             console.log('✅ ItemCalculator: Alíquotas ICMS carregadas');
             return this.aliquotasCache;

@@ -15,6 +15,7 @@ import { ComplianceCalculator } from './core/calculators/ComplianceCalculator.js
 import { CalculationValidator } from './core/validators/CalculationValidator.js';
 import { ExportManager } from './core/exporters/ExportManager.js';
 import { ItemCalculator } from './core/calculators/ItemCalculator.js';
+import { DataViewer } from './modules/DataViewer.js';
 
 // Global instances
 let diProcessor = null;
@@ -22,6 +23,7 @@ let complianceCalculator = null;
 let validator = null;
 let exportManager = null;
 let dbManager = null;
+let dataViewer = null;
 let currentDI = null;
 let currentStep = 1;
 let expenseCounter = 0;
@@ -57,6 +59,7 @@ async function initializeSystem() {
         complianceCalculator = new ComplianceCalculator();
         validator = new CalculationValidator();
         exportManager = new ExportManager();
+        dataViewer = new DataViewer(dbManager);
         
         // Wait for configurations to load - ordem correta de dependências
         await diProcessor.ensureConfigsLoaded();
@@ -78,7 +81,11 @@ async function initializeSystem() {
         window.complianceCalculator = complianceCalculator;
         window.exportManager = exportManager;
         window.dbManager = dbManager;
+        window.dataViewer = dataViewer;
         window.ItemCalculator = ItemCalculator;
+        
+        // Verificar dados existentes ao carregar sistema
+        await checkForExistingData();
         
         console.log('🎉 Sistema inicializado com sucesso');
         
@@ -255,6 +262,33 @@ async function processarDI() {
         console.log('🔍 Processando XML com DIProcessor...');
         currentDI = await diProcessor.parseXML(xmlContent);
         console.log('✅ DI processada:', currentDI ? 'SUCESSO' : 'FALHOU');
+        
+        // CRÍTICO: Salvar DI no IndexedDB imediatamente após parsing
+        if (currentDI && currentDI.numero_di) {
+            try {
+                console.log(`💾 Salvando DI ${currentDI.numero_di} no IndexedDB...`);
+                
+                // Garantir que dbManager está inicializado
+                if (!dbManager) {
+                    throw new Error('IndexedDBManager não está inicializado');
+                }
+                
+                // Salvar DI no banco de dados
+                const savedId = await dbManager.saveDI(currentDI);
+                console.log(`✅ DI ${currentDI.numero_di} salva no IndexedDB com ID: ${savedId}`);
+                
+                // Marcar como salva para rastreamento
+                currentDI._indexeddb_id = savedId;
+                currentDI._saved_at = new Date().toISOString();
+                
+            } catch (error) {
+                console.error('❌ Erro ao salvar DI no IndexedDB:', error);
+                // Mostrar erro ao usuário mas permitir continuar em modo offline
+                showError(`Aviso: DI não pôde ser salva no banco de dados. Erro: ${error.message}`);
+                // Não lançar erro para permitir processamento offline
+                console.warn('⚠️ Continuando em modo offline sem persistência');
+            }
+        }
         
         // Set global variable for ItemCalculator access
         window.currentDI = currentDI;
@@ -719,7 +753,7 @@ function updateExpensePreview() {
     
     // Calculate ICMS impact using parser legado structure
     if (!currentDI.despesas_aduaneiras || !currentDI.despesas_aduaneiras.total_despesas_aduaneiras) {
-        logger.warn('Despesas aduaneiras não encontradas na DI');
+        console.warn('Despesas aduaneiras não encontradas na DI');
         return;
     }
     const automaticExpenses = currentDI.despesas_aduaneiras.total_despesas_aduaneiras;
@@ -1029,7 +1063,7 @@ async function exportarPlanilhaCustos() {
         const result = await exportManager.export('excel', currentDI, currentCalculation);
         showAlert(`Planilha exportada: ${result.filename}`, 'success');
     } catch (error) {
-        logger.error('Erro na exportação:', error);
+        console.error('Erro na exportação:', error);
         showAlert('Erro ao exportar planilha: ' + error.message, 'danger');
     }
 }
@@ -1046,7 +1080,7 @@ function exportarRelatórioImpostos() {
         exportAsJSON('relatorio_impostos_' + currentDI.numero_di, report);
         showAlert('Relatório de impostos exportado com sucesso!', 'success');
     } catch (error) {
-        logger.error('Erro na exportação:', error);
+        console.error('Erro na exportação:', error);
         showAlert('Erro ao exportar relatório: ' + error.message, 'danger');
     }
 }
@@ -1098,7 +1132,7 @@ function exportarMemoriaCalculo() {
         exportAsJSON('memoria_calculo_' + currentDI.numero_di, memoryData);
         showAlert('Memória de cálculo exportada com sucesso!', 'success');
     } catch (error) {
-        logger.error('Erro na exportação:', error);
+        console.error('Erro na exportação:', error);
         showAlert('Erro ao exportar memória de cálculo: ' + error.message, 'danger');
     }
 }
@@ -2430,7 +2464,7 @@ async function carregarAliquotasICMS() {
     if (aliquotasCache) return aliquotasCache;
     
     try {
-        const response = await fetch('../data/aliquotas.json');
+        const response = await fetch('./src/shared/data/aliquotas.json');
         aliquotasCache = await response.json();
         console.log('✅ Alíquotas ICMS carregadas:', aliquotasCache);
         return aliquotasCache;
@@ -2441,66 +2475,8 @@ async function carregarAliquotasICMS() {
     }
 }
 
-/**
- * Preencher select de estados com alíquotas do JSON
- */
-async function preencherSelectEstados() {
-    const aliquotas = await carregarAliquotasICMS();
-    if (!aliquotas) return;
-    
-    const select = document.getElementById('estadoDestinoSelect');
-    if (!select) return;
-    
-    select.innerHTML = '';
-    
-    Object.entries(aliquotas.aliquotas_icms_2025).forEach(([uf, config]) => {
-        const option = document.createElement('option');
-        option.value = uf;
-        option.textContent = `${uf} (${config.aliquota_interna}%)`;
-        if (config.fcp) {
-            option.textContent += ` + FCP`;
-        }
-        
-        // Não definir estado padrão - será selecionado baseado na DI
-        // if (uf === 'GO') {
-        //     option.selected = true;
-        // }
-        
-        select.appendChild(option);
-    });
-    
-    // Atualizar alíquota padrão
-    atualizarAliquotaPadrao();
-}
-
-/**
- * Atualizar alíquota padrão baseada no estado selecionado
- */
-async function atualizarAliquotaPadrao() {
-    const aliquotas = await carregarAliquotasICMS();
-    if (!aliquotas) return;
-    
-    const estadoSelect = document.getElementById('estadoDestinoSelect');
-    const aliquotaInput = document.getElementById('aliquotaPadraoInput');
-    
-    if (!estadoSelect || !aliquotaInput) return;
-    
-    const estado = estadoSelect.value;
-    const config = aliquotas.aliquotas_icms_2025[estado];
-    
-    if (config) {
-        let aliquotaTotal = config.aliquota_interna;
-        
-        // Adicionar FCP se aplicável
-        if (config.fcp && typeof config.fcp === 'number') {
-            aliquotaTotal += config.fcp;
-        }
-        
-        aliquotaInput.value = aliquotaTotal;
-        icmsConfig.estado = estado;
-        icmsConfig.aliquotaPadrao = aliquotaTotal;
-    }
-}
+// Funções preencherSelectEstados() e atualizarAliquotaPadrao() removidas
+// Estado agora é auto-extraído da DI conforme princípio KISS
 
 /**
  * Extrair NCMs únicos da DI carregada
@@ -2526,11 +2502,39 @@ function extrairNCMsUnicos() {
 
 /**
  * Mostrar modal de configuração de alíquotas ICMS
+ * Auto-extrai estado da DI conforme princípio KISS
  */
 async function mostrarModalICMS() {
-    // Carregar configurações e preencher estados
-    await preencherSelectEstados();
+    // Validar se DI está carregada (NO FALLBACKS)
+    if (!currentDI) {
+        showAlert('DI não carregada. Carregue uma DI antes de configurar alíquotas ICMS.', 'warning');
+        return;
+    }
     
+    // Auto-extrair estado da DI (NO FALLBACKS)
+    const estadoDI = currentDI.importador?.endereco_uf;
+    if (!estadoDI) {
+        showAlert('Estado do importador não encontrado na DI - campo obrigatório para configuração ICMS.', 'danger');
+        return;
+    }
+    
+    console.log(`🏛️ Estado extraído da DI: ${estadoDI}`);
+    
+    // Carregar alíquotas e obter configuração do estado
+    const aliquotas = await carregarAliquotasICMS();
+    if (!aliquotas || !aliquotas.aliquotas_icms_2025[estadoDI]) {
+        showAlert(`Configuração ICMS não encontrada para o estado ${estadoDI}.`, 'danger');
+        return;
+    }
+    
+    const configEstado = aliquotas.aliquotas_icms_2025[estadoDI];
+    const aliquotaPadrao = configEstado.aliquota_interna;
+    
+    // Preencher campos read-only com dados extraídos
+    document.getElementById('estadoExtraido').textContent = `${estadoDI} - ${configEstado.nome || estadoDI}`;
+    document.getElementById('aliquotaPadraoExtraida').value = aliquotaPadrao;
+    
+    // Extrair NCMs da DI
     const ncms = extrairNCMsUnicos();
     
     if (ncms.length === 0) {
@@ -2545,7 +2549,8 @@ async function mostrarModalICMS() {
     tableBody.innerHTML = '';
     
     ncms.forEach(ncmData => {
-        const aliquotaAtual = icmsConfig.ncmConfigs[ncmData.ncm] || icmsConfig.aliquotaPadrao;
+        // Usar alíquota específica do NCM ou padrão do estado
+        const aliquotaAtual = icmsConfig.ncmConfigs?.[ncmData.ncm] || aliquotaPadrao;
         
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -2557,13 +2562,19 @@ async function mostrarModalICMS() {
                     <input type="number" class="form-control text-center ncm-aliquota-input" 
                            data-ncm="${ncmData.ncm}" 
                            value="${aliquotaAtual}" 
-                           min="0" max="27" step="0.01">
+                           min="0" max="27" step="0.01"
+                           placeholder="${aliquotaPadrao}%">
                     <span class="input-group-text">%</span>
                 </div>
+                <small class="text-muted">Padrão: ${aliquotaPadrao}%</small>
             </td>
         `;
         tableBody.appendChild(row);
     });
+    
+    // Armazenar estado e alíquota padrão para uso no salvamento
+    window.currentEstadoDI = estadoDI;
+    window.currentAliquotaPadrao = aliquotaPadrao;
     
     // Mostrar modal
     const modal = new bootstrap.Modal(document.getElementById('icmsConfigModal'));
@@ -2572,11 +2583,17 @@ async function mostrarModalICMS() {
 
 /**
  * Salvar configurações de alíquotas
+ * Usa estado auto-extraído da DI
  */
 function salvarConfiguracoesICMS() {
-    // Atualizar estado e alíquota padrão
-    icmsConfig.estado = document.getElementById('estadoDestinoSelect').value;
-    icmsConfig.aliquotaPadrao = parseFloat(document.getElementById('aliquotaPadraoInput').value) || 19;
+    // Usar estado e alíquota extraídos da DI (NO FALLBACKS)
+    if (!window.currentEstadoDI || !window.currentAliquotaPadrao) {
+        showAlert('Erro: estado e alíquota padrão não foram extraídos da DI.', 'danger');
+        return;
+    }
+    
+    icmsConfig.estado = window.currentEstadoDI;
+    icmsConfig.aliquotaPadrao = window.currentAliquotaPadrao;
     
     // Coletar alíquotas específicas por NCM
     const inputs = document.querySelectorAll('.ncm-aliquota-input');
@@ -2630,12 +2647,404 @@ document.addEventListener('DOMContentLoaded', function() {
         salvarBtn.addEventListener('click', salvarConfiguracoesICMS);
     }
     
-    // Listener para mudança de estado
-    const estadoSelect = document.getElementById('estadoDestinoSelect');
-    if (estadoSelect) {
-        estadoSelect.addEventListener('change', atualizarAliquotaPadrao);
-    }
+    // Listener para dropdown de estado removido - estado agora é auto-extraído da DI
 });
+
+// ========================================
+// FUNÇÕES DE GESTÃO DO BANCO DE DADOS E VISUALIZAÇÃO
+// ========================================
+
+/**
+ * Verifica dados existentes ao carregar o sistema
+ */
+async function checkForExistingData() {
+    try {
+        const dbStatus = await dbManager.checkDatabaseStatus();
+        console.log('📊 Status do banco:', dbStatus);
+        
+        // Atualizar badge de contagem de DIs
+        const badge = document.getElementById('diCountBadge');
+        if (badge && dbStatus.stats) {
+            badge.textContent = dbStatus.stats.declaracoes || 0;
+        }
+        
+        // Se há dados, mostrar opção de visualização
+        if (dbStatus.hasData) {
+            console.log(`💾 Encontradas ${dbStatus.stats.declaracoes} DIs no banco`);
+        }
+        
+    } catch (error) {
+        console.error('Erro ao verificar dados existentes:', error);
+    }
+}
+
+/**
+ * Mostra modal de visualização de DIs importadas
+ */
+async function showDataViewerModal() {
+    try {
+        console.log('📋 Abrindo visualizador de DIs...');
+        
+        // Carregar DIs do banco
+        const result = await dataViewer.listSavedDIs(1, 10);
+        
+        // Renderizar tabela
+        const tableBody = document.getElementById('diListTableBody');
+        if (result.success && result.data.length > 0) {
+            tableBody.innerHTML = result.data.map(di => {
+                const statusBadge = dataViewer.getStatusBadge(di.status);
+                const valorFormatado = formatCurrency(di.valor_total_brl);
+                const dataFormatada = di.data_processamento ? 
+                    new Date(di.data_processamento).toLocaleDateString('pt-BR') : '-';
+                
+                return `
+                    <tr>
+                        <td><strong>${di.numero_di}</strong></td>
+                        <td>${dataFormatada}</td>
+                        <td>${di.importador_nome || '-'}</td>
+                        <td>${dataViewer.formatCNPJ(di.importador_cnpj)}</td>
+                        <td>${valorFormatado}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="viewDIDetails('${di.numero_di}')">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="loadDIForProcessing('${di.numero_di}')">
+                                <i class="bi bi-play"></i>
+                            </button>
+                            <button class="btn btn-sm btn-success" onclick="exportDI('${di.numero_di}')">
+                                <i class="bi bi-download"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="confirmDeleteDI('${di.numero_di}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            document.getElementById('noDataMessage').classList.add('d-none');
+        } else {
+            tableBody.innerHTML = '';
+            document.getElementById('noDataMessage').classList.remove('d-none');
+        }
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalDataViewer'));
+        modal.show();
+        
+    } catch (error) {
+        console.error('Erro ao mostrar visualizador:', error);
+        showAlert('Erro ao carregar DIs importadas.', 'danger');
+    }
+}
+
+/**
+ * Mostra modal de gerenciamento do banco
+ */
+async function showDatabaseManagement() {
+    try {
+        console.log('⚙️ Abrindo gerenciador do banco...');
+        
+        // Obter estatísticas
+        const stats = await dbManager.getDataStatistics();
+        
+        // Atualizar estatísticas na interface
+        document.getElementById('statTotalDIs').textContent = stats.declaracoes;
+        document.getElementById('statTotalAdicoes').textContent = stats.adicoes;
+        document.getElementById('statTotalProdutos').textContent = stats.produtos;
+        document.getElementById('statTotalRecords').textContent = stats.total;
+        
+        // Mostrar última DI
+        const lastDIDetails = document.getElementById('lastDIDetails');
+        if (stats.ultimaDI) {
+            lastDIDetails.innerHTML = `
+                <p><strong>DI:</strong> ${stats.ultimaDI.numero}</p>
+                <p><strong>Data:</strong> ${new Date(stats.ultimaDI.data).toLocaleDateString('pt-BR')}</p>
+                <p class="mb-0"><strong>Empresa:</strong> ${stats.ultimaDI.empresa || 'N/A'}</p>
+            `;
+        } else {
+            lastDIDetails.innerHTML = '<p class="mb-0">Nenhuma DI importada ainda</p>';
+        }
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalDatabaseManagement'));
+        modal.show();
+        
+    } catch (error) {
+        console.error('Erro ao mostrar gerenciador:', error);
+        showAlert('Erro ao carregar informações do banco.', 'danger');
+    }
+}
+
+/**
+ * Inicia nova importação
+ */
+function startNewImport() {
+    // Limpar dados atuais
+    currentDI = null;
+    currentStep = 1;
+    
+    // Resetar interface
+    document.getElementById('xmlFile').value = '';
+    document.getElementById('fileInfo').classList.add('d-none');
+    document.querySelector('.upload-area').classList.remove('file-loaded', 'success');
+    
+    // Voltar ao step 1
+    avancarStep(1);
+    
+    console.log('🆕 Nova importação iniciada');
+    showAlert('Pronto para nova importação. Selecione um arquivo XML.', 'info');
+}
+
+/**
+ * Confirma limpeza do banco de dados
+ */
+async function confirmClearDatabase() {
+    try {
+        const stats = await dbManager.getDataStatistics();
+        
+        // Atualizar contadores no modal de confirmação
+        document.getElementById('confirmDICount').textContent = stats.declaracoes;
+        document.getElementById('confirmAdicaoCount').textContent = stats.adicoes;
+        document.getElementById('confirmProdutoCount').textContent = stats.produtos;
+        
+        // Mostrar modal de confirmação
+        const modal = new bootstrap.Modal(document.getElementById('modalConfirmClearDB'));
+        modal.show();
+        
+    } catch (error) {
+        console.error('Erro ao preparar confirmação:', error);
+        showAlert('Erro ao verificar dados do banco.', 'danger');
+    }
+}
+
+/**
+ * Limpa todo o banco de dados
+ */
+async function clearDatabase() {
+    try {
+        console.log('🗑️ Limpando banco de dados...');
+        
+        await dbManager.clearAll();
+        
+        // Fechar modais
+        bootstrap.Modal.getInstance(document.getElementById('modalConfirmClearDB')).hide();
+        bootstrap.Modal.getInstance(document.getElementById('modalDatabaseManagement')).hide();
+        
+        // Atualizar interface
+        await checkForExistingData();
+        
+        console.log('✅ Banco de dados limpo');
+        showAlert('Banco de dados limpo com sucesso!', 'success');
+        
+    } catch (error) {
+        console.error('Erro ao limpar banco:', error);
+        showAlert('Erro ao limpar banco de dados.', 'danger');
+    }
+}
+
+/**
+ * Exporta backup completo
+ */
+async function exportBackup() {
+    try {
+        console.log('💾 Exportando backup...');
+        
+        const allDIs = await dbManager.db.declaracoes.toArray();
+        const backup = {
+            version: '1.0',
+            exportDate: new Date().toISOString(),
+            data: allDIs
+        };
+        
+        const blob = new Blob([JSON.stringify(backup, null, 2)], {
+            type: 'application/json'
+        });
+        
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `expertzy_backup_${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        
+        showAlert('Backup exportado com sucesso!', 'success');
+        
+    } catch (error) {
+        console.error('Erro ao exportar backup:', error);
+        showAlert('Erro ao exportar backup.', 'danger');
+    }
+}
+
+/**
+ * Ver detalhes de uma DI específica
+ */
+async function viewDIDetails(numeroDI) {
+    try {
+        console.log(`👁️ Visualizando detalhes da DI ${numeroDI}...`);
+        
+        const details = await dataViewer.viewDIDetails(numeroDI);
+        
+        if (!details.success) {
+            throw new Error(details.error);
+        }
+        
+        // Popular conteúdo das abas
+        const overviewContent = document.getElementById('diOverviewContent');
+        overviewContent.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Informações Básicas</h6>
+                    <p><strong>Número DI:</strong> ${details.data.declaracao.numero_di}</p>
+                    <p><strong>Data Processamento:</strong> ${new Date(details.data.declaracao.data_processamento).toLocaleDateString('pt-BR')}</p>
+                    <p><strong>Importador:</strong> ${details.data.declaracao.importador_nome}</p>
+                    <p><strong>CNPJ:</strong> ${dataViewer.formatCNPJ(details.data.declaracao.importador_cnpj)}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Estatísticas</h6>
+                    <p><strong>Total Adições:</strong> ${details.data.estatisticas.totalAdicoes}</p>
+                    <p><strong>Total Produtos:</strong> ${details.data.estatisticas.totalProdutos}</p>
+                    <p><strong>Valor Total:</strong> ${formatCurrency(details.data.estatisticas.valorTotal)}</p>
+                    <p><strong>Total Despesas:</strong> ${formatCurrency(details.data.estatisticas.totalDespesas)}</p>
+                </div>
+            </div>
+        `;
+        
+        // Configurar botões do modal
+        document.getElementById('btnLoadDIForProcessing').onclick = () => loadDIForProcessing(numeroDI);
+        document.getElementById('btnExportDI').onclick = () => exportDI(numeroDI);
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('modalDIDetails'));
+        modal.show();
+        
+    } catch (error) {
+        console.error('Erro ao visualizar detalhes:', error);
+        showAlert('Erro ao carregar detalhes da DI.', 'danger');
+    }
+}
+
+/**
+ * Carrega DI para processamento
+ */
+async function loadDIForProcessing(numeroDI) {
+    try {
+        console.log(`🔄 Carregando DI ${numeroDI} para processamento...`);
+        
+        const di = await dbManager.getDI(numeroDI);
+        if (!di) {
+            throw new Error('DI não encontrada');
+        }
+        
+        // Carregar DI no sistema
+        currentDI = di;
+        window.currentDI = di;
+        
+        // Fechar modais
+        const detailsModal = bootstrap.Modal.getInstance(document.getElementById('modalDIDetails'));
+        if (detailsModal) detailsModal.hide();
+        
+        const viewerModal = bootstrap.Modal.getInstance(document.getElementById('modalDataViewer'));
+        if (viewerModal) viewerModal.hide();
+        
+        // Ir para step 2 ou 3 dependendo do status
+        const targetStep = di.processing_status === 'xml_loaded' ? 2 : 3;
+        
+        // Popular dados na interface
+        if (targetStep >= 2) {
+            populateStep2Data(di);
+            populateAllAdditions(di);
+        }
+        
+        avancarStep(targetStep);
+        
+        showAlert(`DI ${numeroDI} carregada para processamento.`, 'success');
+        
+    } catch (error) {
+        console.error('Erro ao carregar DI:', error);
+        showAlert('Erro ao carregar DI para processamento.', 'danger');
+    }
+}
+
+/**
+ * Exporta DI específica
+ */
+async function exportDI(numeroDI) {
+    try {
+        const result = await dataViewer.exportDI(numeroDI);
+        
+        if (result.success) {
+            showAlert(result.message, 'success');
+        } else {
+            throw new Error(result.error);
+        }
+        
+    } catch (error) {
+        console.error('Erro ao exportar DI:', error);
+        showAlert('Erro ao exportar DI.', 'danger');
+    }
+}
+
+/**
+ * Confirma deleção de DI
+ */
+function confirmDeleteDI(numeroDI) {
+    if (confirm(`Tem certeza que deseja deletar a DI ${numeroDI}? Esta ação não pode ser desfeita.`)) {
+        deleteDI(numeroDI);
+    }
+}
+
+/**
+ * Deleta DI específica
+ */
+async function deleteDI(numeroDI) {
+    try {
+        const result = await dataViewer.deleteDI(numeroDI);
+        
+        if (result.success) {
+            showAlert(result.message, 'success');
+            // Recarregar lista
+            showDataViewerModal();
+            // Atualizar badge
+            await checkForExistingData();
+        } else {
+            throw new Error(result.error);
+        }
+        
+    } catch (error) {
+        console.error('Erro ao deletar DI:', error);
+        showAlert('Erro ao deletar DI.', 'danger');
+    }
+}
+
+/**
+ * Busca DIs no visualizador
+ */
+async function searchDIs() {
+    const searchTerm = document.getElementById('searchDI').value;
+    const filterPeriod = document.getElementById('filterPeriod').value;
+    
+    console.log('🔍 Buscando DIs:', { searchTerm, filterPeriod });
+    
+    // Implementar busca conforme critérios
+    // Por enquanto, recarregar lista completa
+    showDataViewerModal();
+}
+
+// Tornar funções disponíveis globalmente
+window.showDataViewerModal = showDataViewerModal;
+window.showDatabaseManagement = showDatabaseManagement;
+window.startNewImport = startNewImport;
+window.confirmClearDatabase = confirmClearDatabase;
+window.clearDatabase = clearDatabase;
+window.exportBackup = exportBackup;
+window.viewDIDetails = viewDIDetails;
+window.loadDIForProcessing = loadDIForProcessing;
+window.exportDI = exportDI;
+window.confirmDeleteDI = confirmDeleteDI;
+window.searchDIs = searchDIs;
 
 // Exportar funções para uso global
 window.mostrarModalICMS = mostrarModalICMS;
