@@ -863,6 +863,11 @@ async function calcularImpostos() {
         // Use the modular method to calculate taxes for ALL additions
         const taxCalculation = await complianceCalculator.calcularTodasAdicoes(currentDI, despesasConsolidadas);
         
+        // 🔥 CRÍTICO: Conectar pipeline ao IndexedDB via ProductMemoryManager
+        console.log('🔄 Salvando dados calculados no IndexedDB via ProductMemoryManager...');
+        await complianceCalculator.atualizarDISalvaComCalculos(currentDI, taxCalculation, despesasConsolidadas);
+        console.log('✅ Dados salvos no IndexedDB com sucesso');
+        
         // Store calculation results with individual products
         currentDI.calculoImpostos = taxCalculation;
         currentDI.despesasExtras = expenses; // Store for export
@@ -2428,7 +2433,7 @@ function viewMultiAdditionSummary() {
 /**
  * Export multi-addition summary using dedicated exporter
  */
-function exportMultiAdditionSummary() {
+async function exportMultiAdditionSummary() {
     if (!currentDI || !currentDI.adicoes || currentDI.adicoes.length === 0) {
         showAlert('Nenhuma DI carregada para exportar.', 'warning');
         return;
@@ -2439,7 +2444,7 @@ function exportMultiAdditionSummary() {
         const exporter = new MultiAdditionExporter(currentDI);
         
         // Export to Excel (default)
-        const result = exporter.exportToExcel();
+        const result = await exporter.exportToExcel();
         
         if (result.success) {
             showAlert(`Resumo multi-adição exportado: ${result.fileName}`, 'success');

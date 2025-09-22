@@ -1,10 +1,10 @@
 {
   "di_numero": "2300120746",
-  "timestamp": "2025-09-22T17:27:54.836Z",
+  "timestamp": "2025-09-22T18:16:04.975Z",
   "calculationMemory": [
     {
-      "id": "calc_1758562034602_yvnla5355",
-      "timestamp": "2025-09-22T17:27:14.602Z",
+      "id": "calc_1758564942892_ek787nsyh",
+      "timestamp": "2025-09-22T18:15:42.892Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "001",
       "resumo": {
@@ -15,7 +15,7 @@
       "detalhes": {
         "adicao_numero": "001",
         "ncm": "73181500",
-        "timestamp": "2025-09-22T17:27:14.602Z",
+        "timestamp": "2025-09-22T18:15:42.892Z",
         "valores_base": {
           "cif_usd": 6346.13,
           "cif_brl": 33112.2,
@@ -78,8 +78,8 @@
       }
     },
     {
-      "id": "calc_1758562034604_feczop16i",
-      "timestamp": "2025-09-22T17:27:14.604Z",
+      "id": "calc_1758564942895_0020c7jxj",
+      "timestamp": "2025-09-22T18:15:42.895Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "002",
       "resumo": {
@@ -90,7 +90,7 @@
       "detalhes": {
         "adicao_numero": "002",
         "ncm": "73181600",
-        "timestamp": "2025-09-22T17:27:14.604Z",
+        "timestamp": "2025-09-22T18:15:42.895Z",
         "valores_base": {
           "cif_usd": 1004.2,
           "cif_brl": 5239.61,
@@ -153,8 +153,8 @@
       }
     },
     {
-      "id": "calc_1758562034605_t8tkmc7ri",
-      "timestamp": "2025-09-22T17:27:14.605Z",
+      "id": "calc_1758564942896_qo7oxm34t",
+      "timestamp": "2025-09-22T18:15:42.896Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "003",
       "resumo": {
@@ -165,7 +165,7 @@
       "detalhes": {
         "adicao_numero": "003",
         "ncm": "73182200",
-        "timestamp": "2025-09-22T17:27:14.605Z",
+        "timestamp": "2025-09-22T18:15:42.896Z",
         "valores_base": {
           "cif_usd": 990.59,
           "cif_brl": 5168.6,
@@ -228,8 +228,8 @@
       }
     },
     {
-      "id": "calc_1758562034605_6w7c8clc0",
-      "timestamp": "2025-09-22T17:27:14.605Z",
+      "id": "calc_1758564942896_0nkxm6koa",
+      "timestamp": "2025-09-22T18:15:42.896Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "004",
       "resumo": {
@@ -240,7 +240,7 @@
       "detalhes": {
         "adicao_numero": "004",
         "ncm": "73202010",
-        "timestamp": "2025-09-22T17:27:14.605Z",
+        "timestamp": "2025-09-22T18:15:42.896Z",
         "valores_base": {
           "cif_usd": 350.11,
           "cif_brl": 1826.76,
@@ -303,8 +303,8 @@
       }
     },
     {
-      "id": "calc_1758562034606_tzle3k6ik",
-      "timestamp": "2025-09-22T17:27:14.606Z",
+      "id": "calc_1758564942897_giwkt2g1u",
+      "timestamp": "2025-09-22T18:15:42.896Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "005",
       "resumo": {
@@ -315,7 +315,7 @@
       "detalhes": {
         "adicao_numero": "005",
         "ncm": "73249000",
-        "timestamp": "2025-09-22T17:27:14.606Z",
+        "timestamp": "2025-09-22T18:15:42.896Z",
         "valores_base": {
           "cif_usd": 406.99,
           "cif_brl": 2123.55,
@@ -378,8 +378,8 @@
       }
     },
     {
-      "id": "calc_1758562034606_lbfhblkiu",
-      "timestamp": "2025-09-22T17:27:14.606Z",
+      "id": "calc_1758564942897_pm8605vdp",
+      "timestamp": "2025-09-22T18:15:42.897Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "006",
       "resumo": {
@@ -390,7 +390,7 @@
       "detalhes": {
         "adicao_numero": "006",
         "ncm": "84099111",
-        "timestamp": "2025-09-22T17:27:14.606Z",
+        "timestamp": "2025-09-22T18:15:42.897Z",
         "valores_base": {
           "cif_usd": 33391.48,
           "cif_brl": 174226.72,
@@ -453,8 +453,8 @@
       }
     },
     {
-      "id": "calc_1758562034607_oq2je8sce",
-      "timestamp": "2025-09-22T17:27:14.607Z",
+      "id": "calc_1758564942898_l1dh0ea35",
+      "timestamp": "2025-09-22T18:15:42.898Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "007",
       "resumo": {
@@ -465,7 +465,7 @@
       "detalhes": {
         "adicao_numero": "007",
         "ncm": "84099114",
-        "timestamp": "2025-09-22T17:27:14.607Z",
+        "timestamp": "2025-09-22T18:15:42.898Z",
         "valores_base": {
           "cif_usd": 1758.14,
           "cif_brl": 9173.44,
@@ -528,8 +528,8 @@
       }
     },
     {
-      "id": "calc_1758562034607_uirwm0d22",
-      "timestamp": "2025-09-22T17:27:14.607Z",
+      "id": "calc_1758564942898_5178nta8f",
+      "timestamp": "2025-09-22T18:15:42.898Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "008",
       "resumo": {
@@ -540,7 +540,7 @@
       "detalhes": {
         "adicao_numero": "008",
         "ncm": "84099117",
-        "timestamp": "2025-09-22T17:27:14.607Z",
+        "timestamp": "2025-09-22T18:15:42.898Z",
         "valores_base": {
           "cif_usd": 2683.57,
           "cif_brl": 14002.06,
@@ -603,8 +603,8 @@
       }
     },
     {
-      "id": "calc_1758562034607_fjxucr6ub",
-      "timestamp": "2025-09-22T17:27:14.607Z",
+      "id": "calc_1758564942899_82lki0sv6",
+      "timestamp": "2025-09-22T18:15:42.899Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "009",
       "resumo": {
@@ -615,7 +615,7 @@
       "detalhes": {
         "adicao_numero": "009",
         "ncm": "84099118",
-        "timestamp": "2025-09-22T17:27:14.607Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 466.35,
           "cif_brl": 2433.27,
@@ -678,8 +678,8 @@
       }
     },
     {
-      "id": "calc_1758562034608_2qk93ybsg",
-      "timestamp": "2025-09-22T17:27:14.608Z",
+      "id": "calc_1758564942899_1gvkc1fwr",
+      "timestamp": "2025-09-22T18:15:42.899Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "010",
       "resumo": {
@@ -690,7 +690,7 @@
       "detalhes": {
         "adicao_numero": "010",
         "ncm": "84561190",
-        "timestamp": "2025-09-22T17:27:14.608Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 2265.35,
           "cif_brl": 11819.91,
@@ -753,8 +753,8 @@
       }
     },
     {
-      "id": "calc_1758562034608_0mjd7fgvf",
-      "timestamp": "2025-09-22T17:27:14.608Z",
+      "id": "calc_1758564942899_6twczjsh1",
+      "timestamp": "2025-09-22T18:15:42.899Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "011",
       "resumo": {
@@ -765,7 +765,7 @@
       "detalhes": {
         "adicao_numero": "011",
         "ncm": "84831020",
-        "timestamp": "2025-09-22T17:27:14.608Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 1042.54,
           "cif_brl": 5439.66,
@@ -828,8 +828,8 @@
       }
     },
     {
-      "id": "calc_1758562034608_r2lx3jy9a",
-      "timestamp": "2025-09-22T17:27:14.608Z",
+      "id": "calc_1758564942899_g058xhlmc",
+      "timestamp": "2025-09-22T18:15:42.899Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "012",
       "resumo": {
@@ -840,7 +840,7 @@
       "detalhes": {
         "adicao_numero": "012",
         "ncm": "87141000",
-        "timestamp": "2025-09-22T17:27:14.608Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 26005.32,
           "cif_brl": 135687.95,
@@ -903,8 +903,8 @@
       }
     },
     {
-      "id": "calc_1758562034609_wzu7ql1d8",
-      "timestamp": "2025-09-22T17:27:14.609Z",
+      "id": "calc_1758564942899_i06c5b1a4",
+      "timestamp": "2025-09-22T18:15:42.899Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "013",
       "resumo": {
@@ -915,7 +915,7 @@
       "detalhes": {
         "adicao_numero": "013",
         "ncm": "87141000",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 14353,
           "cif_brl": 74889.64,
@@ -978,8 +978,8 @@
       }
     },
     {
-      "id": "calc_1758562034609_unr0lzzd8",
-      "timestamp": "2025-09-22T17:27:14.609Z",
+      "id": "calc_1758564942900_8r67ui51v",
+      "timestamp": "2025-09-22T18:15:42.900Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "014",
       "resumo": {
@@ -990,7 +990,7 @@
       "detalhes": {
         "adicao_numero": "014",
         "ncm": "90271000",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.900Z",
         "valores_base": {
           "cif_usd": 15801.85,
           "cif_brl": 82449.31,
@@ -1053,8 +1053,8 @@
       }
     },
     {
-      "id": "calc_1758562034609_ygpo2ss5r",
-      "timestamp": "2025-09-22T17:27:14.609Z",
+      "id": "calc_1758564942900_ae5xf4sgr",
+      "timestamp": "2025-09-22T18:15:42.900Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "015",
       "resumo": {
@@ -1065,7 +1065,7 @@
       "detalhes": {
         "adicao_numero": "015",
         "ncm": "90299010",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.900Z",
         "valores_base": {
           "cif_usd": 1178.27,
           "cif_brl": 6147.85,
@@ -1128,8 +1128,8 @@
       }
     },
     {
-      "id": "calc_1758562034609_zgxah2l4z",
-      "timestamp": "2025-09-22T17:27:14.609Z",
+      "id": "calc_1758564942900_seah8fqdk",
+      "timestamp": "2025-09-22T18:15:42.900Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "016",
       "resumo": {
@@ -1140,7 +1140,7 @@
       "detalhes": {
         "adicao_numero": "016",
         "ncm": "84099120",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.900Z",
         "valores_base": {
           "cif_usd": 339.37,
           "cif_brl": 1770.73,
@@ -1208,7 +1208,7 @@
     "last_calculation": {
       "adicao_numero": "016",
       "ncm": "84099120",
-      "timestamp": "2025-09-22T17:27:14.609Z",
+      "timestamp": "2025-09-22T18:15:42.900Z",
       "valores_base": {
         "cif_usd": 339.37,
         "cif_brl": 1770.73,

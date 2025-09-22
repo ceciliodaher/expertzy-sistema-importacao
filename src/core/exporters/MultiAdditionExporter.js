@@ -19,29 +19,38 @@ export class MultiAdditionExporter {
     /**
      * Exporta resumo para Excel
      */
-    exportToExcel() {
+    async exportToExcel() {
         try {
-            const workbook = XLSX.utils.book_new();
+            const workbook = new ExcelJS.Workbook();
             
             // Sheet 1: Resumo Geral
-            const resumoSheet = this.createResumoSheet();
-            XLSX.utils.book_append_sheet(workbook, resumoSheet, 'Resumo Geral');
+            const resumoSheet = workbook.addWorksheet('Resumo Geral');
+            this.createResumoSheet(resumoSheet);
             
             // Sheet 2: Detalhamento por Adição
-            const detalhamentoSheet = this.createDetalhamentoSheet();
-            XLSX.utils.book_append_sheet(workbook, detalhamentoSheet, 'Detalhamento');
+            const detalhamentoSheet = workbook.addWorksheet('Detalhamento');
+            this.createDetalhamentoSheet(detalhamentoSheet);
             
             // Sheet 3: Análise Fiscal
-            const fiscalSheet = this.createAnalyseFiscalSheet();
-            XLSX.utils.book_append_sheet(workbook, fiscalSheet, 'Análise Fiscal');
+            const fiscalSheet = workbook.addWorksheet('Análise Fiscal');
+            this.createAnalyseFiscalSheet(fiscalSheet);
             
             // Sheet 4: Comparativo NCMs
-            const ncmSheet = this.createComparativoNCMSheet();
-            XLSX.utils.book_append_sheet(workbook, ncmSheet, 'Comparativo NCM');
+            const ncmSheet = workbook.addWorksheet('Comparativo NCM');
+            this.createComparativoNCMSheet(ncmSheet);
             
             // Export file
             const fileName = `Resumo_MultiAdicao_${this.di.numero_di}_${new Date().toISOString().split('T')[0]}.xlsx`;
-            XLSX.writeFile(workbook, fileName);
+            const buffer = await workbook.xlsx.writeBuffer();
+            
+            // Create download
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
             
             console.log('✅ Resumo multi-adição exportado para Excel:', fileName);
             return { success: true, fileName };
@@ -55,21 +64,20 @@ export class MultiAdditionExporter {
     /**
      * Cria sheet de resumo geral
      */
-    createResumoSheet() {
-        const data = [
-            [this.empresa],
-            [this.subtitulo],
-            [''],
-            ['RESUMO GERAL DA IMPORTAÇÃO'],
-            [''],
-            ['DI Número:', this.di.numero_di],
-            ['Data Registro:', this.di.data_registro],
-            ['Total de Adições:', this.di.adicoes.length],
-            ['Importador:', this.di.importador?.nome || 'N/A'],
-            [''],
-            ['TOTAIS CONSOLIDADOS'],
-            ['']
-        ];
+    createResumoSheet(worksheet) {
+        // Cabeçalho
+        worksheet.addRow([this.empresa]);
+        worksheet.addRow([this.subtitulo]);
+        worksheet.addRow(['']);
+        worksheet.addRow(['RESUMO GERAL DA IMPORTAÇÃO']);
+        worksheet.addRow(['']);
+        worksheet.addRow(['DI Número:', this.di.numero_di]);
+        worksheet.addRow(['Data Registro:', this.di.data_registro]);
+        worksheet.addRow(['Total de Adições:', this.di.adicoes.length]);
+        worksheet.addRow(['Importador:', this.di.importador?.nome || 'N/A']);
+        worksheet.addRow(['']);
+        worksheet.addRow(['TOTAIS CONSOLIDADOS']);
+        worksheet.addRow(['']);
         
         // Calcular totais
         let totalCIF = 0;

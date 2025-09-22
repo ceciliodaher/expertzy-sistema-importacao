@@ -7,7 +7,7 @@
   "calculations": {
     "tipo": "DI_COMPLETA",
     "numero_adicoes": 16,
-    "timestamp": "2025-09-22T17:27:14.610Z",
+    "timestamp": "2025-09-22T18:15:42.901Z",
     "estado": "GO",
     "ncm": "73181500, 73181600, 73182200, 73202010, 73249000, 84099111, 84099114, 84099117, 84099118, 84561190, 84831020, 87141000, 87141000, 90271000, 90299010, 84099120",
     "valores_base": {
@@ -7282,7 +7282,7 @@
       {
         "adicao_numero": "001",
         "ncm": "73181500",
-        "timestamp": "2025-09-22T17:27:14.602Z",
+        "timestamp": "2025-09-22T18:15:42.892Z",
         "valores_base": {
           "cif_usd": 6346.13,
           "cif_brl": 33112.2,
@@ -7346,7 +7346,7 @@
       {
         "adicao_numero": "002",
         "ncm": "73181600",
-        "timestamp": "2025-09-22T17:27:14.604Z",
+        "timestamp": "2025-09-22T18:15:42.895Z",
         "valores_base": {
           "cif_usd": 1004.2,
           "cif_brl": 5239.61,
@@ -7410,7 +7410,7 @@
       {
         "adicao_numero": "003",
         "ncm": "73182200",
-        "timestamp": "2025-09-22T17:27:14.605Z",
+        "timestamp": "2025-09-22T18:15:42.896Z",
         "valores_base": {
           "cif_usd": 990.59,
           "cif_brl": 5168.6,
@@ -7474,7 +7474,7 @@
       {
         "adicao_numero": "004",
         "ncm": "73202010",
-        "timestamp": "2025-09-22T17:27:14.605Z",
+        "timestamp": "2025-09-22T18:15:42.896Z",
         "valores_base": {
           "cif_usd": 350.11,
           "cif_brl": 1826.76,
@@ -7538,7 +7538,7 @@
       {
         "adicao_numero": "005",
         "ncm": "73249000",
-        "timestamp": "2025-09-22T17:27:14.606Z",
+        "timestamp": "2025-09-22T18:15:42.896Z",
         "valores_base": {
           "cif_usd": 406.99,
           "cif_brl": 2123.55,
@@ -7602,7 +7602,7 @@
       {
         "adicao_numero": "006",
         "ncm": "84099111",
-        "timestamp": "2025-09-22T17:27:14.606Z",
+        "timestamp": "2025-09-22T18:15:42.897Z",
         "valores_base": {
           "cif_usd": 33391.48,
           "cif_brl": 174226.72,
@@ -7666,7 +7666,7 @@
       {
         "adicao_numero": "007",
         "ncm": "84099114",
-        "timestamp": "2025-09-22T17:27:14.607Z",
+        "timestamp": "2025-09-22T18:15:42.898Z",
         "valores_base": {
           "cif_usd": 1758.14,
           "cif_brl": 9173.44,
@@ -7730,7 +7730,7 @@
       {
         "adicao_numero": "008",
         "ncm": "84099117",
-        "timestamp": "2025-09-22T17:27:14.607Z",
+        "timestamp": "2025-09-22T18:15:42.898Z",
         "valores_base": {
           "cif_usd": 2683.57,
           "cif_brl": 14002.06,
@@ -7794,7 +7794,7 @@
       {
         "adicao_numero": "009",
         "ncm": "84099118",
-        "timestamp": "2025-09-22T17:27:14.607Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 466.35,
           "cif_brl": 2433.27,
@@ -7858,7 +7858,7 @@
       {
         "adicao_numero": "010",
         "ncm": "84561190",
-        "timestamp": "2025-09-22T17:27:14.608Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 2265.35,
           "cif_brl": 11819.91,
@@ -7922,7 +7922,7 @@
       {
         "adicao_numero": "011",
         "ncm": "84831020",
-        "timestamp": "2025-09-22T17:27:14.608Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 1042.54,
           "cif_brl": 5439.66,
@@ -7986,7 +7986,7 @@
       {
         "adicao_numero": "012",
         "ncm": "87141000",
-        "timestamp": "2025-09-22T17:27:14.608Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 26005.32,
           "cif_brl": 135687.95,
@@ -8050,7 +8050,7 @@
       {
         "adicao_numero": "013",
         "ncm": "87141000",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.899Z",
         "valores_base": {
           "cif_usd": 14353,
           "cif_brl": 74889.64,
@@ -8114,7 +8114,7 @@
       {
         "adicao_numero": "014",
         "ncm": "90271000",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.900Z",
         "valores_base": {
           "cif_usd": 15801.85,
           "cif_brl": 82449.31,
@@ -8178,7 +8178,7 @@
       {
         "adicao_numero": "015",
         "ncm": "90299010",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.900Z",
         "valores_base": {
           "cif_usd": 1178.27,
           "cif_brl": 6147.85,
@@ -8242,7 +8242,7 @@
       {
         "adicao_numero": "016",
         "ncm": "84099120",
-        "timestamp": "2025-09-22T17:27:14.609Z",
+        "timestamp": "2025-09-22T18:15:42.900Z",
         "valores_base": {
           "cif_usd": 339.37,
           "cif_brl": 1770.73,
@@ -11141,7 +11141,7 @@
         "base_icms_item": 3024.4443631582026
       }
     ],
-    "data_calculo": "2025-09-22T17:27:14.610Z",
+    "data_calculo": "2025-09-22T18:15:42.901Z",
     "versao": "2.0"
   },
   "totals": {
@@ -11342,5 +11342,5 @@
       }
     }
   ],
-  "generated_at": "2025-09-22T17:27:22.123Z"
+  "generated_at": "2025-09-22T18:15:50.494Z"
 }

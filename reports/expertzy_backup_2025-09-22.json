@@ -1,13 +1,13 @@
 {
   "version": "1.0",
-  "exportDate": "2025-09-22T17:26:17.640Z",
+  "exportDate": "2025-09-22T18:18:35.166Z",
   "data": [
     {
       "numero_di": "2300120746",
       "importador_cnpj": "40.462.206/0001-58",
       "importador_nome": "WPX IMPORTACAO E EXPORTACAO DE PECAS LTDA",
       "importador_endereco_uf": "GO",
-      "data_processamento": "2025-09-22T17:25:25.973Z",
+      "data_processamento": "2025-09-22T18:18:19.909Z",
       "data_registro": "02/01/2023",
       "situacao": "ENTREGA NAO AUTORIZADA",
       "total_adicoes": 16,

@@ -127,11 +127,14 @@ export class ExportManager {
         if (!diData.adicoes || diData.adicoes.length === 0) {
             throw new Error('DI deve conter pelo menos uma adição para export');
         }
-        if (!diData.frete_brl && diData.frete_brl !== 0) {
-            throw new Error('Frete BRL ausente na DI para export');
+        // Frete e seguro são opcionais - podem não existir na DI
+        if (diData.frete_brl === undefined) {
+            diData.frete_brl = 0;
+            console.log('⚠️ ExportManager: frete_brl não informado na DI - assumindo 0');
         }
-        if (!diData.seguro_brl && diData.seguro_brl !== 0) {
-            throw new Error('Seguro BRL ausente na DI para export');
+        if (diData.seguro_brl === undefined) {
+            diData.seguro_brl = 0;
+            console.log('⚠️ ExportManager: seguro_brl não informado na DI - assumindo 0');
         }
 
         // Validar calculation data

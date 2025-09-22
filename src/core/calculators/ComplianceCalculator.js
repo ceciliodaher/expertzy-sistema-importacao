@@ -1095,6 +1095,8 @@ export class ComplianceCalculator {
      * @param {Object} despesasConsolidadas - Despesas consolidadas
      */
     async atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas) {
+        console.log('🔄 [DEBUG] atualizarDISalvaComCalculos iniciado para DI:', di?.numero_di);
+        
         if (!di || !di.numero_di) {
             throw new Error('DI inválida para atualização no IndexedDB');
         }
@@ -1106,6 +1108,13 @@ export class ComplianceCalculator {
         if (!despesasConsolidadas) {
             throw new Error('Despesas consolidadas ausentes para atualização no IndexedDB');
         }
+        
+        console.log('📊 [DEBUG] Dados válidos - salvando no IndexedDB:', {
+            di_numero: di.numero_di,
+            total_adicoes: di.adicoes?.length,
+            impostos_calculados: !!totaisConsolidados.impostos,
+            despesas_processadas: !!despesasConsolidadas
+        });
         
         // IndexedDB é obrigatório - NO FALLBACKS
         if (!window.dbManager) {
