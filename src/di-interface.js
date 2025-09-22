@@ -14,6 +14,7 @@ import { DIProcessor } from './core/processors/DIProcessor.js';
 import { ComplianceCalculator } from './core/calculators/ComplianceCalculator.js';
 import { CalculationValidator } from './core/validators/CalculationValidator.js';
 import { ExportManager } from './core/exporters/ExportManager.js';
+import { MultiAdditionExporter } from './core/exporters/MultiAdditionExporter.js';
 import { ItemCalculator } from './core/calculators/ItemCalculator.js';
 import { DataViewer } from './modules/DataViewer.js';
 
@@ -48,6 +49,11 @@ async function initializeSystem() {
         await dbManager.initialize();
         console.log('✅ IndexedDB inicializado');
         
+        // Clean localStorage (fresh start - no migration needed)
+        console.log('🧹 Limpando localStorage para fresh start...');
+        localStorage.clear();
+        console.log('✅ localStorage limpo');
+        
         // Make dbManager available globally for other modules
         window.dbManager = dbManager;
         
@@ -71,7 +77,7 @@ async function initializeSystem() {
         
         // Inicializar dependências opcionais do ComplianceCalculator
         complianceCalculator.initializeItemCalculator();
-        complianceCalculator.initializeProductMemory();
+        await complianceCalculator.initializeProductMemory();
         
         // Setup expense preview listeners
         setupExpensePreview();

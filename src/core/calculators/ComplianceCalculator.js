@@ -10,6 +10,8 @@
  * PERFORMANCE FIX: Single calculation execution (no repetitions)
  */
 
+import ProductMemoryManager from '../memory/ProductMemoryManager.js';
+
 export class ComplianceCalculator {
     constructor() {
         this.configuracoes = null;
@@ -65,19 +67,15 @@ export class ComplianceCalculator {
     }
     
     /**
-     * Inicializa ProductMemoryManager se disponível
+     * Inicializa ProductMemoryManager
      */
-    initializeProductMemory() {
+    async initializeProductMemory() {
         try {
-            if (typeof ProductMemoryManager !== 'undefined') {
-                this.productMemory = new ProductMemoryManager();
-                console.log('[ComplianceCalculator] ProductMemoryManager integrado');
-            } else {
-                console.log('[ComplianceCalculator] ProductMemoryManager não disponível - produtos não serão salvos para precificação');
-            }
+            this.productMemory = new ProductMemoryManager();
+            console.log('[ComplianceCalculator] ProductMemoryManager integrado e inicializado');
         } catch (error) {
             console.error('[ComplianceCalculator] Erro ao inicializar ProductMemory:', error);
-            this.productMemory = null;
+            throw new Error('ProductMemoryManager obrigatório não pode ser inicializado - sistema não pode prosseguir');
         }
     }
 
@@ -236,7 +234,7 @@ export class ComplianceCalculator {
         this.validarTotaisComXML(di, totaisConsolidados);
         
         // NOVA FUNCIONALIDADE: Salvar produtos na memória para sistema de precificação
-        this.salvarProdutosNaMemoria(di, totaisConsolidados, despesasConsolidadas);
+        await this.salvarProdutosNaMemoria(di, totaisConsolidados, despesasConsolidadas);
         
         // INTEGRAÇÃO: Salvar no IndexedDB (NO FALLBACKS)
         await this.atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas);
@@ -1024,10 +1022,17 @@ export class ComplianceCalculator {
      * @param {Object} totaisConsolidados - Resultados do cálculo
      * @param {Object} despesasConsolidadas - Despesas consolidadas
      */
-    salvarProdutosNaMemoria(di, totaisConsolidados, despesasConsolidadas) {
+    async salvarProdutosNaMemoria(di, totaisConsolidados, despesasConsolidadas) {
         if (!this.productMemory) {
-            console.log('ℹ️ ProductMemoryManager não disponível - produtos não serão salvos');
-            return;
+            throw new Error('ProductMemoryManager não disponível - obrigatório para funcionamento do sistema');
+        }
+        
+        if (!di?.numero_di) {
+            throw new Error('DI sem número válido - obrigatório para salvamento');
+        }
+
+        if (!di?.adicoes || di.adicoes.length === 0) {
+            throw new Error('DI sem adições válidas - obrigatório para salvamento');
         }
         
         try {
@@ -1035,10 +1040,10 @@ export class ComplianceCalculator {
             
             // Extrair dados relevantes da DI para salvar produtos estruturados
             const diNumber = di.numero_di;
-            const additions = di.adicoes || [];
+            const additions = di.adicoes;
             
             // Usar método específico do ProductMemoryManager para salvar dados da DI
-            const savedProducts = this.productMemory.saveProductsFromDI(
+            const savedProducts = await this.productMemory.saveProductsFromDI(
                 diNumber, 
                 additions, 
                 totaisConsolidados
@@ -1049,9 +1054,11 @@ export class ComplianceCalculator {
             // Opcional: Notificar outros sistemas que produtos foram salvos
             this.notifyProductsSaved(savedProducts);
             
+            return savedProducts;
+            
         } catch (error) {
             console.error('❌ Erro ao salvar produtos na memória:', error);
-            // Não interrompe o fluxo principal - é uma funcionalidade adicional
+            throw new Error(`Falha ao salvar produtos: ${error.message}`);
         }
     }
     
