@@ -78,8 +78,36 @@ class IndexedDBManager {
             configuracoes_usuario: 'chave, valor, timestamp, validado'
         });
 
-        // Schema v1 é a única versão suportada - consolidação completa
-        // Mantém compatibilidade total com sistema atual funcional
+        // SCHEMA OFICIAL - NOMENCLATURA DIProcessor.js (PRIMARY CREATOR)
+        // Versão 3 - Schema único com nomenclatura oficial
+        this.db.version(3).stores({
+            // DECLARAÇÕES - Nomenclatura oficial DIProcessor
+            declaracoes: '++id, numero_di, importador_cnpj, importador_nome, importador_endereco_uf, importador_endereco_logradouro, importador_endereco_numero, importador_endereco_complemento, importador_endereco_bairro, importador_endereco_cidade, importador_endereco_municipio, importador_endereco_cep, importador_representante_nome, importador_representante_cpf, importador_telefone, importador_endereco_completo, data_processamento, data_registro, urf_despacho_codigo, urf_despacho_nome, modalidade_codigo, modalidade_nome, situacao_entrega, total_adicoes, incoterm_identificado, taxa_cambio, informacao_complementar, valor_total_fob_usd, valor_total_fob_brl, valor_total_frete_usd, valor_total_frete_brl, valor_aduaneiro_total_brl, *ncms, xml_hash, xml_content, processing_state, icms_configured, extra_expenses_configured, [importador_cnpj+data_processamento]',
+            
+            // ADIÇÕES - Nomenclatura oficial com tributos completos
+            adicoes: '++id, di_id, numero_adicao, ncm, descricao_ncm, peso_liquido, condicao_venda_incoterm, moeda_negociacao_codigo, moeda_negociacao_nome, valor_moeda_negociacao, valor_reais, frete_valor_reais, seguro_valor_reais, taxa_cambio, metodo_valoracao_codigo, metodo_valoracao_nome, codigo_naladi_sh, codigo_naladi_ncca, quantidade_estatistica, unidade_estatistica, aplicacao_mercadoria, condicao_mercadoria, condicao_venda_local, ii_aliquota_ad_valorem, ii_valor_devido, ii_valor_recolher, ii_base_calculo, ipi_aliquota_ad_valorem, ipi_valor_devido, ipi_valor_recolher, pis_aliquota_ad_valorem, pis_valor_devido, pis_valor_recolher, cofins_aliquota_ad_valorem, cofins_valor_devido, cofins_valor_recolher, cide_valor_devido, cide_valor_recolher, pis_cofins_base_calculo, icms_aliquota, fornecedor_nome, fornecedor_logradouro, fornecedor_numero, fornecedor_complemento, fornecedor_cidade, fornecedor_estado, fabricante_nome, fabricante_logradouro, fabricante_numero, fabricante_cidade, fabricante_estado, processing_state, custo_basico_federal, [di_id+numero_adicao]',
+            
+            // PRODUTOS - Nomenclatura oficial DIProcessor
+            produtos: '++id, adicao_id, numero_sequencial_item, descricao_mercadoria, ncm, quantidade, unidade_medida, valor_unitario_usd, valor_unitario_brl, valor_total_usd, valor_total_brl, taxa_cambio, processing_state, custo_produto_federal, is_virtual, [adicao_id+numero_sequencial_item]',
+            
+            // DESPESAS - Nomenclatura oficial
+            despesas_aduaneiras: '++id, di_id, tipo, valor, codigo_receita, processing_state, origem, [di_id+tipo]',
+            
+            // DADOS CARGA - Nomenclatura oficial expandida
+            dados_carga: '++id, di_id, peso_bruto, peso_liquido, pais_procedencia_codigo, pais_procedencia_nome, urf_entrada_codigo, urf_entrada_nome, data_chegada, via_transporte_codigo, via_transporte_nome, nome_veiculo, nome_transportador',
+            
+            // Tabelas de apoio
+            incentivos_entrada: '++id, di_id, estado, tipo_beneficio, percentual_reducao, economia_calculada, [di_id+estado]',
+            incentivos_saida: '++id, di_id, estado, operacao, credito_aplicado, contrapartidas, [di_id+estado+operacao]',
+            elegibilidade_ncm: '++id, ncm, estado, incentivo_codigo, elegivel, motivo_rejeicao, [ncm+estado+incentivo_codigo]',
+            metricas_dashboard: '++id, periodo, tipo_metrica, valor, breakdown_estados, [periodo+tipo_metrica]',
+            cenarios_precificacao: '++id, di_id, nome_cenario, configuracao, resultados_comparativos, [di_id+nome_cenario]',
+            historico_operacoes: '++id, timestamp, operacao, modulo, detalhes, resultado',
+            snapshots: '++id, di_id, nome_customizado, timestamp, dados_completos',
+            configuracoes_usuario: 'chave, valor, timestamp, validado'
+        });
+
+        console.log('✅ Schema oficial DIProcessor.js inicializado');
     }
 
     /**
@@ -101,6 +129,66 @@ class IndexedDBManager {
     }
 
     /**
+     * Valida nomenclatura oficial DIProcessor.js - NO FALLBACKS
+     * Falha explicitamente se encontrar nomenclatura incorreta
+     * @param {Object} diData - Dados da DI para validar
+     */
+    validateNomenclature(diData) {
+        // VALIDAÇÕES DE ESTRUTURA PRINCIPAL
+        if (diData.urf_despacho && !diData.urf_despacho_nome) {
+            throw new Error('VIOLAÇÃO NOMENCLATURA: Use "urf_despacho_nome" não "urf_despacho"');
+        }
+        
+        if (diData.modalidade && !diData.modalidade_nome) {
+            throw new Error('VIOLAÇÃO NOMENCLATURA: Use "modalidade_nome" não "modalidade"');
+        }
+        
+        if (diData.situacao && !diData.situacao_entrega) {
+            throw new Error('VIOLAÇÃO NOMENCLATURA: Use "situacao_entrega" não "situacao"');
+        }
+
+        // VALIDAÇÕES DE ADIÇÕES
+        if (diData.adicoes && Array.isArray(diData.adicoes)) {
+            for (const adicao of diData.adicoes) {
+                // Validar tributos - nomenclatura oficial
+                if (adicao.tributos) {
+                    if (adicao.tributos.ii_aliquota && !adicao.tributos.ii_aliquota_ad_valorem) {
+                        throw new Error('VIOLAÇÃO NOMENCLATURA: Use "ii_aliquota_ad_valorem" não "ii_aliquota"');
+                    }
+                    if (adicao.tributos.ipi_aliquota && !adicao.tributos.ipi_aliquota_ad_valorem) {
+                        throw new Error('VIOLAÇÃO NOMENCLATURA: Use "ipi_aliquota_ad_valorem" não "ipi_aliquota"');
+                    }
+                    if (adicao.tributos.pis_aliquota && !adicao.tributos.pis_aliquota_ad_valorem) {
+                        throw new Error('VIOLAÇÃO NOMENCLATURA: Use "pis_aliquota_ad_valorem" não "pis_aliquota"');
+                    }
+                    if (adicao.tributos.cofins_aliquota && !adicao.tributos.cofins_aliquota_ad_valorem) {
+                        throw new Error('VIOLAÇÃO NOMENCLATURA: Use "cofins_aliquota_ad_valorem" não "cofins_aliquota"');
+                    }
+                }
+
+                // Validar produtos - nomenclatura oficial
+                if (adicao.produtos && Array.isArray(adicao.produtos)) {
+                    for (const produto of adicao.produtos) {
+                        if (produto.descricao && !produto.descricao_mercadoria) {
+                            throw new Error('VIOLAÇÃO NOMENCLATURA: Use "descricao_mercadoria" não "descricao"');
+                        }
+                        if (produto.codigo && !produto.numero_sequencial_item) {
+                            throw new Error('VIOLAÇÃO NOMENCLATURA: Use "numero_sequencial_item" não "codigo"');
+                        }
+                    }
+                }
+            }
+        }
+
+        // VALIDAÇÕES DE DESPESAS
+        if (diData.despesas && !diData.despesas_aduaneiras) {
+            throw new Error('VIOLAÇÃO NOMENCLATURA: Use "despesas_aduaneiras" não "despesas"');
+        }
+
+        console.log('✅ Nomenclatura oficial DIProcessor.js validada - zero violações');
+    }
+
+    /**
      * Salva uma DI completa com todas as suas relações
      * Usa transação atômica para garantir integridade
      * @param {Object} diData - Dados transformados da DI
@@ -118,6 +206,9 @@ class IndexedDBManager {
         if (!diData.importador?.cnpj) {
             throw new Error('CNPJ do importador é obrigatório');
         }
+
+        // VALIDAÇÕES NO FALLBACKS - Nomenclatura oficial DIProcessor.js
+        this.validateNomenclature(diData);
 
         try {
             return await this.db.transaction('rw', 
@@ -144,18 +235,40 @@ class IndexedDBManager {
                         diData.data_processamento = new Date();
                     }
 
-                    // Salvar declaração principal
+                    // Salvar declaração principal - NOMENCLATURA OFICIAL DIProcessor.js
                     const diId = await this.db.declaracoes.add({
                         numero_di: diData.numero_di,
+                        
+                        // IMPORTADOR - Campos expandidos conforme DIProcessor
                         importador_cnpj: diData.importador.cnpj,
                         importador_nome: diData.importador.nome,
                         importador_endereco_uf: diData.importador.endereco_uf,
+                        importador_endereco_logradouro: diData.importador.endereco_logradouro,
+                        importador_endereco_numero: diData.importador.endereco_numero,
+                        importador_endereco_complemento: diData.importador.endereco_complemento,
+                        importador_endereco_bairro: diData.importador.endereco_bairro,
+                        importador_endereco_cidade: diData.importador.endereco_cidade,
+                        importador_endereco_municipio: diData.importador.endereco_municipio,
+                        importador_endereco_cep: diData.importador.endereco_cep,
+                        importador_representante_nome: diData.importador.representante_nome,
+                        importador_representante_cpf: diData.importador.representante_cpf,
+                        importador_telefone: diData.importador.telefone,
+                        importador_endereco_completo: diData.importador.endereco_completo,
+                        
                         data_processamento: diData.data_processamento,
                         data_registro: diData.data_registro,
-                        urf_despacho: diData.urf_despacho,
-                        modalidade: diData.modalidade,
-                        situacao: diData.situacao_entrega,
+                        
+                        // URF/MODALIDADE - Nomenclatura oficial expandida
+                        urf_despacho_codigo: diData.urf_despacho_codigo,
+                        urf_despacho_nome: diData.urf_despacho_nome,
+                        modalidade_codigo: diData.modalidade_codigo,
+                        modalidade_nome: diData.modalidade_nome,
+                        
+                        situacao_entrega: diData.situacao_entrega,
                         total_adicoes: diData.total_adicoes,
+                        
+                        // INCOTERM - Estrutura completa
+                        incoterm_identificado: diData.incoterm_identificado,
                         
                         // Valores totais
                         valor_total_fob_usd: diData.valor_total_fob_usd,
@@ -201,87 +314,157 @@ class IndexedDBManager {
                             valor_moeda_negociacao: adicao.valor_moeda_negociacao,
                             valor_reais: adicao.valor_reais,
                             
-                            // Tributos
-                            ii_aliquota: adicao.ii_aliquota,
-                            ii_valor_devido: adicao.ii_valor_devido,
-                            ipi_aliquota: adicao.ipi_aliquota,
-                            ipi_valor_devido: adicao.ipi_valor_devido,
-                            pis_aliquota: adicao.pis_aliquota,
-                            pis_valor_devido: adicao.pis_valor_devido,
-                            cofins_aliquota: adicao.cofins_aliquota,
-                            cofins_valor_devido: adicao.cofins_valor_devido,
-                            icms_aliquota: adicao.icms_aliquota,
+                            // TRIBUTOS - Nomenclatura oficial DIProcessor.js
+                            ii_aliquota_ad_valorem: adicao.tributos?.ii_aliquota_ad_valorem,
+                            ii_valor_devido: adicao.tributos?.ii_valor_devido,
+                            ii_valor_recolher: adicao.tributos?.ii_valor_recolher,
+                            ii_base_calculo: adicao.tributos?.ii_base_calculo,
+                            ipi_aliquota_ad_valorem: adicao.tributos?.ipi_aliquota_ad_valorem,
+                            ipi_valor_devido: adicao.tributos?.ipi_valor_devido,
+                            ipi_valor_recolher: adicao.tributos?.ipi_valor_recolher,
+                            pis_aliquota_ad_valorem: adicao.tributos?.pis_aliquota_ad_valorem,
+                            pis_valor_devido: adicao.tributos?.pis_valor_devido,
+                            pis_valor_recolher: adicao.tributos?.pis_valor_recolher,
+                            cofins_aliquota_ad_valorem: adicao.tributos?.cofins_aliquota_ad_valorem,
+                            cofins_valor_devido: adicao.tributos?.cofins_valor_devido,
+                            cofins_valor_recolher: adicao.tributos?.cofins_valor_recolher,
+                            cide_valor_devido: adicao.tributos?.cide_valor_devido,
+                            cide_valor_recolher: adicao.tributos?.cide_valor_recolher,
+                            pis_cofins_base_calculo: adicao.tributos?.pis_cofins_base_calculo,
+                            icms_aliquota: adicao.tributos?.icms_aliquota,
                             
                             // Frete e seguro
                             frete_valor_reais: adicao.frete_valor_reais,
                             seguro_valor_reais: adicao.seguro_valor_reais,
                             
-                            // Outros dados
+                            // DADOS COMPLEMENTARES - Nomenclatura oficial
                             peso_liquido: adicao.peso_liquido,
                             condicao_venda_incoterm: adicao.condicao_venda_incoterm,
-                            fornecedor_nome: adicao.fornecedor_nome,
-                            fabricante_nome: adicao.fabricante_nome
+                            
+                            // MOEDA E VALORAÇÃO - Campos expandidos
+                            moeda_negociacao_codigo: adicao.moeda_negociacao_codigo,
+                            moeda_negociacao_nome: adicao.moeda_negociacao_nome,
+                            metodo_valoracao_codigo: adicao.metodo_valoracao_codigo,
+                            metodo_valoracao_nome: adicao.metodo_valoracao_nome,
+                            
+                            // CÓDIGOS ADICIONAIS
+                            codigo_naladi_sh: adicao.codigo_naladi_sh,
+                            codigo_naladi_ncca: adicao.codigo_naladi_ncca,
+                            quantidade_estatistica: adicao.quantidade_estatistica,
+                            unidade_estatistica: adicao.unidade_estatistica,
+                            aplicacao_mercadoria: adicao.aplicacao_mercadoria,
+                            condicao_mercadoria: adicao.condicao_mercadoria,
+                            condicao_venda_local: adicao.condicao_venda_local,
+                            
+                            // FORNECEDOR/FABRICANTE - Estrutura expandida
+                            fornecedor_nome: adicao.fornecedor?.nome || adicao.fornecedor_nome,
+                            fornecedor_logradouro: adicao.fornecedor?.logradouro,
+                            fornecedor_numero: adicao.fornecedor?.numero,
+                            fornecedor_complemento: adicao.fornecedor?.complemento,
+                            fornecedor_cidade: adicao.fornecedor?.cidade,
+                            fornecedor_estado: adicao.fornecedor?.estado,
+                            fabricante_nome: adicao.fabricante?.nome || adicao.fabricante_nome,
+                            fabricante_logradouro: adicao.fabricante?.logradouro,
+                            fabricante_numero: adicao.fabricante?.numero,
+                            fabricante_cidade: adicao.fabricante?.cidade,
+                            fabricante_estado: adicao.fabricante?.estado
                         });
 
-                        // Salvar produtos da adição
-                        if (adicao.mercadorias && adicao.mercadorias.length > 0) {
-                            for (const mercadoria of adicao.mercadorias) {
-                                if (!mercadoria.descricao) {
-                                    throw new Error(`Descrição é obrigatória para produto da adição ${adicao.numero_adicao}`);
+                        // SALVAR PRODUTOS - NOMENCLATURA OFICIAL DIProcessor.js
+                        if (adicao.produtos && adicao.produtos.length > 0) {
+                            for (const produto of adicao.produtos) {
+                                // VALIDAÇÃO NO FALLBACKS - Campo obrigatório nomenclatura oficial
+                                if (!produto.descricao_mercadoria) {
+                                    throw new Error(`Campo "descricao_mercadoria" é obrigatório para produto da adição ${adicao.numero_adicao} - não use "descricao"`);
                                 }
 
                                 await this.db.produtos.add({
                                     adicao_id: adicaoId,
-                                    codigo: mercadoria.codigo,
-                                    descricao: mercadoria.descricao,
+                                    // NOMENCLATURA OFICIAL DIProcessor.js
+                                    numero_sequencial_item: produto.numero_sequencial_item || produto.codigo,
+                                    descricao_mercadoria: produto.descricao_mercadoria,
                                     ncm: adicao.ncm,
-                                    quantidade: mercadoria.quantidade,
-                                    unidade_medida: mercadoria.unidade_medida,
-                                    valor_unitario: mercadoria.valor_unitario,
-                                    valor_total: mercadoria.valor_total
+                                    quantidade: produto.quantidade,
+                                    unidade_medida: produto.unidade_medida,
+                                    
+                                    // VALORES EXPANDIDOS - USD e BRL
+                                    valor_unitario_usd: produto.valor_unitario_usd,
+                                    valor_unitario_brl: produto.valor_unitario_brl || produto.valor_unitario,
+                                    valor_total_usd: produto.valor_total_usd,
+                                    valor_total_brl: produto.valor_total_brl || produto.valor_total,
+                                    taxa_cambio: produto.taxa_cambio,
+                                    
+                                    // CAMPOS DE CONTROLE
+                                    processing_state: 'DI_COMPLETE_FROM_XML',
+                                    custo_produto_federal: produto.custo_produto_federal || 0,
+                                    is_virtual: produto.is_virtual || false
                                 });
                             }
                         }
                     }
 
-                    // Salvar despesas aduaneiras
-                    if (diData.despesas) {
+                    // SALVAR DADOS DE CARGA - Nomenclatura oficial expandida
+                    if (diData.carga) {
+                        await this.db.dados_carga.add({
+                            di_id: diId,
+                            peso_bruto: diData.carga.peso_bruto,
+                            peso_liquido: diData.carga.peso_liquido,
+                            
+                            // PAÍS PROCEDÊNCIA - Campos expandidos
+                            pais_procedencia_codigo: diData.carga.pais_procedencia_codigo,
+                            pais_procedencia_nome: diData.carga.pais_procedencia_nome,
+                            
+                            // URF ENTRADA - Campos expandidos
+                            urf_entrada_codigo: diData.carga.urf_entrada_codigo,
+                            urf_entrada_nome: diData.carga.urf_entrada_nome,
+                            
+                            // TRANSPORTE - Campos expandidos
+                            via_transporte_codigo: diData.carga.via_transporte_codigo,
+                            via_transporte_nome: diData.carga.via_transporte_nome,
+                            nome_veiculo: diData.carga.nome_veiculo,
+                            nome_transportador: diData.carga.nome_transportador,
+                            data_chegada: diData.carga.data_chegada
+                        });
+                    }
+
+                    // SALVAR DESPESAS ADUANEIRAS - Nomenclatura já oficial
+                    if (diData.despesas_aduaneiras) {
                         // SISCOMEX
-                        if (diData.despesas.siscomex !== undefined && diData.despesas.siscomex > 0) {
+                        if (diData.despesas_aduaneiras.siscomex !== undefined && diData.despesas_aduaneiras.siscomex > 0) {
                             const codigoSiscomex = this.getCodigoReceita('SISCOMEX');
                             await this.db.despesas_aduaneiras.add({
                                 di_id: diId,
                                 tipo: 'SISCOMEX',
-                                valor: diData.despesas.siscomex,
+                                valor: diData.despesas_aduaneiras.siscomex,
                                 codigo_receita: codigoSiscomex
                             });
                         }
                         
                         // AFRMM
-                        if (diData.despesas.afrmm !== undefined && diData.despesas.afrmm > 0) {
+                        if (diData.despesas_aduaneiras.afrmm !== undefined && diData.despesas_aduaneiras.afrmm > 0) {
                             const codigoAFRMM = this.getCodigoReceita('AFRMM');
                             await this.db.despesas_aduaneiras.add({
                                 di_id: diId,
                                 tipo: 'AFRMM',
-                                valor: diData.despesas.afrmm,
+                                valor: diData.despesas_aduaneiras.afrmm,
                                 codigo_receita: codigoAFRMM
                             });
                         }
                         
                         // CAPATAZIA
-                        if (diData.despesas.capatazia !== undefined && diData.despesas.capatazia > 0) {
+                        if (diData.despesas_aduaneiras.capatazia !== undefined && diData.despesas_aduaneiras.capatazia > 0) {
                             const codigoCapatazia = this.getCodigoReceita('CAPATAZIA');
                             await this.db.despesas_aduaneiras.add({
                                 di_id: diId,
                                 tipo: 'CAPATAZIA',
-                                valor: diData.despesas.capatazia,
+                                valor: diData.despesas_aduaneiras.capatazia,
                                 codigo_receita: codigoCapatazia
                             });
                         }
 
                         // Outras despesas
-                        if (diData.despesas.outras && Array.isArray(diData.despesas.outras)) {
-                            for (const despesa of diData.despesas.outras) {
+                        if (diData.despesas_aduaneiras.outras && Array.isArray(diData.despesas_aduaneiras.outras)) {
+                            for (const despesa of diData.despesas_aduaneiras.outras) {
                                 if (!despesa.tipo) {
                                     throw new Error('Tipo é obrigatório para despesa adicional');
                                 }
@@ -389,16 +572,60 @@ class IndexedDBManager {
             .equals(di.id)
             .toArray();
 
-        // Buscar produtos de cada adição
+        // Buscar produtos de cada adição e reconstruir estrutura de tributos
         for (const adicao of di.adicoes) {
             adicao.produtos = await this.db.produtos
                 .where('adicao_id')
                 .equals(adicao.id)
                 .toArray();
+            
+            // RECONSTRUIR ESTRUTURA DE TRIBUTOS - Nomenclatura oficial DIProcessor.js
+            // Schema v3 já usa nomenclatura correta, então apenas mover campos
+            adicao.tributos = {
+                ii_aliquota_ad_valorem: adicao.ii_aliquota_ad_valorem,
+                ii_valor_devido: adicao.ii_valor_devido,
+                ii_valor_recolher: adicao.ii_valor_recolher,
+                ii_base_calculo: adicao.ii_base_calculo,
+                ipi_aliquota_ad_valorem: adicao.ipi_aliquota_ad_valorem,
+                ipi_valor_devido: adicao.ipi_valor_devido,
+                ipi_valor_recolher: adicao.ipi_valor_recolher,
+                pis_aliquota_ad_valorem: adicao.pis_aliquota_ad_valorem,
+                pis_valor_devido: adicao.pis_valor_devido,
+                pis_valor_recolher: adicao.pis_valor_recolher,
+                cofins_aliquota_ad_valorem: adicao.cofins_aliquota_ad_valorem,
+                cofins_valor_devido: adicao.cofins_valor_devido,
+                cofins_valor_recolher: adicao.cofins_valor_recolher,
+                cide_valor_devido: adicao.cide_valor_devido,
+                cide_valor_recolher: adicao.cide_valor_recolher,
+                pis_cofins_base_calculo: adicao.pis_cofins_base_calculo,
+                icms_aliquota: adicao.icms_aliquota
+            };
+            
+            // RECONSTRUIR ESTRUTURAS DE FORNECEDOR E FABRICANTE
+            if (adicao.fornecedor_nome) {
+                adicao.fornecedor = {
+                    nome: adicao.fornecedor_nome,
+                    logradouro: adicao.fornecedor_logradouro,
+                    numero: adicao.fornecedor_numero,
+                    complemento: adicao.fornecedor_complemento,
+                    cidade: adicao.fornecedor_cidade,
+                    estado: adicao.fornecedor_estado
+                };
+            }
+            
+            if (adicao.fabricante_nome) {
+                adicao.fabricante = {
+                    nome: adicao.fabricante_nome,
+                    logradouro: adicao.fabricante_logradouro,
+                    numero: adicao.fabricante_numero,
+                    cidade: adicao.fabricante_cidade,
+                    estado: adicao.fabricante_estado
+                };
+            }
         }
 
         // Buscar despesas
-        di.despesas = await this.db.despesas_aduaneiras
+        di.despesas_aduaneiras = await this.db.despesas_aduaneiras
             .where('di_id')
             .equals(di.id)
             .toArray();
@@ -408,6 +635,38 @@ class IndexedDBManager {
             .where('di_id')
             .equals(di.id)
             .first();
+
+        // RECONSTRUIR ESTRUTURA DO IMPORTADOR - Nomenclatura oficial DIProcessor.js
+        di.importador = {
+            nome: di.importador_nome,
+            cnpj: di.importador_cnpj,
+            endereco_uf: di.importador_endereco_uf,
+            endereco_logradouro: di.importador_endereco_logradouro,
+            endereco_numero: di.importador_endereco_numero,
+            endereco_complemento: di.importador_endereco_complemento,
+            endereco_bairro: di.importador_endereco_bairro,
+            endereco_cidade: di.importador_endereco_cidade,
+            endereco_municipio: di.importador_endereco_municipio,
+            endereco_cep: di.importador_endereco_cep,
+            endereco_completo: di.importador_endereco_completo,
+            representante_nome: di.importador_representante_nome,
+            representante_cpf: di.importador_representante_cpf,
+            telefone: di.importador_telefone
+        };
+        
+        // RECONSTRUIR ESTRUTURA DA CARGA - Campos expandidos
+        if (di.carga) {
+            // Manter estrutura já existente, mas garantir campos expandidos
+            di.carga = {
+                ...di.carga,
+                pais_procedencia_codigo: di.carga.pais_procedencia_codigo,
+                pais_procedencia_nome: di.carga.pais_procedencia_nome,
+                urf_entrada_codigo: di.carga.urf_entrada_codigo,
+                urf_entrada_nome: di.carga.urf_entrada_nome,
+                via_transporte_codigo: di.carga.via_transporte_codigo,
+                via_transporte_nome: di.carga.via_transporte_nome
+            };
+        }
 
         return di;
     }

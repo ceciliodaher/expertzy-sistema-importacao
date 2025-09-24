@@ -290,7 +290,7 @@ async function processarDI() {
             } catch (error) {
                 console.error('❌ Erro ao salvar DI no IndexedDB:', error);
                 // Mostrar erro ao usuário mas permitir continuar em modo offline
-                showError(`Aviso: DI não pôde ser salva no banco de dados. Erro: ${error.message}`);
+                showAlert(`Aviso: DI não pôde ser salva no banco de dados. Erro: ${error.message}`);
                 // Não lançar erro para permitir processamento offline
                 console.warn('⚠️ Continuando em modo offline sem persistência');
             }
