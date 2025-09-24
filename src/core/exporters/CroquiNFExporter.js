@@ -14,7 +14,7 @@
  */
 
 class CroquiNFExporter {
-    constructor(diData, calculosData = null) {
+    constructor(diData, calculosData = null, incentiveManager = null) {
         // NO FALLBACKS - validar dados obrigatórios
         if (!diData) {
             throw new Error('Dados da DI não disponíveis - obrigatórios para CroquiNFExporter');
@@ -26,14 +26,48 @@ class CroquiNFExporter {
         
         this.di = diData;  // Dados já processados pelo DIProcessor
         this.calculos = calculosData;  // Cálculos já feitos pelo ComplianceCalculator
+        this.incentiveManager = incentiveManager;  // Para gerar campos CST 51
         this.empresa = 'EXPERTZY';
         this.subtitulo = 'SISTEMA DE IMPORTAÇÃO E PRECIFICAÇÃO';
         this.versao = '2.1.0';
         
+        // Configuração de incentivos (será carregada dinamicamente)
+        this.beneficiosConfig = null;
+        
         console.log('🏭 CroquiNFExporter v2.1: Inicializando com DI:', diData.numero_di);
         
         this.initializeStyles();
-        this.prepareAllData();
+        this.loadIncentiveConfig().then(() => {
+            this.prepareAllData();
+        }).catch(error => {
+            console.warn('⚠️ Erro ao carregar configuração de incentivos:', error);
+            this.prepareAllData(); // Continuar sem incentivos
+        });
+    }
+    
+    /**
+     * Carregar configuração de benefícios de beneficios.json (NO HARDCODED DATA)
+     */
+    async loadIncentiveConfig() {
+        try {
+            // Usar PathResolver se disponível
+            const pathResolver = typeof PathResolver !== 'undefined' ? new PathResolver() : null;
+            const configPath = pathResolver ? 
+                pathResolver.resolveDataPath('beneficios.json') : 
+                '/src/shared/data/beneficios.json';
+                
+            const response = await fetch(configPath);
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar beneficios.json: ${response.status}`);
+            }
+            
+            this.beneficiosConfig = await response.json();
+            console.log('✅ Configuração de benefícios carregada:', Object.keys(this.beneficiosConfig.programas).length, 'programas');
+            
+        } catch (error) {
+            console.error('❌ Erro ao carregar beneficios.json:', error);
+            throw error;
+        }
     }
     
     initializeStyles() {
@@ -210,6 +244,9 @@ class CroquiNFExporter {
                     valor_cofins: produto.cofins_item
                 };
                 
+                // APLICAR INCENTIVOS FISCAIS (CST 51) SE DISPONÍVEL
+                this.applyIncentiveFields(produtoProcessado, produto.ncm);
+                
                 produtos.push(produtoProcessado);
                 itemCounter++;
             });
@@ -257,6 +294,113 @@ class CroquiNFExporter {
         totais.valor_total_nota = totais.base_calculo_icms;
         
         return totais;
+    }
+    
+    // ========== INCENTIVOS FISCAIS CST 51 ==========
+    
+    /**
+     * Aplicar campos de incentivos fiscais CST 51 aos produtos
+     * Nomenclatura oficial: IncentiveManager é PRIMARY CREATOR
+     */
+    applyIncentiveFields(produto, ncm) {
+        if (!this.incentiveManager || !this.beneficiosConfig) {
+            console.log('📋 Sem IncentiveManager ou configuração - croqui sem incentivos fiscais');
+            return;
+        }
+        
+        try {
+            // Verificar se há programa_selecionado (nomenclatura oficial)
+            const programaSelecionado = this.getProgramaSelecionado();
+            
+            if (!programaSelecionado) {
+                console.log('📋 Nenhum programa de incentivo selecionado');
+                return;
+            }
+            
+            console.log(`💰 Aplicando incentivo fiscal ${programaSelecionado} ao NCM ${ncm}`);
+            
+            // Obter configuração do programa
+            const configPrograma = this.beneficiosConfig.programas[programaSelecionado];
+            if (!configPrograma) {
+                console.warn(`⚠️ Configuração não encontrada para programa ${programaSelecionado}`);
+                return;
+            }
+            
+            // Aplicar campos CST 51
+            this.generateCST51Fields(produto, configPrograma, programaSelecionado);
+            
+        } catch (error) {
+            console.error('❌ Erro ao aplicar incentivos fiscais:', error);
+            // NO FALLBACKS - continuar sem incentivos mas registrar erro
+        }
+    }
+    
+    /**
+     * Gerar campos específicos CST 51 para diferimento ICMS
+     * Campos conforme SPED NFe: CST, vBC, vICMSOp, vICMS, vICMSDif, pDif, cBenef
+     */
+    generateCST51Fields(produto, configPrograma, programaCodigo) {
+        // CST do programa (geralmente 51 para diferimento)
+        produto.cst_icms = configPrograma.nf_config?.cst || '51';
+        
+        // Valor da operação (mesma base de cálculo)
+        produto.vICMSOp = produto.bc_icms;
+        
+        // Percentual de diferimento baseado na redução da base
+        const reducaoBase = configPrograma.reducao_base || 1.0;
+        const percentualDiferimento = (1.0 - reducaoBase) * 100;
+        
+        // Alíquota ICMS
+        const aliquotaICMS = produto.aliq_icms;
+        
+        // ICMS devido sem diferimento
+        const icmsOperacao = produto.bc_icms * (aliquotaICMS / 100);
+        
+        // Aplicar diferimento conforme tipo de programa
+        if (configPrograma.tipo === 'diferimento_total') {
+            // Diferimento total - ICMS devido = 0
+            produto.valor_icms = 0;
+            produto.vICMSDif = icmsOperacao;
+            produto.pDif = 100;
+            
+        } else if (configPrograma.tipo === 'diferimento_parcial') {
+            // Diferimento parcial - usar redução da base
+            const icmsDiferido = icmsOperacao * (1.0 - reducaoBase);
+            const icmsDevido = icmsOperacao - icmsDiferido;
+            
+            produto.valor_icms = icmsDevido;
+            produto.vICMSDif = icmsDiferido;
+            produto.pDif = percentualDiferimento;
+            
+        } else if (configPrograma.tipo === 'credito_outorgado') {
+            // Crédito outorgado - não altera entrada, só saída
+            console.log('💳 Programa de crédito outorgado - não altera campos da NF de entrada');
+            return;
+        }
+        
+        // Código do benefício
+        produto.cBenef = configPrograma.nf_config?.cBenef || '';
+        
+        console.log(`✅ CST 51 aplicado: Programa ${programaCodigo}, ICMS Diferido: R$ ${produto.vICMSDif?.toFixed(2) || '0,00'}`);
+    }
+    
+    /**
+     * Obter programa selecionado com nomenclatura oficial
+     * NO FALLBACKS - deve usar nomenclatura do IncentiveManager
+     */
+    getProgramaSelecionado() {
+        // Tentar obter da configuração global (di-interface.js)
+        if (typeof window !== 'undefined' && window.currentDI && window.currentDI.programa_selecionado) {
+            return window.currentDI.programa_selecionado;
+        }
+        
+        // Validação de nomenclatura (NO FALLBACKS)
+        if (typeof window !== 'undefined' && window.currentDI && 
+            (window.currentDI.selectedIncentive || window.currentDI.selected_incentive)) {
+            throw new Error('VIOLAÇÃO NOMENCLATURA: Use "programa_selecionado" não "selectedIncentive"');
+        }
+        
+        return null;
     }
     
     // ========== MÉTODOS AUXILIARES (apenas formatação, sem cálculos) ==========
@@ -1131,7 +1275,7 @@ class CroquiNFExporter {
 // ========== FUNÇÕES GLOBAIS PARA INTEGRAÇÃO ==========
 
 
-window.gerarCroquiPDFNovo = async function(diData) {
+window.gerarCroquiPDFNovo = async function(diData, incentiveManager = null) {
     try {
         console.log('🚀 Iniciando geração do Croqui NF PDF (v2.1 - IndexedDB)...');
         
@@ -1160,7 +1304,7 @@ window.gerarCroquiPDFNovo = async function(diData) {
             throw new Error('Cálculos não encontrados - execute o cálculo de impostos primeiro');
         }
         
-        const exporter = new CroquiNFExporter(diData, calculationData);
+        const exporter = new CroquiNFExporter(diData, calculationData, incentiveManager);
         const buffer = await exporter.generatePDF();
         
         // Download do arquivo
