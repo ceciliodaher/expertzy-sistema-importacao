@@ -1,0 +1,164 @@
+{
+  "versao": "2025.1",
+  "data_atualizacao": "2025-09-24",
+  "fonte": "Documentação Oficial Estados - Consolidação Expertzy NCMs Vedados",
+  "total_ncms_vedados": 358,
+  
+  "vedacoes_por_programa": {
+    "GO_COMEXPRODUZIR": {
+      "total_vedados": 252,
+      "observacao": "Maior lista restritiva - foco proteção indústria local",
+      "lista_negativa": [
+        "0201", "0202", "0203", "0204", "0205", "0206", "0207", "0208", "0209", "0210",
+        "0401", "0402", "0403", "0404", "0405", "0406", "0407", "0408", "0409", "0410",
+        "1501", "1502", "1503", "1504", "1505", "1506", "1507", "1508", "1509", "1510",
+        "1511", "1512", "1513", "1514", "1515", "1516", "1517", "1518", "1519", "1520",
+        "1521", "1522",
+        "1701", "1702", "1703", "1704",
+        "2710", "2711", "2712", "2713", "2714", "2715", "2716", "2717", "2718", "2719",
+        "2401", "2402", "2403", "2404", "2405",
+        "2201", "2202", "2203", "2204", "2205", "2206", "2207", "2208", "2209",
+        "5001", "5002", "5003", "5004", "5005", "5006", "5007", "5101", "5102", "5103",
+        "5104", "5105", "5106", "5107", "5108", "5109", "5110", "5111", "5112", "5113",
+        "5201", "5202", "5203", "5204", "5205", "5206", "5207", "5208", "5209", "5210",
+        "5211", "5212", "5301", "5302", "5303", "5305", "5306", "5307", "5308", "5309",
+        "5310", "5311", "5401", "5402", "5403", "5404", "5405", "5406", "5407", "5408",
+        "5501", "5502", "5503", "5504", "5505", "5506", "5507", "5508", "5509", "5510",
+        "5511", "5512", "5513", "5514", "5515", "5516", "5601", "5602", "5603", "5604",
+        "5605", "5606", "5607", "5608", "5609", "6001", "6002", "6003", "6004", "6005",
+        "6006", "6101", "6102", "6103", "6104", "6105", "6106", "6107", "6108", "6109",
+        "6110", "6111", "6112", "6113", "6114", "6115", "6116", "6117", "6201", "6202",
+        "6203", "6204", "6205", "6206", "6207", "6208", "6209", "6210", "6211", "6212",
+        "6213", "6214", "6215", "6216", "6217", "6301", "6302", "6303", "6304", "6305",
+        "6306", "6307", "6308", "6309", "6310", "6401", "6402", "6403", "6404", "6405",
+        "6406", "6501", "6502", "6503", "6504", "6505", "6506", "6507", "6601", "6602",
+        "6603", "7001", "7002", "7003", "7004", "7005", "7006", "7007", "7008", "7009",
+        "7010", "7011", "7012", "7013", "7014", "7015", "7016", "7017", "7018", "7019",
+        "7020", "8703", "8704", "8705", "8706", "8707", "8708", "8709", "8710", "8711",
+        "8712", "8713", "8714", "8715", "8716", "8801", "8802", "8803", "8804", "8805"
+      ],
+      "categorias_vedadas": {
+        "alimentos_basicos": ["Carnes", "Leites e derivados", "Óleos vegetais", "Açúcar"],
+        "petroleo_derivados": ["Petróleo cru", "Combustíveis", "Lubrificantes"],
+        "textil_vestuario": ["Tecidos", "Roupas", "Calçados", "Acessórios"],
+        "veiculos": ["Automóveis", "Motocicletas", "Aeronaves"],
+        "bebidas_fumo": ["Bebidas alcoólicas", "Derivados tabaco"],
+        "vidros": ["Vidros planos", "Vidros temperados", "Espelhos"]
+      }
+    },
+    
+    "SC_TTD_TODOS": {
+      "total_vedados": 85,
+      "observacao": "Foco proteção setores estratégicos Santa Catarina",
+      "lista_negativa": [
+        "2710", "2711", "2712", "2713", "2714", "2715",
+        "7001", "7002", "7003", "7004", "7005", "7006", "7007", "7008", "7009",
+        "7010", "7011", "7012", "7013", "7014", "7015", "7016", "7017", "7018",
+        "1901", "1902", "1903", "1904", "1905",
+        "3901", "3902", "3903", "3904", "3905", "3906", "3907", "3908", "3909",
+        "3910", "3911", "3912", "3913", "3914", "3915", "3916", "3917", "3918",
+        "3919", "3920", "3921", "3922", "3923", "3924", "3925", "3926",
+        "7201", "7202", "7203", "7204", "7205", "7206", "7207", "7208", "7209",
+        "7210", "7211", "7212", "7213", "7214", "7215", "7216", "7217", "7218",
+        "7219", "7220", "7221", "7222", "7223", "7224", "7225", "7226", "7227",
+        "7228", "7229"
+      ],
+      "padroes_wildcard": [
+        "27.10.*", "27.11.*", "70.*", "39.*", "72.*"
+      ],
+      "categorias_vedadas": {
+        "combustiveis": ["Petróleo", "Gasolina", "Diesel", "Querosene"],
+        "vidros": ["Vidros planos", "Vidros de segurança", "Espelhos"],
+        "polimeros": ["Plásticos primários", "Resinas", "Elastômeros"],
+        "siderurgia": ["Ferro gusa", "Aço", "Laminados", "Trefilados"],
+        "alimentos_processados": ["Preparações alimentícias específicas"]
+      }
+    },
+    
+    "MG_CORREDOR": {
+      "tipo": "lista_conceitual",
+      "observacao": "Lista negativa conceitual - consultar legislação específica",
+      "produtos_vedados_conceituais": [
+        "Combustíveis líquidos e gasosos",
+        "Produtos siderúrgicos (ferro e aço)",
+        "Café em grão ou processado", 
+        "Leite e derivados lácteos",
+        "Farinha de trigo",
+        "Derivados do fumo (cigarros, charutos)",
+        "Bebidas alcoólicas",
+        "Produtos com alto valor agregado local"
+      ],
+      "ncm_ranges_principais": [
+        "2710-2719",  
+        "7201-7229",  
+        "0901",       
+        "0401-0406",  
+        "1101",       
+        "2401-2405",  
+        "2203-2208"   
+      ]
+    },
+    
+    "ES_OPERACIONAL": {
+      "tipo": "elegibilidade_operacional", 
+      "observacao": "Restrições baseadas em estrutura operacional, não NCMs específicos",
+      "produtos_vedados_conceituais": [
+        "Produtos que exijam licenças especiais",
+        "Mercadorias controladas ANVISA",
+        "Itens sujeitos a controle do Exército",
+        "Produtos com restrições ambientais IBAMA",
+        "Mercadorias de alto risco sanitário"
+      ],
+      "requisitos_estruturais": {
+        "centro_distribuicao": "1000m2 mínimo obrigatório",
+        "desembaraco": "Portos/aeroportos capixabas preferenciais", 
+        "operador_logistico": "Qualificado como alternativa ao CD próprio"
+      }
+    }
+  },
+  
+  "mapeamento_programa_vedacao": {
+    "SC_TTD_409": "SC_TTD_TODOS",
+    "SC_TTD_410": "SC_TTD_TODOS", 
+    "SC_TTD_411": "SC_TTD_TODOS",
+    "GO_COMEXPRODUZIR": "GO_COMEXPRODUZIR",
+    "MG_CORREDOR": "MG_CORREDOR",
+    "ES_INVEST": "ES_OPERACIONAL",
+    "RO_CREDITO": null,
+    "MT_DIFERIMENTO": null,
+    "AL_PRECATORIOS": null
+  },
+  
+  "validacao_algoritmos": {
+    "GO_COMEXPRODUZIR": {
+      "tipo": "lista_exata",
+      "algoritmo": "Verificar se NCM está na lista_negativa exata",
+      "exemplo": "NCM 2710 → VEDADO (combustível)"
+    },
+    "SC_TTD_TODOS": {
+      "tipo": "lista_com_wildcards", 
+      "algoritmo": "Verificar lista exata OU padrões wildcard",
+      "exemplo": "NCM 7001 → VEDADO (vidro) OU 70.* → VEDADO"
+    },
+    "MG_CORREDOR": {
+      "tipo": "ranges_conceituais",
+      "algoritmo": "Verificar se NCM está em ranges definidos",
+      "exemplo": "NCM 7205 → VEDADO (range 7201-7229 siderúrgico)"
+    },
+    "ES_OPERACIONAL": {
+      "tipo": "validacao_estrutural",
+      "algoritmo": "Verificar se empresa atende requisitos operacionais",
+      "exemplo": "CD < 1000m2 → INELEGÍVEL para programa"
+    }
+  },
+  
+  "estatisticas": {
+    "total_ncms_sistema": 10457,
+    "percentual_vedado_go": "2.41%",
+    "percentual_vedado_sc": "0.81%", 
+    "overlap_go_sc": 45,
+    "ncms_liberados_todos": 9942,
+    "estados_mais_restritivos": ["GO", "SC", "MG"],
+    "estados_mais_flexiveis": ["ES", "RO", "MT", "AL"]
+  }
+}

@@ -1,258 +1,203 @@
 {
   "versao": "2025.1",
-  "data_atualizacao": "2025-08-17",
-  "fonte": "Documentação Oficial Expertzy - Benefícios Fiscais Reais",
+  "data_atualizacao": "2025-01-23",
+  "fonte": "Sistema Expertzy - Módulo de Incentivos Fiscais v1.0",
 
-  "goias_comexproduzir": {
-    "codigo": "GO_COMEXPRODUZIR",
-    "nome": "COMEXPRODUZIR - Goiás",
-    "base_legal": "Lei Estadual nº 14.186/2002 e Decreto nº 5.686/2002",
-    "mecanismo": "crédito_outorgado",
-    "percentual_credito": 65,
-    "aplicacao": "operacoes_interestaduais",
-    
-    "condicoes": {
-      "desembaraço_permitido": "Qualquer porto goiano (TECA Goiânia, Porto Seco Anápolis, etc.)",
-      "entrada_fisica_obrigatoria": true,
-      "perfil_comex_minimo": 95,
-      "excecoes_desembaraço": "Permitido desembaraço externo por exigência sanitária"
-    },
-    
-    "contrapartidas": {
-      "funproduzir": {
-        "percentual": 5,
-        "base_calculo": "valor_credito_outorgado",
-        "obrigatorio": true
-      },
-      "protege": {
-        "percentual": 15,
-        "base_calculo": "valor_credito_outorgado",
-        "obrigatorio": true
-      },
-      "multa_descumprimento_empregos": 20
-    },
-    
-    "beneficio_adicional": {
-      "vendas_internas": {
-        "mecanismo": "reducao_base_calculo",
-        "aliquota_aplicada": 19.00,
-        "base_reduzida_percentual": 78.95,
-        "carga_efetiva_resultado": 4.00,
-        "contrapartidas": false,
-        "calculo": "Para carga efetiva de 4%: base_reduzida = (4% / 19%) * 100 = 21.05% da base. Redução = 78.95%"
-      }
-    },
-    
-    "calculo": {
-      "formula_interestadual": "ICMS_devido × 0.35 + (credito_outorgado × 0.05) + (credito_outorgado × 0.15)",
-      "formula_interna": "base_calculo × base_reduzida_percentual × aliquota_interna",
-      "carga_efetiva_interestadual": 1.92,
-      "carga_efetiva_interna": 4.00
-    },
-
-    "ncms_vedados": {
-      "observacao": "Lista dos principais NCMs vedados - consultar legislação completa",
-      "exemplos": [
-        "2710", "2711", "2712", "2713", "2714", "2715",
-        "24.02", "24.03",
-        "22.03", "22.04", "22.05", "22.06", "22.07", "22.08",
-        "87.03", "87.04", "87.05"
-      ]
-    },
-    
-    "elegibilidade": {
-      "regra_geral": "Todos os NCMs são elegíveis, EXCETO os listados como vedados",
-      "verificacao": "Verificar se NCM NÃO está na lista de vedados"
-    }
+  "reforma_tributaria_nacional": {
+    "2025": {"mantido": 1.0},
+    "2026": {"mantido": 1.0},
+    "2027": {"mantido": 1.0},
+    "2028": {"mantido": 1.0},
+    "2029": {"mantido": 0.9},
+    "2030": {"mantido": 0.8},
+    "2031": {"mantido": 0.7},
+    "2032": {"mantido": 0.6},
+    "2033": {"mantido": 0.0}
   },
 
-  "santa_catarina_ttds": {
-    "codigo": "SC_TTD",
-    "nome": "TTDs - Santa Catarina",
-    "base_legal": "Decretos Estaduais SC",
-    
-    "ttd_409": {
-      "nome": "TTD 409 - Regime Progressivo",
-      "fase_1": {
-        "periodo": "primeiros_36_meses",
-        "aliquota_antecipacao_importacao": 2.6,
-        "operacoes_interestaduais": {
-          "aliquota_destaque": 4.0,
-          "aliquota_efetiva": 2.6
-        },
-        "operacoes_internas": {
-          "contribuintes_normais": {
-            "aliquota_destaque": 4.0,
-            "aliquota_efetiva": 2.6
-          },
-          "simples_sem_st": {
-            "aliquota_destaque": 12.0,
-            "aliquota_efetiva": 7.6
-          },
-          "simples_com_st": {
-            "aliquota_destaque": 4.0,
-            "aliquota_efetiva": 2.6
-          },
-          "pessoas_fisicas": {
-            "aliquota_destaque": 17.0,
-            "aliquota_efetiva": 17.0
-          }
-        },
-        "fundo_educacao": 0.4
+  "programas": {
+    "SC_TTD_409": {
+      "nome": "TTD 409 Santa Catarina",
+      "tipo": "diferimento_parcial",
+      "descricao": "Diferimento do ICMS na importação com antecipação reduzida",
+      "nf_config": {
+        "cst": "51",
+        "cBenef": "SC830015"
       },
-      
-      "fase_2": {
-        "periodo": "apos_36_meses",
-        "aliquota_antecipacao_importacao": 1.0,
-        "operacoes_interestaduais": {
-          "aliquota_destaque": 4.0,
-          "aliquota_efetiva": 1.0
-        },
-        "operacoes_internas": {
-          "contribuintes_normais": {
-            "aliquota_destaque": 4.0,
-            "aliquota_efetiva": 1.0
-          },
-          "simples_sem_st": {
-            "aliquota_destaque": 12.0,
-            "aliquota_efetiva": 3.6
-          },
-          "simples_com_st": {
-            "aliquota_destaque": 4.0,
-            "aliquota_efetiva": 1.0
-          },
-          "pessoas_fisicas": {
-            "aliquota_destaque": 17.0,
-            "aliquota_efetiva": 17.0
-          }
-        },
-        "fundo_educacao": 0.4
-      }
-    },
-    
-    "ttd_410": {
-      "nome": "TTD 410 - Regime Especial",
-      "requisitos": {
-        "historico_ttd_409": "24_meses",
-        "faturamento_minimo_anual": 24000000
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.04
       },
-      "diferimento_importacao": 100,
-      "operacoes_interestaduais": {
-        "aliquota_destaque": 4.0,
-        "aliquota_efetiva": 0.6
-      },
-      "operacoes_internas": {
-        "contribuintes_normais": {
-          "aliquota_destaque": 4.0,
-          "aliquota_efetiva": 0.6
+      "fases": [
+        {
+          "ate_mes": 36,
+          "aliquota_antecipacao": 0.026,
+          "descricao": "Primeiros 36 meses - 2,6%"
         },
-        "simples_sem_st": {
-          "aliquota_destaque": 12.0,
-          "aliquota_efetiva": 3.6
-        },
-        "simples_com_st": {
-          "aliquota_destaque": 4.0,
-          "aliquota_efetiva": 0.6
-        },
-        "pessoas_fisicas": {
-          "aliquota_destaque": 17.0,
-          "aliquota_efetiva": 17.0
+        {
+          "apos_mes": 36,
+          "aliquota_antecipacao": 0.01,
+          "descricao": "Após 36 meses - 1,0%"
         }
+      ],
+      "requisitos": {
+        "estados_elegiveis": ["SC"],
+        "desembaraco_local": true
       },
-      "fundo_educacao": 0.4
-    }
-  },
-
-  "minas_gerais_corredor": {
-    "codigo": "MG_CORREDOR",
-    "nome": "Corredor de Importação - Minas Gerais",
-    "base_legal": "Legislação MG",
-    "mecanismo": "diferimento + crédito presumido",
-    "diferimento_importacao": 100,
-    
-    "credito_presumido": {
-      "sem_similar_nacional": {
-        "interestaduais": 2.5,
-        "internas": 5.0
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
       },
-      "com_similar_nacional": {
-        "interestaduais": 3.0,
-        "internas": 6.0
-      }
-    },
-    "contrapartidas": false
-  },
-
-  "outros_estados": {
-    "rondonia": {
-      "codigo": "RO_CREDITO",
-      "nome": "Crédito Presumido - Rondônia",
-      "credito_presumido_interestadual": 85,
-      "carga_efetiva": 0.6,
-      "contrapartidas": false
-    },
-    
-    "mato_grosso": {
-      "codigo": "MT_DIFERIMENTO",
-      "nome": "Diferimento Total - Mato Grosso",
-      "diferimento_importacao": 100,
-      "recolhimento": "saidas_subsequentes"
-    },
-    
-    "alagoas": {
-      "codigo": "AL_PRECATORIOS",
-      "nome": "Compensação Precatórios - Alagoas",
-      "mecanismo": "creditos_judiciais",
-      "economia_potencial": "até 90%",
-      "desvantagem": "custo_transacao_precatorios"
-    },
-    
-    "espirito_santo": {
-      "codigo": "ES_INVEST",
-      "nome": "INVEST-ES Importação",
-      "diferimento_importacao": 100,
-      "reducao_saida_cd": 75,
-      "taxa_administrativa": 0.5,
-      "exigencia_cd": "1000m2_minimo"
-    }
-  },
-
-  "calculadora_beneficios": {
-    "GO_COMEXPRODUZIR": {
-      "operacao_interestadual": {
-        "base_calculo": "valor_icms_devido",
-        "credito_outorgado": "base_calculo * 0.65",
-        "icms_efetivo": "base_calculo * 0.35",
-        "funproduzir": "credito_outorgado * 0.05",
-        "protege": "credito_outorgado * 0.15",
-        "custo_total": "icms_efetivo + funproduzir + protege"
-      },
-      "operacao_interna": {
-        "base_calculo": "valor_mercadoria",
-        "base_reduzida": "base_calculo * 0.2105",
-        "icms_devido": "base_reduzida * 0.19",
-        "carga_efetiva": 4.00,
-        "contrapartidas": 0,
-        "observacao": "Base reduzida para que 19% resulte em carga efetiva de 4%"
-      }
-    },
-    
-    "SC_TTD_409_FASE1": {
-      "antecipacao_importacao": 2.6,
-      "fundo_educacao": 0.4,
-      "custo_total_minimo": 3.0
-    },
-    
-    "SC_TTD_409_FASE2": {
-      "antecipacao_importacao": 1.0,
-      "fundo_educacao": 0.4,
-      "custo_total_minimo": 1.4
+      "reducao_base": 0.949
     },
     
     "SC_TTD_410": {
-      "antecipacao_importacao": 0.6,
-      "fundo_educacao": 0.4,
-      "custo_total_minimo": 1.0
+      "nome": "TTD 410 Santa Catarina",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total sem antecipação após 24 meses",
+      "nf_config": {
+        "cst": "51",
+        "cBenef": "SC830015"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.04
+      },
+      "requisitos": {
+        "estados_elegiveis": ["SC"],
+        "desembaraco_local": true,
+        "tempo_minimo_meses": 24,
+        "faturamento_minimo_anual": 24000000
+      },
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
+      },
+      "reducao_base": 1.0
+    },
+    
+    "SC_TTD_411": {
+      "nome": "TTD 411 Santa Catarina",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total com garantia obrigatória",
+      "nf_config": {
+        "cst": "51",
+        "cBenef": "SC830015"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.04
+      },
+      "requisitos": {
+        "estados_elegiveis": ["SC"],
+        "desembaraco_local": true,
+        "garantia": {
+          "obrigatoria": true,
+          "tipo": ["real", "fidejussoria"]
+        }
+      },
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
+      },
+      "reducao_base": 1.0
+    },
+    
+    "MG_CORREDOR": {
+      "nome": "Corredor de Importação MG",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total do ICMS na importação",
+      "nf_config": {
+        "cst": "51"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.18,
+        "icms_calculo": 0.18
+      },
+      "requisitos": {
+        "estados_elegiveis": ["MG"],
+        "desembaraco_local": true
+      },
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.18
+      },
+      "reducao_base": 1.0
+    },
+    
+    "ES_INVEST": {
+      "nome": "INVEST-ES Importação",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total do ICMS na importação",
+      "nf_config": {
+        "cst": "51"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.17
+      },
+      "requisitos": {
+        "estados_elegiveis": ["ES"],
+        "desembaraco_local": true,
+        "centro_distribuicao": true,
+        "area_minima_m2": 1000
+      },
+      "contrapartidas": [
+        {
+          "tipo": "taxa_administrativa",
+          "percentual": 0.005,
+          "base": "icms_diferido"
+        }
+      ],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
+      },
+      "reducao_base": 0.995
+    },
+    
+    "GO_COMEXPRODUZIR": {
+      "nome": "COMEXPRODUZIR Goiás",
+      "tipo": "credito_outorgado",
+      "descricao": "Crédito outorgado de 65% do ICMS interestadual",
+      "nf_config": {
+        "observacao": "Crédito aplicado na saída, não altera entrada"
+      },
+      "credito": 0.65,
+      "aliquotas": {
+        "icms_interestadual": 0.04,
+        "icms_interno": 0.19
+      },
+      "requisitos": {
+        "estados_elegiveis": ["GO"],
+        "desembaraco_local": true,
+        "percentual_comex_minimo": 0.95,
+        "entrada_fisica_obrigatoria": true
+      },
+      "contrapartidas": [
+        {
+          "fundo": "FUNPRODUZIR",
+          "percentual": 0.05,
+          "base": "credito_outorgado",
+          "obrigatorio": true
+        },
+        {
+          "fundo": "PROTEGE", 
+          "percentual": 0.15,
+          "base": "credito_outorgado",
+          "obrigatorio": true
+        }
+      ],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.04,
+        "aliquota_interestadual": 0.04
+      },
+      "reducao_base": 0.65
     }
   }
 }

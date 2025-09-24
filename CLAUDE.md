@@ -97,6 +97,7 @@ expertzy-sistema-importacao/
 │   ├── core/
 │   │   ├── calculators/     # ComplianceCalculator.js, ItemCalculator.js
 │   │   ├── processors/      # DIProcessor.js (com validações NO FALLBACKS)
+│   │   ├── incentives/      # IncentiveManager.js (sistema completo de incentivos fiscais)
 │   │   ├── exporters/       # ExcelExporter.js, ExportManager.js, MultiAdditionExporter.js, CroquiNFExporter.js (com incentivos)
 │   │   ├── validators/      # CalculationValidator.js
 │   │   ├── engines/         # PricingEngine.js
@@ -513,11 +514,11 @@ await saveCompleteDespesas(diId, diData);
 // - Análises preliminares de custos
 ```
 
-## 🎯 MÓDULO DE INCENTIVOS FISCAIS IMPLEMENTADO (23/09/2025)
+## 🎯 MÓDULO DE INCENTIVOS FISCAIS RECUPERADO (24/09/2025)
 
 ### Sistema Completo de Benefícios Fiscais Estaduais
 
-O sistema agora inclui módulo completo de incentivos fiscais seguindo princípios KISS, DRY e NO FALLBACKS:
+**MÓDULO RECUPERADO DO COMMIT 8bf5220**: Sistema completo de incentivos fiscais implementado anteriormente foi recuperado com sucesso, incluindo integração com PathResolver para compatibilidade universal. O módulo segue princípios KISS, DRY e NO FALLBACKS:
 
 #### Estados Suportados:
 
@@ -598,6 +599,23 @@ getIncentiveFields() // CST, vBC, vICMSOp, vICMS, vICMSDif, pDif, cBenef
 
 // Integração na função global
 window.gerarCroquiPDFNovo(diData, incentiveManager)
+```
+
+#### Compatibilidade Universal (PathResolver)
+
+**ATUALIZAÇÃO 24/09/2025**: IncentiveManager.js foi atualizado para compatibilidade universal usando PathResolver:
+
+```javascript
+// Constructor com PathResolver
+constructor() {
+    this.pathResolver = typeof PathResolver !== 'undefined' ? new PathResolver() : null;
+    // ... resto da inicialização
+}
+
+// Carregamento de configurações com path universal
+const path = this.pathResolver ? 
+    this.pathResolver.resolveDataPath('beneficios.json') : 
+    '/src/shared/data/beneficios.json';
 ```
 
 #### Refatoração DRY Implementada

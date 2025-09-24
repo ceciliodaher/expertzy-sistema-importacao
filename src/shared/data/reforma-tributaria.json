@@ -1,0 +1,197 @@
+{
+  "versao": "2025.1",
+  "data_atualizacao": "2025-09-24",
+  "fonte": "EC 132/2023 e LC 212/2024 - Configuração Técnica Reforma Tributária",
+  
+  "cronograma_tributario": {
+    "2025": {
+      "pis_cofins": {
+        "ativo": true,
+        "pis_aliquota": 0.0165,
+        "cofins_aliquota": 0.076
+      },
+      "cbs": {
+        "ativo": false,
+        "aliquota": 0
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 1.0,
+        "status": "mantidos_integralmente"
+      }
+    },
+    
+    "2026": {
+      "pis_cofins": {
+        "ativo": true,
+        "pis_aliquota": 0.0165,
+        "cofins_aliquota": 0.076
+      },
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.009,
+        "status": "experimental_compensavel"
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.001,
+        "status": "experimental_compensavel"  
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 1.0,
+        "status": "mantidos_integralmente"
+      }
+    },
+    
+    "2027": {
+      "pis_cofins": {
+        "ativo": false,
+        "data_extincao": "2027-01-01"
+      },
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.275,
+        "status": "definitivo"
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.001
+      },
+      "imposto_seletivo": {
+        "ativo": true,
+        "aplicacao": "produtos_especificos"
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 1.0,
+        "status": "mantidos_integralmente"
+      }
+    },
+    
+    "2028": {
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.265
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.001
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 1.0,
+        "status": "mantidos_integralmente"
+      }
+    },
+    
+    "2029": {
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.275
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.028
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 0.9,
+        "status": "reducao_10_porcento"
+      }
+    },
+    
+    "2030": {
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.28
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.055
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 0.8,
+        "status": "reducao_20_porcento"
+      }
+    },
+    
+    "2031": {
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.275
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.082
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 0.7,
+        "status": "reducao_30_porcento"
+      }
+    },
+    
+    "2032": {
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.27
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.109
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 0.6,
+        "status": "reducao_40_porcento"
+      }
+    },
+    
+    "2033": {
+      "sistema_final": true,
+      "cbs": {
+        "ativo": true,
+        "aliquota": 0.265,
+        "status": "aliquota_final"
+      },
+      "ibs": {
+        "ativo": true,
+        "aliquota": 0.136,
+        "status": "aliquota_final"
+      },
+      "icms_beneficios": {
+        "fator_manutencao": 0.0,
+        "status": "extincao_completa"
+      },
+      "aliquota_total_unificada": 0.401
+    }
+  },
+  
+  "transicao_pis_cofins_cbs": {
+    "2025_2026": {
+      "modelo": "coexistencia",
+      "pis_cofins": "aliquotas_normais",
+      "cbs": "experimental_compensavel"
+    },
+    "2027_inicio": {
+      "modelo": "substituicao_definitiva", 
+      "pis_cofins": "extinto",
+      "cbs": "aliquota_plena_27.5"
+    }
+  },
+  
+  "fatores_calculo_beneficios": {
+    "periodo_protecao": {
+      "inicio": 2025,
+      "fim": 2028,
+      "fator": 1.0
+    },
+    "reducao_gradual": {
+      "2029": 0.9,
+      "2030": 0.8, 
+      "2031": 0.7,
+      "2032": 0.6,
+      "2033": 0.0
+    }
+  },
+  
+  "algoritmos_projecao": {
+    "beneficio_futuro": "beneficio_atual × fator_ano",
+    "custo_sem_beneficio_2033": "valor_mercadoria × 0.401",
+    "economia_liquida": "custo_sem_beneficio - custo_com_beneficio_projetado"
+  }
+}
