@@ -31,6 +31,11 @@ let currentStep = 1;
 let expenseCounter = 0;
 let currencyMasks = [];
 
+// Incentives system
+let incentiveManager = null;
+let selectedIncentive = null;
+let availablePrograms = [];
+
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DI Interface: Inicializando sistema...');
@@ -124,6 +129,9 @@ function setupEventListeners() {
     
     // Setup expense table event delegation
     setupExpenseTableEvents();
+    
+    // Setup incentives event listeners
+    setupIncentivesEventListeners();
 }
 
 /**
@@ -280,6 +288,18 @@ async function processarDI() {
                     throw new Error('IndexedDBManager não está inicializado');
                 }
                 
+                // Add incentive data to DI before saving
+                if (selectedIncentive) {
+                    currentDI.incentive_program = selectedIncentive.programa;
+                    currentDI.incentive_applied = true;
+                    currentDI.incentive_name = selectedIncentive.nome;
+                    console.log('💰 Incluindo dados de incentivos na DI:', selectedIncentive.programa);
+                } else {
+                    currentDI.incentive_program = null;
+                    currentDI.incentive_applied = false;
+                    currentDI.incentive_name = null;
+                }
+                
                 // Salvar DI no banco de dados
                 const savedId = await dbManager.saveDI(currentDI);
                 console.log(`✅ DI ${currentDI.numero_di} salva no IndexedDB com ID: ${savedId}`);
@@ -372,6 +392,18 @@ function populateStep2Data(diData) {
     
     // Initialize expense preview
     updateExpensePreview();
+    
+    // Initialize incentives system
+    const estado = diData.importador?.estado;
+    const ncms = extractNCMsFromDI(diData);
+    if (estado) {
+        initializeIncentives(estado, ncms).catch(error => {
+            console.warn('⚠️ Não foi possível inicializar sistema de incentivos:', error.message);
+        });
+    } else {
+        console.warn('⚠️ Estado do importador não encontrado - sistema de incentivos não disponível');
+        hideIncentivesSection();
+    }
 }
 
 /**
@@ -805,6 +837,14 @@ async function calcularImpostos() {
     try {
         showLoading('Calculando impostos...', 'Aplicando legislação fiscal brasileira');
         
+        // Get incentive data if selected
+        const incentiveData = getSelectedIncentiveData();
+        if (incentiveData) {
+            console.log('🎯 Aplicando incentivo fiscal:', incentiveData.nome);
+        } else {
+            console.log('ℹ️ Calculando sem incentivos fiscais');
+        }
+        
         // Get all expenses from the table
         const expenses = getAllExpenses();
         
@@ -862,7 +902,8 @@ async function calcularImpostos() {
         complianceCalculator.setEstadoDestino(estadoImportador);
         
         // Use the modular method to calculate taxes for ALL additions
-        const taxCalculation = await complianceCalculator.calcularTodasAdicoes(currentDI, despesasConsolidadas);
+        // Pass incentive data as third parameter for future integration
+        const taxCalculation = await complianceCalculator.calcularTodasAdicoes(currentDI, despesasConsolidadas, incentiveData);
         
         // 🔥 CRÍTICO: Conectar pipeline ao IndexedDB via ProductMemoryManager
         console.log('🔄 Salvando dados calculados no IndexedDB via ProductMemoryManager...');
@@ -872,6 +913,14 @@ async function calcularImpostos() {
         // Store calculation results with individual products
         currentDI.calculoImpostos = taxCalculation;
         currentDI.despesasExtras = expenses; // Store for export
+        
+        // Store incentive data with calculation results
+        if (incentiveData) {
+            currentDI.incentive_program = incentiveData.programa;
+            currentDI.incentive_applied = true;
+            currentDI.incentive_name = incentiveData.nome;
+            console.log('💰 Incentivos aplicados nos cálculos:', incentiveData.programa);
+        }
         
         // Make calculation available globally for export modules
         window.currentCalculation = taxCalculation;
@@ -1488,6 +1537,244 @@ function prepararParaPrecificacao() {
         console.error('Erro ao preparar para precificação:', error);
         showAlert('❌ Erro ao preparar dados para precificação.', 'danger');
     }
+}
+
+// ====== INCENTIVOS FISCAIS ======
+
+/**
+ * Setup event listeners for incentives system
+ */
+function setupIncentivesEventListeners() {
+    const hasIncentive = document.getElementById('hasIncentive');
+    const incentiveProgram = document.getElementById('incentiveProgram');
+    
+    if (hasIncentive) {
+        hasIncentive.addEventListener('change', onIncentiveSelectionChange);
+    }
+    
+    if (incentiveProgram) {
+        incentiveProgram.addEventListener('change', onProgramSelectionChange);
+    }
+}
+
+/**
+ * Initialize incentives system for current DI
+ */
+async function initializeIncentives(estado, ncms = []) {
+    console.log('🎯 Inicializando sistema de incentivos para:', estado);
+    
+    try {
+        // Initialize IncentiveManager if not already initialized
+        if (!incentiveManager && typeof IncentiveManager !== 'undefined') {
+            incentiveManager = new IncentiveManager();
+            await incentiveManager.initializeConfiguration();
+            console.log('✅ IncentiveManager inicializado');
+        }
+        
+        if (!incentiveManager) {
+            console.warn('⚠️ Sistema de incentivos não disponível - IncentiveManager não encontrado');
+            hideIncentivesSection();
+            return;
+        }
+        
+        // Get available programs for this state
+        availablePrograms = incentiveManager.getAvailablePrograms(estado);
+        console.log(`📋 Programas disponíveis para ${estado}:`, availablePrograms);
+        
+        // Populate program options
+        populateIncentiveOptions(availablePrograms, ncms);
+        
+    } catch (error) {
+        console.error('❌ Erro ao inicializar sistema de incentivos:', error.message);
+        hideIncentivesSection();
+    }
+}
+
+/**
+ * Populate incentive program options
+ */
+function populateIncentiveOptions(programas, ncms) {
+    const programSelect = document.getElementById('incentiveProgram');
+    if (!programSelect) return;
+    
+    // Clear current options
+    programSelect.innerHTML = '<option value="">Selecione um programa...</option>';
+    
+    if (programas.length === 0) {
+        programSelect.innerHTML = '<option value="">Nenhum programa disponível para seu estado</option>';
+        return;
+    }
+    
+    // Add program options
+    programas.forEach(programa => {
+        const option = document.createElement('option');
+        option.value = programa.codigo;
+        option.textContent = `${programa.nome} - ${programa.descricao}`;
+        programSelect.appendChild(option);
+    });
+    
+    console.log(`✅ ${programas.length} programas adicionados ao select`);
+}
+
+/**
+ * Handle incentive yes/no selection
+ */
+function onIncentiveSelectionChange() {
+    const hasIncentive = document.getElementById('hasIncentive');
+    const incentiveSelection = document.getElementById('incentiveSelection');
+    const noIncentiveInfo = document.getElementById('noIncentiveInfo');
+    const incentiveInfo = document.getElementById('incentiveInfo');
+    const incentiveWarning = document.getElementById('incentiveWarning');
+    
+    const value = hasIncentive.value;
+    
+    if (value === 'sim') {
+        incentiveSelection.style.display = 'block';
+        noIncentiveInfo.style.display = 'none';
+        
+        // Check if programs are available
+        if (availablePrograms.length === 0) {
+            showIncentiveWarning('Nenhum programa de incentivo disponível para o estado da sua empresa.');
+            incentiveSelection.style.display = 'none';
+        }
+    } else if (value === 'nao') {
+        incentiveSelection.style.display = 'none';
+        noIncentiveInfo.style.display = 'block';
+        incentiveInfo.style.display = 'none';
+        incentiveWarning.style.display = 'none';
+        selectedIncentive = null;
+    } else {
+        incentiveSelection.style.display = 'none';
+        noIncentiveInfo.style.display = 'none';
+        incentiveInfo.style.display = 'none';
+        incentiveWarning.style.display = 'none';
+        selectedIncentive = null;
+    }
+}
+
+/**
+ * Handle program selection
+ */
+async function onProgramSelectionChange() {
+    const incentiveProgram = document.getElementById('incentiveProgram');
+    const programCodigo = incentiveProgram.value;
+    
+    if (!programCodigo || !incentiveManager) {
+        selectedIncentive = null;
+        hideIncentiveInfo();
+        return;
+    }
+    
+    try {
+        // Get current DI NCMs for validation
+        const ncms = currentDI ? extractNCMsFromDI(currentDI) : [];
+        const estado = currentDI ? currentDI.importador?.estado : null;
+        
+        if (!estado) {
+            throw new Error('Estado do importador não encontrado');
+        }
+        
+        // Validate eligibility
+        const elegibilidade = incentiveManager.validateEligibility(estado, programCodigo, ncms);
+        
+        if (!elegibilidade.elegivel) {
+            showIncentiveWarning(elegibilidade.motivo);
+            selectedIncentive = null;
+            return;
+        }
+        
+        // Set selected incentive
+        const programa = availablePrograms.find(p => p.codigo === programCodigo);
+        selectedIncentive = {
+            programa: programCodigo,
+            nome: programa.nome,
+            tipo: programa.tipo,
+            estado: estado,
+            elegivel: true
+        };
+        
+        showIncentiveInfo(programa);
+        console.log('🎯 Programa selecionado:', selectedIncentive);
+        
+    } catch (error) {
+        console.error('❌ Erro ao validar programa:', error.message);
+        showIncentiveWarning(`Erro ao validar programa: ${error.message}`);
+        selectedIncentive = null;
+    }
+}
+
+/**
+ * Show incentive program information
+ */
+function showIncentiveInfo(programa) {
+    const incentiveInfo = document.getElementById('incentiveInfo');
+    const incentiveInfoContent = document.getElementById('incentiveInfoContent');
+    const incentiveWarning = document.getElementById('incentiveWarning');
+    
+    if (!incentiveInfo || !incentiveInfoContent) return;
+    
+    incentiveInfoContent.innerHTML = `
+        <strong>${programa.nome}</strong><br>
+        <small>Tipo: ${programa.tipo} | Estado: ${programa.codigo.split('_')[0]}</small><br>
+        <em>${programa.descricao}</em>
+    `;
+    
+    incentiveInfo.style.display = 'block';
+    incentiveWarning.style.display = 'none';
+}
+
+/**
+ * Show incentive warning
+ */
+function showIncentiveWarning(message) {
+    const incentiveWarning = document.getElementById('incentiveWarning');
+    const incentiveWarningContent = document.getElementById('incentiveWarningContent');
+    const incentiveInfo = document.getElementById('incentiveInfo');
+    
+    if (!incentiveWarning || !incentiveWarningContent) return;
+    
+    incentiveWarningContent.textContent = message;
+    incentiveWarning.style.display = 'block';
+    incentiveInfo.style.display = 'none';
+}
+
+/**
+ * Hide incentive info displays
+ */
+function hideIncentiveInfo() {
+    const incentiveInfo = document.getElementById('incentiveInfo');
+    const incentiveWarning = document.getElementById('incentiveWarning');
+    
+    if (incentiveInfo) incentiveInfo.style.display = 'none';
+    if (incentiveWarning) incentiveWarning.style.display = 'none';
+}
+
+/**
+ * Hide entire incentives section (when not available)
+ */
+function hideIncentivesSection() {
+    const incentivesSection = document.getElementById('incentivesSection');
+    if (incentivesSection) {
+        incentivesSection.style.display = 'none';
+    }
+}
+
+/**
+ * Extract NCMs from current DI for validation
+ */
+function extractNCMsFromDI(diData) {
+    if (!diData || !diData.adicoes) return [];
+    
+    const ncms = [...new Set(diData.adicoes.map(adicao => adicao.ncm).filter(ncm => ncm))];
+    console.log('📋 NCMs extraídos da DI:', ncms);
+    return ncms;
+}
+
+/**
+ * Get current incentive selection data
+ */
+function getSelectedIncentiveData() {
+    return selectedIncentive;
 }
 
 /**

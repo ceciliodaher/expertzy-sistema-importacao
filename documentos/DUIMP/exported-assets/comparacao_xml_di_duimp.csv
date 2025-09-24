@@ -1,0 +1,13 @@
+Aspecto,DI (Declaração de Importação),DUIMP (Declaração Única de Importação)
+Formato de Dados,XML estruturado disponível oficialmente,Formato JSON via API (sem XML oficial)
+Estrutura de Organização,Organizada por adições (agrupamento de mercadorias),Organizada por itens individuais (sem agrupamento)
+Disponibilidade Oficial,Sim - XML oficial disponível para download,Não - apenas via API em formato JSON
+Método de Obtenção,Download direto via SISCOMEX após registro,Consulta via API REST do Portal Único
+Campos de Tributos,Tributos calculados e apresentados por adição,Tributos detalhados item por item com memória completa
+Informações de Itens,Dados básicos por item dentro de cada adição,Dados completos e detalhados para cada item
+Integração com NFe,Importação direta via XML para emissão de NFe,Requer desenvolvimento de integração via API
+Status de Desenvolvimento,Sistema maduro e consolidado,Em implementação - sem XML consolidado
+Forma de Consulta,Interface tradicional SISCOMEX,Portal Único Siscomex via web/API
+Dados de Cálculos,Memória de cálculo básica incluída,Memória de cálculo completa com alíquotas e fundamentos
+Extrato/Relatório,Extrato em PDF e XML disponíveis,Extrato PDF simplificado (sem dados tributários completos)
+Uso em Sistemas Externos,Amplamente integrado com ERPs via XML,Integração limitada - requer adaptação dos sistemas

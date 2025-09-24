@@ -1,0 +1,16 @@
+Campo/Informação,DI,DUIMP
+Número de Adições,Múltiplas adições possíveis,Conceito virtual apenas para taxa Siscomex
+Limite de Itens,Sem limite específico por adição,Até 99.999 itens por declaração
+Estrutura de Dados,Adição > Itens (hierárquica),Item direto (não hierárquica)
+NCM por Item,Por adição (agrupamento),Por item individual obrigatoriamente
+Peso Líquido/Bruto,Por adição (agregado),Por item individual (rateio automático)
+Valor por Item,Valor FOB por adição,Valor detalhado por item individual
+Fundamentos Legais,Por adição,Por item com detalhamento completo
+Atributos do Produto,Não havia sistema estruturado,Sistema estruturado via catálogo
+Catálogo de Produtos,Não aplicável,Obrigatório - item deve estar catalogado
+Operador Estrangeiro,Dados básicos do exportador,Cadastro completo via sistema
+Método de Valoração,Por operação/adição,Por item (mais granular)
+Cobertura Cambial,Por operação,Por item quando aplicável
+Taxa Siscomex,Calculada por número de adições,Calculada por agrupamento virtual de itens
+Controle de Versões,Retificação via nova versão DI,Sistema de versões automático
+Histórico de Alterações,Histórico básico de alterações,Rastreabilidade total de mudanças

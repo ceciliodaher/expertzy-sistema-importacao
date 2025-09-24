@@ -1,0 +1,14 @@
+Aspecto,DI (Declaração de Importação),DUIMP (Declaração Única de Importação)
+Definição,Documento principal do despacho aduaneiro focado em aspectos fiscais e aduaneiros,"Documento eletrônico que integra informações aduaneiras, administrativas, comerciais, financeiras, fiscais e logísticas"
+Forma e Processamento,Processada no SISCOMEX com etapas separadas para diferentes órgãos,Elaborada no Portal Único Siscomex com integração automática entre órgãos
+Licenciamento,Licença de Importação (LI) emitida antes do registro da DI em processo separado,Integra licenciamento via módulo LPCO com análise paralela ao despacho
+Compartilhamento de Dados,"Menos eficiente, com necessidade de inserir dados em sistemas distintos",Transparente e eficiente com compartilhamento automático entre órgãos
+Catálogo de Produtos,Não havia sistema centralizado para cadastro de produtos,Sistema centralizado - informações cadastradas uma vez e reutilizadas
+Pagamento de Tributos,Realizado em etapas específicas do processo,Centraliza recolhimento de tributos facilitando gestão financeira
+Momento de Registro,Após a chegada da carga no armazém/zona primária,Pode ser registrada antes da chegada da carga
+Documentos Substituídos,N/A - documento original,"Substitui DI, DSI e parte das LIs"
+Sistema Utilizado,SISCOMEX LI/DI,Portal Único Siscomex
+Integração com Órgãos,"Sequencial, com necessidade de aprovações por etapas",Paralelo e integrado com verificações coordenadas
+Flexibilidade de Atualização,Limitada - informações precisam ser inseridas de uma só vez,Alta - permite atualizações em momentos distintos
+Transparência,Menor transparência entre órgãos,Total transparência com acesso para todos os intervenientes
+Recolhimento de Impostos (OEA Nível 2),Não aplicável,Coleta mensal unificada para OEAs Nível 2
