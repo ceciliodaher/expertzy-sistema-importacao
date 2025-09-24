@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard IndexedDB - Sistema Expertzy</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Expertzy Brand System -->
+    <link href="src/shared/styles/expertzy-brand.css" rel="stylesheet">
+    <link href="src/modules/dashboard/dashboard-styles.css" rel="stylesheet">
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Dashboard de análise e gestão de dados IndexedDB do Sistema Expertzy">
+    <meta name="keywords" content="dashboard, indexeddb, expertzy, declarações importação">
+    <meta name="author" content="Expertzy - Inteligência Tributária">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="expertzy-spinner mb-3"></div>
+            <h5 id="loadingMessage">Conectando ao IndexedDB...</h5>
+            <p id="loadingDetail" class="text-muted">Aguarde enquanto carregamos os dados</p>
+        </div>
+    </div>
+
+    <!-- Professional Navigation -->
+    <nav class="navbar navbar-expand-lg expertzy-navbar fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="https://expertzy.com.br" target="_blank">
+                <img src="images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo">
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="index.html">
+                            <i class="bi bi-house"></i> Início
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="di-interface.html">
+                            <i class="bi bi-file-earmark-text"></i> Processar DI
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white active" href="dashboard.html">
+                            <i class="bi bi-graph-up"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-tools"></i> Ferramentas
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#validation" onclick="dashboardComponents.validateNomenclature()">
+                                <i class="bi bi-check-circle"></i> Validar Nomenclatura
+                            </a></li>
+                            <li><a class="dropdown-item" href="#export" onclick="dashboardComponents.exportData()">
+                                <i class="bi bi-download"></i> Exportar Dados
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#clear" onclick="dashboardComponents.confirmClearDatabase()">
+                                <i class="bi bi-trash"></i> Limpar Banco
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Hero Section -->
+        <section class="dashboard-hero">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h1><i class="bi bi-graph-up"></i> Dashboard IndexedDB</h1>
+                        <p>Análise e gestão completa dos dados do sistema Expertzy</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end">
+                        <button class="btn btn-outline-light btn-lg" onclick="dashboardComponents.refreshStats()">
+                            <i class="bi bi-arrow-clockwise"></i> Atualizar Dados
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container-fluid">
+            <!-- Statistics Cards -->
+            <section class="mb-5">
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <div class="dashboard-loading">
+                            <div class="dashboard-spinner"></div>
+                            <p>Carregando estatísticas...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="mb-5">
+                <div class="row">
+                    <div class="col-lg-6 mb-4">
+                        <div class="dashboard-section">
+                            <div class="section-header">
+                                <h2><i class="bi bi-bar-chart"></i> NCMs Mais Importados</h2>
+                            </div>
+                            <div class="section-content">
+                                <div class="chart-container">
+                                    <canvas id="ncmChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6 mb-4">
+                        <div class="dashboard-section">
+                            <div class="section-header">
+                                <h2><i class="bi bi-pie-chart"></i> Distribuição por UF</h2>
+                            </div>
+                            <div class="section-content">
+                                <div class="chart-container">
+                                    <canvas id="ufChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-8 mb-4">
+                        <div class="dashboard-section">
+                            <div class="section-header">
+                                <h2><i class="bi bi-graph-up"></i> Evolução Mensal</h2>
+                            </div>
+                            <div class="section-content">
+                                <div class="chart-container">
+                                    <canvas id="monthlyChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 mb-4">
+                        <div class="dashboard-section">
+                            <div class="section-header">
+                                <h2><i class="bi bi-speedometer2"></i> Status</h2>
+                            </div>
+                            <div class="section-content">
+                                <div class="chart-container">
+                                    <canvas id="statusChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DIs List Section -->
+            <section class="mb-5">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-file-earmark-text"></i> Declarações de Importação</h2>
+                    </div>
+                    <div class="section-content">
+                        <div id="disList">
+                            <div class="dashboard-loading">
+                                <div class="dashboard-spinner"></div>
+                                <p>Carregando declarações...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schema Information -->
+            <section class="mb-5">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-diagram-3"></i> Estrutura do Banco</h2>
+                    </div>
+                    <div class="section-content">
+                        <div id="schemaInfo">
+                            <div class="dashboard-loading">
+                                <div class="dashboard-spinner"></div>
+                                <p>Carregando informações do schema...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Validation Section -->
+            <section class="mb-5">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2><i class="bi bi-check-circle"></i> Validação de Nomenclatura</h2>
+                    </div>
+                    <div class="section-content">
+                        <div class="mb-3">
+                            <p class="text-muted">
+                                Verifique se todos os dados estão usando a nomenclatura oficial estabelecida pelo 
+                                <strong>DIProcessor.js</strong> (PRIMARY CREATOR).
+                            </p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <button class="btn btn-expertzy-primary" onclick="dashboardComponents.validateNomenclature()">
+                                <i class="bi bi-search"></i> Executar Validação
+                            </button>
+                        </div>
+                        
+                        <div id="validationResults"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-expertzy-navy text-white py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <p class="mb-0">
+                        &copy; 2025 <strong>Expertzy - Inteligência Tributária</strong>
+                    </p>
+                    <small class="text-muted">Dashboard IndexedDB - Nomenclatura oficial DIProcessor.js</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small class="text-muted">
+                        <i class="bi bi-database"></i> Schema v3 | 
+                        <i class="bi bi-shield-check"></i> Zero Fallbacks | 
+                        <i class="bi bi-check-circle"></i> 100% Conformidade
+                    </small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- Bootstrap 5 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
+    <!-- Dexie.js for IndexedDB -->
+    <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.4/dist/dexie.min.js"></script>
+    
+    <!-- Dashboard Modules -->
+    <script src="src/modules/dashboard/dashboard-core.js"></script>
+    <script src="src/modules/dashboard/dashboard-components.js"></script>
+    <script src="src/modules/dashboard/dashboard-charts.js"></script>
+    
+    <!-- Loading Overlay Utilities -->
+    <style>
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(9, 26, 48, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+        
+        .loading-overlay.hidden {
+            display: none;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .expertzy-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #FF002D;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .text-expertzy-navy {
+            color: var(--expertzy-navy) !important;
+        }
+    </style>
+
+    <!-- Dashboard Initialization -->
+    <script>
+        // Global dashboard instances
+        let dashboardCore = null;
+        let dashboardComponents = null;
+        let dashboardCharts = null;
+        
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                console.log('🚀 Inicializando Dashboard IndexedDB...');
+                
+                // Show loading overlay
+                showLoadingOverlay('Conectando ao IndexedDB...');
+                
+                // Initialize core modules
+                dashboardCore = new DashboardCore();
+                dashboardComponents = new DashboardComponents(dashboardCore);
+                dashboardCharts = new DashboardCharts(dashboardCore);
+                
+                // Load initial data
+                showLoadingOverlay('Carregando dados...');
+                
+                await Promise.all([
+                    dashboardComponents.renderStatsCards(),
+                    dashboardComponents.renderDIsList(),
+                    dashboardComponents.renderTableStructure()
+                ]);
+                
+                // Load charts
+                showLoadingOverlay('Renderizando gráficos...');
+                await dashboardCharts.renderAllCharts();
+                
+                // Hide loading overlay
+                hideLoadingOverlay();
+                
+                console.log('✅ Dashboard inicializado com sucesso');
+                
+                // Show success message
+                showWelcomeMessage();
+                
+            } catch (error) {
+                console.error('❌ Erro ao inicializar dashboard:', error);
+                hideLoadingOverlay();
+                showErrorMessage('Erro ao inicializar dashboard: ' + error.message);
+            }
+        });
+        
+        // Loading overlay utilities
+        function showLoadingOverlay(message = 'Carregando...') {
+            const overlay = document.getElementById('loadingOverlay');
+            const messageEl = document.getElementById('loadingMessage');
+            
+            if (overlay && messageEl) {
+                messageEl.textContent = message;
+                overlay.classList.remove('hidden');
+            }
+        }
+        
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+            }
+        }
+        
+        function showWelcomeMessage() {
+            const alertHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i>
+                    <strong>Dashboard carregado!</strong> 
+                    Todos os dados estão usando a nomenclatura oficial DIProcessor.js.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            const container = document.querySelector('.container-fluid');
+            const alertDiv = document.createElement('div');
+            alertDiv.innerHTML = alertHTML;
+            container.insertBefore(alertDiv, container.firstChild);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+        
+        function showErrorMessage(message) {
+            const alertHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>Erro:</strong> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            const container = document.querySelector('.container-fluid');
+            const alertDiv = document.createElement('div');
+            alertDiv.innerHTML = alertHTML;
+            container.insertBefore(alertDiv, container.firstChild);
+        }
+        
+        // Handle window resize for charts
+        window.addEventListener('resize', () => {
+            if (dashboardCharts) {
+                dashboardCharts.resizeCharts();
+            }
+        });
+        
+        // Auto-refresh every 5 minutes
+        setInterval(async () => {
+            if (dashboardComponents && dashboardCharts) {
+                console.log('🔄 Auto-refresh dashboard...');
+                await dashboardComponents.refreshStats();
+                await dashboardCharts.updateCharts();
+            }
+        }, 300000); // 5 minutes
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + R: Refresh dashboard
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r' && e.shiftKey) {
+                e.preventDefault();
+                if (dashboardComponents) {
+                    dashboardComponents.refreshStats();
+                    dashboardComponents.refreshDIs();
+                }
+                if (dashboardCharts) {
+                    dashboardCharts.updateCharts();
+                }
+            }
+            
+            // Ctrl/Cmd + E: Export data
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                if (dashboardComponents) {
+                    dashboardComponents.exportData();
+                }
+            }
+            
+            // Ctrl/Cmd + V: Validate nomenclature
+            if ((e.ctrlKey || e.metaKey) && e.key === 'v' && e.shiftKey) {
+                e.preventDefault();
+                if (dashboardComponents) {
+                    dashboardComponents.validateNomenclature();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

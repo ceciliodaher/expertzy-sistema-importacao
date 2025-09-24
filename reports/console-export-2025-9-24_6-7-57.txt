@@ -1,0 +1,96 @@
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+🚀 DI Interface: Inicializando sistema... di-interface.js:35:13
+📋 Inicializando componentes do sistema... di-interface.js:45:17
+✅ IndexedDB inicializado di-interface.js:50:17
+🧹 Limpando localStorage para fresh start... di-interface.js:53:17
+✅ localStorage limpo di-interface.js:55:17
+ℹ️ Sistema novo - sem dados legados para migrar di-interface.js:61:17
+[DIProcessor] Configurações carregadas com sucesso 2 DIProcessor.js:27:21
+✅ Configurações do DIProcessor carregadas di-interface.js:72:17
+[ComplianceCalculator] Configurações carregadas com sucesso 2 ComplianceCalculator.js:45:21
+✅ Configurações do ComplianceCalculator carregadas di-interface.js:76:17
+[ComplianceCalculator] ItemCalculator integrado ComplianceCalculator.js:59:25
+[ComplianceCalculator] ProductMemoryManager integrado e inicializado ComplianceCalculator.js:75:21
+📊 Status do banco: 
+Object { hasData: true, stats: {…}, isHealthy: true, version: 1, dbName: "ExpertzyDB" }
+di-interface.js:2674:17
+💾 Encontradas 1 DIs no banco di-interface.js:2684:21
+🎉 Sistema inicializado com sucesso di-interface.js:96:17
+✅ ProductMemoryManager: 4 produtos carregados ProductMemoryManager.js:37:25
+⚙️ Abrindo gerenciador do banco... di-interface.js:2758:17
+🗑️ Limpando banco de dados... di-interface.js:2838:17
+📊 Status do banco: 
+Object { hasData: true, stats: {…}, isHealthy: true, version: 1, dbName: "ExpertzyDB" }
+di-interface.js:2674:17
+💾 Encontradas 0 DIs no banco di-interface.js:2684:21
+✅ Banco de dados limpo di-interface.js:2849:17
+📁 Arquivo arrastado: 2300120746.xml di-interface.js:1708:21
+🚀 processarDI: Iniciando processamento di-interface.js:239:13
+📋 Arquivo para processar: 2300120746.xml di-interface.js:244:13
+🔧 DIProcessor disponível: true di-interface.js:252:13
+⏳ Iniciando carregamento... di-interface.js:255:17
+📖 Lendo conteúdo do arquivo... di-interface.js:259:17
+✅ Arquivo lido. Tamanho: 267199 di-interface.js:261:17
+✅ XML convertido para base64 di-interface.js:265:17
+🔍 Processando XML com DIProcessor... di-interface.js:268:17
+Incoterm identificado: CFR - Cost and Freight - Custo e frete DIProcessor.js:155:25
+🔍 Extraindo despesas aduaneiras... DIProcessor.js:1066:17
+  ⚠️ II_OUTROS é imposto, não despesa: R$ 79185.09 DIProcessor.js:1133:29
+📋 Pagamento extraído: II_OUTROS (0086) = R$ 79185.09 DIProcessor.js:1139:25
+  ⚠️ IPI_VINCULADO é imposto, não despesa: R$ 33320.00 DIProcessor.js:1133:29
+📋 Pagamento extraído: IPI_VINCULADO (1038) = R$ 33320.00 DIProcessor.js:1139:25
+  ⚠️ PIS é imposto, não despesa: R$ 14050.41 DIProcessor.js:1133:29
+📋 Pagamento extraído: PIS (5602) = R$ 14050.41 DIProcessor.js:1139:25
+  ⚠️ COFINS é imposto, não despesa: R$ 67648.25 DIProcessor.js:1133:29
+📋 Pagamento extraído: COFINS (5629) = R$ 67648.25 DIProcessor.js:1139:25
+📋 Pagamento extraído: SISCOMEX (7811) = R$ 493.56 DIProcessor.js:1139:25
+💰 Total despesas aduaneiras para base ICMS: R$ 493.56 DIProcessor.js:1225:17
+✅ Despesas aduaneiras extraídas: 
+Object { siscomex: 493.56, afrmm: 0, capatazia: 0, total: 493.56 }
+DIProcessor.js:1090:17
+📊 Moeda VMLE/VMLD: 220, Taxa: 5.2177 BRL DIProcessor.js:641:17
+📂 ConfigLoader: Carregando configurações essenciais... ConfigLoader.js:23:21
+✅ ConfigLoader: Configurações carregadas com sucesso ConfigLoader.js:45:21
+✅ Moeda processada DATA-DRIVEN: USD (5.2177) DIProcessor.js:708:17
+✅ DI processada: SUCESSO di-interface.js:270:17
+💾 Salvando DI 2300120746 no IndexedDB... di-interface.js:275:25
+❌ Erro ao salvar DI no IndexedDB: Error: Descrição é obrigatória para produto da adição 001
+    saveDI IndexedDBManager.js:230
+    e dexie.js:3885
+    follow dexie.js:804
+    it dexie.js:1188
+    Je dexie.js:1092
+    follow dexie.js:794
+    t dexie.js:840
+    je dexie.js:654
+    follow dexie.js:793
+    s dexie.js:3884
+    at dexie.js:1204
+    Fe dexie.js:926
+    Ue dexie.js:998
+    Ne dexie.js:981
+    promise callback*ge< dexie.js:583
+    be dexie.js:600
+    Re dexie.js:919
+    e dexie.js:664
+    t dexie.js:840
+    je dexie.js:654
+    e dexie.js:663
+    i dexie.js:3855
+    _whenReady dexie.js:4701
+    _transaction dexie.js:4874
+    transaction dexie.js:4816
+    saveDI IndexedDBManager.js:123
+    processarDI di-interface.js:283
+di-interface.js:291:25
+    processarDI https://importa-precifica.local/src/di-interface.js:291
+❌ ERRO no processamento da DI: ReferenceError: showError is not defined
+    processarDI https://importa-precifica.local/src/di-interface.js:293
+di-interface.js:323:17
+Stack trace completo: processarDI@https://importa-precifica.local/src/di-interface.js:293:17
+di-interface.js:324:17
+Detalhes do erro: 
+Object { name: "ReferenceError", message: "showError is not defined", stack: "processarDI@https://importa-precifica.local/src/di-interface.js:293:17\n" }
+di-interface.js:325:17
+    processarDI https://importa-precifica.local/src/di-interface.js:325
