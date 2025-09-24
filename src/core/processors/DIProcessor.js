@@ -1180,24 +1180,23 @@ export class DIProcessor {
     }
 
     /**
-     * Calcula despesas automáticas (AFRMM, etc.)
+     * Extrai despesas automáticas das informações complementares (AFRMM, etc.)
+     * PRINCÍPIO: APENAS EXTRAIR dados da DI, NÃO calcular
      */
     async calcularDespesasAutomaticas(xmlDoc, despesas) {
-        // ===== AFRMM = 25% do frete marítimo =====
-        const viaTransporte = this.getTextContent(xmlDoc, 'viaTransporteCodigo');
+        // ===== AFRMM - EXTRAIR das informações complementares =====
+        const afrmmExtraido = this.diData.informacoes_complementares?.dados_extraidos?.afrmm_valor;
         
-        if (viaTransporte === '10') { // Via marítima
-            const freteValorReais = this.convertValue(this.getTextContent(xmlDoc, 'freteValorReais'), 'monetary');
-            
-            if (freteValorReais > 0) {
-                await this.ensureConfigsLoaded();
-                const afrmmRate = this.configLoader.getAFRMMRate();
-                const afrmm = freteValorReais * afrmmRate;
-                despesas.calculadas.afrmm = afrmm;
-                
-                console.log(`📋 AFRMM calculado: ${afrmmRate * 100}% de R$ ${freteValorReais.toFixed(2)} = R$ ${afrmm.toFixed(2)}`);
-            }
+        if (afrmmExtraido && afrmmExtraido > 0) {
+            despesas.calculadas.afrmm = afrmmExtraido;
+            console.log(`✅ AFRMM extraído das informações complementares: R$ ${afrmmExtraido.toFixed(2)}`);
+        } else {
+            console.log(`⚠️ AFRMM não encontrado nas informações complementares`);
         }
+        
+        // ===== OUTRAS DESPESAS - podem ser adicionadas aqui no futuro =====
+        // Exemplo: Taxas portuárias, despesas de armazenagem, etc.
+        // Sempre EXTRAIR das informações da DI, nunca calcular
     }
 
 

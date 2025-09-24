@@ -632,10 +632,34 @@ class IndexedDBManager {
         }
 
         // Buscar despesas
-        di.despesas_aduaneiras = await this.db.despesas_aduaneiras
+        const despesasAduaneiras = await this.db.despesas_aduaneiras
             .where('di_id')
             .equals(di.id)
             .toArray();
+
+        // RECONSTRUIR ESTRUTURA despesas_aduaneiras.calculadas - CRÍTICO para ComplianceCalculator
+        const despesasCalculadas = {};
+        despesasAduaneiras.forEach(despesa => {
+            if (despesa.tipo === 'SISCOMEX') despesasCalculadas.siscomex = despesa.valor;
+            if (despesa.tipo === 'AFRMM') despesasCalculadas.afrmm = despesa.valor;  
+            if (despesa.tipo === 'CAPATAZIA') despesasCalculadas.capatazia = despesa.valor;
+            if (despesa.tipo === 'TAXA_CE') despesasCalculadas.taxa_ce = despesa.valor;
+        });
+
+        // Estrutura compatível com DIProcessor.js - Nomenclatura oficial
+        di.despesas_aduaneiras = {
+            calculadas: despesasCalculadas,
+            pagamentos: despesasAduaneiras.filter(d => ['SISCOMEX', 'ANTI_DUMPING', 'MEDIDA_COMPENSATORIA'].includes(d.tipo)),
+            acrescimos: despesasAduaneiras.filter(d => ['CAPATAZIA', 'TAXA_CE'].includes(d.tipo)),
+            total_despesas_aduaneiras: Object.values(despesasCalculadas).reduce((sum, val) => sum + (val || 0), 0)
+        };
+
+        console.log('🔧 Estrutura despesas_aduaneiras reconstituída do IndexedDB:', {
+            siscomex: di.despesas_aduaneiras.calculadas.siscomex,
+            afrmm: di.despesas_aduaneiras.calculadas.afrmm,
+            capatazia: di.despesas_aduaneiras.calculadas.capatazia,
+            total: di.despesas_aduaneiras.total_despesas_aduaneiras
+        });
 
         // Buscar dados de carga
         di.carga = await this.db.dados_carga
