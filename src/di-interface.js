@@ -393,17 +393,17 @@ function populateStep2Data(diData) {
     // Initialize expense preview
     updateExpensePreview();
     
-    // Initialize incentives system
-    const estado = diData.importador?.estado;
+    // Initialize incentives system (ALWAYS show section)
+    const estado = diData.importador?.endereco_uf;
     const ncms = extractNCMsFromDI(diData);
-    if (estado) {
-        initializeIncentives(estado, ncms).catch(error => {
-            console.warn('⚠️ Não foi possível inicializar sistema de incentivos:', error.message);
-        });
-    } else {
-        console.warn('⚠️ Estado do importador não encontrado - sistema de incentivos não disponível');
-        hideIncentivesSection();
-    }
+    
+    // Always initialize incentives system, regardless of state
+    initializeIncentives(estado, ncms).catch(error => {
+        console.warn('⚠️ Não foi possível inicializar sistema de incentivos:', error.message);
+        // Still show section even if initialization fails
+        showIncentivesSection();
+        populateAllIncentivePrograms();
+    });
 }
 
 /**
@@ -1558,10 +1558,13 @@ function setupIncentivesEventListeners() {
 }
 
 /**
- * Initialize incentives system for current DI
+ * Initialize incentives system for current DI (ALWAYS shows section)
  */
 async function initializeIncentives(estado, ncms = []) {
-    console.log('🎯 Inicializando sistema de incentivos para:', estado);
+    console.log('🎯 Inicializando sistema de incentivos para:', estado || 'TODOS OS ESTADOS');
+    
+    // Always ensure section is visible
+    showIncentivesSection();
     
     try {
         // Initialize IncentiveManager if not already initialized
@@ -1572,28 +1575,34 @@ async function initializeIncentives(estado, ncms = []) {
         }
         
         if (!incentiveManager) {
-            console.warn('⚠️ Sistema de incentivos não disponível - IncentiveManager não encontrado');
-            hideIncentivesSection();
+            console.warn('⚠️ Sistema de incentivos não disponível - usando lista básica');
+            populateAllIncentivePrograms();
             return;
         }
         
-        // Get available programs for this state
-        availablePrograms = incentiveManager.getAvailablePrograms(estado);
-        console.log(`📋 Programas disponíveis para ${estado}:`, availablePrograms);
+        // Get available programs for this state, or all programs if no state
+        if (estado) {
+            availablePrograms = incentiveManager.getAvailablePrograms(estado);
+            console.log(`📋 Programas disponíveis para ${estado}:`, availablePrograms);
+        } else {
+            availablePrograms = getAllIncentivePrograms();
+            console.log('📋 Carregando TODOS os programas para simulação:', availablePrograms.length);
+        }
         
         // Populate program options
-        populateIncentiveOptions(availablePrograms, ncms);
+        populateIncentiveOptions(availablePrograms, ncms, estado);
         
     } catch (error) {
         console.error('❌ Erro ao inicializar sistema de incentivos:', error.message);
-        hideIncentivesSection();
+        console.warn('⚠️ Continuando com lista básica de programas');
+        populateAllIncentivePrograms();
     }
 }
 
 /**
- * Populate incentive program options
+ * Populate incentive program options (with cross-state validation)
  */
-function populateIncentiveOptions(programas, ncms) {
+function populateIncentiveOptions(programas, ncms, estadoEmpresa) {
     const programSelect = document.getElementById('incentiveProgram');
     if (!programSelect) return;
     
@@ -1668,14 +1677,29 @@ async function onProgramSelectionChange() {
     try {
         // Get current DI NCMs for validation
         const ncms = currentDI ? extractNCMsFromDI(currentDI) : [];
-        const estado = currentDI ? currentDI.importador?.estado : null;
+        const estadoEmpresa = currentDI ? currentDI.importador?.endereco_uf : null;
         
-        if (!estado) {
-            throw new Error('Estado do importador não encontrado');
+        // Extract program state from code (SC_TTD_409 -> SC)
+        const estadoPrograma = programCodigo.split('_')[0];
+        
+        // Check for cross-state selection
+        if (estadoEmpresa && estadoPrograma !== estadoEmpresa) {
+            const confirmacao = await showCrossStateConfirmation(estadoEmpresa, estadoPrograma, programCodigo);
+            if (!confirmacao) {
+                // User cancelled, reset selection
+                incentiveProgram.value = '';
+                selectedIncentive = null;
+                hideIncentiveInfo();
+                return;
+            }
+            console.log(`✅ Usuário confirmou simulação cross-state: ${estadoEmpresa} -> ${estadoPrograma}`);
         }
         
+        // Use company state for validation, or program state if confirmed cross-state
+        const estadoValidacao = estadoEmpresa || estadoPrograma;
+        
         // Validate eligibility
-        const elegibilidade = incentiveManager.validateEligibility(estado, programCodigo, ncms);
+        const elegibilidade = incentiveManager.validateEligibility(estadoValidacao, programCodigo, ncms);
         
         if (!elegibilidade.elegivel) {
             showIncentiveWarning(elegibilidade.motivo);
@@ -1686,6 +1710,9 @@ async function onProgramSelectionChange() {
         // Set selected incentive
         const programa = availablePrograms.find(p => p.codigo === programCodigo);
         selectedIncentive = {
+            estadoEmpresa: estadoEmpresa,
+            estadoPrograma: estadoPrograma,
+            crossState: estadoEmpresa && estadoPrograma !== estadoEmpresa,
             programa: programCodigo,
             nome: programa.nome,
             tipo: programa.tipo,
@@ -1757,6 +1784,155 @@ function hideIncentivesSection() {
     if (incentivesSection) {
         incentivesSection.style.display = 'none';
     }
+}
+
+/**
+ * Show entire incentives section (always visible now)
+ */
+function showIncentivesSection() {
+    const incentivesSection = document.getElementById('incentivesSection');
+    if (incentivesSection) {
+        incentivesSection.style.display = 'block';
+        console.log('✅ Seção de incentivos fiscais está visível');
+    }
+}
+
+/**
+ * Get all available incentive programs from beneficios.json (NO HARDCODED DATA)
+ */
+async function getAllIncentivePrograms() {
+    try {
+        const pathResolver = typeof PathResolver !== 'undefined' ? new PathResolver() : null;
+        const beneficiosPath = pathResolver ? 
+            pathResolver.resolveDataPath('beneficios.json') : 
+            '/src/shared/data/beneficios.json';
+            
+        const response = await fetch(beneficiosPath);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        const programs = [];
+        
+        // Extract all programs from beneficios.json
+        for (const [codigo, programa] of Object.entries(data.programas)) {
+            programs.push({
+                codigo: codigo,
+                nome: programa.nome,
+                estado: codigo.split('_')[0], // Extract state from code (SC_TTD_409 -> SC)
+                tipo: programa.tipo,
+                descricao: programa.descricao
+            });
+        }
+        
+        console.log(`📋 ${programs.length} programas carregados de beneficios.json`);
+        return programs;
+        
+    } catch (error) {
+        console.error('❌ Erro ao carregar programas de beneficios.json:', error.message);
+        throw new Error('Não foi possível carregar lista de programas de incentivos');
+    }
+}
+
+/**
+ * Populate all incentive programs when system fails (uses beneficios.json)
+ */
+async function populateAllIncentivePrograms() {
+    const incentiveProgram = document.getElementById('incentiveProgram');
+    if (!incentiveProgram) return;
+    
+    try {
+        const programs = await getAllIncentivePrograms();
+        
+        // Clear existing options
+        incentiveProgram.innerHTML = '<option value="">Selecione um programa...</option>';
+        
+        // Add all programs from JSON file
+        programs.forEach(program => {
+            const option = document.createElement('option');
+            option.value = program.codigo;
+            option.textContent = `${program.estado} - ${program.nome}`;
+            incentiveProgram.appendChild(option);
+        });
+        
+        console.log(`✅ ${programs.length} programas carregados para simulação`);
+        
+    } catch (error) {
+        console.error('❌ Falha ao carregar programas:', error.message);
+        // Only show error message, don't hardcode any programs
+        incentiveProgram.innerHTML = '<option value="">Erro: Não foi possível carregar programas</option>';
+    }
+}
+
+/**
+ * Show confirmation dialog for cross-state program selection
+ */
+async function showCrossStateConfirmation(estadoEmpresa, estadoPrograma, programCodigo) {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal fade';
+        modal.id = 'crossStateModal';
+        modal.setAttribute('tabindex', '-1');
+        modal.innerHTML = `
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title">⚠️ Programa de Outro Estado Selecionado</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            <h6><i class="bi bi-info-circle"></i> Simulação Cross-Estado</h6>
+                            <p><strong>Estado da sua empresa:</strong> ${estadoEmpresa || 'Não identificado'}</p>
+                            <p><strong>Estado do programa selecionado:</strong> ${estadoPrograma}</p>
+                            <p><strong>Programa:</strong> ${programCodigo}</p>
+                        </div>
+                        <p>Você selecionou um programa de incentivo fiscal de <strong>${estadoPrograma}</strong>, mas sua empresa está localizada em <strong>${estadoEmpresa}</strong>.</p>
+                        <p>Isso pode ser útil para:</p>
+                        <ul>
+                            <li><strong>Simulações:</strong> Comparar benefícios entre estados</li>
+                            <li><strong>Planejamento:</strong> Avaliar mudança de localização</li>
+                            <li><strong>Análise:</strong> Estudar impacto de diferentes regimes tributários</li>
+                        </ul>
+                        <div class="alert alert-warning">
+                            <strong>Atenção:</strong> Os cálculos serão feitos considerando as regras do estado <strong>${estadoPrograma}</strong>.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelCrossState">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-warning" id="confirmCrossState">
+                            <i class="bi bi-calculator"></i> Continuar Simulação
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+        
+        // Handle confirmation
+        modal.querySelector('#confirmCrossState').addEventListener('click', () => {
+            bootstrapModal.hide();
+            resolve(true);
+        });
+        
+        // Handle cancellation
+        modal.querySelector('#cancelCrossState').addEventListener('click', () => {
+            bootstrapModal.hide();
+            resolve(false);
+        });
+        
+        // Handle modal close
+        modal.addEventListener('hidden.bs.modal', () => {
+            document.body.removeChild(modal);
+        });
+    });
 }
 
 /**

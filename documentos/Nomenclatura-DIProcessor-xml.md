@@ -123,6 +123,50 @@ Com base na análise do arquivo **DIProcessor.js**, identifiquei a nomenclatura 
 - `16` → `CAPATAZIA` (Capatazia)
 - `17` → `TAXA_CE` (Taxa CE - Conhecimento Embarque)
 
+### **Incentivos Fiscais (Registro: `diData.incentivos`)**
+
+| Campo JavaScript       | Módulo Criador           | Tipo    | Descrição                                     |
+|:---------------------- |:------------------------ |:------- |:--------------------------------------------- |
+| `possui_incentivo`     | IncentiveManager.js      | boolean | Indica se a empresa possui incentivo fiscal   |
+| `programa_selecionado` | IncentiveManager.js      | string  | Código do programa de incentivo selecionado   |
+| `programas_disponiveis`| IncentiveManager.js      | array   | Lista de programas disponíveis para o estado  |
+| `estado_empresa`       | IncentiveManager.js      | string  | Estado da empresa (UF do importador)          |
+| `estado_programa`      | IncentiveManager.js      | string  | Estado do programa selecionado                |
+| `cross_state`          | IncentiveManager.js      | boolean | Indica se é simulação cross-estado            |
+| `incentivo_aplicado`   | IncentiveManager.js      | object  | Dados do incentivo aplicado na importação     |
+
+### **IndexedDB - Tabelas de Incentivos (Schema v3)**
+
+| Tabela                 | Campos Principais                      | Módulo Criador      | Descrição                    |
+|:---------------------- |:-------------------------------------- |:------------------- |:---------------------------- |
+| `incentivos_entrada`   | `di_id`, `estado`, `tipo_beneficio`    | IndexedDBManager.js | Incentivos na entrada        |
+| `incentivos_saida`     | `di_id`, `estado`, `operacao`          | IndexedDBManager.js | Incentivos na saída          |
+| `elegibilidade_ncm`    | `ncm`, `estado`, `incentivo_codigo`    | IndexedDBManager.js | Elegibilidade por NCM        |
+
+### **Validações de Nomenclatura (NO FALLBACKS)**
+
+```javascript
+// ✅ OBRIGATÓRIO: Validação em todos os módulos que usam incentivos
+if (objeto.selected_incentive) {
+    throw new Error('VIOLAÇÃO NOMENCLATURA: Use "programa_selecionado" não "selected_incentive"');
+}
+
+if (objeto.has_incentive !== undefined) {
+    throw new Error('VIOLAÇÃO NOMENCLATURA: Use "possui_incentivo" não "has_incentive"');  
+}
+
+if (objeto.available_programs) {
+    throw new Error('VIOLAÇÃO NOMENCLATURA: Use "programas_disponiveis" não "available_programs"');
+}
+```
+
+### **Hierarquia de Autoridade para Incentivos**
+
+1. **IncentiveManager.js**: PRIMARY CREATOR para nomenclatura de incentivos
+2. **di-interface.js**: CONSUMER (deve seguir nomenclatura do IncentiveManager)
+3. **IndexedDBManager.js**: CONSUMER (implementa schema seguindo IncentiveManager)
+4. **CroquiNFExporter.js**: CONSUMER (usa dados de incentivos para CST 51)
+
 ### **Conversões de Tipos**
 
 O sistema utiliza conversões específicas para diferentes tipos de dados:
