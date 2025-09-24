@@ -84,10 +84,20 @@ export class ComplianceCalculator {
      * Calcular impostos para TODAS as adições de uma DI
      * @param {object} di - Objeto DI completo com todas as adições
      * @param {object} despesasConsolidadas - Despesas totais da DI
+     * @param {object} incentivo - Dados do incentivo fiscal selecionado (opcional)
      * @returns {object} Cálculo consolidado de todas as adições
      */
-    async calcularTodasAdicoes(di, despesasConsolidadas = null) {
+    async calcularTodasAdicoes(di, despesasConsolidadas = null, incentivo = null) {
         console.log('📋 ComplianceCalculator: Processando DI completa com múltiplas adições...');
+        
+        // Processar incentivo fiscal se fornecido
+        if (incentivo) {
+            console.log(`💰 Aplicando incentivo fiscal: ${incentivo.programa} (${incentivo.tipo})`);
+            // Validar nomenclatura do incentivo
+            if (incentivo.selected_incentive || incentivo.has_incentive || incentivo.available_programs) {
+                throw new Error('VIOLAÇÃO NOMENCLATURA: Incentivo deve usar nomenclatura oficial (programa_selecionado, possui_incentivo, programas_disponiveis)');
+            }
+        }
         
         if (!di || !di.adicoes || di.adicoes.length === 0) {
             throw new Error('DI sem adições válidas para cálculo');

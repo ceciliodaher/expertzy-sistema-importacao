@@ -31,14 +31,35 @@ let currentStep = 1;
 let expenseCounter = 0;
 let currencyMasks = [];
 
-// Incentives system
+// Incentives system (nomenclatura oficial)
 let incentiveManager = null;
-let selectedIncentive = null;
-let availablePrograms = [];
+let programa_selecionado = null;
+let programas_disponiveis = [];
+
+// ✅ VALIDAÇÕES NO FALLBACKS para nomenclatura incorreta
+function validateIncentiveNomenclature(objeto) {
+    if (objeto.selected_incentive !== undefined) {
+        throw new Error('VIOLAÇÃO NOMENCLATURA: Use "programa_selecionado" não "selected_incentive"');
+    }
+    if (objeto.has_incentive !== undefined) {
+        throw new Error('VIOLAÇÃO NOMENCLATURA: Use "possui_incentivo" não "has_incentive"');
+    }
+    if (objeto.available_programs !== undefined) {
+        throw new Error('VIOLAÇÃO NOMENCLATURA: Use "programas_disponiveis" não "available_programs"');
+    }
+}
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 DI Interface: Inicializando sistema...');
+    
+    // Validar nomenclatura na inicialização
+    try {
+        validateIncentiveNomenclature(window);
+        console.log('✅ Nomenclatura de incentivos validada');
+    } catch (error) {
+        console.error('❌ Erro de nomenclatura:', error.message);
+    }
     initializeSystem();
     setupEventListeners();
 });
@@ -289,11 +310,11 @@ async function processarDI() {
                 }
                 
                 // Add incentive data to DI before saving
-                if (selectedIncentive) {
-                    currentDI.incentive_program = selectedIncentive.programa;
+                if (programa_selecionado) {
+                    currentDI.incentive_program = programa_selecionado.programa;
                     currentDI.incentive_applied = true;
-                    currentDI.incentive_name = selectedIncentive.nome;
-                    console.log('💰 Incluindo dados de incentivos na DI:', selectedIncentive.programa);
+                    currentDI.incentive_name = programa_selecionado.nome;
+                    console.log('💰 Incluindo dados de incentivos na DI:', programa_selecionado.programa);
                 } else {
                     currentDI.incentive_program = null;
                     currentDI.incentive_applied = false;
@@ -1582,15 +1603,15 @@ async function initializeIncentives(estado, ncms = []) {
         
         // Get available programs for this state, or all programs if no state
         if (estado) {
-            availablePrograms = incentiveManager.getAvailablePrograms(estado);
-            console.log(`📋 Programas disponíveis para ${estado}:`, availablePrograms);
+            programas_disponiveis = incentiveManager.getAvailablePrograms(estado);
+            console.log(`📋 Programas disponíveis para ${estado}:`, programas_disponiveis);
         } else {
-            availablePrograms = getAllIncentivePrograms();
-            console.log('📋 Carregando TODOS os programas para simulação:', availablePrograms.length);
+            programas_disponiveis = getAllIncentivePrograms();
+            console.log('📋 Carregando TODOS os programas para simulação:', programas_disponiveis.length);
         }
         
         // Populate program options
-        populateIncentiveOptions(availablePrograms, ncms, estado);
+        populateIncentiveOptions(programas_disponiveis, ncms, estado);
         
     } catch (error) {
         console.error('❌ Erro ao inicializar sistema de incentivos:', error.message);
@@ -1642,7 +1663,7 @@ function onIncentiveSelectionChange() {
         noIncentiveInfo.style.display = 'none';
         
         // Check if programs are available
-        if (availablePrograms.length === 0) {
+        if (programas_disponiveis.length === 0) {
             showIncentiveWarning('Nenhum programa de incentivo disponível para o estado da sua empresa.');
             incentiveSelection.style.display = 'none';
         }
@@ -1651,13 +1672,13 @@ function onIncentiveSelectionChange() {
         noIncentiveInfo.style.display = 'block';
         incentiveInfo.style.display = 'none';
         incentiveWarning.style.display = 'none';
-        selectedIncentive = null;
+        programa_selecionado = null;
     } else {
         incentiveSelection.style.display = 'none';
         noIncentiveInfo.style.display = 'none';
         incentiveInfo.style.display = 'none';
         incentiveWarning.style.display = 'none';
-        selectedIncentive = null;
+        programa_selecionado = null;
     }
 }
 
@@ -1669,7 +1690,7 @@ async function onProgramSelectionChange() {
     const programCodigo = incentiveProgram.value;
     
     if (!programCodigo || !incentiveManager) {
-        selectedIncentive = null;
+        programa_selecionado = null;
         hideIncentiveInfo();
         return;
     }
@@ -1688,7 +1709,7 @@ async function onProgramSelectionChange() {
             if (!confirmacao) {
                 // User cancelled, reset selection
                 incentiveProgram.value = '';
-                selectedIncentive = null;
+                programa_selecionado = null;
                 hideIncentiveInfo();
                 return;
             }
@@ -1703,13 +1724,13 @@ async function onProgramSelectionChange() {
         
         if (!elegibilidade.elegivel) {
             showIncentiveWarning(elegibilidade.motivo);
-            selectedIncentive = null;
+            programa_selecionado = null;
             return;
         }
         
         // Set selected incentive
-        const programa = availablePrograms.find(p => p.codigo === programCodigo);
-        selectedIncentive = {
+        const programa = programas_disponiveis.find(p => p.codigo === programCodigo);
+        programa_selecionado = {
             estadoEmpresa: estadoEmpresa,
             estadoPrograma: estadoPrograma,
             crossState: estadoEmpresa && estadoPrograma !== estadoEmpresa,
@@ -1721,12 +1742,12 @@ async function onProgramSelectionChange() {
         };
         
         showIncentiveInfo(programa);
-        console.log('🎯 Programa selecionado:', selectedIncentive);
+        console.log('🎯 Programa selecionado:', programa_selecionado);
         
     } catch (error) {
         console.error('❌ Erro ao validar programa:', error.message);
         showIncentiveWarning(`Erro ao validar programa: ${error.message}`);
-        selectedIncentive = null;
+        programa_selecionado = null;
     }
 }
 
@@ -1950,7 +1971,7 @@ function extractNCMsFromDI(diData) {
  * Get current incentive selection data
  */
 function getSelectedIncentiveData() {
-    return selectedIncentive;
+    return programa_selecionado;
 }
 
 /**
