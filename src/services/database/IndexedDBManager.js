@@ -429,35 +429,42 @@ class IndexedDBManager {
 
                     // SALVAR DESPESAS ADUANEIRAS - Nomenclatura já oficial
                     if (diData.despesas_aduaneiras) {
+                        console.log('💰 Salvando despesas aduaneiras:', {
+                            siscomex: diData.despesas_aduaneiras.calculadas?.siscomex,
+                            afrmm: diData.despesas_aduaneiras.calculadas?.afrmm,
+                            capatazia: diData.despesas_aduaneiras.calculadas?.capatazia
+                        });
                         // SISCOMEX
-                        if (diData.despesas_aduaneiras.siscomex !== undefined && diData.despesas_aduaneiras.siscomex > 0) {
+                        if (diData.despesas_aduaneiras.calculadas?.siscomex !== undefined && diData.despesas_aduaneiras.calculadas.siscomex > 0) {
                             const codigoSiscomex = this.getCodigoReceita('SISCOMEX');
                             await this.db.despesas_aduaneiras.add({
                                 di_id: diId,
                                 tipo: 'SISCOMEX',
-                                valor: diData.despesas_aduaneiras.siscomex,
+                                valor: diData.despesas_aduaneiras.calculadas.siscomex,
                                 codigo_receita: codigoSiscomex
                             });
+                            console.log(`✅ SISCOMEX salvo: R$ ${diData.despesas_aduaneiras.calculadas.siscomex.toFixed(2)}`);
                         }
                         
                         // AFRMM
-                        if (diData.despesas_aduaneiras.afrmm !== undefined && diData.despesas_aduaneiras.afrmm > 0) {
+                        if (diData.despesas_aduaneiras.calculadas?.afrmm !== undefined && diData.despesas_aduaneiras.calculadas.afrmm > 0) {
                             const codigoAFRMM = this.getCodigoReceita('AFRMM');
                             await this.db.despesas_aduaneiras.add({
                                 di_id: diId,
                                 tipo: 'AFRMM',
-                                valor: diData.despesas_aduaneiras.afrmm,
+                                valor: diData.despesas_aduaneiras.calculadas.afrmm,
                                 codigo_receita: codigoAFRMM
                             });
+                            console.log(`✅ AFRMM salvo: R$ ${diData.despesas_aduaneiras.calculadas.afrmm.toFixed(2)}`);
                         }
                         
                         // CAPATAZIA
-                        if (diData.despesas_aduaneiras.capatazia !== undefined && diData.despesas_aduaneiras.capatazia > 0) {
+                        if (diData.despesas_aduaneiras.calculadas?.capatazia !== undefined && diData.despesas_aduaneiras.calculadas.capatazia > 0) {
                             const codigoCapatazia = this.getCodigoReceita('CAPATAZIA');
                             await this.db.despesas_aduaneiras.add({
                                 di_id: diId,
                                 tipo: 'CAPATAZIA',
-                                valor: diData.despesas_aduaneiras.capatazia,
+                                valor: diData.despesas_aduaneiras.calculadas.capatazia,
                                 codigo_receita: codigoCapatazia
                             });
                         }

@@ -1358,6 +1358,63 @@ export class DIProcessor {
     getDespesasAutomaticas() {
         return this.diData.despesas_aduaneiras || {};
     }
+
+    /**
+     * Carrega dados de moedas do arquivo de configuração
+     * @returns {Promise<Object>} Dados das moedas
+     */
+    async loadMoedasData() {
+        if (!this.moedasData) {
+            const response = await fetch('/src/shared/data/moedas-siscomex.json');
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar moedas-siscomex.json: ${response.status}`);
+            }
+            this.moedasData = await response.json();
+        }
+        return this.moedasData;
+    }
+
+    /**
+     * Retorna dados da moeda baseado no código SISCOMEX
+     * @param {string} codigoSiscomex - Código SISCOMEX da moeda
+     * @returns {Promise<Object>} Dados da moeda (símbolo, nome, etc.)
+     */
+    async getCurrencyData(codigoSiscomex) {
+        const moedasData = await this.loadMoedasData();
+        const moeda = moedasData.moedas.find(m => m.codigo_siscomex === codigoSiscomex);
+        
+        if (!moeda) {
+            throw new Error(`Código de moeda SISCOMEX '${codigoSiscomex}' não encontrado em moedas-siscomex.json`);
+        }
+        
+        return moeda;
+    }
+
+    /**
+     * Formata valor com símbolo de moeda correto
+     * @param {number} valor - Valor a ser formatado  
+     * @param {string} codigoSiscomex - Código SISCOMEX da moeda
+     * @returns {Promise<string>} Valor formatado com símbolo
+     */
+    async formatCurrency(valor, codigoSiscomex) {
+        const moedaData = await this.getCurrencyData(codigoSiscomex);
+        const simbolo = moedaData.simbolo;
+        const decimais = moedaData.decimais;
+        
+        if (moedaData.codigo_iso === 'USD') {
+            // USD - formato americano
+            return `${simbolo} ${valor.toLocaleString('en-US', { 
+                minimumFractionDigits: decimais, 
+                maximumFractionDigits: decimais 
+            })}`;
+        } else {
+            // BRL e outras - formato brasileiro  
+            return `${simbolo} ${valor.toLocaleString('pt-BR', { 
+                minimumFractionDigits: decimais, 
+                maximumFractionDigits: decimais 
+            })}`;
+        }
+    }
 }
 
 // Export para uso em outros módulos
