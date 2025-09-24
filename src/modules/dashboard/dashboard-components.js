@@ -10,6 +10,9 @@ class DashboardComponents {
         this.core = dashboardCore;
         this.searchTimeout = null;
         this.currentFilter = '';
+        this.currentPageSize = 50;
+        this.currentFilters = {};
+        this.navigationStack = [{ level: 'declaracoes', title: 'Declarações', id: null }];
     }
     
     /**
@@ -853,57 +856,6 @@ class DashboardComponents {
         `;
     }
     
-    /**
-     * Validar nomenclatura e mostrar resultados
-     */
-    async validateNomenclature() {
-        const resultsContainer = document.getElementById('validationResults');
-        if (!resultsContainer) return;
-        
-        try {
-            resultsContainer.innerHTML = this.getLoadingHTML('Validando nomenclatura...');
-            
-            const validation = await this.core.validateNomenclature();
-            
-            const resultHTML = `
-                <div class="validation-result ${validation.isValid ? 'success' : 'warning'}">
-                    <h6><i class="bi bi-${validation.isValid ? 'check-circle' : 'exclamation-triangle'}"></i> ${validation.summary}</h6>
-                    
-                    <div class="mt-3">
-                        <h6>Verificações Realizadas:</h6>
-                        <ul class="validation-list">
-                            ${validation.checks.map(check => `
-                                <li>
-                                    <i class="bi bi-${check.status === 'success' ? 'check-circle text-success' : 'x-circle text-danger'}"></i>
-                                    <span class="validation-code">${check.field}</span>: ${check.message}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                    
-                    ${validation.violations.length > 0 ? `
-                        <div class="mt-3">
-                            <h6>Violações Encontradas:</h6>
-                            <ul class="validation-list">
-                                ${validation.violations.map(violation => `
-                                    <li>
-                                        <i class="bi bi-exclamation-triangle text-warning"></i>
-                                        <strong>${violation.type}:</strong> ${violation.message} (${violation.count} registro(s))
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-            
-            resultsContainer.innerHTML = resultHTML;
-            
-        } catch (error) {
-            console.error('❌ Erro na validação:', error);
-            resultsContainer.innerHTML = this.getErrorHTML('Erro durante validação: ' + error.message);
-        }
-    }
     
     /**
      * Actions
@@ -1040,6 +992,33 @@ class DashboardComponents {
             maximumFractionDigits: 2
         }).format(value);
     }
+
+    // Sistema de moedas correto com símbolos
+    formatCurrency(value, currency = 'BRL') {
+        if (!value || value === 0) return currency === 'BRL' ? 'R$ 0,00' : '$ 0.00';
+        
+        if (currency === 'USD') {
+            return '$ ' + new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        } else {
+            return 'R$ ' + new Intl.NumberFormat('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value);
+        }
+    }
+
+    // Formato para valores monetários com detecção automática de moeda
+    formatMoneyWithCurrency(value, currencyCode = null) {
+        if (!value || value === 0) return currencyCode === 'USD' ? '$ 0.00' : 'R$ 0,00';
+        
+        // Se não especificado, detecta pela magnitude (valores USD geralmente menores)
+        const detectedCurrency = currencyCode || (value > 10000 ? 'BRL' : 'USD');
+        
+        return this.formatCurrency(value, detectedCurrency);
+    }
     
     showAlert(message, type = 'info') {
         const alertHTML = `
@@ -1070,6 +1049,1093 @@ class DashboardComponents {
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';
             }, index * 100);
+        });
+    }
+
+    /**
+     * Sistema de Paginação Avançada
+     */
+    renderPaginationControls(currentPage, totalPages, totalRecords, pageSize = 50) {
+        if (totalPages <= 1) return '';
+        
+        const startRecord = (currentPage - 1) * pageSize + 1;
+        const endRecord = Math.min(currentPage * pageSize, totalRecords);
+        
+        // Gerar números de página visíveis
+        const visiblePages = this.getVisiblePages(currentPage, totalPages);
+        
+        return `
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    <span class="records-info">
+                        Mostrando ${startRecord}-${endRecord} de ${totalRecords.toLocaleString('pt-BR')} registros
+                    </span>
+                    <div class="page-size-selector">
+                        <label>Registros por página:</label>
+                        <select class="form-select form-select-sm" onchange="dashboardComponents.changePageSize(this.value)">
+                            <option value="10" ${pageSize === 10 ? 'selected' : ''}>10</option>
+                            <option value="25" ${pageSize === 25 ? 'selected' : ''}>25</option>
+                            <option value="50" ${pageSize === 50 ? 'selected' : ''}>50</option>
+                            <option value="100" ${pageSize === 100 ? 'selected' : ''}>100</option>
+                            <option value="250" ${pageSize === 250 ? 'selected' : ''}>250</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <nav aria-label="Navegação de páginas">
+                    <ul class="pagination pagination-sm">
+                        <!-- Primeira página -->
+                        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                            <button class="page-link" onclick="dashboardComponents.goToPage(1)" ${currentPage === 1 ? 'disabled' : ''}>
+                                <i class="bi bi-chevron-double-left"></i>
+                            </button>
+                        </li>
+                        
+                        <!-- Página anterior -->
+                        <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                            <button class="page-link" onclick="dashboardComponents.goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                        </li>
+                        
+                        <!-- Números de página -->
+                        ${visiblePages.map(page => `
+                            <li class="page-item ${page === currentPage ? 'active' : ''}">
+                                <button class="page-link" onclick="dashboardComponents.goToPage(${page})">${page}</button>
+                            </li>
+                        `).join('')}
+                        
+                        <!-- Próxima página -->
+                        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                            <button class="page-link" onclick="dashboardComponents.goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </li>
+                        
+                        <!-- Última página -->
+                        <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                            <button class="page-link" onclick="dashboardComponents.goToPage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''}>
+                                <i class="bi bi-chevron-double-right"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <!-- Jump to page -->
+                <div class="jump-to-page">
+                    <label>Ir para página:</label>
+                    <input type="number" class="form-control form-control-sm" 
+                           min="1" max="${totalPages}" 
+                           placeholder="${currentPage}"
+                           onkeypress="if(event.key==='Enter') dashboardComponents.jumpToPage(this.value)">
+                    <button class="btn btn-sm btn-outline-primary" onclick="dashboardComponents.jumpToPage(document.querySelector('.jump-to-page input').value)">
+                        Ir
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Calcular páginas visíveis para paginação
+    getVisiblePages(currentPage, totalPages, maxVisible = 5) {
+        const pages = [];
+        let start, end;
+        
+        if (totalPages <= maxVisible) {
+            start = 1;
+            end = totalPages;
+        } else {
+            const half = Math.floor(maxVisible / 2);
+            start = Math.max(1, currentPage - half);
+            end = Math.min(totalPages, start + maxVisible - 1);
+            
+            if (end - start < maxVisible - 1) {
+                start = Math.max(1, end - maxVisible + 1);
+            }
+        }
+        
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+        
+        return pages;
+    }
+
+    // Navegar para página específica
+    async goToPage(page) {
+        const currentTable = this.getCurrentActiveTable();
+        if (!currentTable) return;
+        
+        this.showLoadingOverlay('Carregando página...');
+        
+        try {
+            await this.renderTable(currentTable, page, this.currentPageSize, this.currentFilters);
+        } catch (error) {
+            console.error('❌ Erro ao navegar para página:', error);
+            this.showAlert('Erro ao carregar página: ' + error.message, 'danger');
+        } finally {
+            this.hideLoadingOverlay();
+        }
+    }
+
+    // Saltar para página
+    jumpToPage(pageNumber) {
+        const page = parseInt(pageNumber);
+        if (!page || page < 1) return;
+        
+        this.goToPage(page);
+    }
+
+    // Alterar tamanho da página
+    async changePageSize(newSize) {
+        this.currentPageSize = parseInt(newSize);
+        const currentTable = this.getCurrentActiveTable();
+        if (!currentTable) return;
+        
+        this.showLoadingOverlay('Aplicando novo tamanho...');
+        
+        try {
+            // Voltar para primeira página com novo tamanho
+            await this.renderTable(currentTable, 1, this.currentPageSize, this.currentFilters);
+        } catch (error) {
+            console.error('❌ Erro ao alterar tamanho da página:', error);
+            this.showAlert('Erro ao alterar tamanho da página: ' + error.message, 'danger');
+        } finally {
+            this.hideLoadingOverlay();
+        }
+    }
+
+    // Obter tabela ativa atual
+    getCurrentActiveTable() {
+        const activeTab = document.querySelector('.table-structure-tabs .nav-link.active');
+        return activeTab ? activeTab.textContent.toLowerCase().trim() : 'declaracoes';
+    }
+
+    // Loading overlay para transições
+    showLoadingOverlay(message = 'Carregando...') {
+        const existing = document.querySelector('.pagination-loading');
+        if (existing) existing.remove();
+        
+        const overlay = document.createElement('div');
+        overlay.className = 'pagination-loading';
+        overlay.innerHTML = `
+            <div class="loading-content">
+                <div class="spinner-border text-primary" role="status"></div>
+                <span class="ms-2">${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+    }
+
+    hideLoadingOverlay() {
+        const overlay = document.querySelector('.pagination-loading');
+        if (overlay) {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 300);
+        }
+    }
+
+    /**
+     * Sistema de Filtros Dinâmicos e Busca Global
+     */
+    renderAdvancedFilters(tableName) {
+        const filterConfig = this.getFilterConfig(tableName);
+        
+        return `
+            <div class="advanced-filters-container">
+                <div class="filters-header">
+                    <h6><i class="bi bi-funnel"></i> Filtros Avançados</h6>
+                    <div class="filter-actions">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="dashboardComponents.clearAllFilters()">
+                            <i class="bi bi-x-circle"></i> Limpar Filtros
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary" onclick="dashboardComponents.toggleFilters()">
+                            <i class="bi bi-chevron-down" id="filterToggleIcon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="filters-body" id="filtersBody" style="display: none;">
+                    <!-- Busca Global -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label">Busca Global</label>
+                            <div class="search-global-container">
+                                <input type="text" class="form-control" 
+                                       placeholder="Buscar em todos os campos..." 
+                                       id="globalSearch"
+                                       onkeyup="dashboardComponents.handleGlobalSearch(this.value)">
+                                <i class="bi bi-search search-icon"></i>
+                                <div class="search-results-counter" id="searchCounter" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtros Específicos por Campo -->
+                    <div class="row">
+                        ${filterConfig.map(filter => `
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">${filter.label}</label>
+                                ${this.renderFilterControl(filter)}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Filtros Aplicados (Tags) -->
+                    <div class="applied-filters" id="appliedFilters"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Configuração de filtros por tabela
+    getFilterConfig(tableName) {
+        const configs = {
+            'declaracoes': [
+                { field: 'numero_di', type: 'text', label: 'Número DI' },
+                { field: 'importador_cnpj', type: 'text', label: 'CNPJ Importador' },
+                { field: 'importador_endereco_uf', type: 'select', label: 'UF', options: ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC', 'BA', 'GO', 'PE', 'CE', 'ES'] },
+                { field: 'processing_state', type: 'select', label: 'Estado', options: ['DI_COMPLETE_FROM_XML', 'ICMS_CALCULATED', 'FINAL_COMPLETE'] },
+                { field: 'data_processamento', type: 'date', label: 'Data Processamento' }
+            ],
+            'adicoes': [
+                { field: 'ncm', type: 'text', label: 'NCM' },
+                { field: 'numero_adicao', type: 'text', label: 'Número Adição' },
+                { field: 'valor_reais', type: 'number', label: 'Valor Mínimo (R$)' },
+                { field: 'ii_aliquota_ad_valorem', type: 'number', label: 'Alíquota II (%)' }
+            ],
+            'produtos': [
+                { field: 'ncm', type: 'text', label: 'NCM' },
+                { field: 'descricao_mercadoria', type: 'text', label: 'Descrição' },
+                { field: 'unidade_medida', type: 'select', label: 'Unidade', options: ['UN', 'KG', 'MT', 'LT', 'M2', 'M3'] },
+                { field: 'valor_unitario_brl', type: 'number', label: 'Valor Unitário Min (R$)' }
+            ],
+            'despesas_aduaneiras': [
+                { field: 'tipo', type: 'select', label: 'Tipo', options: ['SISCOMEX', 'AFRMM', 'CAPATAZIA', 'ANTI_DUMPING'] },
+                { field: 'codigo_receita', type: 'text', label: 'Código Receita' },
+                { field: 'valor', type: 'number', label: 'Valor Mínimo (R$)' },
+                { field: 'origem', type: 'select', label: 'Origem', options: ['XML', 'CALCULADO', 'MANUAL'] }
+            ]
+        };
+        
+        return configs[tableName] || [];
+    }
+
+    // Renderizar controle de filtro específico
+    renderFilterControl(filter) {
+        switch (filter.type) {
+            case 'select':
+                return `
+                    <select class="form-select" onchange="dashboardComponents.applyFieldFilter('${filter.field}', this.value, '${filter.type}')">
+                        <option value="">Todos</option>
+                        ${filter.options.map(option => `<option value="${option}">${option}</option>`).join('')}
+                    </select>
+                `;
+            case 'number':
+                return `
+                    <input type="number" class="form-control" 
+                           placeholder="Valor mínimo"
+                           onchange="dashboardComponents.applyFieldFilter('${filter.field}', this.value, '${filter.type}')"
+                           step="0.01">
+                `;
+            case 'date':
+                return `
+                    <input type="date" class="form-control" 
+                           onchange="dashboardComponents.applyFieldFilter('${filter.field}', this.value, '${filter.type}')">
+                `;
+            default: // text
+                return `
+                    <input type="text" class="form-control" 
+                           placeholder="Digite para filtrar..."
+                           onkeyup="dashboardComponents.debounceFieldFilter('${filter.field}', this.value, '${filter.type}')"
+                           autocomplete="off">
+                `;
+        }
+    }
+
+    // Busca global com debounce
+    handleGlobalSearch(query) {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(async () => {
+            const currentTable = this.getCurrentActiveTable();
+            const counter = document.getElementById('searchCounter');
+            
+            if (query.trim()) {
+                this.currentFilters['_global'] = query;
+                counter.style.display = 'block';
+                counter.innerHTML = '<div class="spinner-border spinner-border-sm"></div>';
+                
+                try {
+                    await this.renderTable(currentTable, 1, this.currentPageSize, this.currentFilters);
+                    const totalRecords = await this.core.getTableCount(currentTable, this.currentFilters);
+                    counter.innerHTML = `${totalRecords} resultado(s) encontrado(s)`;
+                } catch (error) {
+                    console.error('❌ Erro na busca global:', error);
+                    counter.innerHTML = 'Erro na busca';
+                }
+            } else {
+                delete this.currentFilters['_global'];
+                counter.style.display = 'none';
+                await this.renderTable(currentTable, 1, this.currentPageSize, this.currentFilters);
+            }
+            
+            this.updateAppliedFilters();
+        }, 300);
+    }
+
+    // Aplicar filtro por campo específico
+    applyFieldFilter(field, value, type) {
+        if (value && value.trim()) {
+            this.currentFilters[field] = { value: value.trim(), type };
+        } else {
+            delete this.currentFilters[field];
+        }
+        
+        this.refreshCurrentTable();
+        this.updateAppliedFilters();
+    }
+
+    // Filtro por campo com debounce (para text inputs)
+    debounceFieldFilter(field, value, type) {
+        clearTimeout(this.searchTimeout);
+        this.searchTimeout = setTimeout(() => {
+            this.applyFieldFilter(field, value, type);
+        }, 500);
+    }
+
+    // Atualizar tabela com filtros atuais
+    async refreshCurrentTable() {
+        const currentTable = this.getCurrentActiveTable();
+        if (!currentTable) return;
+        
+        try {
+            await this.renderTable(currentTable, 1, this.currentPageSize, this.currentFilters);
+        } catch (error) {
+            console.error('❌ Erro ao atualizar tabela:', error);
+            this.showAlert('Erro ao aplicar filtros: ' + error.message, 'danger');
+        }
+    }
+
+    // Exibir filtros aplicados como tags
+    updateAppliedFilters() {
+        const container = document.getElementById('appliedFilters');
+        if (!container) return;
+        
+        const filterTags = [];
+        
+        Object.entries(this.currentFilters).forEach(([key, filter]) => {
+            if (key === '_global') {
+                filterTags.push(`
+                    <span class="filter-tag global-filter">
+                        <i class="bi bi-search"></i> Busca: "${filter}"
+                        <button onclick="dashboardComponents.removeFilter('${key}')" class="btn-close-filter">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </span>
+                `);
+            } else {
+                const displayValue = typeof filter === 'object' ? filter.value : filter;
+                filterTags.push(`
+                    <span class="filter-tag field-filter">
+                        <strong>${key}:</strong> ${displayValue}
+                        <button onclick="dashboardComponents.removeFilter('${key}')" class="btn-close-filter">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </span>
+                `);
+            }
+        });
+        
+        if (filterTags.length > 0) {
+            container.innerHTML = `
+                <div class="applied-filters-header">
+                    <small class="text-muted">Filtros aplicados:</small>
+                </div>
+                <div class="filter-tags-container">
+                    ${filterTags.join('')}
+                </div>
+            `;
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    // Remover filtro específico
+    async removeFilter(key) {
+        delete this.currentFilters[key];
+        
+        // Limpar também o campo de input correspondente
+        if (key === '_global') {
+            const globalSearch = document.getElementById('globalSearch');
+            if (globalSearch) globalSearch.value = '';
+            
+            const counter = document.getElementById('searchCounter');
+            if (counter) counter.style.display = 'none';
+        }
+        
+        await this.refreshCurrentTable();
+        this.updateAppliedFilters();
+    }
+
+    // Limpar todos os filtros
+    async clearAllFilters() {
+        this.currentFilters = {};
+        
+        // Limpar inputs
+        const filterInputs = document.querySelectorAll('#filtersBody input, #filtersBody select');
+        filterInputs.forEach(input => {
+            input.value = '';
+        });
+        
+        const counter = document.getElementById('searchCounter');
+        if (counter) counter.style.display = 'none';
+        
+        await this.refreshCurrentTable();
+        this.updateAppliedFilters();
+    }
+
+    // Toggle de visibilidade dos filtros
+    toggleFilters() {
+        const body = document.getElementById('filtersBody');
+        const icon = document.getElementById('filterToggleIcon');
+        
+        if (body.style.display === 'none') {
+            body.style.display = 'block';
+            icon.className = 'bi bi-chevron-up';
+        } else {
+            body.style.display = 'none';
+            icon.className = 'bi bi-chevron-down';
+        }
+    }
+
+    /**
+     * Sistema de Drill-Down Navigation (DI → Adição → Produto)
+     */
+    renderBreadcrumbNavigation() {
+        if (!this.navigationStack || this.navigationStack.length === 0) {
+            this.navigationStack = [{ level: 'declaracoes', title: 'Declarações', id: null }];
+        }
+        
+        return `
+            <nav aria-label="breadcrumb" class="drill-down-breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    ${this.navigationStack.map((item, index) => `
+                        <li class="breadcrumb-item ${index === this.navigationStack.length - 1 ? 'active' : ''}">
+                            ${index === this.navigationStack.length - 1 ? 
+                                `<span><i class="${this.getLevelIcon(item.level)}"></i> ${item.title}</span>` :
+                                `<button class="btn-breadcrumb" onclick="dashboardComponents.navigateToLevel(${index})">
+                                    <i class="${this.getLevelIcon(item.level)}"></i> ${item.title}
+                                </button>`
+                            }
+                        </li>
+                    `).join('')}
+                </ol>
+                
+                <!-- Ações de navegação -->
+                <div class="navigation-actions">
+                    ${this.navigationStack.length > 1 ? `
+                        <button class="btn btn-sm btn-outline-secondary" onclick="dashboardComponents.navigateBack()">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </button>
+                    ` : ''}
+                    
+                    <button class="btn btn-sm btn-outline-primary" onclick="dashboardComponents.resetNavigation()">
+                        <i class="bi bi-house"></i> Início
+                    </button>
+                </div>
+            </nav>
+        `;
+    }
+
+    // Obter ícone para cada nível
+    getLevelIcon(level) {
+        const icons = {
+            'declaracoes': 'bi bi-file-earmark-text',
+            'adicoes': 'bi bi-plus-square',
+            'produtos': 'bi bi-box',
+            'despesas_aduaneiras': 'bi bi-currency-dollar'
+        };
+        return icons[level] || 'bi bi-folder';
+    }
+
+    // Navegar para nível específico no breadcrumb
+    async navigateToLevel(levelIndex) {
+        // Cortar o stack até o nível desejado
+        this.navigationStack = this.navigationStack.slice(0, levelIndex + 1);
+        const currentLevel = this.navigationStack[levelIndex];
+        
+        // Recarregar dados para esse nível
+        await this.loadLevelData(currentLevel);
+        this.updateBreadcrumbDisplay();
+    }
+
+    // Voltar um nível
+    async navigateBack() {
+        if (this.navigationStack.length <= 1) return;
+        
+        this.navigationStack.pop();
+        const currentLevel = this.navigationStack[this.navigationStack.length - 1];
+        
+        await this.loadLevelData(currentLevel);
+        this.updateBreadcrumbDisplay();
+    }
+
+    // Resetar para início
+    async resetNavigation() {
+        this.navigationStack = [{ level: 'declaracoes', title: 'Declarações', id: null }];
+        this.currentFilters = {};
+        
+        await this.loadLevelData(this.navigationStack[0]);
+        this.updateBreadcrumbDisplay();
+    }
+
+    // Carregar dados para um nível específico
+    async loadLevelData(levelInfo) {
+        this.showLoadingOverlay(`Carregando ${levelInfo.title}...`);
+        
+        try {
+            // Aplicar filtros de hierarquia baseado no nível atual
+            const hierarchyFilters = this.buildHierarchyFilters(levelInfo);
+            const combinedFilters = { ...this.currentFilters, ...hierarchyFilters };
+            
+            await this.renderTable(levelInfo.level, 1, this.currentPageSize, combinedFilters);
+            
+            // Atualizar aba ativa
+            const tabs = document.querySelectorAll('.table-structure-tabs .nav-link');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            const targetTab = Array.from(tabs).find(tab => 
+                tab.textContent.toLowerCase().trim() === levelInfo.level
+            );
+            if (targetTab) targetTab.classList.add('active');
+            
+        } catch (error) {
+            console.error('❌ Erro ao carregar dados do nível:', error);
+            this.showAlert('Erro ao carregar dados: ' + error.message, 'danger');
+        } finally {
+            this.hideLoadingOverlay();
+        }
+    }
+
+    // Construir filtros de hierarquia
+    buildHierarchyFilters(levelInfo) {
+        const filters = {};
+        
+        // Filtrar baseado na hierarquia DI → Adição → Produto
+        this.navigationStack.forEach(stackItem => {
+            if (stackItem.id && stackItem.level !== levelInfo.level) {
+                switch (stackItem.level) {
+                    case 'declaracoes':
+                        if (levelInfo.level === 'adicoes' || levelInfo.level === 'produtos') {
+                            filters['di_id'] = { value: stackItem.id, type: 'number' };
+                        }
+                        break;
+                    case 'adicoes':
+                        if (levelInfo.level === 'produtos') {
+                            filters['adicao_id'] = { value: stackItem.id, type: 'number' };
+                        }
+                        break;
+                }
+            }
+        });
+        
+        return filters;
+    }
+
+    // Atualizar exibição do breadcrumb
+    updateBreadcrumbDisplay() {
+        const container = document.querySelector('.drill-down-breadcrumb');
+        if (container) {
+            container.outerHTML = this.renderBreadcrumbNavigation();
+        }
+    }
+
+    // Drill down para próximo nível (chamado por botões das tabelas)
+    async drillDownTo(level, id, title) {
+        const levelConfig = {
+            'adicoes': { level: 'adicoes', title: `Adições de ${title}` },
+            'produtos': { level: 'produtos', title: `Produtos de ${title}` },
+            'despesas_aduaneiras': { level: 'despesas_aduaneiras', title: `Despesas de ${title}` }
+        };
+        
+        if (!levelConfig[level]) {
+            console.error('❌ Nível de drill-down inválido:', level);
+            return;
+        }
+        
+        // Adicionar novo nível ao stack
+        const newLevel = { 
+            level: levelConfig[level].level, 
+            title: levelConfig[level].title, 
+            id: id 
+        };
+        
+        this.navigationStack.push(newLevel);
+        
+        // Carregar dados do novo nível
+        await this.loadLevelData(newLevel);
+        this.updateBreadcrumbDisplay();
+    }
+
+    // Renderizar botão de drill-down nas células da tabela
+    renderDrillDownButton(targetLevel, id, title, icon = 'bi bi-arrow-right') {
+        const levelNames = {
+            'adicoes': 'adições',
+            'produtos': 'produtos', 
+            'despesas_aduaneiras': 'despesas'
+        };
+        
+        return `
+            <button class="btn btn-sm btn-outline-primary drill-down-btn" 
+                    onclick="dashboardComponents.drillDownTo('${targetLevel}', ${id}, '${title.replace(/'/g, "&#39;")}')"
+                    title="Ver ${levelNames[targetLevel]} de ${title}">
+                <i class="${icon}"></i>
+            </button>
+        `;
+    }
+
+    // Context menu para ações de drill-down
+    renderContextMenu(record, recordType) {
+        const actions = [];
+        
+        switch (recordType) {
+            case 'declaracoes':
+                actions.push(
+                    { label: 'Ver Adições', action: `drillDownTo('adicoes', ${record.id}, 'DI ${record.numero_di}')`, icon: 'bi bi-plus-square' },
+                    { label: 'Ver Despesas', action: `drillDownTo('despesas_aduaneiras', ${record.id}, 'DI ${record.numero_di}')`, icon: 'bi bi-currency-dollar' }
+                );
+                break;
+            case 'adicoes':
+                actions.push(
+                    { label: 'Ver Produtos', action: `drillDownTo('produtos', ${record.id}, 'Adição ${record.numero_adicao}')`, icon: 'bi bi-box' }
+                );
+                break;
+        }
+        
+        if (actions.length === 0) return '';
+        
+        return `
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                        type="button" data-bs-toggle="dropdown">
+                    <i class="bi bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    ${actions.map(action => `
+                        <li>
+                            <button class="dropdown-item" onclick="dashboardComponents.${action.action}">
+                                <i class="${action.icon}"></i> ${action.label}
+                            </button>
+                        </li>
+                    `).join('')}
+                </ul>
+            </div>
+        `;
+    }
+
+    // Hover preview para dados relacionados
+    async showHoverPreview(recordType, id, event) {
+        const preview = document.getElementById('hoverPreview');
+        if (preview) preview.remove();
+        
+        try {
+            let previewData;
+            let previewHTML = '';
+            
+            switch (recordType) {
+                case 'declaracoes':
+                    previewData = await this.core.getDICompleteStats(id);
+                    previewHTML = this.renderDIPreview(previewData);
+                    break;
+                case 'adicoes':
+                    previewData = await this.core.getAdicaoCompleteStats(id);
+                    previewHTML = this.renderAdicaoPreview(previewData);
+                    break;
+            }
+            
+            if (previewHTML) {
+                this.showTooltipPreview(previewHTML, event);
+            }
+        } catch (error) {
+            console.error('❌ Erro ao carregar preview:', error);
+        }
+    }
+
+    // Renderizar preview para DI
+    renderDIPreview(stats) {
+        return `
+            <div class="hover-preview-content">
+                <h6><i class="bi bi-file-earmark-text"></i> DI ${stats.numero_di}</h6>
+                <div class="preview-stats">
+                    <div><strong>Adições:</strong> ${stats.totalAdicoes || 0}</div>
+                    <div><strong>Produtos:</strong> ${stats.totalProdutos || 0}</div>
+                    <div><strong>Valor Total:</strong> R$ ${this.formatMoney(stats.valorTotal || 0)}</div>
+                    <div><strong>Impostos:</strong> R$ ${this.formatMoney(stats.totalImpostos || 0)}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Renderizar preview para Adição
+    renderAdicaoPreview(stats) {
+        return `
+            <div class="hover-preview-content">
+                <h6><i class="bi bi-plus-square"></i> Adição ${stats.numero_adicao}</h6>
+                <div class="preview-stats">
+                    <div><strong>NCM:</strong> ${stats.ncm || 'N/A'}</div>
+                    <div><strong>Produtos:</strong> ${stats.totalProdutos || 0}</div>
+                    <div><strong>Valor:</strong> R$ ${this.formatMoney(stats.valor || 0)}</div>
+                    <div><strong>Impostos:</strong> R$ ${this.formatMoney(stats.totalImpostos || 0)}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Mostrar tooltip de preview
+    showTooltipPreview(content, event) {
+        const tooltip = document.createElement('div');
+        tooltip.id = 'hoverPreview';
+        tooltip.className = 'hover-preview-tooltip';
+        tooltip.innerHTML = content;
+        
+        document.body.appendChild(tooltip);
+        
+        // Posicionar próximo ao mouse
+        const rect = tooltip.getBoundingClientRect();
+        const x = Math.min(event.pageX + 10, window.innerWidth - rect.width - 20);
+        const y = Math.min(event.pageY + 10, window.innerHeight - rect.height - 20);
+        
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+        
+        // Remover depois de 3 segundos
+        setTimeout(() => {
+            if (tooltip.parentNode) {
+                tooltip.remove();
+            }
+        }, 3000);
+    }
+
+    /**
+     * Otimizações de Performance para Grandes Volumes
+     */
+    
+    // Virtual Scrolling para listas grandes (>1000 itens)
+    renderVirtualizedTable(data, containerHeight = 400, rowHeight = 50) {
+        if (data.length <= 100) {
+            // Para listas pequenas, usar renderização normal
+            return this.renderNormalTable(data);
+        }
+        
+        const visibleRows = Math.ceil(containerHeight / rowHeight) + 5; // Buffer rows
+        
+        return `
+            <div class="virtualized-table-container" style="height: ${containerHeight}px; overflow-y: auto;">
+                <div class="virtualized-content" style="height: ${data.length * rowHeight}px; position: relative;">
+                    <div class="visible-rows" id="visibleRows">
+                        <!-- Rows will be dynamically populated -->
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Inicializar virtual scrolling
+    initVirtualScrolling(tableContainer, data, renderRowFunction) {
+        const scrollContainer = tableContainer.querySelector('.virtualized-table-container');
+        const contentDiv = tableContainer.querySelector('.virtualized-content');
+        const visibleRowsDiv = tableContainer.querySelector('.visible-rows');
+        
+        let startIndex = 0;
+        let endIndex = Math.min(20, data.length);
+        
+        // Renderizar linhas iniciais
+        this.updateVirtualRows(visibleRowsDiv, data, startIndex, endIndex, renderRowFunction);
+        
+        // Scroll listener com throttling
+        let scrollTimeout;
+        scrollContainer.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const scrollTop = scrollContainer.scrollTop;
+                const rowHeight = 50;
+                const containerHeight = scrollContainer.clientHeight;
+                
+                startIndex = Math.floor(scrollTop / rowHeight);
+                endIndex = Math.min(startIndex + Math.ceil(containerHeight / rowHeight) + 10, data.length);
+                
+                this.updateVirtualRows(visibleRowsDiv, data, startIndex, endIndex, renderRowFunction);
+            }, 16); // ~60fps
+        });
+    }
+
+    // Atualizar linhas visíveis no virtual scroll
+    updateVirtualRows(container, data, startIndex, endIndex, renderRowFunction) {
+        const fragment = document.createDocumentFragment();
+        const rowHeight = 50;
+        
+        // Limpar container
+        container.innerHTML = '';
+        
+        // Renderizar apenas as linhas visíveis
+        for (let i = startIndex; i < endIndex; i++) {
+            if (data[i]) {
+                const rowDiv = document.createElement('div');
+                rowDiv.style.position = 'absolute';
+                rowDiv.style.top = (i * rowHeight) + 'px';
+                rowDiv.style.width = '100%';
+                rowDiv.style.height = rowHeight + 'px';
+                rowDiv.innerHTML = renderRowFunction(data[i], i);
+                fragment.appendChild(rowDiv);
+            }
+        }
+        
+        container.appendChild(fragment);
+    }
+
+    // Cache inteligente para consultas frequentes
+    initPerformanceCache() {
+        this.performanceCache = {
+            queries: new Map(),
+            stats: new Map(),
+            maxSize: 50,
+            ttl: 5 * 60 * 1000 // 5 minutos
+        };
+    }
+
+    // Obter dados com cache
+    async getCachedData(cacheKey, queryFunction) {
+        if (!this.performanceCache) {
+            this.initPerformanceCache();
+        }
+        
+        const cached = this.performanceCache.queries.get(cacheKey);
+        const now = Date.now();
+        
+        // Verificar se o cache é válido
+        if (cached && (now - cached.timestamp) < this.performanceCache.ttl) {
+            console.log(`📦 Cache hit: ${cacheKey}`);
+            return cached.data;
+        }
+        
+        // Executar consulta e armazenar no cache
+        console.log(`🔍 Cache miss: ${cacheKey}`);
+        const data = await queryFunction();
+        
+        // Limitar tamanho do cache
+        if (this.performanceCache.queries.size >= this.performanceCache.maxSize) {
+            const firstKey = this.performanceCache.queries.keys().next().value;
+            this.performanceCache.queries.delete(firstKey);
+        }
+        
+        this.performanceCache.queries.set(cacheKey, {
+            data,
+            timestamp: now
+        });
+        
+        return data;
+    }
+
+    // Lazy loading de dados relacionados
+    async loadDataLazy(tableName, page, filters, signal) {
+        const abortController = signal || new AbortController();
+        
+        try {
+            // Mostrar skeleton loading
+            this.showSkeletonLoading(tableName);
+            
+            // Carregar dados em chunks menores
+            const chunkSize = 25;
+            const startIndex = (page - 1) * this.currentPageSize;
+            const chunks = Math.ceil(this.currentPageSize / chunkSize);
+            
+            let allData = [];
+            
+            for (let chunk = 0; chunk < chunks; chunk++) {
+                if (abortController.signal.aborted) {
+                    throw new Error('Operação cancelada');
+                }
+                
+                const chunkStart = startIndex + (chunk * chunkSize);
+                const chunkEnd = Math.min(chunkStart + chunkSize, startIndex + this.currentPageSize);
+                
+                const chunkData = await this.core.getCompleteTableData(
+                    tableName, 
+                    Math.floor(chunkStart / chunkSize) + 1, 
+                    chunkSize, 
+                    filters
+                );
+                
+                allData = allData.concat(chunkData.data || []);
+                
+                // Update progress
+                this.updateLoadingProgress(chunk + 1, chunks);
+                
+                // Small delay to prevent UI blocking
+                await new Promise(resolve => setTimeout(resolve, 10));
+            }
+            
+            return {
+                data: allData,
+                total: allData.length,
+                page: page
+            };
+            
+        } catch (error) {
+            if (error.message === 'Operação cancelada') {
+                console.log('⏹️ Carregamento cancelado pelo usuário');
+            } else {
+                console.error('❌ Erro no carregamento lazy:', error);
+            }
+            throw error;
+        } finally {
+            this.hideSkeletonLoading();
+        }
+    }
+
+    // Skeleton loading para UX melhor
+    showSkeletonLoading(tableName) {
+        const tableContainer = document.getElementById('tableContent');
+        if (!tableContainer) return;
+        
+        const skeletonRows = Array(5).fill(0).map(() => `
+            <tr class="skeleton-row">
+                <td><div class="skeleton-item"></div></td>
+                <td><div class="skeleton-item"></div></td>
+                <td><div class="skeleton-item"></div></td>
+                <td><div class="skeleton-item"></div></td>
+            </tr>
+        `).join('');
+        
+        tableContainer.innerHTML = `
+            <div class="skeleton-loading">
+                <table class="table">
+                    <tbody>${skeletonRows}</tbody>
+                </table>
+                <div class="loading-progress">
+                    <div class="progress">
+                        <div class="progress-bar" id="loadingProgressBar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted" id="loadingProgressText">Carregando dados...</small>
+                </div>
+            </div>
+        `;
+    }
+
+    hideSkeletonLoading() {
+        const skeleton = document.querySelector('.skeleton-loading');
+        if (skeleton) {
+            skeleton.remove();
+        }
+    }
+
+    updateLoadingProgress(current, total) {
+        const progressBar = document.getElementById('loadingProgressBar');
+        const progressText = document.getElementById('loadingProgressText');
+        
+        if (progressBar && progressText) {
+            const percentage = (current / total) * 100;
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = `Carregando... ${current}/${total} chunks`;
+        }
+    }
+
+    // Debounce para operações custosas
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func.apply(this, args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Throttle para scroll events
+    throttle(func, limit) {
+        let inThrottle;
+        return function executedFunction(...args) {
+            if (!inThrottle) {
+                func.apply(this, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    }
+
+    // Memory management - limpeza periódica
+    initMemoryManagement() {
+        // Limpar cache a cada 10 minutos
+        setInterval(() => {
+            if (this.performanceCache) {
+                const now = Date.now();
+                for (const [key, value] of this.performanceCache.queries.entries()) {
+                    if (now - value.timestamp > this.performanceCache.ttl) {
+                        this.performanceCache.queries.delete(key);
+                    }
+                }
+                console.log(`🧹 Cache limpo: ${this.performanceCache.queries.size} entradas restantes`);
+            }
+        }, 10 * 60 * 1000);
+        
+        // Monitorar uso de memória
+        if (performance.memory) {
+            setInterval(() => {
+                const memory = performance.memory;
+                const usedMB = Math.round(memory.usedJSHeapSize / 1024 / 1024);
+                const totalMB = Math.round(memory.totalJSHeapSize / 1024 / 1024);
+                
+                if (usedMB > 100) { // Alert se usar mais que 100MB
+                    console.warn(`⚠️ Alto uso de memória: ${usedMB}MB / ${totalMB}MB`);
+                }
+            }, 30000); // Check a cada 30 segundos
+        }
+    }
+
+    // Métricas de performance
+    startPerformanceMetrics(operation) {
+        return {
+            operation,
+            startTime: performance.now(),
+            startMemory: performance.memory ? performance.memory.usedJSHeapSize : 0
+        };
+    }
+
+    endPerformanceMetrics(metrics) {
+        const endTime = performance.now();
+        const endMemory = performance.memory ? performance.memory.usedJSHeapSize : 0;
+        
+        const duration = Math.round(endTime - metrics.startTime);
+        const memoryDelta = Math.round((endMemory - metrics.startMemory) / 1024); // KB
+        
+        console.log(`⚡ Performance - ${metrics.operation}: ${duration}ms, Memory: ${memoryDelta > 0 ? '+' : ''}${memoryDelta}KB`);
+        
+        // Alertar para operações lentas
+        if (duration > 2000) {
+            console.warn(`🐌 Operação lenta detectada: ${metrics.operation} (${duration}ms)`);
+        }
+        
+        return { duration, memoryDelta };
+    }
+
+    // Otimização de DOM - batch updates
+    batchDOMUpdates(updates) {
+        return new Promise(resolve => {
+            requestAnimationFrame(() => {
+                const fragment = document.createDocumentFragment();
+                
+                updates.forEach(update => {
+                    if (typeof update === 'function') {
+                        update(fragment);
+                    }
+                });
+                
+                resolve(fragment);
+            });
         });
     }
 }

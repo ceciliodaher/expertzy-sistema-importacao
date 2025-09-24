@@ -14,37 +14,39 @@ Sistema web modular para processamento automatizado de Declarações de Importa�
 ## 🏛️ NOMENCLATURA OFICIAL - AUTORIDADE ÚNICA
 
 ### REGRA FUNDAMENTAL
+
 **DIProcessor.js é o PRIMARY CREATOR** - único módulo autorizado a criar nomenclatura de campos. Todos os outros módulos DEVEM seguir exatamente seus nomes de campos.
 
 ### Hierarquia de Autoridade:
+
 1. **DIProcessor.js**: PRIMARY CREATOR (cria nomenclatura oficial)
 2. **IndexedDBManager.js**: Implementa schema seguindo DIProcessor  
 3. **Demais módulos**: CONSUMERS (seguem nomenclatura estabelecida)
 
 ### Tabela de Nomenclatura Oficial
 
-| Entidade | Nome OFICIAL | Nome PROIBIDO | Módulo Criador | Status |
-|----------|--------------|---------------|----------------|---------|
-| **Produtos/Itens** | `produtos` | ~~mercadorias~~, ~~items~~ | DIProcessor.js:366 | ✅ CORRIGIDO |
-| **Despesas** | `despesas_aduaneiras` | ~~despesas~~, ~~expenses~~ | DIProcessor.js:1088 | ✅ CORRIGIDO |
-| **Adições** | `adicoes` | ~~additions~~ | DIProcessor.js:290 | ✅ CORRETO |
-| **Impostos** | `tributos` | ~~impostos~~, ~~taxes~~ | DIProcessor.js:404 | ✅ CORRETO |
-| **Valor BRL** | `valor_reais` | ~~valor_brl~~, ~~amount_brl~~ | DIProcessor.js:332 | ✅ CORRETO |
-| **Frete** | `frete_valor_reais` | ~~freight~~ | DIProcessor.js:348 | ✅ CORRETO |
-| **Seguro** | `seguro_valor_reais` | ~~insurance~~ | DIProcessor.js:351 | ✅ CORRETO |
-| **Totais** | `totais` | ~~totals~~ | DIProcessor.js:864 | ✅ CORRETO |
-| **Importador** | `importador` | ~~importer~~ | DIProcessor.js:168 | ✅ CORRETO |
-| **Carga** | `carga` | ~~cargo~~ | DIProcessor.js:179 | ✅ CORRETO |
+| Entidade           | Nome OFICIAL          | Nome PROIBIDO                 | Módulo Criador      | Status      |
+| ------------------ | --------------------- | ----------------------------- | ------------------- | ----------- |
+| **Produtos/Itens** | `produtos`            | ~~mercadorias~~, ~~items~~    | DIProcessor.js:366  | ✅ CORRIGIDO |
+| **Despesas**       | `despesas_aduaneiras` | ~~despesas~~, ~~expenses~~    | DIProcessor.js:1088 | ✅ CORRIGIDO |
+| **Adições**        | `adicoes`             | ~~additions~~                 | DIProcessor.js:290  | ✅ CORRETO   |
+| **Impostos**       | `tributos`            | ~~impostos~~, ~~taxes~~       | DIProcessor.js:404  | ✅ CORRETO   |
+| **Valor BRL**      | `valor_reais`         | ~~valor_brl~~, ~~amount_brl~~ | DIProcessor.js:332  | ✅ CORRETO   |
+| **Frete**          | `frete_valor_reais`   | ~~freight~~                   | DIProcessor.js:348  | ✅ CORRETO   |
+| **Seguro**         | `seguro_valor_reais`  | ~~insurance~~                 | DIProcessor.js:351  | ✅ CORRETO   |
+| **Totais**         | `totais`              | ~~totals~~                    | DIProcessor.js:864  | ✅ CORRETO   |
+| **Importador**     | `importador`          | ~~importer~~                  | DIProcessor.js:168  | ✅ CORRETO   |
+| **Carga**          | `carga`               | ~~cargo~~                     | DIProcessor.js:179  | ✅ CORRETO   |
 
 ### Violations Corrigidas (23/09/2025)
 
-| Arquivo | Linha | Violação | Correção | Status |
-|---------|-------|----------|----------|---------|
-| IndexedDBManager.js | 227 | `adicao.mercadorias` | ✅ `adicao.produtos` | CORRIGIDO |
-| IndexedDBManager.js | 248 | `diData.despesas` | ✅ `diData.despesas_aduaneiras` | CORRIGIDO |
-| DataTransformer.js | 229 | `transformMercadorias()` | ✅ `transformProdutos()` | CORRIGIDO |
-| DataValidator.js | 246 | `validateMercadoria()` | ✅ `validateProduto()` | CORRIGIDO |
-| business-interface.js | 282 | `diData.despesas` | ✅ `diData.despesas_aduaneiras` | CORRIGIDO |
+| Arquivo               | Linha | Violação                 | Correção                       | Status    |
+| --------------------- | ----- | ------------------------ | ------------------------------ | --------- |
+| IndexedDBManager.js   | 227   | `adicao.mercadorias`     | ✅ `adicao.produtos`            | CORRIGIDO |
+| IndexedDBManager.js   | 248   | `diData.despesas`        | ✅ `diData.despesas_aduaneiras` | CORRIGIDO |
+| DataTransformer.js    | 229   | `transformMercadorias()` | ✅ `transformProdutos()`        | CORRIGIDO |
+| DataValidator.js      | 246   | `validateMercadoria()`   | ✅ `validateProduto()`          | CORRIGIDO |
+| business-interface.js | 282   | `diData.despesas`        | ✅ `diData.despesas_aduaneiras` | CORRIGIDO |
 
 ### Enforcement (OBRIGATÓRIO)
 
@@ -135,38 +137,45 @@ src/modules/dashboard/
 ### Funcionalidades Principais
 
 #### ✅ Visualização Completa de Dados
+
 - **Modo Amostra**: Primeiros 10 registros para visão rápida
 - **Modo Completo**: Todos os dados com paginação inteligente (implementando)
 - **Drill-Down Navigation**: DI → Adições → Produtos → Impostos detalhados
 - **Filtros Dinâmicos**: Por qualquer campo com busca global
 - **Export Seletivo**: Download de dados filtrados
 
-#### ✅ Estatísticas Relacionais Avançadas  
+#### ✅ Estatísticas Relacionais Avançadas
+
 **Por Declaração de Importação:**
+
 - Valor total importado e impostos federais calculados
 - Número de adições e produtos por DI
 - Despesas aduaneiras por código de receita
 - Estados de processamento e tempo médio
 
 **Por Adição:**
+
 - NCMs únicos e alíquotas médias (II, IPI, PIS, COFINS)
 - Valor total em BRL com breakdown de impostos
 - Fornecedores e fabricantes por país
 - Rateio de impostos por produto da adição
 
 **Por Produto/Mercadoria:**
+
 - Custo unitário com impostos rateados  
 - Unidades de medida e quantidades
 - Descrição com nomenclatura oficial (`descricao_mercadoria`)
 - Comparativo valor USD vs BRL
 
 **Agregadas Globais:**
+
 - Total de importadores únicos por UF
 - NCMs mais importados com frequência
 - Breakdown completo de impostos por tipo
 - Evolução temporal de importações
 
 #### ✅ Interface de Navegação Avançada
+
 - **Sistema de Abas**: Uma por tabela principal (declaracoes, adicoes, produtos, despesas_aduaneiras, dados_carga)
 - **Breadcrumb Navigation**: Navegação hierárquica clara
 - **Context Menu**: Ações específicas por registro (Ver, Exportar, Detalhar)
@@ -174,6 +183,7 @@ src/modules/dashboard/
 - **Keyboard Shortcuts**: Ctrl+R (refresh), Ctrl+E (export), Ctrl+Shift+V (validação)
 
 #### ✅ Performance e Escalabilidade
+
 - **Paginação Server-Side**: Para grandes volumes de dados
 - **Cache Inteligente**: Estatísticas frequentes em memória
 - **Lazy Loading**: Carregamento sob demanda
@@ -198,6 +208,7 @@ this.db.version(3).stores({
 ### Métodos de Estatísticas Implementados
 
 #### Dashboard Core (dashboard-core.js)
+
 ```javascript
 // Visualização completa com paginação  
 async getCompleteTableData(tableName, page = 1, limit = 50, filters = {}, orderBy = 'id')
@@ -226,6 +237,7 @@ async getSupplierAnalysis()  // Análise de fornecedores por país
 ### Interface Visual Expandida
 
 #### Componentes de UI Avançados (dashboard-components.js)
+
 ```javascript
 // Seletores de modo de visualização
 renderTableModeSelector()  // [Amostra] [Completo] [Exploração] [Estatísticas]
@@ -243,6 +255,7 @@ renderPerformanceMetrics() // Métricas de tempo e volume
 ```
 
 #### Estilos Responsivos (dashboard-styles.css)
+
 ```css
 /* Sistema de abas avançado */
 .table-structure-tabs .nav-link.active {
@@ -281,12 +294,12 @@ async validateNomenclature() {
     const produtosIncorretos = await this.db.produtos
         .filter(produto => !produto.descricao_mercadoria && produto.descricao)
         .toArray();
-    
+
     // Verifica despesas com nomenclatura incorreta  
     const despesasIncorretas = await this.db.despesas_aduaneiras
         .filter(despesa => despesa.despesas && !despesa.despesas_aduaneiras)
         .toArray();
-        
+
     // Retorna relatório de conformidade
     return {
         isValid: violations.length === 0,
@@ -301,6 +314,7 @@ async validateNomenclature() {
 ### Escalabilidade e Performance
 
 **Otimizações Implementadas:**
+
 - **Bulk Operations**: `this.db.table.bulkAdd()` para inserções rápidas
 - **Lazy Loading**: Carregamento sob demanda de dados relacionais
 - **Cache Estratégico**: Estatísticas frequentes mantidas em memória
@@ -308,6 +322,7 @@ async validateNomenclature() {
 - **Paginação Inteligente**: Limit/offset otimizados para não degradar com volume
 
 **Limites de Performance:**
+
 - **DIs**: Até 10,000 declarações sem degradação significativa
 - **Produtos**: Até 100,000 produtos com virtualização
 - **Consultas**: < 500ms para estatísticas complexas
@@ -317,10 +332,12 @@ async validateNomenclature() {
 ### Acesso e Navegação
 
 **URLs do Dashboard:**
+
 - **Principal**: `http://localhost:8000/dashboard.html`
 - **Integrado**: Links em todos os módulos (index.html, di-interface.html)
 
 **Navegação por Teclado:**
+
 - `Ctrl+Shift+R`: Refresh completo com cache clear
 - `Ctrl+E`: Export dados da aba atual
 - `Ctrl+Shift+V`: Executar validação de nomenclatura
@@ -330,6 +347,7 @@ async validateNomenclature() {
 ### Status Atual (24/09/2025)
 
 ✅ **Implementado Completamente:**
+
 - Visualização por abas com dados reais
 - Estatísticas relacionais básicas  
 - Interface responsiva com Expertzy brand
@@ -337,6 +355,7 @@ async validateNomenclature() {
 - Export individual por tabela
 
 🔄 **Em Implementação:**
+
 - Visualização completa com paginação
 - Drill-down navigation hierárquica
 - Cálculos de impostos agregados
@@ -352,22 +371,26 @@ Sistema completamente refatorado para **salvamento progressivo** conforme especi
 #### Funções de Salvamento Completo Implementadas:
 
 1. **saveCompleteDI()** (`/src/di-interface.js`)
+   
    - ✅ Salva DI completa com dados 98% funcionais do XML
    - ✅ Validações NO FALLBACKS para campos obrigatórios
    - ✅ Estado inicial: `'DI_COMPLETE_FROM_XML'`
    - ✅ Hash de integridade e XML original em base64
 
 2. **saveCompleteAdicoes()** (`/src/di-interface.js`)
+   
    - ✅ Salva adições com tributos federais já calculados
    - ✅ Custo básico federal calculável imediatamente
    - ✅ Estrutura completa: NCM, valores, logística, fornecedores
 
 3. **saveCompleteProducts()** (`/src/di-interface.js`)
+   
    - ✅ Produtos virtuais ou reais com tributos rateados
    - ✅ Cálculo automático de `custo_produto_federal`
    - ✅ Rateio proporcional de impostos por produto
 
 4. **saveCompleteDespesas()** (`/src/di-interface.js`)
+   
    - ✅ Despesas federais do XML (SISCOMEX, AFRMM, Capatazia)
    - ✅ Estrutura para despesas extras futuras
    - ✅ Códigos de receita corretos
@@ -455,11 +478,11 @@ db.version(2).stores({
     incentivos_entrada: '++id, di_id, estado, tipo_beneficio, percentual_reducao, economia_calculada',
     incentivos_saida: '++id, di_id, estado, operacao, credito_aplicado, contrapartidas',
     elegibilidade_ncm: '++id, ncm, estado, incentivo_codigo, elegivel, motivo_rejeicao',
-    
+
     // Business intelligence
     metricas_dashboard: '++id, periodo, tipo_metrica, valor, breakdown_estados',
     cenarios_precificacao: '++id, di_id, nome_cenario, configuracao, resultados_comparativos',
-    
+
     // Auditoria e controle
     historico_operacoes: '++id, timestamp, operacao, modulo, detalhes, resultado',
     snapshots: '++id, di_id, nome_customizado, timestamp, dados_completos',
@@ -496,6 +519,7 @@ await saveCompleteDespesas(diId, diData);
 O sistema agora inclui módulo completo de incentivos fiscais seguindo princípios KISS, DRY e NO FALLBACKS:
 
 #### Estados Suportados:
+
 - **🏆 Santa Catarina**: TTD 409/410/411 (diferimento parcial/total)
 - **🏆 Minas Gerais**: Corredor de Importação (diferimento total)
 - **🏆 Espírito Santo**: INVEST-ES (diferimento total)
@@ -504,24 +528,26 @@ O sistema agora inclui módulo completo de incentivos fiscais seguindo princípi
 #### Arquivos Criados:
 
 **1. `/src/core/incentives/IncentiveManager.js`** (740 linhas)
+
 ```javascript
 // Sistema centralizado de incentivos fiscais
 class IncentiveManager {
     // Validação de elegibilidade (estado + NCMs)
     validateEligibility(estado, programa, ncms)
-    
+
     // Cálculo de campos NF com CST 51 
     calculateNFFields(di, programa)
-    
+
     // Impacto nos custos considerando reforma tributária
     calculateCostImpact(produtos, programa, year)
-    
+
     // Projeções 2025-2033
     projectReformScenarios(startYear)
 }
 ```
 
 **2. `/src/shared/data/ncms-vedados.json`** (358 NCMs centralizados)
+
 ```json
 {
     "vedacoes_por_programa": {
@@ -535,6 +561,7 @@ class IncentiveManager {
 ```
 
 **3. `/src/shared/data/reforma-tributaria.json`**
+
 ```json
 {
     "cronograma": {
@@ -548,6 +575,7 @@ class IncentiveManager {
 ```
 
 **4. `/documentos/PRD-Modulo-Incentivos-Fiscais.md`**
+
 - Product Requirements Document completo
 - Cronograma de implementação
 - Métricas de sucesso
@@ -556,6 +584,7 @@ class IncentiveManager {
 #### Integração com CroquiNFExporter
 
 **CroquiNFExporter.js** agora suporta incentivos fiscais:
+
 ```javascript
 // Constructor aceita IncentiveManager
 constructor(diData, calculosData, incentiveManager)
@@ -573,6 +602,7 @@ window.gerarCroquiPDFNovo(diData, incentiveManager)
 #### Refatoração DRY Implementada
 
 **ANTES** (duplicação):
+
 ```json
 // beneficios.json - CADA programa tinha seção ncms_restritos
 "SC_TTD_409": {
@@ -582,6 +612,7 @@ window.gerarCroquiPDFNovo(diData, incentiveManager)
 ```
 
 **DEPOIS** (centralizado):
+
 ```json
 // beneficios.json - simplificado
 {
@@ -599,24 +630,28 @@ window.gerarCroquiPDFNovo(diData, incentiveManager)
 #### Funcionalidades Principais
 
 **1. Validação Automática de Elegibilidade**
+
 ```javascript
 const elegibilidade = incentiveManager.validateEligibility('SC', 'SC_TTD_409', ['2710', '8703']);
 // ❌ NCMs restritos: combustíveis e veículos vedados
 ```
 
 **2. Geração de Croqui com Diferimento CST 51**
+
 ```javascript
 const diComIncentivo = incentiveManager.calculateNFFields(di, 'SC_TTD_409');
 // ✅ CST: 51, vICMSDif: R$ 275.574,70, pDif: 94.91%, cBenef: SC830015
 ```
 
 **3. Análise de Impacto de Custos**
+
 ```javascript
 const custosComIncentivo = incentiveManager.calculateCostImpact(produtos, 'SC_TTD_409', 2030);
 // ✅ Economia atual vs projeção reforma tributária
 ```
 
 **4. Projeções da Reforma Tributária (2025-2033)**
+
 ```javascript
 const cenarios = incentiveManager.projectReformScenarios(2025);
 // ✅ Timeline completa com alertas por ano

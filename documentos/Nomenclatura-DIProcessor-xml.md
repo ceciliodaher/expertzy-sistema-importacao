@@ -98,6 +98,18 @@ Com base na análise do arquivo **DIProcessor.js**, identifiquei a nomenclatura 
 
 ### **Despesas Aduaneiras (Registro: `diData.despesas_aduaneiras`)**
 
+| **Fonte XML**                                      | **Campo DIProcessor**                      | **Método de Extração**          | **Código Receita** | **Tipo de Despesa**  | **Descrição**                              |
+| -------------------------------------------------- | ------------------------------------------ | ------------------------------- | ------------------ | -------------------- | ------------------------------------------ |
+| `<pagamento><codigoReceita>7811</codigoReceita>`   | `despesas.calculadas.siscomex`             | `extractPagamentos()`           | 7811               | SISCOMEX             | Taxa de Utilização do SISCOMEX             |
+| `<pagamento><codigoReceita>5529</codigoReceita>`   | `despesas.calculadas.anti_dumping`         | `extractPagamentos()`           | 5529               | ANTI_DUMPING         | Direito Antidumping                        |
+| `<pagamento><codigoReceita>5622</codigoReceita>`   | `despesas.calculadas.medida_compensatoria` | `extractPagamentos()`           | 5622               | MEDIDA_COMPENSATORIA | Medida Compensatória                       |
+| `<pagamento><codigoReceita>5651</codigoReceita>`   | `despesas.calculadas.medida_salvaguarda`   | `extractPagamentos()`           | 5651               | MEDIDA_SALVAGUARDA   | Medida de Salvaguarda                      |
+| `<pagamento><codigoReceita>0086</codigoReceita>`   | `despesas.pagamentos[]`                    | `extractPagamentos()`           | 0086               | II_OUTROS            | II - Outros                                |
+| `<pagamento><codigoReceita>1038</codigoReceita>`   | `despesas.pagamentos[]`                    | `extractPagamentos()`           | 1038               | IPI_VINCULADO        | IPI Vinculado Importação                   |
+| `<acrescimo><codigoAcrescimo>16</codigoAcrescimo>` | `despesas.calculadas.capatazia`            | `extractAcrescimos()`           | 16                 | CAPATAZIA            | Capatazia                                  |
+| `<acrescimo><codigoAcrescimo>17</codigoAcrescimo>` | `despesas.calculadas.taxa_ce`              | `extractAcrescimos()`           | 17                 | TAXA_CE              | Taxa CE                                    |
+| `informacaoComplementar`                           | `despesas.calculadas.afrmm`                | `calcularDespesasAutomaticas()` | AFRMM              | AFRMM                | Adicional Frete Renovação Marinha Mercante |
+
 **Códigos de Receita Mapeados:**
 
 - `7811` → `SISCOMEX` (Taxa de Utilização do SISCOMEX)

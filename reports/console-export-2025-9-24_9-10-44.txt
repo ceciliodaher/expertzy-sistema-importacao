@@ -1,0 +1,3122 @@
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+📊 Tributos individuais calculados para item (R$ 286.00):
+        - II: 16% = R$ 45.76
+        - IPI: 6.5% = R$ 21.56 (base: R$ 331.76)
+        - PIS: 2.1% = R$ 6.01
+        - COFINS: 9.65% = R$ 27.60 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 286.00) - Adição 001:
+        - Proporção na adição: 0.8637%
+        - Despesas aduaneiras: R$ 0.89
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.89 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 286.00
+        - Tributos: R$ 100.93
+        - Despesas: R$ 0.89
+        - Base ICMS: R$ 478.78
+        - ICMS (19%): R$ 90.97
+        - Custo total: R$ 478.78 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 703.37):
+        - II: 16% = R$ 112.54
+        - IPI: 6.5% = R$ 53.03 (base: R$ 815.91)
+        - PIS: 2.1% = R$ 14.77
+        - COFINS: 9.65% = R$ 67.88 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 703.37) - Adição 001:
+        - Proporção na adição: 2.1242%
+        - Despesas aduaneiras: R$ 2.18
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.18 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 703.37
+        - Tributos: R$ 248.22
+        - Despesas: R$ 2.18
+        - Base ICMS: R$ 1177.50
+        - ICMS (19%): R$ 223.72
+        - Custo total: R$ 1177.50 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 342.34):
+        - II: 16% = R$ 54.77
+        - IPI: 6.5% = R$ 25.81 (base: R$ 397.11)
+        - PIS: 2.1% = R$ 7.19
+        - COFINS: 9.65% = R$ 33.04 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 342.34) - Adição 001:
+        - Proporção na adição: 1.0339%
+        - Despesas aduaneiras: R$ 1.06
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.06 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 342.34
+        - Tributos: R$ 120.81
+        - Despesas: R$ 1.06
+        - Base ICMS: R$ 573.09
+        - ICMS (19%): R$ 108.89
+        - Custo total: R$ 573.09 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 298.02):
+        - II: 16% = R$ 47.68
+        - IPI: 6.5% = R$ 22.47 (base: R$ 345.70)
+        - PIS: 2.1% = R$ 6.26
+        - COFINS: 9.65% = R$ 28.76 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 298.02) - Adição 001:
+        - Proporção na adição: 0.9000%
+        - Despesas aduaneiras: R$ 0.92
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.92 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 298.02
+        - Tributos: R$ 105.17
+        - Despesas: R$ 0.92
+        - Base ICMS: R$ 498.90
+        - ICMS (19%): R$ 94.79
+        - Custo total: R$ 498.90 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 365.19):
+        - II: 16% = R$ 58.43
+        - IPI: 6.5% = R$ 27.54 (base: R$ 423.62)
+        - PIS: 2.1% = R$ 7.67
+        - COFINS: 9.65% = R$ 35.24 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 365.19) - Adição 001:
+        - Proporção na adição: 1.1029%
+        - Despesas aduaneiras: R$ 1.13
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.13 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 365.19
+        - Tributos: R$ 128.88
+        - Despesas: R$ 1.13
+        - Base ICMS: R$ 611.35
+        - ICMS (19%): R$ 116.16
+        - Custo total: R$ 611.35 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5962.63):
+        - II: 16% = R$ 954.02
+        - IPI: 6.5% = R$ 449.58 (base: R$ 6916.65)
+        - PIS: 2.1% = R$ 125.22
+        - COFINS: 9.65% = R$ 575.39 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5962.63) - Adição 001:
+        - Proporção na adição: 18.0074%
+        - Despesas aduaneiras: R$ 18.46
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 18.46 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5962.63
+        - Tributos: R$ 2104.21
+        - Despesas: R$ 18.46
+        - Base ICMS: R$ 9981.85
+        - ICMS (19%): R$ 1896.55
+        - Custo total: R$ 9981.85 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 198.14):
+        - II: 16% = R$ 31.70
+        - IPI: 6.5% = R$ 14.94 (base: R$ 229.84)
+        - PIS: 2.1% = R$ 4.16
+        - COFINS: 9.65% = R$ 19.12 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 198.14) - Adição 001:
+        - Proporção na adição: 0.5984%
+        - Despesas aduaneiras: R$ 0.61
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.61 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 198.14
+        - Tributos: R$ 69.92
+        - Despesas: R$ 0.61
+        - Base ICMS: R$ 331.70
+        - ICMS (19%): R$ 63.02
+        - Custo total: R$ 331.70 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 880.41):
+        - II: 16% = R$ 140.87
+        - IPI: 6.5% = R$ 66.38 (base: R$ 1021.28)
+        - PIS: 2.1% = R$ 18.49
+        - COFINS: 9.65% = R$ 84.96 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 880.41) - Adição 001:
+        - Proporção na adição: 2.6589%
+        - Despesas aduaneiras: R$ 2.72
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.72 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 880.41
+        - Tributos: R$ 310.70
+        - Despesas: R$ 2.72
+        - Base ICMS: R$ 1473.87
+        - ICMS (19%): R$ 280.04
+        - Custo total: R$ 1473.87 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 151.70):
+        - II: 16% = R$ 24.27
+        - IPI: 6.5% = R$ 11.44 (base: R$ 175.98)
+        - PIS: 2.1% = R$ 3.19
+        - COFINS: 9.65% = R$ 14.64 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 151.70) - Adição 001:
+        - Proporção na adição: 0.4582%
+        - Despesas aduaneiras: R$ 0.47
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.47 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 151.70
+        - Tributos: R$ 53.54
+        - Despesas: R$ 0.47
+        - Base ICMS: R$ 253.96
+        - ICMS (19%): R$ 48.25
+        - Custo total: R$ 253.96 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 274.32):
+        - II: 16% = R$ 43.89
+        - IPI: 6.5% = R$ 20.68 (base: R$ 318.21)
+        - PIS: 2.1% = R$ 5.76
+        - COFINS: 9.65% = R$ 26.47 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 274.32) - Adição 001:
+        - Proporção na adição: 0.8285%
+        - Despesas aduaneiras: R$ 0.85
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.85 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 274.32
+        - Tributos: R$ 96.81
+        - Despesas: R$ 0.85
+        - Base ICMS: R$ 459.23
+        - ICMS (19%): R$ 87.25
+        - Custo total: R$ 459.23 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 199.27):
+        - II: 16% = R$ 31.88
+        - IPI: 6.5% = R$ 15.02 (base: R$ 231.15)
+        - PIS: 2.1% = R$ 4.18
+        - COFINS: 9.65% = R$ 19.23 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 199.27) - Adição 001:
+        - Proporção na adição: 0.6018%
+        - Despesas aduaneiras: R$ 0.62
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.62 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 199.27
+        - Tributos: R$ 70.32
+        - Despesas: R$ 0.62
+        - Base ICMS: R$ 333.59
+        - ICMS (19%): R$ 63.38
+        - Custo total: R$ 333.59 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 222.21):
+        - II: 16% = R$ 35.55
+        - IPI: 6.5% = R$ 16.75 (base: R$ 257.77)
+        - PIS: 2.1% = R$ 4.67
+        - COFINS: 9.65% = R$ 21.44 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 222.21) - Adição 001:
+        - Proporção na adição: 0.6711%
+        - Despesas aduaneiras: R$ 0.69
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.69 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 222.21
+        - Tributos: R$ 78.42
+        - Despesas: R$ 0.69
+        - Base ICMS: R$ 372.00
+        - ICMS (19%): R$ 70.68
+        - Custo total: R$ 372.00 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 197.84):
+        - II: 16% = R$ 31.65
+        - IPI: 6.5% = R$ 14.92 (base: R$ 229.49)
+        - PIS: 2.1% = R$ 4.15
+        - COFINS: 9.65% = R$ 19.09 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 197.84) - Adição 001:
+        - Proporção na adição: 0.5975%
+        - Despesas aduaneiras: R$ 0.61
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.61 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 197.84
+        - Tributos: R$ 69.82
+        - Despesas: R$ 0.61
+        - Base ICMS: R$ 331.19
+        - ICMS (19%): R$ 62.93
+        - Custo total: R$ 331.19 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 001 ItemCalculator.js:309:21
+    ✅ 54 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 2/16: NCM 73181600 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 16.22 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 16.22 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 7104.88 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 8771.45 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 5239.61", II: "R$ 838.33", IPI: "R$ 395.07", PIS: "R$ 110.03", COFINS: "R$ 505.62", ICMS: "R$ 1666.58", "Total Impostos": "R$ 3515.63", "Custo Total": "R$ 8771.45" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 314.53):
+        - II: 16% = R$ 50.33
+        - IPI: 6.5% = R$ 23.72 (base: R$ 364.86)
+        - PIS: 2.1% = R$ 6.61
+        - COFINS: 9.65% = R$ 30.35 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 314.53) - Adição 002:
+        - Proporção na adição: 6.0030%
+        - Despesas aduaneiras: R$ 0.97
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.97 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 314.53
+        - Tributos: R$ 111.00
+        - Despesas: R$ 0.97
+        - Base ICMS: R$ 526.55
+        - ICMS (19%): R$ 100.04
+        - Custo total: R$ 526.55 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1920.03):
+        - II: 16% = R$ 307.20
+        - IPI: 6.5% = R$ 144.77 (base: R$ 2227.23)
+        - PIS: 2.1% = R$ 40.32
+        - COFINS: 9.65% = R$ 185.28 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1920.03) - Adição 002:
+        - Proporção na adição: 36.6445%
+        - Despesas aduaneiras: R$ 5.94
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.94 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1920.03
+        - Tributos: R$ 677.58
+        - Despesas: R$ 5.94
+        - Base ICMS: R$ 3214.26
+        - ICMS (19%): R$ 610.71
+        - Custo total: R$ 3214.26 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 391.84):
+        - II: 16% = R$ 62.69
+        - IPI: 6.5% = R$ 29.54 (base: R$ 454.54)
+        - PIS: 2.1% = R$ 8.23
+        - COFINS: 9.65% = R$ 37.81 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 391.84) - Adição 002:
+        - Proporção na adição: 7.4785%
+        - Despesas aduaneiras: R$ 1.21
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.21 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 391.84
+        - Tributos: R$ 138.28
+        - Despesas: R$ 1.21
+        - Base ICMS: R$ 655.97
+        - ICMS (19%): R$ 124.63
+        - Custo total: R$ 655.97 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 752.75):
+        - II: 16% = R$ 120.44
+        - IPI: 6.5% = R$ 56.76 (base: R$ 873.19)
+        - PIS: 2.1% = R$ 15.81
+        - COFINS: 9.65% = R$ 72.64 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 752.75) - Adição 002:
+        - Proporção na adição: 14.3665%
+        - Despesas aduaneiras: R$ 2.33
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.33 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 752.75
+        - Tributos: R$ 265.64
+        - Despesas: R$ 2.33
+        - Base ICMS: R$ 1260.15
+        - ICMS (19%): R$ 239.43
+        - Custo total: R$ 1260.15 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 241.74):
+        - II: 16% = R$ 38.68
+        - IPI: 6.5% = R$ 18.23 (base: R$ 280.41)
+        - PIS: 2.1% = R$ 5.08
+        - COFINS: 9.65% = R$ 23.33 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 241.74) - Adição 002:
+        - Proporção na adição: 4.6136%
+        - Despesas aduaneiras: R$ 0.75
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.75 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 241.74
+        - Tributos: R$ 85.31
+        - Despesas: R$ 0.75
+        - Base ICMS: R$ 404.68
+        - ICMS (19%): R$ 76.89
+        - Custo total: R$ 404.68 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1198.70):
+        - II: 16% = R$ 191.79
+        - IPI: 6.5% = R$ 90.38 (base: R$ 1390.50)
+        - PIS: 2.1% = R$ 25.17
+        - COFINS: 9.65% = R$ 115.67 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1198.70) - Adição 002:
+        - Proporção na adição: 22.8777%
+        - Despesas aduaneiras: R$ 3.71
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.71 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1198.70
+        - Tributos: R$ 423.02
+        - Despesas: R$ 3.71
+        - Base ICMS: R$ 2006.71
+        - ICMS (19%): R$ 381.27
+        - Custo total: R$ 2006.71 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 420.23):
+        - II: 16% = R$ 67.24
+        - IPI: 6.5% = R$ 31.69 (base: R$ 487.46)
+        - PIS: 2.1% = R$ 8.82
+        - COFINS: 9.65% = R$ 40.55 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 420.23) - Adição 002:
+        - Proporção na adição: 8.0202%
+        - Despesas aduaneiras: R$ 1.30
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.30 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 420.23
+        - Tributos: R$ 148.30
+        - Despesas: R$ 1.30
+        - Base ICMS: R$ 703.49
+        - ICMS (19%): R$ 133.66
+        - Custo total: R$ 703.49 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 002 ItemCalculator.js:309:21
+    ✅ 7 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 3/16: NCM 73182200 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 16.00 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 16.00 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 7008.59 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 8652.58 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 5168.60", II: "R$ 826.97", IPI: "R$ 389.72", PIS: "R$ 108.54", COFINS: "R$ 498.76", ICMS: "R$ 1643.99", "Total Impostos": "R$ 3467.98", "Custo Total": "R$ 8652.58" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 957.23):
+        - II: 16% = R$ 153.16
+        - IPI: 6.5% = R$ 72.18 (base: R$ 1110.39)
+        - PIS: 2.1% = R$ 20.10
+        - COFINS: 9.65% = R$ 92.37 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 957.23) - Adição 003:
+        - Proporção na adição: 18.5201%
+        - Despesas aduaneiras: R$ 2.96
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.96 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 957.23
+        - Tributos: R$ 337.81
+        - Despesas: R$ 2.96
+        - Base ICMS: R$ 1602.47
+        - ICMS (19%): R$ 304.47
+        - Custo total: R$ 1602.47 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 424.46):
+        - II: 16% = R$ 67.91
+        - IPI: 6.5% = R$ 32.00 (base: R$ 492.37)
+        - PIS: 2.1% = R$ 8.91
+        - COFINS: 9.65% = R$ 40.96 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 424.46) - Adição 003:
+        - Proporção na adição: 8.2123%
+        - Despesas aduaneiras: R$ 1.31
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.31 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 424.46
+        - Tributos: R$ 149.79
+        - Despesas: R$ 1.31
+        - Base ICMS: R$ 710.57
+        - ICMS (19%): R$ 135.01
+        - Custo total: R$ 710.57 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 461.15):
+        - II: 16% = R$ 73.78
+        - IPI: 6.5% = R$ 34.77 (base: R$ 534.93)
+        - PIS: 2.1% = R$ 9.68
+        - COFINS: 9.65% = R$ 44.50 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 461.15) - Adição 003:
+        - Proporção na adição: 8.9221%
+        - Despesas aduaneiras: R$ 1.43
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.43 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 461.15
+        - Tributos: R$ 162.74
+        - Despesas: R$ 1.43
+        - Base ICMS: R$ 772.00
+        - ICMS (19%): R$ 146.68
+        - Custo total: R$ 772.00 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2226.87):
+        - II: 16% = R$ 356.30
+        - IPI: 6.5% = R$ 167.91 (base: R$ 2583.17)
+        - PIS: 2.1% = R$ 46.76
+        - COFINS: 9.65% = R$ 214.89 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2226.87) - Adição 003:
+        - Proporção na adição: 43.0846%
+        - Despesas aduaneiras: R$ 6.89
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 6.89 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2226.87
+        - Tributos: R$ 785.86
+        - Despesas: R$ 6.89
+        - Base ICMS: R$ 3727.93
+        - ICMS (19%): R$ 708.31
+        - Custo total: R$ 3727.93 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 583.56):
+        - II: 16% = R$ 93.37
+        - IPI: 6.5% = R$ 44.00 (base: R$ 676.92)
+        - PIS: 2.1% = R$ 12.25
+        - COFINS: 9.65% = R$ 56.31 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 583.56) - Adição 003:
+        - Proporção na adição: 11.2904%
+        - Despesas aduaneiras: R$ 1.81
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.81 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 583.56
+        - Tributos: R$ 205.94
+        - Despesas: R$ 1.81
+        - Base ICMS: R$ 976.91
+        - ICMS (19%): R$ 185.61
+        - Custo total: R$ 976.91 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 515.48):
+        - II: 16% = R$ 82.48
+        - IPI: 6.5% = R$ 38.87 (base: R$ 597.96)
+        - PIS: 2.1% = R$ 10.83
+        - COFINS: 9.65% = R$ 49.74 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 515.48) - Adição 003:
+        - Proporção na adição: 9.9734%
+        - Despesas aduaneiras: R$ 1.60
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.60 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 515.48
+        - Tributos: R$ 181.91
+        - Despesas: R$ 1.60
+        - Base ICMS: R$ 862.96
+        - ICMS (19%): R$ 163.96
+        - Custo total: R$ 862.96 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 003 ItemCalculator.js:309:21
+    ✅ 6 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 4/16: NCM 73202010 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 5.65 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 5.65 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 2545.94 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 3143.14 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 1826.76", II: "R$ 292.28", IPI: "R$ 206.61", PIS: "R$ 38.36", COFINS: "R$ 176.28", ICMS: "R$ 597.20", "Total Impostos": "R$ 1310.73", "Custo Total": "R$ 3143.14" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 207.18):
+        - II: 16% = R$ 33.15
+        - IPI: 9.75% = R$ 23.43 (base: R$ 240.32)
+        - PIS: 2.1% = R$ 4.35
+        - COFINS: 9.65% = R$ 19.99 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 207.18) - Adição 004:
+        - Proporção na adição: 11.3411%
+        - Despesas aduaneiras: R$ 0.64
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.64 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 207.18
+        - Tributos: R$ 80.92
+        - Despesas: R$ 0.64
+        - Base ICMS: R$ 356.47
+        - ICMS (19%): R$ 67.73
+        - Custo total: R$ 356.47 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 881.92):
+        - II: 16% = R$ 141.11
+        - IPI: 9.75% = R$ 99.75 (base: R$ 1023.03)
+        - PIS: 2.1% = R$ 18.52
+        - COFINS: 9.65% = R$ 85.11 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 881.92) - Adição 004:
+        - Proporção na adição: 48.2779%
+        - Despesas aduaneiras: R$ 2.73
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.73 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 881.92
+        - Tributos: R$ 344.48
+        - Despesas: R$ 2.73
+        - Base ICMS: R$ 1517.44
+        - ICMS (19%): R$ 288.31
+        - Custo total: R$ 1517.44 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 265.75):
+        - II: 16% = R$ 42.52
+        - IPI: 9.75% = R$ 30.06 (base: R$ 308.27)
+        - PIS: 2.1% = R$ 5.58
+        - COFINS: 9.65% = R$ 25.64 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 265.75) - Adição 004:
+        - Proporção na adição: 14.5476%
+        - Despesas aduaneiras: R$ 0.82
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.82 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 265.75
+        - Tributos: R$ 103.80
+        - Despesas: R$ 0.82
+        - Base ICMS: R$ 457.25
+        - ICMS (19%): R$ 86.88
+        - Custo total: R$ 457.25 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 472.00):
+        - II: 16% = R$ 75.52
+        - IPI: 9.75% = R$ 53.38 (base: R$ 547.52)
+        - PIS: 2.1% = R$ 9.91
+        - COFINS: 9.65% = R$ 45.55 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 472.00) - Adição 004:
+        - Proporção na adição: 25.8382%
+        - Despesas aduaneiras: R$ 1.46
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.46 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 472.00
+        - Tributos: R$ 184.36
+        - Despesas: R$ 1.46
+        - Base ICMS: R$ 812.13
+        - ICMS (19%): R$ 154.30
+        - Custo total: R$ 812.13 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 004 ItemCalculator.js:309:21
+    ✅ 4 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 5/16: NCM 73249000 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 6.57 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 6.57 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 2843.32 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 3510.27 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 2123.55", II: "R$ 305.79", IPI: "R$ 157.90", PIS: "R$ 44.59", COFINS: "R$ 204.92", ICMS: "R$ 666.95", "Total Impostos": "R$ 1380.15", "Custo Total": "R$ 3510.27" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 2123.58):
+        - II: 14.4% = R$ 305.80
+        - IPI: 6.5% = R$ 157.91 (base: R$ 2429.38)
+        - PIS: 2.1% = R$ 44.60
+        - COFINS: 9.65% = R$ 204.93 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2123.58) - Adição 005:
+        - Proporção na adição: 100.0016%
+        - Despesas aduaneiras: R$ 6.57
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 6.57 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2123.58
+        - Tributos: R$ 713.23
+        - Despesas: R$ 6.57
+        - Base ICMS: R$ 3510.35
+        - ICMS (19%): R$ 666.97
+        - Custo total: R$ 3510.35 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 005 ItemCalculator.js:309:21
+    ✅ 1 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 6/16: NCM 84099111 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 539.25 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 539.25 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 241425.11 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 298055.70 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 174226.72", II: "R$ 27876.27", IPI: "R$ 6568.36", PIS: "R$ 5435.87", COFINS: "R$ 26778.64", ICMS: "R$ 56630.58", "Total Impostos": "R$ 123289.72", "Custo Total": "R$ 298055.70" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 5479.95):
+        - II: 16% = R$ 876.79
+        - IPI: 3.25% = R$ 206.59 (base: R$ 6356.74)
+        - PIS: 3.12% = R$ 170.97
+        - COFINS: 15.37% = R$ 842.27 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5479.95) - Adição 006:
+        - Proporção na adição: 3.1453%
+        - Despesas aduaneiras: R$ 16.96
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.96 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5479.95
+        - Tributos: R$ 2096.63
+        - Despesas: R$ 16.96
+        - Base ICMS: R$ 9374.74
+        - ICMS (19%): R$ 1781.20
+        - Custo total: R$ 9374.74 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5477.15):
+        - II: 16% = R$ 876.34
+        - IPI: 3.25% = R$ 206.49 (base: R$ 6353.50)
+        - PIS: 3.12% = R$ 170.89
+        - COFINS: 15.37% = R$ 841.84 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5477.15) - Adição 006:
+        - Proporção na adição: 3.1437%
+        - Despesas aduaneiras: R$ 16.95
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.95 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5477.15
+        - Tributos: R$ 2095.56
+        - Despesas: R$ 16.95
+        - Base ICMS: R$ 9369.96
+        - ICMS (19%): R$ 1780.29
+        - Custo total: R$ 9369.96 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 13305.07):
+        - II: 16% = R$ 2128.81
+        - IPI: 3.25% = R$ 501.60 (base: R$ 15433.88)
+        - PIS: 3.12% = R$ 415.12
+        - COFINS: 15.37% = R$ 2044.99 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 13305.07) - Adição 006:
+        - Proporção na adição: 7.6366%
+        - Despesas aduaneiras: R$ 41.18
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 41.18 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 13305.07
+        - Tributos: R$ 5090.52
+        - Despesas: R$ 41.18
+        - Base ICMS: R$ 22761.45
+        - ICMS (19%): R$ 4324.67
+        - Custo total: R$ 22761.45 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6805.30):
+        - II: 16% = R$ 1088.85
+        - IPI: 3.25% = R$ 256.56 (base: R$ 7894.15)
+        - PIS: 3.12% = R$ 212.33
+        - COFINS: 15.37% = R$ 1045.98 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6805.30) - Adição 006:
+        - Proporção na adição: 3.9060%
+        - Despesas aduaneiras: R$ 21.06
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 21.06 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6805.30
+        - Tributos: R$ 2603.71
+        - Despesas: R$ 21.06
+        - Base ICMS: R$ 11642.07
+        - ICMS (19%): R$ 2211.99
+        - Custo total: R$ 11642.07 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6676.89):
+        - II: 16% = R$ 1068.30
+        - IPI: 3.25% = R$ 251.72 (base: R$ 7745.19)
+        - PIS: 3.12% = R$ 208.32
+        - COFINS: 15.37% = R$ 1026.24 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6676.89) - Adição 006:
+        - Proporção na adição: 3.8323%
+        - Despesas aduaneiras: R$ 20.67
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.67 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6676.89
+        - Tributos: R$ 2554.58
+        - Despesas: R$ 20.67
+        - Base ICMS: R$ 11422.39
+        - ICMS (19%): R$ 2170.25
+        - Custo total: R$ 11422.39 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6650.60):
+        - II: 16% = R$ 1064.10
+        - IPI: 3.25% = R$ 250.73 (base: R$ 7714.70)
+        - PIS: 3.12% = R$ 207.50
+        - COFINS: 15.37% = R$ 1022.20 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6650.60) - Adição 006:
+        - Proporção na adição: 3.8172%
+        - Despesas aduaneiras: R$ 20.58
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.58 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6650.60
+        - Tributos: R$ 2544.52
+        - Despesas: R$ 20.58
+        - Base ICMS: R$ 11377.42
+        - ICMS (19%): R$ 2161.71
+        - Custo total: R$ 11377.42 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6642.87):
+        - II: 16% = R$ 1062.86
+        - IPI: 3.25% = R$ 250.44 (base: R$ 7705.73)
+        - PIS: 3.12% = R$ 207.26
+        - COFINS: 15.37% = R$ 1021.01 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6642.87) - Adição 006:
+        - Proporção na adição: 3.8128%
+        - Despesas aduaneiras: R$ 20.56
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.56 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6642.87
+        - Tributos: R$ 2541.56
+        - Despesas: R$ 20.56
+        - Base ICMS: R$ 11364.18
+        - ICMS (19%): R$ 2159.19
+        - Custo total: R$ 11364.18 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 11289.95):
+        - II: 16% = R$ 1806.39
+        - IPI: 3.25% = R$ 425.63 (base: R$ 13096.35)
+        - PIS: 3.12% = R$ 352.25
+        - COFINS: 15.37% = R$ 1735.27 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 11289.95) - Adição 006:
+        - Proporção na adição: 6.4800%
+        - Despesas aduaneiras: R$ 34.94
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 34.94 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 11289.95
+        - Tributos: R$ 4319.54
+        - Despesas: R$ 34.94
+        - Base ICMS: R$ 19314.12
+        - ICMS (19%): R$ 3669.68
+        - Custo total: R$ 19314.12 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6631.59):
+        - II: 16% = R$ 1061.05
+        - IPI: 3.25% = R$ 250.01 (base: R$ 7692.64)
+        - PIS: 3.12% = R$ 206.91
+        - COFINS: 15.37% = R$ 1019.28 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6631.59) - Adição 006:
+        - Proporção na adição: 3.8063%
+        - Despesas aduaneiras: R$ 20.53
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.53 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6631.59
+        - Tributos: R$ 2537.25
+        - Despesas: R$ 20.53
+        - Base ICMS: R$ 11344.89
+        - ICMS (19%): R$ 2155.53
+        - Custo total: R$ 11344.89 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5477.15):
+        - II: 16% = R$ 876.34
+        - IPI: 3.25% = R$ 206.49 (base: R$ 6353.50)
+        - PIS: 3.12% = R$ 170.89
+        - COFINS: 15.37% = R$ 841.84 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5477.15) - Adição 006:
+        - Proporção na adição: 3.1437%
+        - Despesas aduaneiras: R$ 16.95
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.95 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5477.15
+        - Tributos: R$ 2095.56
+        - Despesas: R$ 16.95
+        - Base ICMS: R$ 9369.96
+        - ICMS (19%): R$ 1780.29
+        - Custo total: R$ 9369.96 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5471.00):
+        - II: 16% = R$ 875.36
+        - IPI: 3.25% = R$ 206.26 (base: R$ 6346.36)
+        - PIS: 3.12% = R$ 170.70
+        - COFINS: 15.37% = R$ 840.89 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5471.00) - Adição 006:
+        - Proporção na adição: 3.1402%
+        - Despesas aduaneiras: R$ 16.93
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.93 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5471.00
+        - Tributos: R$ 2093.21
+        - Despesas: R$ 16.93
+        - Base ICMS: R$ 9359.43
+        - ICMS (19%): R$ 1778.29
+        - Custo total: R$ 9359.43 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6646.78):
+        - II: 16% = R$ 1063.49
+        - IPI: 3.25% = R$ 250.58 (base: R$ 7710.27)
+        - PIS: 3.12% = R$ 207.38
+        - COFINS: 15.37% = R$ 1021.61 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6646.78) - Adição 006:
+        - Proporção na adição: 3.8150%
+        - Despesas aduaneiras: R$ 20.57
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.57 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6646.78
+        - Tributos: R$ 2543.06
+        - Despesas: R$ 20.57
+        - Base ICMS: R$ 11370.88
+        - ICMS (19%): R$ 2160.47
+        - Custo total: R$ 11370.88 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 19541.35):
+        - II: 16% = R$ 3126.62
+        - IPI: 3.25% = R$ 736.71 (base: R$ 22667.97)
+        - PIS: 3.12% = R$ 609.69
+        - COFINS: 15.37% = R$ 3003.51 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 19541.35) - Adição 006:
+        - Proporção na adição: 11.2160%
+        - Despesas aduaneiras: R$ 60.48
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 60.48 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 19541.35
+        - Tributos: R$ 7476.52
+        - Despesas: R$ 60.48
+        - Base ICMS: R$ 33430.07
+        - ICMS (19%): R$ 6351.71
+        - Custo total: R$ 33430.07 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 10953.28):
+        - II: 16% = R$ 1752.53
+        - IPI: 3.25% = R$ 412.94 (base: R$ 12705.81)
+        - PIS: 3.12% = R$ 341.74
+        - COFINS: 15.37% = R$ 1683.52 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 10953.28) - Adição 006:
+        - Proporção na adição: 6.2868%
+        - Despesas aduaneiras: R$ 33.90
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 33.90 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 10953.28
+        - Tributos: R$ 4190.73
+        - Despesas: R$ 33.90
+        - Base ICMS: R$ 18738.16
+        - ICMS (19%): R$ 3560.25
+        - Custo total: R$ 18738.16 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6662.44):
+        - II: 16% = R$ 1065.99
+        - IPI: 3.25% = R$ 251.17 (base: R$ 7728.43)
+        - PIS: 3.12% = R$ 207.87
+        - COFINS: 15.37% = R$ 1024.02 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6662.44) - Adição 006:
+        - Proporção na adição: 3.8240%
+        - Despesas aduaneiras: R$ 20.62
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.62 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6662.44
+        - Tributos: R$ 2549.05
+        - Despesas: R$ 20.62
+        - Base ICMS: R$ 11397.67
+        - ICMS (19%): R$ 2165.56
+        - Custo total: R$ 11397.67 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6632.99):
+        - II: 16% = R$ 1061.28
+        - IPI: 3.25% = R$ 250.06 (base: R$ 7694.26)
+        - PIS: 3.12% = R$ 206.95
+        - COFINS: 15.37% = R$ 1019.49 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6632.99) - Adição 006:
+        - Proporção na adição: 3.8071%
+        - Despesas aduaneiras: R$ 20.53
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.53 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6632.99
+        - Tributos: R$ 2537.78
+        - Despesas: R$ 20.53
+        - Base ICMS: R$ 11347.28
+        - ICMS (19%): R$ 2155.98
+        - Custo total: R$ 11347.28 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 11282.03):
+        - II: 16% = R$ 1805.12
+        - IPI: 3.25% = R$ 425.33 (base: R$ 13087.16)
+        - PIS: 3.12% = R$ 352.00
+        - COFINS: 15.37% = R$ 1734.05 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 11282.03) - Adição 006:
+        - Proporção na adição: 6.4755%
+        - Despesas aduaneiras: R$ 34.92
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 34.92 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 11282.03
+        - Tributos: R$ 4316.50
+        - Despesas: R$ 34.92
+        - Base ICMS: R$ 19300.56
+        - ICMS (19%): R$ 3667.11
+        - Custo total: R$ 19300.56 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6646.32):
+        - II: 16% = R$ 1063.41
+        - IPI: 3.25% = R$ 250.57 (base: R$ 7709.73)
+        - PIS: 3.12% = R$ 207.37
+        - COFINS: 15.37% = R$ 1021.54 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6646.32) - Adição 006:
+        - Proporção na adição: 3.8148%
+        - Despesas aduaneiras: R$ 20.57
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.57 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6646.32
+        - Tributos: R$ 2542.88
+        - Despesas: R$ 20.57
+        - Base ICMS: R$ 11370.08
+        - ICMS (19%): R$ 2160.32
+        - Custo total: R$ 11370.08 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6639.14):
+        - II: 16% = R$ 1062.26
+        - IPI: 3.25% = R$ 250.30 (base: R$ 7701.40)
+        - PIS: 3.12% = R$ 207.14
+        - COFINS: 15.37% = R$ 1020.44 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6639.14) - Adição 006:
+        - Proporção na adição: 3.8106%
+        - Despesas aduaneiras: R$ 20.55
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.55 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6639.14
+        - Tributos: R$ 2540.13
+        - Despesas: R$ 20.55
+        - Base ICMS: R$ 11357.81
+        - ICMS (19%): R$ 2157.98
+        - Custo total: R$ 11357.81 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5989.01):
+        - II: 16% = R$ 958.24
+        - IPI: 3.25% = R$ 225.79 (base: R$ 6947.25)
+        - PIS: 3.12% = R$ 186.86
+        - COFINS: 15.37% = R$ 920.51 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5989.01) - Adição 006:
+        - Proporção na adição: 3.4375%
+        - Despesas aduaneiras: R$ 18.54
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 18.54 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5989.01
+        - Tributos: R$ 2291.40
+        - Despesas: R$ 18.54
+        - Base ICMS: R$ 10245.61
+        - ICMS (19%): R$ 1946.67
+        - Custo total: R$ 10245.61 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6647.06):
+        - II: 16% = R$ 1063.53
+        - IPI: 3.25% = R$ 250.59 (base: R$ 7710.59)
+        - PIS: 3.12% = R$ 207.39
+        - COFINS: 15.37% = R$ 1021.65 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6647.06) - Adição 006:
+        - Proporção na adição: 3.8152%
+        - Despesas aduaneiras: R$ 20.57
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.57 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6647.06
+        - Tributos: R$ 2543.17
+        - Despesas: R$ 20.57
+        - Base ICMS: R$ 11371.36
+        - ICMS (19%): R$ 2160.56
+        - Custo total: R$ 11371.36 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6679.31):
+        - II: 16% = R$ 1068.69
+        - IPI: 3.25% = R$ 251.81 (base: R$ 7748.00)
+        - PIS: 3.12% = R$ 208.39
+        - COFINS: 15.37% = R$ 1026.61 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6679.31) - Adição 006:
+        - Proporção na adição: 3.8337%
+        - Despesas aduaneiras: R$ 20.67
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 20.67 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6679.31
+        - Tributos: R$ 2555.51
+        - Despesas: R$ 20.67
+        - Base ICMS: R$ 11426.53
+        - ICMS (19%): R$ 2171.04
+        - Custo total: R$ 11426.53 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 006 ItemCalculator.js:309:21
+    ✅ 22 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 7/16: NCM 84099114 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 28.39 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 28.39 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 12711.58 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 15693.31 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 9173.44", II: "R$ 1467.75", IPI: "R$ 345.84", PIS: "R$ 286.21", COFINS: "R$ 1409.95", ICMS: "R$ 2981.73", "Total Impostos": "R$ 6491.48", "Custo Total": "R$ 15693.31" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 2673.15):
+        - II: 16% = R$ 427.70
+        - IPI: 3.25% = R$ 100.78 (base: R$ 3100.86)
+        - PIS: 3.12% = R$ 83.40
+        - COFINS: 15.37% = R$ 410.86 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2673.15) - Adição 007:
+        - Proporção na adição: 29.1401%
+        - Despesas aduaneiras: R$ 8.27
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 8.27 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2673.15
+        - Tributos: R$ 1022.75
+        - Despesas: R$ 8.27
+        - Base ICMS: R$ 4573.05
+        - ICMS (19%): R$ 868.88
+        - Custo total: R$ 4573.05 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2722.00):
+        - II: 16% = R$ 435.52
+        - IPI: 3.25% = R$ 102.62 (base: R$ 3157.52)
+        - PIS: 3.12% = R$ 84.93
+        - COFINS: 15.37% = R$ 418.37 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2722.00) - Adição 007:
+        - Proporção na adição: 29.6727%
+        - Despesas aduaneiras: R$ 8.42
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 8.42 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2722.00
+        - Tributos: R$ 1041.44
+        - Despesas: R$ 8.42
+        - Base ICMS: R$ 4656.63
+        - ICMS (19%): R$ 884.76
+        - Custo total: R$ 4656.63 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3778.34):
+        - II: 16% = R$ 604.53
+        - IPI: 3.25% = R$ 142.44 (base: R$ 4382.88)
+        - PIS: 3.12% = R$ 117.88
+        - COFINS: 15.37% = R$ 580.73 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3778.34) - Adição 007:
+        - Proporção na adição: 41.1878%
+        - Despesas aduaneiras: R$ 11.69
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.69 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3778.34
+        - Tributos: R$ 1445.59
+        - Despesas: R$ 11.69
+        - Base ICMS: R$ 6463.74
+        - ICMS (19%): R$ 1228.11
+        - Custo total: R$ 6463.74 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 007 ItemCalculator.js:309:21
+    ✅ 3 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 8/16: NCM 84099117 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 43.34 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 43.34 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 19402.57 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 23953.79 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 14002.06", II: "R$ 2240.32", IPI: "R$ 527.88", PIS: "R$ 436.86", COFINS: "R$ 2152.11", ICMS: "R$ 4551.22", "Total Impostos": "R$ 9908.39", "Custo Total": "R$ 23953.79" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 1758.20):
+        - II: 16% = R$ 281.31
+        - IPI: 3.25% = R$ 66.28 (base: R$ 2039.51)
+        - PIS: 3.12% = R$ 54.86
+        - COFINS: 15.37% = R$ 270.24 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1758.20) - Adição 008:
+        - Proporção na adição: 12.5567%
+        - Despesas aduaneiras: R$ 5.44
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.44 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1758.20
+        - Tributos: R$ 672.69
+        - Despesas: R$ 5.44
+        - Base ICMS: R$ 3007.81
+        - ICMS (19%): R$ 571.48
+        - Custo total: R$ 3007.81 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2327.54):
+        - II: 16% = R$ 372.41
+        - IPI: 3.25% = R$ 87.75 (base: R$ 2699.95)
+        - PIS: 3.12% = R$ 72.62
+        - COFINS: 15.37% = R$ 357.74 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2327.54) - Adição 008:
+        - Proporção na adição: 16.6229%
+        - Despesas aduaneiras: R$ 7.20
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 7.20 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2327.54
+        - Tributos: R$ 890.52
+        - Despesas: R$ 7.20
+        - Base ICMS: R$ 3981.81
+        - ICMS (19%): R$ 756.54
+        - Custo total: R$ 3981.81 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2327.54):
+        - II: 16% = R$ 372.41
+        - IPI: 3.25% = R$ 87.75 (base: R$ 2699.95)
+        - PIS: 3.12% = R$ 72.62
+        - COFINS: 15.37% = R$ 357.74 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2327.54) - Adição 008:
+        - Proporção na adição: 16.6229%
+        - Despesas aduaneiras: R$ 7.20
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 7.20 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2327.54
+        - Tributos: R$ 890.52
+        - Despesas: R$ 7.20
+        - Base ICMS: R$ 3981.81
+        - ICMS (19%): R$ 756.54
+        - Custo total: R$ 3981.81 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1754.85):
+        - II: 16% = R$ 280.78
+        - IPI: 3.25% = R$ 66.16 (base: R$ 2035.63)
+        - PIS: 3.12% = R$ 54.75
+        - COFINS: 15.37% = R$ 269.72 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1754.85) - Adição 008:
+        - Proporção na adição: 12.5328%
+        - Despesas aduaneiras: R$ 5.43
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.43 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1754.85
+        - Tributos: R$ 671.41
+        - Despesas: R$ 5.43
+        - Base ICMS: R$ 3002.09
+        - ICMS (19%): R$ 570.40
+        - Custo total: R$ 3002.09 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1754.85):
+        - II: 16% = R$ 280.78
+        - IPI: 3.25% = R$ 66.16 (base: R$ 2035.63)
+        - PIS: 3.12% = R$ 54.75
+        - COFINS: 15.37% = R$ 269.72 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1754.85) - Adição 008:
+        - Proporção na adição: 12.5328%
+        - Despesas aduaneiras: R$ 5.43
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.43 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1754.85
+        - Tributos: R$ 671.41
+        - Despesas: R$ 5.43
+        - Base ICMS: R$ 3002.09
+        - ICMS (19%): R$ 570.40
+        - Custo total: R$ 3002.09 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 825.62):
+        - II: 16% = R$ 132.10
+        - IPI: 3.25% = R$ 31.13 (base: R$ 957.71)
+        - PIS: 3.12% = R$ 25.76
+        - COFINS: 15.37% = R$ 126.90 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 825.62) - Adição 008:
+        - Proporção na adição: 5.8964%
+        - Despesas aduaneiras: R$ 2.56
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.56 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 825.62
+        - Tributos: R$ 315.88
+        - Despesas: R$ 2.56
+        - Base ICMS: R$ 1412.41
+        - ICMS (19%): R$ 268.36
+        - Custo total: R$ 1412.41 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 825.51):
+        - II: 16% = R$ 132.08
+        - IPI: 3.25% = R$ 31.12 (base: R$ 957.59)
+        - PIS: 3.12% = R$ 25.76
+        - COFINS: 15.37% = R$ 126.88 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 825.51) - Adição 008:
+        - Proporção na adição: 5.8956%
+        - Despesas aduaneiras: R$ 2.56
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.56 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 825.51
+        - Tributos: R$ 315.84
+        - Despesas: R$ 2.56
+        - Base ICMS: R$ 1412.22
+        - ICMS (19%): R$ 268.32
+        - Custo total: R$ 1412.22 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 775.72):
+        - II: 16% = R$ 124.12
+        - IPI: 3.25% = R$ 29.24 (base: R$ 899.84)
+        - PIS: 3.12% = R$ 24.20
+        - COFINS: 15.37% = R$ 119.23 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 775.72) - Adição 008:
+        - Proporção na adição: 5.5400%
+        - Despesas aduaneiras: R$ 2.40
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.40 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 775.72
+        - Tributos: R$ 296.79
+        - Despesas: R$ 2.40
+        - Base ICMS: R$ 1327.05
+        - ICMS (19%): R$ 252.14
+        - Custo total: R$ 1327.05 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 775.61):
+        - II: 16% = R$ 124.10
+        - IPI: 3.25% = R$ 29.24 (base: R$ 899.71)
+        - PIS: 3.12% = R$ 24.20
+        - COFINS: 15.37% = R$ 119.21 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 775.61) - Adição 008:
+        - Proporção na adição: 5.5393%
+        - Despesas aduaneiras: R$ 2.40
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.40 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 775.61
+        - Tributos: R$ 296.75
+        - Despesas: R$ 2.40
+        - Base ICMS: R$ 1326.86
+        - ICMS (19%): R$ 252.10
+        - Custo total: R$ 1326.86 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 876.88):
+        - II: 16% = R$ 140.30
+        - IPI: 3.25% = R$ 33.06 (base: R$ 1017.18)
+        - PIS: 3.12% = R$ 27.36
+        - COFINS: 15.37% = R$ 134.78 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 876.88) - Adição 008:
+        - Proporção na adição: 6.2625%
+        - Despesas aduaneiras: R$ 2.71
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.71 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 876.88
+        - Tributos: R$ 335.49
+        - Despesas: R$ 2.71
+        - Base ICMS: R$ 1500.11
+        - ICMS (19%): R$ 285.02
+        - Custo total: R$ 1500.11 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 008 ItemCalculator.js:309:21
+    ✅ 10 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 9/16: NCM 84099118 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 7.53 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 7.53 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 3371.75 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 4162.66 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 2433.27", II: "R$ 389.32", IPI: "R$ 91.73", PIS: "R$ 75.91", COFINS: "R$ 373.99", ICMS: "R$ 790.90", "Total Impostos": "R$ 1721.85", "Custo Total": "R$ 4162.66" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 1250.15):
+        - II: 16% = R$ 200.02
+        - IPI: 3.25% = R$ 47.13 (base: R$ 1450.18)
+        - PIS: 3.12% = R$ 39.00
+        - COFINS: 15.37% = R$ 192.15 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1250.15) - Adição 009:
+        - Proporção na adição: 51.3775%
+        - Despesas aduaneiras: R$ 3.87
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.87 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1250.15
+        - Tributos: R$ 478.31
+        - Despesas: R$ 3.87
+        - Base ICMS: R$ 2138.68
+        - ICMS (19%): R$ 406.35
+        - Custo total: R$ 2138.68 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1183.20):
+        - II: 16% = R$ 189.31
+        - IPI: 3.25% = R$ 44.61 (base: R$ 1372.51)
+        - PIS: 3.12% = R$ 36.92
+        - COFINS: 15.37% = R$ 181.86 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1183.20) - Adição 009:
+        - Proporção na adição: 48.6257%
+        - Despesas aduaneiras: R$ 3.66
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.66 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1183.20
+        - Tributos: R$ 452.69
+        - Despesas: R$ 3.66
+        - Base ICMS: R$ 2024.13
+        - ICMS (19%): R$ 384.59
+        - Custo total: R$ 2024.13 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 009 ItemCalculator.js:309:21
+    ✅ 2 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 10/16: NCM 84561190 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 36.58 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 36.58 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 14687.34 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 18132.52 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 11819.91", II: "R$ 1323.82", IPI: "R$ 0.00", PIS: "R$ 248.21", COFINS: "R$ 1258.82", ICMS: "R$ 3445.18", "Total Impostos": "R$ 6276.03", "Custo Total": "R$ 18132.52" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 11819.94):
+        - II: 11.2% = R$ 1323.83
+        - IPI: 0% = R$ 0.00 (base: R$ 13143.77)
+        - PIS: 2.1% = R$ 248.22
+        - COFINS: 10.65% = R$ 1258.82 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 11819.94) - Adição 010:
+        - Proporção na adição: 100.0003%
+        - Despesas aduaneiras: R$ 36.58
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 36.58 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 11819.94
+        - Tributos: R$ 2830.88
+        - Despesas: R$ 36.58
+        - Base ICMS: R$ 18132.59
+        - ICMS (19%): R$ 3445.19
+        - Custo total: R$ 18132.59 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 010 ItemCalculator.js:309:21
+    ✅ 1 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 11/16: NCM 84831020 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 16.84 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 16.84 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 7332.62 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 9052.61 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 5439.66", II: "R$ 870.34", IPI: "R$ 0.00", PIS: "R$ 169.71", COFINS: "R$ 836.07", ICMS: "R$ 1720.00", "Total Impostos": "R$ 3596.12", "Custo Total": "R$ 9052.61" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 2974.83):
+        - II: 16% = R$ 475.97
+        - IPI: 0% = R$ 0.00 (base: R$ 3450.80)
+        - PIS: 3.12% = R$ 92.81
+        - COFINS: 15.37% = R$ 457.23 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2974.83) - Adição 011:
+        - Proporção na adição: 54.6877%
+        - Despesas aduaneiras: R$ 9.21
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 9.21 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2974.83
+        - Tributos: R$ 1026.02
+        - Despesas: R$ 9.21
+        - Base ICMS: R$ 4950.68
+        - ICMS (19%): R$ 940.63
+        - Custo total: R$ 4950.68 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1505.99):
+        - II: 16% = R$ 240.96
+        - IPI: 0% = R$ 0.00 (base: R$ 1746.95)
+        - PIS: 3.12% = R$ 46.99
+        - COFINS: 15.37% = R$ 231.47 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1505.99) - Adição 011:
+        - Proporção na adição: 27.6853%
+        - Despesas aduaneiras: R$ 4.66
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 4.66 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1505.99
+        - Tributos: R$ 519.42
+        - Despesas: R$ 4.66
+        - Base ICMS: R$ 2506.25
+        - ICMS (19%): R$ 476.19
+        - Custo total: R$ 2506.25 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 958.86):
+        - II: 16% = R$ 153.42
+        - IPI: 0% = R$ 0.00 (base: R$ 1112.27)
+        - PIS: 3.12% = R$ 29.92
+        - COFINS: 15.37% = R$ 147.38 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 958.86) - Adição 011:
+        - Proporção na adição: 17.6271%
+        - Despesas aduaneiras: R$ 2.97
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.97 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 958.86
+        - Tributos: R$ 330.71
+        - Despesas: R$ 2.97
+        - Base ICMS: R$ 1595.72
+        - ICMS (19%): R$ 303.19
+        - Custo total: R$ 1595.72 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 011 ItemCalculator.js:309:21
+    ✅ 3 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 12/16: NCM 87141000 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 419.97 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 419.97 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 183194.39 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 226165.92 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 135687.95", II: "R$ 17368.05", IPI: "R$ 13775.10", PIS: "R$ 2849.44", COFINS: "R$ 13093.88", ICMS: "R$ 42971.52", "Total Impostos": "R$ 90057.99", "Custo Total": "R$ 226165.92" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 2785.77):
+        - II: 12.8% = R$ 356.58
+        - IPI: 9% = R$ 282.81 (base: R$ 3142.35)
+        - PIS: 2.1% = R$ 58.50
+        - COFINS: 9.65% = R$ 268.83 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2785.77) - Adição 012:
+        - Proporção na adição: 2.0531%
+        - Despesas aduaneiras: R$ 8.62
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 8.62 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2785.77
+        - Tributos: R$ 966.72
+        - Despesas: R$ 8.62
+        - Base ICMS: R$ 4643.34
+        - ICMS (19%): R$ 882.23
+        - Custo total: R$ 4643.34 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2829.66):
+        - II: 12.8% = R$ 362.20
+        - IPI: 9% = R$ 287.27 (base: R$ 3191.86)
+        - PIS: 2.1% = R$ 59.42
+        - COFINS: 9.65% = R$ 273.06 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2829.66) - Adição 012:
+        - Proporção na adição: 2.0854%
+        - Despesas aduaneiras: R$ 8.76
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 8.76 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2829.66
+        - Tributos: R$ 981.95
+        - Despesas: R$ 8.76
+        - Base ICMS: R$ 4716.51
+        - ICMS (19%): R$ 896.14
+        - Custo total: R$ 4716.51 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2950.61):
+        - II: 12.8% = R$ 377.68
+        - IPI: 9% = R$ 299.55 (base: R$ 3328.29)
+        - PIS: 2.1% = R$ 61.96
+        - COFINS: 9.65% = R$ 284.73 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2950.61) - Adição 012:
+        - Proporção na adição: 2.1746%
+        - Despesas aduaneiras: R$ 9.13
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 9.13 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2950.61
+        - Tributos: R$ 1023.92
+        - Despesas: R$ 9.13
+        - Base ICMS: R$ 4918.10
+        - ICMS (19%): R$ 934.44
+        - Custo total: R$ 4918.10 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2687.33):
+        - II: 12.8% = R$ 343.98
+        - IPI: 9% = R$ 272.82 (base: R$ 3031.31)
+        - PIS: 2.1% = R$ 56.43
+        - COFINS: 9.65% = R$ 259.33 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2687.33) - Adição 012:
+        - Proporção na adição: 1.9805%
+        - Despesas aduaneiras: R$ 8.32
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 8.32 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2687.33
+        - Tributos: R$ 932.56
+        - Despesas: R$ 8.32
+        - Base ICMS: R$ 4479.27
+        - ICMS (19%): R$ 851.06
+        - Custo total: R$ 4479.27 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3514.72):
+        - II: 12.8% = R$ 449.88
+        - IPI: 9% = R$ 356.81 (base: R$ 3964.61)
+        - PIS: 2.1% = R$ 73.81
+        - COFINS: 9.65% = R$ 339.17 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3514.72) - Adição 012:
+        - Proporção na adição: 2.5903%
+        - Despesas aduaneiras: R$ 10.88
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 10.88 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3514.72
+        - Tributos: R$ 1219.68
+        - Despesas: R$ 10.88
+        - Base ICMS: R$ 5858.37
+        - ICMS (19%): R$ 1113.09
+        - Custo total: R$ 5858.37 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3958.96):
+        - II: 12.8% = R$ 506.75
+        - IPI: 9% = R$ 401.91 (base: R$ 4465.71)
+        - PIS: 2.1% = R$ 83.14
+        - COFINS: 9.65% = R$ 382.04 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3958.96) - Adição 012:
+        - Proporção na adição: 2.9177%
+        - Despesas aduaneiras: R$ 12.25
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 12.25 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3958.96
+        - Tributos: R$ 1373.84
+        - Despesas: R$ 12.25
+        - Base ICMS: R$ 6598.84
+        - ICMS (19%): R$ 1253.78
+        - Custo total: R$ 6598.84 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3866.70):
+        - II: 12.8% = R$ 494.94
+        - IPI: 9% = R$ 392.55 (base: R$ 4361.64)
+        - PIS: 2.1% = R$ 81.20
+        - COFINS: 9.65% = R$ 373.14 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3866.70) - Adição 012:
+        - Proporção na adição: 2.8497%
+        - Despesas aduaneiras: R$ 11.97
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.97 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3866.70
+        - Tributos: R$ 1341.82
+        - Despesas: R$ 11.97
+        - Base ICMS: R$ 6445.05
+        - ICMS (19%): R$ 1224.56
+        - Custo total: R$ 6445.05 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3283.69):
+        - II: 12.8% = R$ 420.31
+        - IPI: 9% = R$ 333.36 (base: R$ 3704.00)
+        - PIS: 2.1% = R$ 68.96
+        - COFINS: 9.65% = R$ 316.88 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3283.69) - Adição 012:
+        - Proporção na adição: 2.4200%
+        - Despesas aduaneiras: R$ 10.16
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 10.16 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3283.69
+        - Tributos: R$ 1139.51
+        - Despesas: R$ 10.16
+        - Base ICMS: R$ 5473.29
+        - ICMS (19%): R$ 1039.92
+        - Custo total: R$ 5473.29 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3243.36):
+        - II: 12.8% = R$ 415.15
+        - IPI: 9% = R$ 329.27 (base: R$ 3658.51)
+        - PIS: 2.1% = R$ 68.11
+        - COFINS: 9.65% = R$ 312.98 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3243.36) - Adição 012:
+        - Proporção na adição: 2.3903%
+        - Despesas aduaneiras: R$ 10.04
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 10.04 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3243.36
+        - Tributos: R$ 1125.51
+        - Despesas: R$ 10.04
+        - Base ICMS: R$ 5406.06
+        - ICMS (19%): R$ 1027.15
+        - Custo total: R$ 5406.06 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 4246.70):
+        - II: 12.8% = R$ 543.58
+        - IPI: 9% = R$ 431.12 (base: R$ 4790.27)
+        - PIS: 2.1% = R$ 89.18
+        - COFINS: 9.65% = R$ 409.81 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 4246.70) - Adição 012:
+        - Proporção na adição: 3.1298%
+        - Despesas aduaneiras: R$ 13.14
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 13.14 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 4246.70
+        - Tributos: R$ 1473.69
+        - Despesas: R$ 13.14
+        - Base ICMS: R$ 7078.43
+        - ICMS (19%): R$ 1344.90
+        - Custo total: R$ 7078.43 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 4351.28):
+        - II: 12.8% = R$ 556.96
+        - IPI: 9% = R$ 441.74 (base: R$ 4908.24)
+        - PIS: 2.1% = R$ 91.38
+        - COFINS: 9.65% = R$ 419.90 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 4351.28) - Adição 012:
+        - Proporção na adição: 3.2068%
+        - Despesas aduaneiras: R$ 13.47
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 13.47 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 4351.28
+        - Tributos: R$ 1509.98
+        - Despesas: R$ 13.47
+        - Base ICMS: R$ 7252.74
+        - ICMS (19%): R$ 1378.02
+        - Custo total: R$ 7252.74 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 4310.94):
+        - II: 12.8% = R$ 551.80
+        - IPI: 9% = R$ 437.65 (base: R$ 4862.74)
+        - PIS: 2.1% = R$ 90.53
+        - COFINS: 9.65% = R$ 416.01 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 4310.94) - Adição 012:
+        - Proporção na adição: 3.1771%
+        - Despesas aduaneiras: R$ 13.34
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 13.34 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 4310.94
+        - Tributos: R$ 1495.98
+        - Despesas: R$ 13.34
+        - Base ICMS: R$ 7185.52
+        - ICMS (19%): R$ 1365.25
+        - Custo total: R$ 7185.52 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 4219.64):
+        - II: 12.8% = R$ 540.11
+        - IPI: 9% = R$ 428.38 (base: R$ 4759.75)
+        - PIS: 2.1% = R$ 88.61
+        - COFINS: 9.65% = R$ 407.19 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 4219.64) - Adição 012:
+        - Proporção na adição: 3.1098%
+        - Despesas aduaneiras: R$ 13.06
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 13.06 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 4219.64
+        - Tributos: R$ 1464.30
+        - Despesas: R$ 13.06
+        - Base ICMS: R$ 7033.33
+        - ICMS (19%): R$ 1336.33
+        - Custo total: R$ 7033.33 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 4116.68):
+        - II: 12.8% = R$ 526.94
+        - IPI: 9% = R$ 417.93 (base: R$ 4643.61)
+        - PIS: 2.1% = R$ 86.45
+        - COFINS: 9.65% = R$ 397.26 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 4116.68) - Adição 012:
+        - Proporção na adição: 3.0339%
+        - Despesas aduaneiras: R$ 12.74
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 12.74 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 4116.68
+        - Tributos: R$ 1428.57
+        - Despesas: R$ 12.74
+        - Base ICMS: R$ 6861.72
+        - ICMS (19%): R$ 1303.73
+        - Custo total: R$ 6861.72 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3826.37):
+        - II: 12.8% = R$ 489.77
+        - IPI: 9% = R$ 388.45 (base: R$ 4316.14)
+        - PIS: 2.1% = R$ 80.35
+        - COFINS: 9.65% = R$ 369.24 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3826.37) - Adição 012:
+        - Proporção na adição: 2.8200%
+        - Despesas aduaneiras: R$ 11.84
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.84 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3826.37
+        - Tributos: R$ 1327.83
+        - Despesas: R$ 11.84
+        - Base ICMS: R$ 6377.82
+        - ICMS (19%): R$ 1211.79
+        - Custo total: R$ 6377.82 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 33334.50):
+        - II: 12.8% = R$ 4266.82
+        - IPI: 9% = R$ 3384.12 (base: R$ 37601.32)
+        - PIS: 2.1% = R$ 700.02
+        - COFINS: 9.65% = R$ 3216.78 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 33334.50) - Adição 012:
+        - Proporção na adição: 24.5670%
+        - Despesas aduaneiras: R$ 103.17
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 103.17 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 33334.50
+        - Tributos: R$ 11567.74
+        - Despesas: R$ 103.17
+        - Base ICMS: R$ 55562.24
+        - ICMS (19%): R$ 10556.83
+        - Custo total: R$ 55562.24 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 10415.72):
+        - II: 12.8% = R$ 1333.21
+        - IPI: 9% = R$ 1057.40 (base: R$ 11748.94)
+        - PIS: 2.1% = R$ 218.73
+        - COFINS: 9.65% = R$ 1005.12 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 10415.72) - Adição 012:
+        - Proporção na adição: 7.6762%
+        - Despesas aduaneiras: R$ 32.24
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 32.24 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 10415.72
+        - Tributos: R$ 3614.46
+        - Despesas: R$ 32.24
+        - Base ICMS: R$ 17361.02
+        - ICMS (19%): R$ 3298.59
+        - Custo total: R$ 17361.02 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 4028.94):
+        - II: 12.8% = R$ 515.70
+        - IPI: 9% = R$ 409.02 (base: R$ 4544.64)
+        - PIS: 2.1% = R$ 84.61
+        - COFINS: 9.65% = R$ 388.79 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 4028.94) - Adição 012:
+        - Proporção na adição: 2.9693%
+        - Despesas aduaneiras: R$ 12.47
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 12.47 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 4028.94
+        - Tributos: R$ 1398.12
+        - Despesas: R$ 12.47
+        - Base ICMS: R$ 6715.47
+        - ICMS (19%): R$ 1275.94
+        - Custo total: R$ 6715.47 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3955.40):
+        - II: 12.8% = R$ 506.29
+        - IPI: 9% = R$ 401.55 (base: R$ 4461.69)
+        - PIS: 2.1% = R$ 83.06
+        - COFINS: 9.65% = R$ 381.70 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3955.40) - Adição 012:
+        - Proporção na adição: 2.9151%
+        - Despesas aduaneiras: R$ 12.24
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 12.24 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3955.40
+        - Tributos: R$ 1372.60
+        - Despesas: R$ 12.24
+        - Base ICMS: R$ 6592.90
+        - ICMS (19%): R$ 1252.65
+        - Custo total: R$ 6592.90 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3812.11):
+        - II: 12.8% = R$ 487.95
+        - IPI: 9% = R$ 387.01 (base: R$ 4300.06)
+        - PIS: 2.1% = R$ 80.05
+        - COFINS: 9.65% = R$ 367.87 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3812.11) - Adição 012:
+        - Proporção na adição: 2.8095%
+        - Despesas aduaneiras: R$ 11.80
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.80 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3812.11
+        - Tributos: R$ 1322.88
+        - Despesas: R$ 11.80
+        - Base ICMS: R$ 6354.06
+        - ICMS (19%): R$ 1207.27
+        - Custo total: R$ 6354.06 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2187.37):
+        - II: 12.8% = R$ 279.98
+        - IPI: 9% = R$ 222.06 (base: R$ 2467.36)
+        - PIS: 2.1% = R$ 45.93
+        - COFINS: 9.65% = R$ 211.08 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2187.37) - Adição 012:
+        - Proporção na adição: 1.6121%
+        - Despesas aduaneiras: R$ 6.77
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 6.77 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2187.37
+        - Tributos: R$ 759.06
+        - Despesas: R$ 6.77
+        - Base ICMS: R$ 3645.93
+        - ICMS (19%): R$ 692.73
+        - Custo total: R$ 3645.93 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 623.81):
+        - II: 12.8% = R$ 79.85
+        - IPI: 9% = R$ 63.33 (base: R$ 703.66)
+        - PIS: 2.1% = R$ 13.10
+        - COFINS: 9.65% = R$ 60.20 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 623.81) - Adição 012:
+        - Proporção na adição: 0.4597%
+        - Despesas aduaneiras: R$ 1.93
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.93 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 623.81
+        - Tributos: R$ 216.47
+        - Despesas: R$ 1.93
+        - Base ICMS: R$ 1039.77
+        - ICMS (19%): R$ 197.56
+        - Custo total: R$ 1039.77 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3641.67):
+        - II: 12.8% = R$ 466.13
+        - IPI: 9% = R$ 369.70 (base: R$ 4107.80)
+        - PIS: 2.1% = R$ 76.48
+        - COFINS: 9.65% = R$ 351.42 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3641.67) - Adição 012:
+        - Proporção na adição: 2.6839%
+        - Despesas aduaneiras: R$ 11.27
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.27 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3641.67
+        - Tributos: R$ 1263.73
+        - Despesas: R$ 11.27
+        - Base ICMS: R$ 6069.96
+        - ICMS (19%): R$ 1153.29
+        - Custo total: R$ 6069.96 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3561.05):
+        - II: 12.8% = R$ 455.81
+        - IPI: 9% = R$ 361.52 (base: R$ 4016.87)
+        - PIS: 2.1% = R$ 74.78
+        - COFINS: 9.65% = R$ 343.64 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3561.05) - Adição 012:
+        - Proporção na adição: 2.6244%
+        - Despesas aduaneiras: R$ 11.02
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.02 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3561.05
+        - Tributos: R$ 1235.76
+        - Despesas: R$ 11.02
+        - Base ICMS: R$ 5935.60
+        - ICMS (19%): R$ 1127.76
+        - Custo total: R$ 5935.60 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3143.80):
+        - II: 12.8% = R$ 402.41
+        - IPI: 9% = R$ 319.16 (base: R$ 3546.20)
+        - PIS: 2.1% = R$ 66.02
+        - COFINS: 9.65% = R$ 303.38 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3143.80) - Adição 012:
+        - Proporção na adição: 2.3169%
+        - Despesas aduaneiras: R$ 9.73
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 9.73 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3143.80
+        - Tributos: R$ 1090.96
+        - Despesas: R$ 9.73
+        - Base ICMS: R$ 5240.11
+        - ICMS (19%): R$ 995.62
+        - Custo total: R$ 5240.11 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2861.74):
+        - II: 12.8% = R$ 366.30
+        - IPI: 9% = R$ 290.52 (base: R$ 3228.04)
+        - PIS: 2.1% = R$ 60.10
+        - COFINS: 9.65% = R$ 276.16 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2861.74) - Adição 012:
+        - Proporção na adição: 2.1091%
+        - Despesas aduaneiras: R$ 8.86
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 8.86 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2861.74
+        - Tributos: R$ 993.08
+        - Despesas: R$ 8.86
+        - Base ICMS: R$ 4769.97
+        - ICMS (19%): R$ 906.29
+        - Custo total: R$ 4769.97 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3367.70):
+        - II: 12.8% = R$ 431.07
+        - IPI: 9% = R$ 341.89 (base: R$ 3798.76)
+        - PIS: 2.1% = R$ 70.72
+        - COFINS: 9.65% = R$ 324.98 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3367.70) - Adição 012:
+        - Proporção na adição: 2.4819%
+        - Despesas aduaneiras: R$ 10.42
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 10.42 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3367.70
+        - Tributos: R$ 1168.66
+        - Despesas: R$ 10.42
+        - Base ICMS: R$ 5613.31
+        - ICMS (19%): R$ 1066.53
+        - Custo total: R$ 5613.31 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3374.83):
+        - II: 12.8% = R$ 431.98
+        - IPI: 9% = R$ 342.61 (base: R$ 3806.81)
+        - PIS: 2.1% = R$ 70.87
+        - COFINS: 9.65% = R$ 325.67 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3374.83) - Adição 012:
+        - Proporção na adição: 2.4872%
+        - Despesas aduaneiras: R$ 10.45
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 10.45 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3374.83
+        - Tributos: R$ 1171.13
+        - Despesas: R$ 10.45
+        - Base ICMS: R$ 5625.19
+        - ICMS (19%): R$ 1068.79
+        - Custo total: R$ 5625.19 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3187.64):
+        - II: 12.8% = R$ 408.02
+        - IPI: 9% = R$ 323.61 (base: R$ 3595.66)
+        - PIS: 2.1% = R$ 66.94
+        - COFINS: 9.65% = R$ 307.61 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3187.64) - Adição 012:
+        - Proporção na adição: 2.3492%
+        - Despesas aduaneiras: R$ 9.87
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 9.87 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3187.64
+        - Tributos: R$ 1106.18
+        - Despesas: R$ 9.87
+        - Base ICMS: R$ 5313.19
+        - ICMS (19%): R$ 1009.51
+        - Custo total: R$ 5313.19 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 012 ItemCalculator.js:309:21
+    ✅ 29 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 13/16: NCM 87141000 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 231.79 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 231.79 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 101109.69 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 124826.78 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 74889.64", II: "R$ 9585.87", IPI: "R$ 7602.86", PIS: "R$ 1572.68", COFINS: "R$ 7226.85", ICMS: "R$ 23717.09", "Total Impostos": "R$ 49705.35", "Custo Total": "R$ 124826.78" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 766.25):
+        - II: 12.8% = R$ 98.08
+        - IPI: 9% = R$ 77.79 (base: R$ 864.33)
+        - PIS: 2.1% = R$ 16.09
+        - COFINS: 9.65% = R$ 73.94 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 766.25) - Adição 013:
+        - Proporção na adição: 1.0232%
+        - Despesas aduaneiras: R$ 2.37
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.37 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 766.25
+        - Tributos: R$ 265.90
+        - Despesas: R$ 2.37
+        - Base ICMS: R$ 1277.19
+        - ICMS (19%): R$ 242.67
+        - Custo total: R$ 1277.19 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 242.72):
+        - II: 12.8% = R$ 31.07
+        - IPI: 9% = R$ 24.64 (base: R$ 273.79)
+        - PIS: 2.1% = R$ 5.10
+        - COFINS: 9.65% = R$ 23.42 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 242.72) - Adição 013:
+        - Proporção na adição: 0.3241%
+        - Despesas aduaneiras: R$ 0.75
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.75 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 242.72
+        - Tributos: R$ 84.23
+        - Despesas: R$ 0.75
+        - Base ICMS: R$ 404.57
+        - ICMS (19%): R$ 76.87
+        - Custo total: R$ 404.57 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 280.94):
+        - II: 12.8% = R$ 35.96
+        - IPI: 9% = R$ 28.52 (base: R$ 316.90)
+        - PIS: 2.1% = R$ 5.90
+        - COFINS: 9.65% = R$ 27.11 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 280.94) - Adição 013:
+        - Proporção na adição: 0.3751%
+        - Despesas aduaneiras: R$ 0.87
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.87 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 280.94
+        - Tributos: R$ 97.49
+        - Despesas: R$ 0.87
+        - Base ICMS: R$ 468.27
+        - ICMS (19%): R$ 88.97
+        - Custo total: R$ 468.27 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 338.89):
+        - II: 12.8% = R$ 43.38
+        - IPI: 9% = R$ 34.40 (base: R$ 382.26)
+        - PIS: 2.1% = R$ 7.12
+        - COFINS: 9.65% = R$ 32.70 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 338.89) - Adição 013:
+        - Proporção na adição: 0.4525%
+        - Despesas aduaneiras: R$ 1.05
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.05 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 338.89
+        - Tributos: R$ 117.60
+        - Despesas: R$ 1.05
+        - Base ICMS: R$ 564.86
+        - ICMS (19%): R$ 107.32
+        - Custo total: R$ 564.86 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1721.61):
+        - II: 12.8% = R$ 220.37
+        - IPI: 9% = R$ 174.78 (base: R$ 1941.97)
+        - PIS: 2.1% = R$ 36.15
+        - COFINS: 9.65% = R$ 166.13 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1721.61) - Adição 013:
+        - Proporção na adição: 2.2989%
+        - Despesas aduaneiras: R$ 5.33
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.33 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1721.61
+        - Tributos: R$ 597.43
+        - Despesas: R$ 5.33
+        - Base ICMS: R$ 2869.59
+        - ICMS (19%): R$ 545.22
+        - Custo total: R$ 2869.59 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1189.43):
+        - II: 12.8% = R$ 152.25
+        - IPI: 9% = R$ 120.75 (base: R$ 1341.68)
+        - PIS: 2.1% = R$ 24.98
+        - COFINS: 9.65% = R$ 114.78 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1189.43) - Adição 013:
+        - Proporção na adição: 1.5882%
+        - Despesas aduaneiras: R$ 3.68
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.68 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1189.43
+        - Tributos: R$ 412.76
+        - Despesas: R$ 3.68
+        - Base ICMS: R$ 1982.56
+        - ICMS (19%): R$ 376.69
+        - Custo total: R$ 1982.56 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1652.96):
+        - II: 12.8% = R$ 211.58
+        - IPI: 9% = R$ 167.81 (base: R$ 1864.54)
+        - PIS: 2.1% = R$ 34.71
+        - COFINS: 9.65% = R$ 159.51 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1652.96) - Adição 013:
+        - Proporção na adição: 2.2072%
+        - Despesas aduaneiras: R$ 5.12
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.12 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1652.96
+        - Tributos: R$ 573.61
+        - Despesas: R$ 5.12
+        - Base ICMS: R$ 2755.17
+        - ICMS (19%): R$ 523.48
+        - Custo total: R$ 2755.17 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2396.29):
+        - II: 12.8% = R$ 306.72
+        - IPI: 9% = R$ 243.27 (base: R$ 2703.01)
+        - PIS: 2.1% = R$ 50.32
+        - COFINS: 9.65% = R$ 231.24 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2396.29) - Adição 013:
+        - Proporção na adição: 3.1998%
+        - Despesas aduaneiras: R$ 7.42
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 7.42 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2396.29
+        - Tributos: R$ 831.56
+        - Despesas: R$ 7.42
+        - Base ICMS: R$ 3994.15
+        - ICMS (19%): R$ 758.89
+        - Custo total: R$ 3994.15 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1792.56):
+        - II: 12.8% = R$ 229.45
+        - IPI: 9% = R$ 181.98 (base: R$ 2022.01)
+        - PIS: 2.1% = R$ 37.64
+        - COFINS: 9.65% = R$ 172.98 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1792.56) - Adição 013:
+        - Proporção na adição: 2.3936%
+        - Despesas aduaneiras: R$ 5.55
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.55 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1792.56
+        - Tributos: R$ 622.05
+        - Despesas: R$ 5.55
+        - Base ICMS: R$ 2987.86
+        - ICMS (19%): R$ 567.69
+        - Custo total: R$ 2987.86 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1006.63):
+        - II: 12.8% = R$ 128.85
+        - IPI: 9% = R$ 102.19 (base: R$ 1135.47)
+        - PIS: 2.1% = R$ 21.14
+        - COFINS: 9.65% = R$ 97.14 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1006.63) - Adição 013:
+        - Proporção na adição: 1.3441%
+        - Despesas aduaneiras: R$ 3.12
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.12 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1006.63
+        - Tributos: R$ 349.32
+        - Despesas: R$ 3.12
+        - Base ICMS: R$ 1677.85
+        - ICMS (19%): R$ 318.79
+        - Custo total: R$ 1677.85 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 232.53):
+        - II: 12.8% = R$ 29.76
+        - IPI: 9% = R$ 23.61 (base: R$ 262.30)
+        - PIS: 2.1% = R$ 4.88
+        - COFINS: 9.65% = R$ 22.44 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 232.53) - Adição 013:
+        - Proporção na adição: 0.3105%
+        - Despesas aduaneiras: R$ 0.72
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 0.72 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 232.53
+        - Tributos: R$ 80.69
+        - Despesas: R$ 0.72
+        - Base ICMS: R$ 387.59
+        - ICMS (19%): R$ 73.64
+        - Custo total: R$ 387.59 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 665.89):
+        - II: 12.8% = R$ 85.23
+        - IPI: 9% = R$ 67.60 (base: R$ 751.12)
+        - PIS: 2.1% = R$ 13.98
+        - COFINS: 9.65% = R$ 64.26 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 665.89) - Adição 013:
+        - Proporção na adição: 0.8892%
+        - Despesas aduaneiras: R$ 2.06
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.06 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 665.89
+        - Tributos: R$ 231.08
+        - Despesas: R$ 2.06
+        - Base ICMS: R$ 1109.91
+        - ICMS (19%): R$ 210.88
+        - Custo total: R$ 1109.91 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 881.82):
+        - II: 12.8% = R$ 112.87
+        - IPI: 9% = R$ 89.52 (base: R$ 994.69)
+        - PIS: 2.1% = R$ 18.52
+        - COFINS: 9.65% = R$ 85.10 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 881.82) - Adição 013:
+        - Proporção na adição: 1.1775%
+        - Despesas aduaneiras: R$ 2.73
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.73 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 881.82
+        - Tributos: R$ 306.01
+        - Despesas: R$ 2.73
+        - Base ICMS: R$ 1469.82
+        - ICMS (19%): R$ 279.27
+        - Custo total: R$ 1469.82 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 881.82):
+        - II: 12.8% = R$ 112.87
+        - IPI: 9% = R$ 89.52 (base: R$ 994.69)
+        - PIS: 2.1% = R$ 18.52
+        - COFINS: 9.65% = R$ 85.10 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 881.82) - Adição 013:
+        - Proporção na adição: 1.1775%
+        - Despesas aduaneiras: R$ 2.73
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.73 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 881.82
+        - Tributos: R$ 306.01
+        - Despesas: R$ 2.73
+        - Base ICMS: R$ 1469.82
+        - ICMS (19%): R$ 279.27
+        - Custo total: R$ 1469.82 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1081.23):
+        - II: 12.8% = R$ 138.40
+        - IPI: 9% = R$ 109.77 (base: R$ 1219.63)
+        - PIS: 2.1% = R$ 22.71
+        - COFINS: 9.65% = R$ 104.34 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1081.23) - Adição 013:
+        - Proporção na adição: 1.4438%
+        - Despesas aduaneiras: R$ 3.35
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.35 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1081.23
+        - Tributos: R$ 375.21
+        - Despesas: R$ 3.35
+        - Base ICMS: R$ 1802.21
+        - ICMS (19%): R$ 342.42
+        - Custo total: R$ 1802.21 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 539.05):
+        - II: 12.8% = R$ 69.00
+        - IPI: 9% = R$ 54.72 (base: R$ 608.05)
+        - PIS: 2.1% = R$ 11.32
+        - COFINS: 9.65% = R$ 52.02 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 539.05) - Adição 013:
+        - Proporção na adição: 0.7198%
+        - Despesas aduaneiras: R$ 1.67
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 1.67 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 539.05
+        - Tributos: R$ 187.06
+        - Despesas: R$ 1.67
+        - Base ICMS: R$ 898.49
+        - ICMS (19%): R$ 170.71
+        - Custo total: R$ 898.49 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1285.67):
+        - II: 12.8% = R$ 164.57
+        - IPI: 9% = R$ 130.52 (base: R$ 1450.23)
+        - PIS: 2.1% = R$ 27.00
+        - COFINS: 9.65% = R$ 124.07 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1285.67) - Adição 013:
+        - Proporção na adição: 1.7167%
+        - Despesas aduaneiras: R$ 3.98
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.98 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1285.67
+        - Tributos: R$ 446.15
+        - Despesas: R$ 3.98
+        - Base ICMS: R$ 2142.96
+        - ICMS (19%): R$ 407.16
+        - Custo total: R$ 2142.96 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 739.91):
+        - II: 12.8% = R$ 94.71
+        - IPI: 9% = R$ 75.12 (base: R$ 834.61)
+        - PIS: 2.1% = R$ 15.54
+        - COFINS: 9.65% = R$ 71.40 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 739.91) - Adição 013:
+        - Proporção na adição: 0.9880%
+        - Despesas aduaneiras: R$ 2.29
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 2.29 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 739.91
+        - Tributos: R$ 256.76
+        - Despesas: R$ 2.29
+        - Base ICMS: R$ 1233.28
+        - ICMS (19%): R$ 234.32
+        - Custo total: R$ 1233.28 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1171.75):
+        - II: 12.8% = R$ 149.98
+        - IPI: 9% = R$ 118.96 (base: R$ 1321.73)
+        - PIS: 2.1% = R$ 24.61
+        - COFINS: 9.65% = R$ 113.07 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1171.75) - Adição 013:
+        - Proporção na adição: 1.5646%
+        - Despesas aduaneiras: R$ 3.63
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.63 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1171.75
+        - Tributos: R$ 406.62
+        - Despesas: R$ 3.63
+        - Base ICMS: R$ 1953.08
+        - ICMS (19%): R$ 371.08
+        - Custo total: R$ 1953.08 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1546.67):
+        - II: 12.8% = R$ 197.97
+        - IPI: 9% = R$ 157.02 (base: R$ 1744.65)
+        - PIS: 2.1% = R$ 32.48
+        - COFINS: 9.65% = R$ 149.25 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1546.67) - Adição 013:
+        - Proporção na adição: 2.0653%
+        - Despesas aduaneiras: R$ 4.79
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 4.79 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1546.67
+        - Tributos: R$ 536.73
+        - Despesas: R$ 4.79
+        - Base ICMS: R$ 2578.01
+        - ICMS (19%): R$ 489.82
+        - Custo total: R$ 2578.01 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 2444.92):
+        - II: 12.8% = R$ 312.95
+        - IPI: 9% = R$ 248.21 (base: R$ 2757.87)
+        - PIS: 2.1% = R$ 51.34
+        - COFINS: 9.65% = R$ 235.94 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2444.92) - Adição 013:
+        - Proporção na adição: 3.2647%
+        - Despesas aduaneiras: R$ 7.57
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 7.57 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2444.92
+        - Tributos: R$ 848.44
+        - Despesas: R$ 7.57
+        - Base ICMS: R$ 4075.22
+        - ICMS (19%): R$ 774.29
+        - Custo total: R$ 4075.22 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1790.86):
+        - II: 12.8% = R$ 229.23
+        - IPI: 9% = R$ 181.81 (base: R$ 2020.09)
+        - PIS: 2.1% = R$ 37.61
+        - COFINS: 9.65% = R$ 172.82 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1790.86) - Adição 013:
+        - Proporção na adição: 2.3913%
+        - Despesas aduaneiras: R$ 5.54
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.54 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1790.86
+        - Tributos: R$ 621.46
+        - Despesas: R$ 5.54
+        - Base ICMS: R$ 2985.02
+        - ICMS (19%): R$ 567.15
+        - Custo total: R$ 2985.02 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 7941.09):
+        - II: 12.8% = R$ 1016.46
+        - IPI: 9% = R$ 806.18 (base: R$ 8957.55)
+        - PIS: 2.1% = R$ 166.76
+        - COFINS: 9.65% = R$ 766.32 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 7941.09) - Adição 013:
+        - Proporção na adição: 10.6037%
+        - Despesas aduaneiras: R$ 24.58
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 24.58 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 7941.09
+        - Tributos: R$ 2755.72
+        - Despesas: R$ 24.58
+        - Base ICMS: R$ 13236.28
+        - ICMS (19%): R$ 2514.89
+        - Custo total: R$ 13236.28 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 19852.70):
+        - II: 12.8% = R$ 2541.15
+        - IPI: 9% = R$ 2015.45 (base: R$ 22393.84)
+        - PIS: 2.1% = R$ 416.91
+        - COFINS: 9.65% = R$ 1915.79 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 19852.70) - Adição 013:
+        - Proporção na adição: 26.5093%
+        - Despesas aduaneiras: R$ 61.45
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 61.45 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 19852.70
+        - Tributos: R$ 6889.28
+        - Despesas: R$ 61.45
+        - Base ICMS: R$ 33090.65
+        - ICMS (19%): R$ 6287.22
+        - Custo total: R$ 33090.65 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1506.83):
+        - II: 12.8% = R$ 192.87
+        - IPI: 9% = R$ 152.97 (base: R$ 1699.71)
+        - PIS: 2.1% = R$ 31.64
+        - COFINS: 9.65% = R$ 145.41 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1506.83) - Adição 013:
+        - Proporção na adição: 2.0121%
+        - Despesas aduaneiras: R$ 4.66
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 4.66 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1506.83
+        - Tributos: R$ 522.90
+        - Despesas: R$ 4.66
+        - Base ICMS: R$ 2511.61
+        - ICMS (19%): R$ 477.21
+        - Custo total: R$ 2511.61 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3722.38):
+        - II: 12.8% = R$ 476.46
+        - IPI: 9% = R$ 377.90 (base: R$ 4198.85)
+        - PIS: 2.1% = R$ 78.17
+        - COFINS: 9.65% = R$ 359.21 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3722.38) - Adição 013:
+        - Proporção na adição: 4.9705%
+        - Despesas aduaneiras: R$ 11.52
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.52 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3722.38
+        - Tributos: R$ 1291.74
+        - Despesas: R$ 11.52
+        - Base ICMS: R$ 6204.50
+        - ICMS (19%): R$ 1178.85
+        - Custo total: R$ 6204.50 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3720.19):
+        - II: 12.8% = R$ 476.18
+        - IPI: 9% = R$ 377.67 (base: R$ 4196.37)
+        - PIS: 2.1% = R$ 78.12
+        - COFINS: 9.65% = R$ 359.00 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3720.19) - Adição 013:
+        - Proporção na adição: 4.9676%
+        - Despesas aduaneiras: R$ 11.51
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 11.51 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3720.19
+        - Tributos: R$ 1290.98
+        - Despesas: R$ 11.51
+        - Base ICMS: R$ 6200.84
+        - ICMS (19%): R$ 1178.16
+        - Custo total: R$ 6200.84 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 4300.10):
+        - II: 12.8% = R$ 550.41
+        - IPI: 9% = R$ 436.55 (base: R$ 4850.51)
+        - PIS: 2.1% = R$ 90.30
+        - COFINS: 9.65% = R$ 414.96 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 4300.10) - Adição 013:
+        - Proporção na adição: 5.7419%
+        - Despesas aduaneiras: R$ 13.31
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 13.31 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 4300.10
+        - Tributos: R$ 1492.22
+        - Despesas: R$ 13.31
+        - Base ICMS: R$ 7167.44
+        - ICMS (19%): R$ 1361.81
+        - Custo total: R$ 7167.44 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 8125.74):
+        - II: 12.8% = R$ 1040.09
+        - IPI: 9% = R$ 824.93 (base: R$ 9165.84)
+        - PIS: 2.1% = R$ 170.64
+        - COFINS: 9.65% = R$ 784.13 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 8125.74) - Adição 013:
+        - Proporção na adição: 10.8503%
+        - Despesas aduaneiras: R$ 25.15
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 25.15 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 8125.74
+        - Tributos: R$ 2819.80
+        - Despesas: R$ 25.15
+        - Base ICMS: R$ 13544.06
+        - ICMS (19%): R$ 2573.37
+        - Custo total: R$ 13544.06 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 1070.97):
+        - II: 12.8% = R$ 137.08
+        - IPI: 9% = R$ 108.73 (base: R$ 1208.06)
+        - PIS: 2.1% = R$ 22.49
+        - COFINS: 9.65% = R$ 103.35 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1070.97) - Adição 013:
+        - Proporção na adição: 1.4301%
+        - Despesas aduaneiras: R$ 3.31
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 3.31 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1070.97
+        - Tributos: R$ 371.65
+        - Despesas: R$ 3.31
+        - Base ICMS: R$ 1785.11
+        - ICMS (19%): R$ 339.17
+        - Custo total: R$ 1785.11 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 013 ItemCalculator.js:309:21
+    ✅ 30 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 14/16: NCM 90271000 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 255.19 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 255.19 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 102451.10 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 126482.84 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 82449.31", II: "R$ 9234.32", IPI: "R$ 0.00", PIS: "R$ 1731.43", COFINS: "R$ 8780.85", ICMS: "R$ 24031.74", "Total Impostos": "R$ 43778.34", "Custo Total": "R$ 126482.84" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 5241.15):
+        - II: 11.2% = R$ 587.01
+        - IPI: 0% = R$ 0.00 (base: R$ 5828.16)
+        - PIS: 2.1% = R$ 110.06
+        - COFINS: 10.65% = R$ 558.18 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5241.15) - Adição 014:
+        - Proporção na adição: 6.3568%
+        - Despesas aduaneiras: R$ 16.22
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.22 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5241.15
+        - Tributos: R$ 1255.26
+        - Despesas: R$ 16.22
+        - Base ICMS: R$ 8040.29
+        - ICMS (19%): R$ 1527.65
+        - Custo total: R$ 8040.29 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5241.04):
+        - II: 11.2% = R$ 587.00
+        - IPI: 0% = R$ 0.00 (base: R$ 5828.04)
+        - PIS: 2.1% = R$ 110.06
+        - COFINS: 10.65% = R$ 558.17 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5241.04) - Adição 014:
+        - Proporção na adição: 6.3567%
+        - Despesas aduaneiras: R$ 16.22
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.22 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5241.04
+        - Tributos: R$ 1255.23
+        - Despesas: R$ 16.22
+        - Base ICMS: R$ 8040.12
+        - ICMS (19%): R$ 1527.62
+        - Custo total: R$ 8040.12 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5241.26):
+        - II: 11.2% = R$ 587.02
+        - IPI: 0% = R$ 0.00 (base: R$ 5828.28)
+        - PIS: 2.1% = R$ 110.07
+        - COFINS: 10.65% = R$ 558.19 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5241.26) - Adição 014:
+        - Proporção na adição: 6.3570%
+        - Despesas aduaneiras: R$ 16.22
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.22 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5241.26
+        - Tributos: R$ 1255.28
+        - Despesas: R$ 16.22
+        - Base ICMS: R$ 8040.45
+        - ICMS (19%): R$ 1527.69
+        - Custo total: R$ 8040.45 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 5241.48):
+        - II: 11.2% = R$ 587.05
+        - IPI: 0% = R$ 0.00 (base: R$ 5828.53)
+        - PIS: 2.1% = R$ 110.07
+        - COFINS: 10.65% = R$ 558.22 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 5241.48) - Adição 014:
+        - Proporção na adição: 6.3572%
+        - Despesas aduaneiras: R$ 16.22
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 16.22 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 5241.48
+        - Tributos: R$ 1255.33
+        - Despesas: R$ 16.22
+        - Base ICMS: R$ 8040.79
+        - ICMS (19%): R$ 1527.75
+        - Custo total: R$ 8040.79 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6147.94):
+        - II: 11.2% = R$ 688.57
+        - IPI: 0% = R$ 0.00 (base: R$ 6836.51)
+        - PIS: 2.1% = R$ 129.11
+        - COFINS: 10.65% = R$ 654.76 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6147.94) - Adição 014:
+        - Proporção na adição: 7.4566%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6147.94
+        - Tributos: R$ 1472.43
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9431.36
+        - ICMS (19%): R$ 1791.96
+        - Custo total: R$ 9431.36 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.60):
+        - II: 11.2% = R$ 688.64
+        - IPI: 0% = R$ 0.00 (base: R$ 6837.24)
+        - PIS: 2.1% = R$ 129.12
+        - COFINS: 10.65% = R$ 654.83 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.60) - Adição 014:
+        - Proporção na adição: 7.4574%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.60
+        - Tributos: R$ 1472.59
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9432.37
+        - ICMS (19%): R$ 1792.15
+        - Custo total: R$ 9432.37 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6147.72):
+        - II: 11.2% = R$ 688.55
+        - IPI: 0% = R$ 0.00 (base: R$ 6836.27)
+        - PIS: 2.1% = R$ 129.10
+        - COFINS: 10.65% = R$ 654.73 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6147.72) - Adição 014:
+        - Proporção na adição: 7.4564%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6147.72
+        - Tributos: R$ 1472.38
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9431.03
+        - ICMS (19%): R$ 1791.90
+        - Custo total: R$ 9431.03 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.60):
+        - II: 11.2% = R$ 688.64
+        - IPI: 0% = R$ 0.00 (base: R$ 6837.24)
+        - PIS: 2.1% = R$ 129.12
+        - COFINS: 10.65% = R$ 654.83 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.60) - Adição 014:
+        - Proporção na adição: 7.4574%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.60
+        - Tributos: R$ 1472.59
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9432.37
+        - ICMS (19%): R$ 1792.15
+        - Custo total: R$ 9432.37 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.60):
+        - II: 11.2% = R$ 688.64
+        - IPI: 0% = R$ 0.00 (base: R$ 6837.24)
+        - PIS: 2.1% = R$ 129.12
+        - COFINS: 10.65% = R$ 654.83 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.60) - Adição 014:
+        - Proporção na adição: 7.4574%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.60
+        - Tributos: R$ 1472.59
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9432.37
+        - ICMS (19%): R$ 1792.15
+        - Custo total: R$ 9432.37 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.16):
+        - II: 11.2% = R$ 688.59
+        - IPI: 0% = R$ 0.00 (base: R$ 6836.76)
+        - PIS: 2.1% = R$ 129.11
+        - COFINS: 10.65% = R$ 654.78 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.16) - Adição 014:
+        - Proporção na adição: 7.4569%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.16
+        - Tributos: R$ 1472.48
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9431.70
+        - ICMS (19%): R$ 1792.02
+        - Custo total: R$ 9431.70 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.93):
+        - II: 11.2% = R$ 688.68
+        - IPI: 0% = R$ 0.00 (base: R$ 6837.61)
+        - PIS: 2.1% = R$ 129.13
+        - COFINS: 10.65% = R$ 654.86 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.93) - Adição 014:
+        - Proporção na adição: 7.4578%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.93
+        - Tributos: R$ 1472.67
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9432.88
+        - ICMS (19%): R$ 1792.25
+        - Custo total: R$ 9432.88 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.60):
+        - II: 11.2% = R$ 688.64
+        - IPI: 0% = R$ 0.00 (base: R$ 6837.24)
+        - PIS: 2.1% = R$ 129.12
+        - COFINS: 10.65% = R$ 654.83 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.60) - Adição 014:
+        - Proporção na adição: 7.4574%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.60
+        - Tributos: R$ 1472.59
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9432.37
+        - ICMS (19%): R$ 1792.15
+        - Custo total: R$ 9432.37 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.82):
+        - II: 11.2% = R$ 688.67
+        - IPI: 0% = R$ 0.00 (base: R$ 6837.49)
+        - PIS: 2.1% = R$ 129.13
+        - COFINS: 10.65% = R$ 654.85 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.82) - Adição 014:
+        - Proporção na adição: 7.4577%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.82
+        - Tributos: R$ 1472.64
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9432.71
+        - ICMS (19%): R$ 1792.21
+        - Custo total: R$ 9432.71 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 6148.71):
+        - II: 11.2% = R$ 688.66
+        - IPI: 0% = R$ 0.00 (base: R$ 6837.37)
+        - PIS: 2.1% = R$ 129.12
+        - COFINS: 10.65% = R$ 654.84 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 6148.71) - Adição 014:
+        - Proporção na adição: 7.4576%
+        - Despesas aduaneiras: R$ 19.03
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 19.03 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 6148.71
+        - Tributos: R$ 1472.62
+        - Despesas: R$ 19.03
+        - Base ICMS: R$ 9432.54
+        - ICMS (19%): R$ 1792.18
+        - Custo total: R$ 9432.54 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 014 ItemCalculator.js:309:21
+    ✅ 14 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 15/16: NCM 90299010 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 19.03 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 19.03 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 8921.10 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 11013.70 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 6147.85", II: "R$ 983.65", IPI: "R$ 695.32", PIS: "R$ 191.81", COFINS: "R$ 883.44", ICMS: "R$ 2092.60", "Total Impostos": "R$ 4846.82", "Custo Total": "R$ 11013.70" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 2943.68):
+        - II: 16% = R$ 470.99
+        - IPI: 9.75% = R$ 332.93 (base: R$ 3414.67)
+        - PIS: 3.12% = R$ 91.84
+        - COFINS: 14.37% = R$ 423.01 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 2943.68) - Adição 015:
+        - Proporção na adição: 47.8814%
+        - Despesas aduaneiras: R$ 9.11
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 9.11 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 2943.68
+        - Tributos: R$ 1318.77
+        - Despesas: R$ 9.11
+        - Base ICMS: R$ 5273.53
+        - ICMS (19%): R$ 1001.97
+        - Custo total: R$ 5273.53 ItemCalculator.js:247:17
+📊 Tributos individuais calculados para item (R$ 3204.20):
+        - II: 16% = R$ 512.67
+        - IPI: 9.75% = R$ 362.39 (base: R$ 3716.87)
+        - PIS: 3.12% = R$ 99.97
+        - COFINS: 14.37% = R$ 460.44 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 3204.20) - Adição 015:
+        - Proporção na adição: 52.1190%
+        - Despesas aduaneiras: R$ 9.92
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 9.92 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 3204.20
+        - Tributos: R$ 1435.48
+        - Despesas: R$ 9.92
+        - Base ICMS: R$ 5740.24
+        - ICMS (19%): R$ 1090.65
+        - Custo total: R$ 5740.24 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 015 ItemCalculator.js:309:21
+    ✅ 2 produtos processados individualmente ComplianceCalculator.js:202:25
+  Processando adição 16/16: NCM 84099120 ComplianceCalculator.js:141:21
+🧮 ComplianceCalculator: Iniciando cálculo de impostos... ComplianceCalculator.js:558:17
+💰 Despesas consolidadas incluídas na base ICMS: R$ 5.48 ComplianceCalculator.js:674:17
+📊 Detalhamento: Automáticas R$ 5.48 + Extras tributáveis R$ 0.00 ComplianceCalculator.js:675:17
+📊 Cálculo Base ICMS (Calculator): ComplianceCalculator.js:782:17
+        - Base antes ICMS: R$ 2453.67 ComplianceCalculator.js:783:17
+        - Alíquota ICMS: 19% ComplianceCalculator.js:784:17
+        - Fator divisão: 0.8100 ComplianceCalculator.js:788:17
+        - Base ICMS final: R$ 3029.22 ComplianceCalculator.js:792:17
+✅ ComplianceCalculator: Cálculo de impostos concluído ComplianceCalculator.js:616:21
+📊 Resumo: 
+Object { CIF: "R$ 1770.73", II: "R$ 283.31", IPI: "R$ 66.75", PIS: "R$ 55.24", COFINS: "R$ 272.16", ICMS: "R$ 575.55", "Total Impostos": "R$ 1253.01", "Custo Total": "R$ 3029.22" }
+ComplianceCalculator.js:617:21
+📊 Tributos individuais calculados para item (R$ 1770.76):
+        - II: 16% = R$ 283.32
+        - IPI: 3.25% = R$ 66.76 (base: R$ 2054.08)
+        - PIS: 3.12% = R$ 55.25
+        - COFINS: 15.37% = R$ 272.17 ItemCalculator.js:99:17
+💰 ItemCalculator: Valor total da DI calculado: R$ 565511.26 ItemCalculator.js:196:21
+📊 ItemCalculator: Rateio despesas para item (R$ 1770.76) - Adição 016:
+        - Proporção na adição: 100.0018%
+        - Despesas aduaneiras: R$ 5.48
+        - Despesas extras: R$ 0.00
+        - Total item: R$ 5.48 ItemCalculator.js:160:17
+📊 ItemCalculator: Base ICMS completa para item:
+        - Valor base: R$ 1770.76
+        - Tributos: R$ 677.49
+        - Despesas: R$ 5.48
+        - Base ICMS: R$ 3029.30
+        - ICMS (19%): R$ 575.57
+        - Custo total: R$ 3029.30 ItemCalculator.js:247:17
+✅ ItemCalculator: Validação de tributos OK para adição 016 ItemCalculator.js:309:21
+    ✅ 1 produtos processados individualmente ComplianceCalculator.js:202:25
+✅ DI processada com sucesso: 
+Object { adicoes: 16, produtos: 189, "II Total": "R$ 79184.34", "IPI Total": "R$ 33319.88", "PIS Total": "R$ 14050.24", "COFINS Total": "R$ 67647.66" }
+ComplianceCalculator.js:224:17
+⚠️ Totais de tributos não encontrados no XML extraído ComplianceCalculator.js:461:21
+💾 Salvando produtos na memória para sistema de precificação... ComplianceCalculator.js:1039:21
+✅ Produto salvo: prod_1758715825002_prximqamh - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825004_0ppzcbjl8 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825005_1gr2pbc7d - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825005_babyztatw - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825005_b0sw4qwl7 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825007_864ee95jy - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825007_jeqp7gevg - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825007_1hpaacqco - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825007_bmp5a555b - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825007_c67ys723u - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825007_bl2h91n5i - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825008_41p8hvoth - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825008_rthqa1v2q - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825008_ijbjll1iw - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825009_wcygplbsd - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825009_48y8y3uc2 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825009_0o74nkoo9 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825010_2dsd4y48s - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825012_ilt8tpm3k - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825012_r8oyenlm2 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825012_2853l4o08 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825013_sun9fqh5r - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825013_7dc52nhof - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825013_ft31h0rcr - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825013_du0zjg3kl - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825013_2qxkue7fe - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825014_wlja3h97c - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825014_qgdqbwsen - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825015_axv25a5g6 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825015_j2j0r4zv9 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825016_2ma1xwp4i - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825016_cic8uooof - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825017_v3w2k4nvd - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825017_d9ye9dchg - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825017_kv27bu3q2 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825018_1vnto31on - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825018_6wi7955is - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825019_fk8q59pg9 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825019_7r4u4enrl - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825019_5mxdj8j60 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825020_ew2f0q32m - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825020_r3n9oiagr - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825021_nvf5tqeky - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825021_5cs2b0jz5 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825022_xx6mz6d42 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825023_ctllx548w - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825023_c7tjqhg7h - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825023_67mvwxire - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825023_ikyf14azn - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825024_6y5puy368 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825024_otinylfym - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825025_54h4he57l - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825025_s6lvp12vo - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825026_keswon269 - NCM 73181500 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825027_u6nqmw4zq - NCM 73181600 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825028_a1506spzx - NCM 73181600 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825028_rnd0dnfqm - NCM 73181600 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825029_fkpp206zh - NCM 73181600 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825029_vzcg13rdv - NCM 73181600 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825030_ojrayf0ma - NCM 73181600 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825031_eph7hm6ml - NCM 73181600 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825031_wdttvgi6q - NCM 73182200 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825032_ovmowxm94 - NCM 73182200 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825032_j67hkrymg - NCM 73182200 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825034_1p24r7lwv - NCM 73182200 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825034_znd5jxrkk - NCM 73182200 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825034_dt98rlie8 - NCM 73182200 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825034_if6d6yhu7 - NCM 73202010 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825035_kdspwpvl5 - NCM 73202010 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825035_4d5bk2tdb - NCM 73202010 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825036_2xs8gmgvd - NCM 73202010 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825036_ph1iopi76 - NCM 73249000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825037_sawowvian - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825037_xzujaczd9 - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825038_e7ry7sssv - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825038_prrvyulny - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825039_mkoij0ha2 - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825039_us7nraiu6 - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825040_acopm2lkq - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825040_q8xop2aej - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825041_7ngr43fsr - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825042_c5u45aaxh - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825042_hpy3gtrc4 - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825042_eqzigvdcw - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825043_uxla4ozv4 - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825043_n14hz4l8w - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825044_m2w6099xs - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825045_2pkqsdz4l - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825045_we76f49pw - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825046_3xxbgkduf - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825046_h2t1w2q4q - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825047_emt3ddepy - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825048_4pef4r5e3 - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825048_c5pg90ikl - NCM 84099111 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825049_oq6jcfl31 - NCM 84099114 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825049_qzstne558 - NCM 84099114 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825050_ujvf71onx - NCM 84099114 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825050_oqnpau4ug - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825051_fdae3iusg - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825051_qqbp15h0d - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825052_lzq28wltu - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825052_ql7cryfdu - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825053_sxvslahzd - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825054_1xbqahdqw - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825054_6clevj2xq - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825054_brtcmc3t3 - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825055_t2i2bf3df - NCM 84099117 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825055_1ephhmn2x - NCM 84099118 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825056_5jzd3b20r - NCM 84099118 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825056_tuis8c1di - NCM 84561190 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825057_jgih8333g - NCM 84831020 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825058_l0f67nox2 - NCM 84831020 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825059_7zlyhyfdy - NCM 84831020 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825059_zx97ma5nq - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825059_c2rfi4ecg - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825060_hwr73w54q - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825061_5khzfit00 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825062_x24vesc2m - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825063_sx5x2kgis - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825063_5h7r4ou4r - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825064_zhryg7hc2 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825064_jzpo728p3 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825065_05e57o8xc - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825065_kot509fb3 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825066_5peuqueoy - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825066_2eee51u9f - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825066_cf6tyex7d - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825067_jkxzt8yb9 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825068_rnklv0dem - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825069_co3swhav9 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825069_m3sym4kzj - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825070_92itmzttf - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825070_u563hlhb8 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825071_b96yr3kpq - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825071_rcgtamvtj - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825072_sdlglv4vh - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825072_4punsp40d - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825074_0xorwhjk4 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825074_cbhg9zczd - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825074_klggba9ds - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825075_c5m6xn8y1 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825075_8paqy03rg - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825076_m6lzxdfi9 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825077_fpyh51q8x - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825077_p2ape6qbp - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825078_2nyo02v5z - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825080_zc4o2yfs3 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825080_bbn2a9g7v - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825081_7huqcql66 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825081_2etvucvws - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825082_fg8n0o4n3 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825083_qtc4jo4n2 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825083_2j6fi5wf6 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825084_rauu0mdxv - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825085_khd08hcu9 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825085_k7bg7ugkj - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825086_1g9l1df5w - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825086_w7t2d5v89 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825087_dfo8a2495 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825087_0dyvhv3ra - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825088_1okqa9qq7 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825089_cwymaem9t - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825090_bpw29ho21 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825090_jlm7shi6g - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825091_38fy5bjav - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825092_dj8jcdgri - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825092_bzzo4dqfb - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825093_0vp63rgrz - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825094_157p894d2 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825094_uyffxzyai - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825095_n2wfuu4o9 - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825095_jqn5njz1u - NCM 87141000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825096_bkez9m78r - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825098_7ik6dduay - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825098_18g4mjzjj - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825099_7pb92rlrt - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825099_cgdyuuk4r - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825100_s1e33rz7d - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825100_q0ws87voz - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825101_oxqf12b6y - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825102_la5ek0m7d - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825102_2ybededcb - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825103_ayoulo3mt - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825103_wmd1r4uxu - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825104_hgiedhrz9 - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825105_uovdcco4x - NCM 90271000 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825106_onpgpzl5o - NCM 90299010 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825106_przflvlbd - NCM 90299010 ProductMemoryManager.js:124:21
+✅ Produto salvo: prod_1758715825107_uu68poqej - NCM 84099120 ProductMemoryManager.js:124:21
+✅ 189 produtos salvos da DI 2300120746 ProductMemoryManager.js:195:21
+✅ 189 produtos salvos na memória para precificação ComplianceCalculator.js:1052:21
+📡 Evento 'productsMemorySaved' disparado para 189 produtos ComplianceCalculator.js:1084:21
+🔄 [DEBUG] atualizarDISalvaComCalculos iniciado para DI: 2300120746 ComplianceCalculator.js:1098:17
+📊 [DEBUG] Dados válidos - salvando no IndexedDB: 
+Object { di_numero: "2300120746", total_adicoes: 16, impostos_calculados: true, despesas_processadas: true }
+ComplianceCalculator.js:1112:17
+🔄 Atualizando DI salva com cálculos completos no IndexedDB... ComplianceCalculator.js:1125:21
+🔧 Estrutura despesas_aduaneiras reconstituída do IndexedDB: 
+Object { siscomex: 493.56, afrmm: 1256.77, capatazia: undefined, total: 1750.33 }
+IndexedDBManager.js:657:17
+✅ DI 2300120746 atualizada no IndexedDB com cálculos completos - pronta para precificação ComplianceCalculator.js:1172:21
+🔄 Salvando dados calculados no IndexedDB via ProductMemoryManager... di-interface.js:867:17
+🔄 [DEBUG] atualizarDISalvaComCalculos iniciado para DI: 2300120746 ComplianceCalculator.js:1098:17
+📊 [DEBUG] Dados válidos - salvando no IndexedDB: 
+Object { di_numero: "2300120746", total_adicoes: 16, impostos_calculados: true, despesas_processadas: true }
+ComplianceCalculator.js:1112:17
+🔄 Atualizando DI salva com cálculos completos no IndexedDB... ComplianceCalculator.js:1125:21
+🔧 Estrutura despesas_aduaneiras reconstituída do IndexedDB: 
+Object { siscomex: 493.56, afrmm: 1256.77, capatazia: undefined, total: 1750.33 }
+IndexedDBManager.js:657:17
+✅ DI 2300120746 atualizada no IndexedDB com cálculos completos - pronta para precificação ComplianceCalculator.js:1172:21
+✅ Dados salvos no IndexedDB com sucesso di-interface.js:869:17
+[DI Interface] populateStep3Results - Estrutura recebida: 
+Object { tipo: "DI_COMPLETA", numero_adicoes: 16, timestamp: "2025-09-24T12:10:25.002Z", estado: "GO", ncm: "73181500, 73181600, 73182200, 73202010, 73249000, 84099111, 84099114, 84099117, 84099118, 84561190, 84831020, 87141000, 87141000, 90271000, 90299010, 84099120", valores_base: {…}, impostos: {…}, despesas: {…}, totais: {…}, adicoes_detalhes: (16) […], … }
+di-interface.js:899:13
+[DI Interface] valores_base: 
+Object { valor_aduaneiro_total: 565511.2599999999, despesas_totais: 1750.3300000000002, peso_liquido: 25226.870000000003, taxa_cambio: 5.217699605901549 }
+di-interface.js:900:13
+[DI Interface] despesas: 
+Object { automaticas: {…}, extras: {…}, classificacao: {…}, totais: {…} }
+di-interface.js:901:13
+[DI Interface] impostos.icms: 
+Object { valor_devido: 178614.94432098756, aliquota: 19, detalhamento: "Soma de todas as adições" }
+di-interface.js:902:13
