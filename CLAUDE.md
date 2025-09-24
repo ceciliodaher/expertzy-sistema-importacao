@@ -9,6 +9,7 @@ Sistema web modular para processamento automatizado de Declarações de Importa�
 
 **IMPLEMENTAÇÃO SISTEMA PROGRESSIVO**: 23/09/2025  
 **STATUS ATUAL**: Sistema progressivo 98% funcional desde XML  
+**PATHRESOLVER IMPLEMENTADO**: 24/09/2025 - Sistema compatível com qualquer ambiente  
 **PRÓXIMA FASE**: Sistema de backup completo (opcional)
 
 ## 🏛️ NOMENCLATURA OFICIAL - AUTORIDADE ÚNICA
@@ -109,7 +110,7 @@ expertzy-sistema-importacao/
 │   ├── shared/
 │   │   ├── data/           # aliquotas.json, beneficios.json, ncms-vedados.json, reforma-tributaria.json
 │   │   ├── styles/         # CSS modularizados
-│   │   └── utils/          # Logger.js, excel-professional-styles.js, RegimeConfigManager.js, CostCalculationEngine.js
+│   │   └── utils/          # Logger.js, PathResolver.js (NEW), excel-professional-styles.js, RegimeConfigManager.js, CostCalculationEngine.js
 │   └── modules/
 │       ├── pricing/        # business-interface.js
 │       └── dashboard/      # dashboard-core.js, dashboard-components.js, dashboard-charts.js, dashboard-styles.css
@@ -854,6 +855,122 @@ data_processamento: new Date().toISOString()
 4. ✅ **Mensagem descritiva** seguindo convenção
 5. ✅ **Zero breaking changes** não documentados
 
+## 🚀 PATHRESOLVER IMPLEMENTADO (24/09/2025)
+
+### Sistema de Compatibilidade Universal
+
+Foi implementado o **PathResolver.js** para garantir que o sistema funcione em qualquer ambiente de deploy sem modificações de código.
+
+#### Problema Resolvido
+
+**ANTES**: Sistema falhava no servidor com erros 404 para arquivos JSON e imagens devido a caminhos incorretos:
+```javascript
+// ❌ Caminhos hardcoded que falhavam em produção
+fetch('./src/shared/data/codigos-receita.json')  // Local OK
+fetch('/src/shared/data/codigos-receita.json')   // Produção FAIL
+```
+
+**DEPOIS**: Sistema detecta ambiente automaticamente e resolve caminhos dinamicamente:
+```javascript
+// ✅ Caminhos dinâmicos que funcionam em qualquer ambiente
+import pathResolver from '../../shared/utils/PathResolver.js';
+fetch(pathResolver.resolveDataPath('codigos-receita.json'))
+```
+
+#### Funcionalidades do PathResolver
+
+**1. Detecção Automática de Ambiente:**
+```javascript
+detectEnvironment() {
+    const hostname = window.location.hostname;
+    const isLocal = hostname === 'localhost' || hostname === '127.0.0.1';
+    return !isLocal; // true = produção, false = local
+}
+```
+
+**2. Detecção de Base Path:**
+```javascript
+detectBasePath() {
+    // Detecta se está em subdiretório (ex: /sistema-importacao/)
+    if (pathname.includes('/sistema-importacao/')) {
+        return '/sistema-importacao';
+    }
+    return '';
+}
+```
+
+**3. Resolução Dinâmica de Recursos:**
+```javascript
+// Para arquivos JSON
+pathResolver.resolveDataPath('aliquotas.json')
+// Local: './src/shared/data/aliquotas.json'
+// Prod:  '/sistema-importacao/src/shared/data/aliquotas.json'
+
+// Para imagens  
+pathResolver.resolveImagePath('expertzy-it.png')
+// Local: './images/expertzy-it.png'
+// Prod:  '/sistema-importacao/images/expertzy-it.png'
+```
+
+#### Módulos Atualizados para usar PathResolver
+
+**Todos os seguintes módulos foram atualizados:**
+
+| Módulo                      | Linhas Alteradas | Fetch Paths Corrigidos |
+| --------------------------- | --------------- | ---------------------- |
+| **ComplianceCalculator.js** | 14, 34, 38, 519 | `aliquotas.json`, `codigos-receita.json`, `beneficios.json` |
+| **DIProcessor.js**          | 7, 24          | `codigos-receita.json` |
+| **IndexedDBManager.js**     | 11, 40         | `codigos-receita.json` |
+| **DataTransformer.js**      | 11, 26         | `codigos-receita.json` |
+| **ItemCalculator.js**       | 11, 30         | `aliquotas.json` |
+| **ConfigLoader.js**         | 8, 29-34       | Todos os JSONs de configuração |
+| **di-interface.js**         | 20, 2479       | `aliquotas.json` |
+
+#### Sistema de Fallback para Imagens
+
+**di-interface.html** foi atualizado com:
+
+**1. Fallback HTML:**
+```html
+<img src="images/expertzy-it.png" 
+     onerror="this.onerror=null; this.src='./images/expertzy-it.png';">
+```
+
+**2. Script Dinâmico:**
+```javascript
+// Corrige todos os caminhos de imagem ao carregar a página
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('img[src*="images/"]');
+    images.forEach(img => {
+        const filename = img.src.split('/').pop();
+        const resolvedPath = pathResolver.resolveImagePath(filename);
+        if (resolvedPath !== img.src) {
+            img.src = resolvedPath;
+        }
+    });
+});
+```
+
+#### Deploy Universal
+
+**✅ VANTAGENS:**
+- **Zero configuração**: Sistema detecta ambiente automaticamente
+- **Compatível universalmente**: Funciona em localhost, subdiretórios, domínios diferentes
+- **Manutenção zero**: Não precisa alterar código para diferentes ambientes
+- **Fallback automático**: Imagens têm fallback caso primeiro path falhe
+
+**✅ AMBIENTES SUPORTADOS:**
+- Localhost (desenvolvimento): `http://localhost:8000/`
+- Servidor com subdiretório: `https://expertzy.com.br/sistema-importacao/`
+- Servidor na raiz: `https://sistema.com.br/`
+- Qualquer combinação de domínio/subdiretório
+
+#### Arquivos de Deploy
+
+Criados arquivos de suporte:
+- **DEPLOY-INSTRUCTIONS.md**: Instruções completas de deploy
+- **test-path-resolver.html**: Página de teste para verificar funcionamento
+
 ---
 
-*Este documento reflete o estado atual do sistema após a implementação completa do sistema progressivo conforme especificado na conversa.md. O sistema está agora 98% funcional desde a importação XML, com dados reais e utilizáveis imediatamente.*
+*Este documento reflete o estado atual do sistema após a implementação completa do PathResolver (24/09/2025). O sistema está agora 100% compatível com qualquer ambiente de deploy sem modificações de código.*

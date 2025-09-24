@@ -4,6 +4,7 @@
  */
 
 import { ConfigLoader } from '../../shared/utils/ConfigLoader.js';
+import pathResolver from '../../shared/utils/PathResolver.js';
 
 export class DIProcessor {
     constructor() {
@@ -20,7 +21,7 @@ export class DIProcessor {
     async loadConfigurations() {
         try {
             // Carrega códigos de receita
-            const codigosResponse = await fetch('./src/shared/data/codigos-receita.json');
+            const codigosResponse = await fetch(pathResolver.resolveDataPath('codigos-receita.json'));
             this.codigosReceita = await codigosResponse.json();
             
             this.configsLoaded = true;

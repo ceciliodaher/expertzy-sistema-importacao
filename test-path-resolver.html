@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste PathResolver</title>
+</head>
+<body>
+    <h1>Teste do PathResolver</h1>
+    <div id="results"></div>
+
+    <script type="module">
+        import pathResolver from './src/shared/utils/PathResolver.js';
+        
+        const resultsDiv = document.getElementById('results');
+        
+        // Testa diferentes cenários
+        const tests = [
+            { test: 'resolveDataPath("aliquotas.json")', result: pathResolver.resolveDataPath('aliquotas.json') },
+            { test: 'resolveDataPath("codigos-receita.json")', result: pathResolver.resolveDataPath('codigos-receita.json') },
+            { test: 'resolveImagePath("expertzy-it.png")', result: pathResolver.resolveImagePath('expertzy-it.png') },
+            { test: 'Base Path', result: pathResolver.basePath },
+            { test: 'Is Production', result: pathResolver.isProduction },
+            { test: 'Window Location', result: window.location.href }
+        ];
+        
+        // Exibe resultados
+        resultsDiv.innerHTML = '<pre>' + JSON.stringify(tests, null, 2) + '</pre>';
+        
+        // Testa fetch real
+        fetch(pathResolver.resolveDataPath('codigos-receita.json'))
+            .then(response => {
+                const status = document.createElement('p');
+                status.innerHTML = '<strong>Fetch codigos-receita.json:</strong> ' + 
+                    (response.ok ? '✅ SUCCESS (Status: ' + response.status + ')' : '❌ FAILED (Status: ' + response.status + ')');
+                resultsDiv.appendChild(status);
+            })
+            .catch(error => {
+                const status = document.createElement('p');
+                status.innerHTML = '<strong>Fetch codigos-receita.json:</strong> ❌ ERROR: ' + error.message;
+                resultsDiv.appendChild(status);
+            });
+    </script>
+</body>
+</html>

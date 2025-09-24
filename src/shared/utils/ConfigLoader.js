@@ -5,6 +5,8 @@
  * Maintains KISS principle - don't over-engineer what works
  */
 
+import pathResolver from './PathResolver.js';
+
 class ConfigLoader {
     constructor() {
         this.cache = {};
@@ -24,12 +26,12 @@ class ConfigLoader {
 
             // Load existing working configurations + estados e moedas
             const configs = await Promise.all([
-                fetch('./src/shared/data/aliquotas.json').then(r => r.json()),
-                fetch('./src/shared/data/beneficios.json').then(r => r.json()),
-                fetch('./src/shared/data/config.json').then(r => r.json()),
-                fetch('./src/shared/data/import-fees.json').then(r => r.json()),
-                fetch('./src/shared/data/estados-brasil.json').then(r => r.json()),
-                fetch('./src/shared/data/moedas-siscomex.json').then(r => r.json())
+                fetch(pathResolver.resolveDataPath('aliquotas.json')).then(r => r.json()),
+                fetch(pathResolver.resolveDataPath('beneficios.json')).then(r => r.json()),
+                fetch(pathResolver.resolveDataPath('config.json')).then(r => r.json()),
+                fetch(pathResolver.resolveDataPath('import-fees.json')).then(r => r.json()),
+                fetch(pathResolver.resolveDataPath('estados-brasil.json')).then(r => r.json()),
+                fetch(pathResolver.resolveDataPath('moedas-siscomex.json')).then(r => r.json())
             ]);
 
             this.cache = {

@@ -27,7 +27,7 @@
     <nav class="navbar navbar-expand-lg expertzy-navbar fixed-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="https://expertzy.com.br" target="_blank">
-                <img src="images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo">
+                <img src="images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo" onerror="this.onerror=null; this.src='./images/expertzy-it.png';">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -1066,6 +1066,25 @@
     
     <!-- Dexie.js for IndexedDB -->
     <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+    
+    <!-- Image Path Resolver -->
+    <script type="module">
+        // Import PathResolver to fix image paths dynamically
+        import pathResolver from './src/shared/utils/PathResolver.js';
+        
+        // Fix all images on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img[src*="images/"]');
+            images.forEach(img => {
+                const originalSrc = img.src;
+                const filename = originalSrc.split('/').pop();
+                const resolvedPath = pathResolver.resolveImagePath(filename);
+                if (resolvedPath !== originalSrc) {
+                    img.src = resolvedPath;
+                }
+            });
+        });
+    </script>
     
     <!-- Main ES6 Module -->
     <script type="module" src="src/di-interface.js"></script>

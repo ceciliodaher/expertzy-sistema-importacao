@@ -8,6 +8,8 @@
  * - FAIL-FAST: Validar antes de transformar
  */
 
+import pathResolver from '../../shared/utils/PathResolver.js';
+
 // Códigos de receita serão carregados via fetch
 // crypto não disponível em browser - usar Web Crypto API
 
@@ -21,7 +23,7 @@ class DataTransformer {
      */
     async initialize() {
         try {
-            const response = await fetch('./src/shared/data/codigos-receita.json');
+            const response = await fetch(pathResolver.resolveDataPath('codigos-receita.json'));
             if (!response.ok) {
                 throw new Error(`Erro ao carregar códigos de receita: ${response.status}`);
             }

@@ -17,6 +17,7 @@ import { ExportManager } from './core/exporters/ExportManager.js';
 import { MultiAdditionExporter } from './core/exporters/MultiAdditionExporter.js';
 import { ItemCalculator } from './core/calculators/ItemCalculator.js';
 import { DataViewer } from './modules/DataViewer.js';
+import pathResolver from './shared/utils/PathResolver.js';
 
 // Global instances
 let diProcessor = null;
@@ -2475,7 +2476,7 @@ async function carregarAliquotasICMS() {
     if (aliquotasCache) return aliquotasCache;
     
     try {
-        const response = await fetch('./src/shared/data/aliquotas.json');
+        const response = await fetch(pathResolver.resolveDataPath('aliquotas.json'));
         aliquotasCache = await response.json();
         console.log('✅ Alíquotas ICMS carregadas:', aliquotasCache);
         return aliquotasCache;

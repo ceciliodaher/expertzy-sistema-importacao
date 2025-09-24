@@ -8,6 +8,8 @@
  * @version 2.0
  */
 
+import pathResolver from '../../shared/utils/PathResolver.js';
+
 class ItemCalculator {
     constructor() {
         this.aliquotasCache = null;
@@ -25,7 +27,7 @@ class ItemCalculator {
         if (this.aliquotasCache) return this.aliquotasCache;
         
         try {
-            const response = await fetch('./src/shared/data/aliquotas.json');
+            const response = await fetch(pathResolver.resolveDataPath('aliquotas.json'));
             this.aliquotasCache = await response.json();
             console.log('✅ ItemCalculator: Alíquotas ICMS carregadas');
             return this.aliquotasCache;
