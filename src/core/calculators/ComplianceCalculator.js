@@ -249,6 +249,18 @@ export class ComplianceCalculator {
         // INTEGRAÇÃO: Salvar no IndexedDB (NO FALLBACKS)
         await this.atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas);
         
+        // NOVO: Preparar e processar dados de precificação se PricingAdapter estiver disponível
+        if (window.pricingAdapter) {
+            try {
+                const pricingData = await this.preparePricingData(di, totaisConsolidados, despesasConsolidadas);
+                await window.pricingAdapter.processPricingData(pricingData);
+                console.log('✅ Dados enviados para processamento de precificação');
+            } catch (error) {
+                console.warn('⚠️ Erro ao processar precificação:', error.message);
+                // Não interromper o fluxo - precificação é opcional
+            }
+        }
+        
         return totaisConsolidados;
     }
     
@@ -1098,6 +1110,96 @@ export class ComplianceCalculator {
         }
     }
     
+    /**
+     * NOVO: Prepara dados para o módulo de precificação
+     * @param {Object} di - Dados da DI processada
+     * @param {Object} totaisConsolidados - Totais calculados
+     * @param {Object} despesasConsolidadas - Despesas consolidadas
+     * @returns {Object} Dados preparados para precificação
+     */
+    async preparePricingData(di, totaisConsolidados, despesasConsolidadas) {
+        // Validação NO FALLBACKS
+        if (!di || !di.numero_di) {
+            throw new Error('DI inválida para preparar dados de precificação');
+        }
+
+        if (!totaisConsolidados) {
+            throw new Error('Totais consolidados obrigatórios para precificação');
+        }
+
+        // Buscar ID da DI no banco se disponível
+        let diId = null;
+        if (window.dbManager) {
+            try {
+                const diSalva = await window.dbManager.getDI(di.numero_di);
+                diId = diSalva?.id;
+            } catch (error) {
+                console.warn('DI ainda não salva no banco:', error.message);
+            }
+        }
+
+        // Estrutura de dados para precificação seguindo nomenclatura oficial
+        const pricingData = {
+            // Identificação
+            di_id: diId,
+            numero_di: di.numero_di,
+            
+            // Importador (nomenclatura oficial)
+            importador: {
+                cnpj: di.importador?.cnpj,
+                nome: di.importador?.nome,
+                endereco_uf: di.importador?.endereco_uf
+            },
+            
+            // Estado para incentivos
+            estado_empresa: di.importador?.endereco_uf,
+            
+            // Totais consolidados
+            totais: {
+                valor_aduaneiro: totaisConsolidados.valores_base?.total_cif_brl,
+                ii_devido: totaisConsolidados.impostos?.ii?.valor_devido,
+                ipi_devido: totaisConsolidados.impostos?.ipi?.valor_devido,
+                pis_devido: totaisConsolidados.impostos?.pis?.valor_devido,
+                cofins_devido: totaisConsolidados.impostos?.cofins?.valor_devido,
+                icms_devido: totaisConsolidados.impostos?.icms?.valor_devido,
+                despesas_aduaneiras: despesasConsolidadas?.total_despesas
+            },
+            
+            // Adições com produtos e cálculos
+            adicoes: di.adicoes?.map((adicao, index) => {
+                const calculoAdicao = totaisConsolidados.adicoes_detalhes?.[index];
+                
+                return {
+                    numero_adicao: adicao.numero_adicao,
+                    ncm: adicao.ncm,
+                    descricao_ncm: adicao.descricao_ncm,
+                    
+                    // Valores (nomenclatura oficial)
+                    valor_reais: adicao.valor_reais,
+                    frete_valor_reais: adicao.frete_valor_reais,
+                    seguro_valor_reais: adicao.seguro_valor_reais,
+                    
+                    // Tributos calculados
+                    tributos: calculoAdicao?.tributos_calculados || adicao.tributos,
+                    
+                    // Produtos com custos
+                    produtos: calculoAdicao?.produtos_com_rateio || adicao.produtos
+                };
+            }),
+            
+            // Despesas aduaneiras
+            despesas_aduaneiras: despesasConsolidadas?.despesas_detalhadas,
+            
+            // Metadados
+            data_processamento: new Date().toISOString(),
+            sistema_origem: 'ComplianceCalculator',
+            versao: '1.0.0'
+        };
+
+        console.log('📊 Dados de precificação preparados para DI:', di.numero_di);
+        return pricingData;
+    }
+
     /**
      * INTEGRAÇÃO: Atualiza DI salva no IndexedDB com cálculos completos - NO FALLBACKS
      * @param {Object} di - Dados da DI processada
