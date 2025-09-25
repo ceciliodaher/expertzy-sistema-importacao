@@ -16,7 +16,7 @@ Implementar módulo completo de precificação integrado ao sistema de importaç
 - **Início:** 25/09/2025
 - **Término:** 25/09/2025
 - **Progresso:** ▓▓▓▓▓▓▓▓▓▓ 100%
-- **Commit:** Aguardando testes E2E
+- **Commit:** 439fa8c - feat: Implementar infraestrutura base do módulo de precificação (FASE 1)
 
 #### Checklist:
 - [x] PricingAdapter.js criado
@@ -177,7 +177,7 @@ Implementar módulo completo de precificação integrado ao sistema de importaç
 ## 🔄 Histórico de Commits
 
 ### FASE 1
-- **[Pendente]** feat: Implementar infraestrutura base do módulo de precificação
+- **439fa8c** (25/09/2025) feat: Implementar infraestrutura base do módulo de precificação (FASE 1)
 
 ## 📌 Links Importantes
 
