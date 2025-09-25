@@ -139,8 +139,48 @@ class IndexedDBManager {
             
             simulacoes_pricing: '++id, di_id, nome_simulacao, parametros_simulacao, resultado_simulacao, comparacao_original, timestamp, [di_id+nome_simulacao]'
         });
+        
+        // Versão 5 - Adiciona tabelas do pipeline completo
+        this.db.version(5).stores({
+            // Manter todas as tabelas existentes da v4
+            declaracoes: '++id, numero_di, importador_cnpj, importador_nome, importador_endereco_uf, importador_endereco_logradouro, importador_endereco_numero, importador_endereco_complemento, importador_endereco_bairro, importador_endereco_cidade, importador_endereco_municipio, importador_endereco_cep, importador_representante_nome, importador_representante_cpf, importador_telefone, importador_endereco_completo, data_processamento, data_registro, urf_despacho_codigo, urf_despacho_nome, modalidade_codigo, modalidade_nome, situacao_entrega, total_adicoes, incoterm_identificado, taxa_cambio, informacao_complementar, valor_total_fob_usd, valor_total_fob_brl, valor_total_frete_usd, valor_total_frete_brl, valor_aduaneiro_total_brl, *ncms, xml_hash, xml_content, processing_state, icms_configured, extra_expenses_configured, pricing_configured, pricing_timestamp, [importador_cnpj+data_processamento]',
+            
+            adicoes: '++id, di_id, numero_adicao, ncm, descricao_ncm, peso_liquido, condicao_venda_incoterm, moeda_negociacao_codigo, moeda_negociacao_nome, valor_moeda_negociacao, valor_reais, frete_valor_reais, seguro_valor_reais, taxa_cambio, metodo_valoracao_codigo, metodo_valoracao_nome, codigo_naladi_sh, codigo_naladi_ncca, quantidade_estatistica, unidade_estatistica, aplicacao_mercadoria, condicao_mercadoria, condicao_venda_local, ii_aliquota_ad_valorem, ii_valor_devido, ii_valor_recolher, ii_base_calculo, ipi_aliquota_ad_valorem, ipi_valor_devido, ipi_valor_recolher, pis_aliquota_ad_valorem, pis_valor_devido, pis_valor_recolher, cofins_aliquota_ad_valorem, cofins_valor_devido, cofins_valor_recolher, cide_valor_devido, cide_valor_recolher, pis_cofins_base_calculo, icms_aliquota, fornecedor_nome, fornecedor_logradouro, fornecedor_numero, fornecedor_complemento, fornecedor_cidade, fornecedor_estado, fabricante_nome, fabricante_logradouro, fabricante_numero, fabricante_cidade, fabricante_estado, processing_state, custo_basico_federal, [di_id+numero_adicao]',
+            
+            produtos: '++id, adicao_id, numero_sequencial_item, descricao_mercadoria, ncm, quantidade, unidade_medida, valor_unitario_usd, valor_unitario_brl, valor_total_usd, valor_total_brl, taxa_cambio, processing_state, custo_produto_federal, is_virtual, margem_configurada, preco_venda_sugerido, custo_unitario_final, categoria_produto, [adicao_id+numero_sequencial_item]',
+            
+            despesas_aduaneiras: '++id, di_id, tipo, valor, codigo_receita, processing_state, origem, [di_id+tipo]',
+            
+            dados_carga: '++id, di_id, peso_bruto, peso_liquido, pais_procedencia_codigo, pais_procedencia_nome, urf_entrada_codigo, urf_entrada_nome, data_chegada, via_transporte_codigo, via_transporte_nome, nome_veiculo, nome_transportador',
+            
+            // Tabelas de apoio existentes
+            incentivos_entrada: '++id, di_id, estado, tipo_beneficio, percentual_reducao, economia_calculada, [di_id+estado]',
+            incentivos_saida: '++id, di_id, estado, operacao, credito_aplicado, contrapartidas, [di_id+estado+operacao]',
+            elegibilidade_ncm: '++id, ncm, estado, incentivo_codigo, elegivel, motivo_rejeicao, [ncm+estado+incentivo_codigo]',
+            metricas_dashboard: '++id, periodo, tipo_metrica, valor, breakdown_estados, [periodo+tipo_metrica]',
+            cenarios_precificacao: '++id, di_id, nome_cenario, configuracao, resultados_comparativos, [di_id+nome_cenario]',
+            historico_operacoes: '++id, timestamp, operacao, modulo, detalhes, resultado',
+            snapshots: '++id, di_id, nome_customizado, timestamp, dados_completos',
+            configuracoes_usuario: 'chave, valor, timestamp, validado',
+            
+            // Tabelas de precificação existentes (v4)
+            pricing_configurations: '++id, di_id, regime_tributario, custo_base, custo_desembolso, custo_contabil, base_formacao_preco, total_creditos, creditos_pis, creditos_cofins, creditos_ipi, creditos_icms, margem_configurada, markup_configurado, estado_destino, tipo_operacao, incentivo_aplicado, incentivo_simulacao, incentivo_economia, margens_padrao, estados_preferenciais, timestamp, [di_id+regime_tributario]',
+            
+            historico_precos: '++id, produto_id, di_id, preco_calculado, margem_aplicada, custo_base_momento, regime_tributario, incentivos_ativos, timestamp, usuario, [produto_id+timestamp]',
+            
+            margens_categoria: '++id, categoria, margem_padrao, markup_padrao, margem_minima, margem_maxima, ultima_atualizacao, [categoria]',
+            
+            simulacoes_pricing: '++id, di_id, nome_simulacao, parametros_simulacao, resultado_simulacao, comparacao_original, timestamp, [di_id+nome_simulacao]',
+            
+            // NOVAS TABELAS PIPELINE v5
+            costing_results: '++id, di_id, numero_di, regime_tributario, custos_4_tipos, detalhamento_completo, total_creditos, economia_creditos, percentual_economia, ready_for_pricing, timestamp, versao_calculo, [di_id+regime_tributario]',
+            
+            pricing_results: '++id, di_id, costing_result_id, cenarios_precos, recomendacoes, analise_comparativa, melhor_cenario, economia_maxima, estados_analisados, timestamp, [di_id+timestamp]',
+            
+            pipeline_metrics: '++id, di_id, etapa, tempo_processamento, status, resultado_resumo, timestamp, [di_id+etapa]'
+        });
 
-        console.log('✅ Schema v4 com precificação inicializado');
+        console.log('✅ Schema v5 com pipeline completo inicializado');
     }
 
     /**
@@ -1347,6 +1387,631 @@ class IndexedDBManager {
         }
         
         console.log('✅ Banco de dados v4 limpo completamente');
+    }
+
+    // ========================================
+    // MÉTODOS ESPECÍFICOS PARA 4 TIPOS DE CUSTOS - FASE 2
+    // ========================================
+
+    /**
+     * Salva resultado completo do cálculo dos 4 tipos de custos
+     * @param {Object} resultadoPricing - Resultado do calculatePricing()
+     * @returns {Promise<number>} ID da configuração salva
+     */
+    async savePricingResult(resultadoPricing) {
+        if (!resultadoPricing) {
+            throw new Error('Resultado de precificação obrigatório para salvar');
+        }
+
+        // Validações NO FALLBACKS obrigatórias
+        if (!resultadoPricing.di_id) {
+            throw new Error('di_id obrigatório no resultado de precificação');
+        }
+
+        if (!resultadoPricing.regime_tributario) {
+            throw new Error('regime_tributario obrigatório no resultado de precificação');
+        }
+
+        if (typeof resultadoPricing.custo_base !== 'number') {
+            throw new Error('custo_base deve ser numérico no resultado de precificação');
+        }
+
+        if (typeof resultadoPricing.custo_desembolso !== 'number') {
+            throw new Error('custo_desembolso deve ser numérico no resultado de precificação');
+        }
+
+        if (typeof resultadoPricing.custo_contabil !== 'number') {
+            throw new Error('custo_contabil deve ser numérico no resultado de precificação');
+        }
+
+        if (typeof resultadoPricing.base_formacao_preco !== 'number') {
+            throw new Error('base_formacao_preco deve ser numérico no resultado de precificação');
+        }
+
+        try {
+            // Estruturar dados para salvar conforme schema v4
+            const pricingConfig = {
+                di_id: resultadoPricing.di_id,
+                regime_tributario: resultadoPricing.regime_tributario,
+                
+                // 4 TIPOS DE CUSTOS
+                custo_base: resultadoPricing.custo_base,
+                custo_desembolso: resultadoPricing.custo_desembolso,
+                custo_contabil: resultadoPricing.custo_contabil,
+                base_formacao_preco: resultadoPricing.base_formacao_preco,
+                
+                // CRÉDITOS DETALHADOS
+                total_creditos: resultadoPricing.total_creditos,
+                creditos_pis: resultadoPricing.detalhamento_completo.custoDesembolso.detalhamento_creditos.detalhamento.creditos_pis || 0,
+                creditos_cofins: resultadoPricing.detalhamento_completo.custoDesembolso.detalhamento_creditos.detalhamento.creditos_cofins || 0,
+                creditos_ipi: resultadoPricing.detalhamento_completo.custoDesembolso.detalhamento_creditos.detalhamento.creditos_ipi || 0,
+                creditos_icms: resultadoPricing.detalhamento_completo.custoDesembolso.detalhamento_creditos.detalhamento.creditos_icms || 0,
+                
+                // DADOS ADICIONAIS
+                margem_configurada: 0, // Será preenchido pela interface
+                markup_configurado: 0, // Será preenchido pela interface
+                estado_destino: null, // Será preenchido pela interface
+                tipo_operacao: 'importacao',
+                
+                // INCENTIVOS (se aplicável)
+                incentivo_aplicado: false,
+                incentivo_simulacao: null,
+                incentivo_economia: 0,
+                
+                // CONFIGURAÇÕES
+                margens_padrao: JSON.stringify({}),
+                estados_preferenciais: JSON.stringify([]),
+                
+                timestamp: new Date().toISOString()
+            };
+
+            // Verificar se já existe configuração para esta DI e regime
+            const existingConfig = await this.db.pricing_configurations
+                .where('[di_id+regime_tributario]')
+                .equals([resultadoPricing.di_id, resultadoPricing.regime_tributario])
+                .first();
+
+            let configId;
+            
+            if (existingConfig) {
+                // Atualizar configuração existente
+                configId = existingConfig.id;
+                await this.db.pricing_configurations.update(configId, {
+                    ...pricingConfig,
+                    id: configId // Manter o ID existente
+                });
+                console.log(`📊 Configuração de precificação atualizada: ID ${configId}`);
+            } else {
+                // Criar nova configuração
+                configId = await this.db.pricing_configurations.add(pricingConfig);
+                console.log(`📊 Nova configuração de precificação criada: ID ${configId}`);
+            }
+
+            // Atualizar status na tabela de declarações
+            await this.updateDeclarationPricingStatus(resultadoPricing.di_id, true);
+
+            return configId;
+
+        } catch (error) {
+            console.error('❌ Erro ao salvar resultado de precificação:', error);
+            throw new Error(`Falha ao salvar resultado de precificação: ${error.message}`);
+        }
+    }
+
+    /**
+     * Atualiza status de precificação na tabela de declarações
+     * @param {number} diId - ID da declaração
+     * @param {boolean} configured - Se precificação foi configurada
+     * @returns {Promise<void>}
+     */
+    async updateDeclarationPricingStatus(diId, configured) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para atualizar status de precificação');
+        }
+
+        const updateData = {
+            pricing_configured: configured,
+            pricing_timestamp: configured ? new Date().toISOString() : null,
+            processing_state: configured ? 'PRICING_CONFIGURED' : 'DI_COMPLETE_FROM_XML'
+        };
+
+        await this.db.declaracoes.update(diId, updateData);
+        console.log(`📊 Status de precificação atualizado para DI ${diId}: ${configured ? 'CONFIGURADO' : 'REMOVIDO'}`);
+    }
+
+    /**
+     * Recupera configuração de precificação completa por DI e regime
+     * @param {number} diId - ID da declaração
+     * @param {string} regimeTributario - Regime tributário
+     * @returns {Promise<Object|null>} Configuração encontrada ou null
+     */
+    async getPricingConfigurationByRegime(diId, regimeTributario) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para buscar configuração');
+        }
+
+        if (!regimeTributario) {
+            throw new Error('Regime tributário obrigatório para buscar configuração');
+        }
+
+        try {
+            const config = await this.db.pricing_configurations
+                .where('[di_id+regime_tributario]')
+                .equals([diId, regimeTributario])
+                .first();
+
+            if (config) {
+                // Parse de dados JSON
+                config.margens_padrao = JSON.parse(config.margens_padrao || '{}');
+                config.estados_preferenciais = JSON.parse(config.estados_preferenciais || '[]');
+            }
+
+            return config;
+
+        } catch (error) {
+            console.error('❌ Erro ao recuperar configuração de precificação:', error);
+            throw new Error(`Falha ao recuperar configuração: ${error.message}`);
+        }
+    }
+
+    /**
+     * Lista todas as configurações de precificação de uma DI
+     * @param {number} diId - ID da declaração
+     * @returns {Promise<Array>} Array de configurações
+     */
+    async getAllPricingConfigurationsByDI(diId) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para listar configurações');
+        }
+
+        try {
+            const configs = await this.db.pricing_configurations
+                .where('di_id')
+                .equals(diId)
+                .toArray();
+
+            // Parse de dados JSON em cada configuração
+            configs.forEach(config => {
+                config.margens_padrao = JSON.parse(config.margens_padrao || '{}');
+                config.estados_preferenciais = JSON.parse(config.estados_preferenciais || '[]');
+            });
+
+            return configs;
+
+        } catch (error) {
+            console.error('❌ Erro ao listar configurações de precificação:', error);
+            throw new Error(`Falha ao listar configurações: ${error.message}`);
+        }
+    }
+
+    /**
+     * Salva parâmetros gerenciais configurados pelo usuário
+     * @param {number} diId - ID da declaração
+     * @param {string} regimeTributario - Regime tributário
+     * @param {Object} parametrosGerenciais - Parâmetros do usuário
+     * @returns {Promise<void>}
+     */
+    async saveParametrosGerenciais(diId, regimeTributario, parametrosGerenciais) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para salvar parâmetros gerenciais');
+        }
+
+        if (!regimeTributario) {
+            throw new Error('Regime tributário obrigatório para salvar parâmetros gerenciais');
+        }
+
+        if (!parametrosGerenciais) {
+            throw new Error('Parâmetros gerenciais obrigatórios para salvar');
+        }
+
+        try {
+            // Buscar configuração existente
+            const existingConfig = await this.db.pricing_configurations
+                .where('[di_id+regime_tributario]')
+                .equals([diId, regimeTributario])
+                .first();
+
+            if (!existingConfig) {
+                throw new Error('Configuração de precificação não encontrada - execute o cálculo primeiro');
+            }
+
+            // Atualizar apenas os parâmetros gerenciais
+            const updateData = {
+                margens_padrao: JSON.stringify({
+                    encargos_financeiros_percentual: parametrosGerenciais.encargos_financeiros_percentual,
+                    custos_indiretos_percentual: parametrosGerenciais.custos_indiretos_percentual,
+                    margem_operacional_percentual: parametrosGerenciais.margem_operacional_percentual,
+                    tributos_recuperaveis_outros: parametrosGerenciais.tributos_recuperaveis_outros
+                }),
+                timestamp: new Date().toISOString()
+            };
+
+            await this.db.pricing_configurations.update(existingConfig.id, updateData);
+            console.log(`📊 Parâmetros gerenciais salvos para DI ${diId} - Regime ${regimeTributario}`);
+
+        } catch (error) {
+            console.error('❌ Erro ao salvar parâmetros gerenciais:', error);
+            throw new Error(`Falha ao salvar parâmetros gerenciais: ${error.message}`);
+        }
+    }
+
+    /**
+     * Recupera parâmetros gerenciais configurados
+     * @param {number} diId - ID da declaração
+     * @param {string} regimeTributario - Regime tributário
+     * @returns {Promise<Object|null>} Parâmetros encontrados ou null
+     */
+    async getParametrosGerenciais(diId, regimeTributario) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para buscar parâmetros gerenciais');
+        }
+
+        if (!regimeTributario) {
+            throw new Error('Regime tributário obrigatório para buscar parâmetros gerenciais');
+        }
+
+        try {
+            const config = await this.db.pricing_configurations
+                .where('[di_id+regime_tributario]')
+                .equals([diId, regimeTributario])
+                .first();
+
+            if (!config || !config.margens_padrao) {
+                return null;
+            }
+
+            const margensPadrao = JSON.parse(config.margens_padrao);
+            
+            // Validar se contém os campos esperados
+            const camposEsperados = [
+                'encargos_financeiros_percentual',
+                'custos_indiretos_percentual', 
+                'margem_operacional_percentual',
+                'tributos_recuperaveis_outros'
+            ];
+
+            const hasAllFields = camposEsperados.every(campo => 
+                margensPadrao.hasOwnProperty(campo)
+            );
+
+            return hasAllFields ? margensPadrao : null;
+
+        } catch (error) {
+            console.error('❌ Erro ao recuperar parâmetros gerenciais:', error);
+            throw new Error(`Falha ao recuperar parâmetros gerenciais: ${error.message}`);
+        }
+    }
+
+    /**
+     * Remove configuração de precificação
+     * @param {number} diId - ID da declaração
+     * @param {string} regimeTributario - Regime tributário (opcional - remove todos se não especificado)
+     * @returns {Promise<number>} Número de registros removidos
+     */
+    async removePricingConfiguration(diId, regimeTributario = null) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para remover configuração');
+        }
+
+        try {
+            let deleted = 0;
+
+            if (regimeTributario) {
+                // Remover configuração específica do regime
+                deleted = await this.db.pricing_configurations
+                    .where('[di_id+regime_tributario]')
+                    .equals([diId, regimeTributario])
+                    .delete();
+            } else {
+                // Remover todas as configurações da DI
+                deleted = await this.db.pricing_configurations
+                    .where('di_id')
+                    .equals(diId)
+                    .delete();
+            }
+
+            // Se removeu todas as configurações, atualizar status da DI
+            if (!regimeTributario || deleted > 0) {
+                const remainingConfigs = await this.db.pricing_configurations
+                    .where('di_id')
+                    .equals(diId)
+                    .count();
+
+                if (remainingConfigs === 0) {
+                    await this.updateDeclarationPricingStatus(diId, false);
+                }
+            }
+
+            console.log(`📊 ${deleted} configuração(ões) de precificação removida(s) para DI ${diId}`);
+            return deleted;
+
+        } catch (error) {
+            console.error('❌ Erro ao remover configuração de precificação:', error);
+            throw new Error(`Falha ao remover configuração: ${error.message}`);
+        }
+    }
+
+    // ========================================
+    // MÉTODOS PIPELINE COMPLETO - v5
+    // ========================================
+
+    /**
+     * Salva resultado de custos para próxima etapa (pricing)
+     * @param {Object} costingResult - Resultado do cálculo de custos
+     */
+    async saveCostingResult(costingResult) {
+        if (!costingResult) {
+            throw new Error('Resultado de custos obrigatório para salvar');
+        }
+
+        if (!costingResult.di_id) {
+            throw new Error('ID da DI obrigatório no resultado de custos');
+        }
+
+        if (!costingResult.regime_tributario) {
+            throw new Error('Regime tributário obrigatório no resultado de custos');
+        }
+
+        if (!costingResult.custos_4_tipos) {
+            throw new Error('Custos dos 4 tipos obrigatórios no resultado');
+        }
+
+        try {
+            // Verificar se já existe resultado para esta DI + regime
+            const existingResult = await this.db.costing_results
+                .where('[di_id+regime_tributario]')
+                .equals([costingResult.di_id, costingResult.regime_tributario])
+                .first();
+
+            let resultId;
+
+            if (existingResult) {
+                // Atualizar resultado existente
+                resultId = existingResult.id;
+                await this.db.costing_results.update(resultId, {
+                    ...costingResult,
+                    id: resultId,
+                    timestamp: new Date().toISOString()
+                });
+                console.log(`✅ Resultado de custos atualizado: ID ${resultId}`);
+            } else {
+                // Criar novo resultado
+                costingResult.timestamp = new Date().toISOString();
+                resultId = await this.db.costing_results.add(costingResult);
+                console.log(`✅ Novo resultado de custos salvo: ID ${resultId}`);
+            }
+
+            return resultId;
+
+        } catch (error) {
+            console.error('❌ Erro ao salvar resultado de custos:', error);
+            throw new Error(`Falha ao salvar custos: ${error.message}`);
+        }
+    }
+
+    /**
+     * Busca resultado de custos por DI
+     * @param {number} diId - ID da DI
+     * @returns {Object|null} Resultado de custos ou null se não encontrado
+     */
+    async getCostingResult(diId) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para buscar resultado de custos');
+        }
+
+        try {
+            const result = await this.db.costing_results
+                .where('di_id')
+                .equals(diId)
+                .last(); // Pegar o mais recente
+
+            return result || null;
+
+        } catch (error) {
+            console.error('❌ Erro ao buscar resultado de custos:', error);
+            throw new Error(`Falha ao buscar custos: ${error.message}`);
+        }
+    }
+
+    /**
+     * Busca resultado de custos por DI e regime específico
+     * @param {number} diId - ID da DI
+     * @param {string} regimeTributario - Regime tributário
+     * @returns {Object|null} Resultado de custos ou null se não encontrado
+     */
+    async getCostingResultByRegime(diId, regimeTributario) {
+        if (!diId || !regimeTributario) {
+            throw new Error('ID da DI e regime tributário obrigatórios');
+        }
+
+        try {
+            const result = await this.db.costing_results
+                .where('[di_id+regime_tributario]')
+                .equals([diId, regimeTributario])
+                .first();
+
+            return result || null;
+
+        } catch (error) {
+            console.error('❌ Erro ao buscar resultado de custos por regime:', error);
+            throw new Error(`Falha ao buscar custos: ${error.message}`);
+        }
+    }
+
+    /**
+     * Salva resultado de precificação multi-cenário
+     * @param {Object} pricingResult - Resultado da formação de preços
+     */
+    async savePricingResult(pricingResult) {
+        if (!pricingResult) {
+            throw new Error('Resultado de precificação obrigatório para salvar');
+        }
+
+        if (!pricingResult.di_id) {
+            throw new Error('ID da DI obrigatório no resultado de precificação');
+        }
+
+        if (!pricingResult.cenarios_precos) {
+            throw new Error('Cenários de preços obrigatórios no resultado');
+        }
+
+        try {
+            pricingResult.timestamp = new Date().toISOString();
+            const resultId = await this.db.pricing_results.add(pricingResult);
+            
+            console.log(`✅ Resultado de precificação salvo: ID ${resultId}`);
+            return resultId;
+
+        } catch (error) {
+            console.error('❌ Erro ao salvar resultado de precificação:', error);
+            throw new Error(`Falha ao salvar preços: ${error.message}`);
+        }
+    }
+
+    /**
+     * Busca resultado de precificação por DI
+     * @param {number} diId - ID da DI
+     * @returns {Object|null} Resultado de precificação ou null se não encontrado
+     */
+    async getPricingResult(diId) {
+        if (!diId) {
+            throw new Error('ID da DI obrigatório para buscar resultado de precificação');
+        }
+
+        try {
+            const result = await this.db.pricing_results
+                .where('di_id')
+                .equals(diId)
+                .last(); // Pegar o mais recente
+
+            return result || null;
+
+        } catch (error) {
+            console.error('❌ Erro ao buscar resultado de precificação:', error);
+            throw new Error(`Falha ao buscar preços: ${error.message}`);
+        }
+    }
+
+    /**
+     * Salva métrica do pipeline para dashboard
+     * @param {Object} metric - Métrica de performance
+     */
+    async savePipelineMetric(metric) {
+        if (!metric) {
+            throw new Error('Métrica obrigatória para salvar');
+        }
+
+        if (!metric.di_id || !metric.etapa) {
+            throw new Error('ID da DI e etapa obrigatórios na métrica');
+        }
+
+        try {
+            metric.timestamp = new Date().toISOString();
+            const metricId = await this.db.pipeline_metrics.add(metric);
+            
+            return metricId;
+
+        } catch (error) {
+            console.error('❌ Erro ao salvar métrica de pipeline:', error);
+            // Não falhar crítico - métricas são opcionais
+            return null;
+        }
+    }
+
+    /**
+     * Busca métricas do pipeline para dashboard
+     * @param {number} diId - ID da DI (opcional)
+     * @returns {Array} Lista de métricas
+     */
+    async getPipelineMetrics(diId = null) {
+        try {
+            if (diId) {
+                return await this.db.pipeline_metrics
+                    .where('di_id')
+                    .equals(diId)
+                    .orderBy('timestamp')
+                    .toArray();
+            } else {
+                return await this.db.pipeline_metrics
+                    .orderBy('timestamp')
+                    .toArray();
+            }
+
+        } catch (error) {
+            console.error('❌ Erro ao buscar métricas de pipeline:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Estatísticas do pipeline para dashboard expandido
+     */
+    async getPipelineStatistics() {
+        try {
+            const stats = {
+                // Contadores básicos
+                total_dis: await this.db.declaracoes.count(),
+                custos_calculados: await this.db.costing_results.count(),
+                precos_calculados: await this.db.pricing_results.count(),
+                
+                // Taxa de conversão entre etapas
+                taxa_di_para_custos: 0,
+                taxa_custos_para_precos: 0,
+                
+                // Regimes mais utilizados
+                regimes_populares: {},
+                
+                // Métricas de tempo médio
+                tempo_medio_custos: 0,
+                tempo_medio_precos: 0
+            };
+
+            // Calcular taxas de conversão
+            if (stats.total_dis > 0) {
+                stats.taxa_di_para_custos = (stats.custos_calculados / stats.total_dis) * 100;
+            }
+            
+            if (stats.custos_calculados > 0) {
+                stats.taxa_custos_para_precos = (stats.precos_calculados / stats.custos_calculados) * 100;
+            }
+
+            // Análise por regime tributário
+            const costingResults = await this.db.costing_results.toArray();
+            const regimeCount = {};
+            
+            costingResults.forEach(result => {
+                const regime = result.regime_tributario;
+                regimeCount[regime] = (regimeCount[regime] || 0) + 1;
+            });
+            
+            stats.regimes_populares = regimeCount;
+
+            // Métricas de tempo médio
+            const metricas = await this.db.pipeline_metrics.toArray();
+            const temposCustos = metricas
+                .filter(m => m.etapa === 'costing_completed')
+                .map(m => m.tempo_processamento)
+                .filter(t => t && t > 0);
+                
+            if (temposCustos.length > 0) {
+                stats.tempo_medio_custos = temposCustos.reduce((a, b) => a + b, 0) / temposCustos.length;
+            }
+
+            return stats;
+
+        } catch (error) {
+            console.error('❌ Erro ao calcular estatísticas do pipeline:', error);
+            return {
+                total_dis: 0,
+                custos_calculados: 0,
+                precos_calculados: 0,
+                taxa_di_para_custos: 0,
+                taxa_custos_para_precos: 0,
+                regimes_populares: {},
+                tempo_medio_custos: 0,
+                tempo_medio_precos: 0
+            };
+        }
     }
 
     /**
