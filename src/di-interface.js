@@ -17,7 +17,7 @@ import { ExportManager } from './core/exporters/ExportManager.js';
 import { MultiAdditionExporter } from './core/exporters/MultiAdditionExporter.js';
 import { ItemCalculator } from './core/calculators/ItemCalculator.js';
 import { DataViewer } from './modules/DataViewer.js';
-import pathResolver from './shared/utils/PathResolver.js';
+import IncentiveManager from './core/incentives/IncentiveManager.js';
 
 // Global instances
 let diProcessor = null;
@@ -1589,16 +1589,10 @@ async function initializeIncentives(estado, ncms = []) {
     
     try {
         // Initialize IncentiveManager if not already initialized
-        if (!incentiveManager && typeof IncentiveManager !== 'undefined') {
+        if (!incentiveManager) {
             incentiveManager = new IncentiveManager();
             await incentiveManager.initializeConfiguration();
             console.log('✅ IncentiveManager inicializado');
-        }
-        
-        if (!incentiveManager) {
-            console.warn('⚠️ Sistema de incentivos não disponível - usando lista básica');
-            populateAllIncentivePrograms();
-            return;
         }
         
         // Get available programs for this state, or all programs if no state
@@ -1823,10 +1817,8 @@ function showIncentivesSection() {
  */
 async function getAllIncentivePrograms() {
     try {
-        const pathResolver = typeof PathResolver !== 'undefined' ? new PathResolver() : null;
-        const beneficiosPath = pathResolver ? 
-            pathResolver.resolveDataPath('beneficios.json') : 
-            '/src/shared/data/beneficios.json';
+        // Usar new URL() para compatibilidade universal
+        const beneficiosPath = new URL('./shared/data/beneficios.json', import.meta.url);
             
         const response = await fetch(beneficiosPath);
         if (!response.ok) {
@@ -2960,7 +2952,7 @@ async function carregarAliquotasICMS() {
     if (aliquotasCache) return aliquotasCache;
     
     try {
-        const response = await fetch(pathResolver.resolveDataPath('aliquotas.json'));
+        const response = await fetch(new URL('./shared/data/aliquotas.json', import.meta.url));
         aliquotasCache = await response.json();
         console.log('✅ Alíquotas ICMS carregadas:', aliquotasCache);
         return aliquotasCache;

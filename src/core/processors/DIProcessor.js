@@ -4,7 +4,6 @@
  */
 
 import { ConfigLoader } from '../../shared/utils/ConfigLoader.js';
-import pathResolver from '../../shared/utils/PathResolver.js';
 
 export class DIProcessor {
     constructor() {
@@ -21,7 +20,7 @@ export class DIProcessor {
     async loadConfigurations() {
         try {
             // Carrega códigos de receita
-            const codigosResponse = await fetch(pathResolver.resolveDataPath('codigos-receita.json'));
+            const codigosResponse = await fetch(new URL('../../shared/data/codigos-receita.json', import.meta.url));
             this.codigosReceita = await codigosResponse.json();
             
             this.configsLoaded = true;
@@ -1365,7 +1364,7 @@ export class DIProcessor {
      */
     async loadMoedasData() {
         if (!this.moedasData) {
-            const response = await fetch('/src/shared/data/moedas-siscomex.json');
+            const response = await fetch(new URL('../../shared/data/moedas-siscomex.json', import.meta.url));
             if (!response.ok) {
                 throw new Error(`Erro ao carregar moedas-siscomex.json: ${response.status}`);
             }

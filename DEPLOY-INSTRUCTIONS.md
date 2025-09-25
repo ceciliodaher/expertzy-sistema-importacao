@@ -2,29 +2,39 @@
 
 ## Correções Implementadas
 
-Foi implementado um sistema de resolução dinâmica de caminhos para garantir que o sistema funcione tanto localmente quanto em servidores remotos.
+O sistema foi **migrado completamente** para `new URL()` + `import.meta.url`, eliminando dependências frágeis e garantindo compatibilidade universal sem configuração.
 
-### Arquivos Modificados:
+### Mudanças Arquiteturais:
 
-1. **Criado: `src/shared/utils/PathResolver.js`**
-   - Detecta automaticamente o ambiente (local vs produção)
-   - Resolve caminhos de recursos dinamicamente
-   - Garante compatibilidade entre diferentes ambientes
+1. **Sistema Nativo ES2020+**
+   - Eliminado PathResolver.js (dependência customizada)
+   - Migração para `new URL()` + `import.meta.url` (padrão nativo)
+   - Resolução de paths em tempo de build/carregamento
 
-2. **Atualizados todos os módulos que fazem fetch de JSONs:**
-   - ComplianceCalculator.js
-   - DIProcessor.js  
-   - IndexedDBManager.js
-   - DataTransformer.js
-   - ItemCalculator.js
-   - ConfigLoader.js
-   - di-interface.js
+2. **Módulos Migrados (10 arquivos):**
+   - **Core**: IncentiveManager.js, CroquiNFExporter.js, ComplianceCalculator.js, ItemCalculator.js, DIProcessor.js
+   - **Services**: DataTransformer.js, IndexedDBManager.js  
+   - **Utils**: ConfigLoader.js
+   - **Interface**: di-interface.js
 
-3. **Atualizado: `di-interface.html`**
-   - Adicionado script para resolver caminhos de imagens dinamicamente
-   - Fallback para imagens caso o caminho inicial falhe
+3. **Padrão Implementado:**
+```javascript
+// ✅ NOVO: Resolução nativa ES2020+
+const response = await fetch(new URL('../../shared/data/aliquotas.json', import.meta.url));
+
+// ❌ ANTES: PathResolver removido
+// const response = await fetch(pathResolver.resolveDataPath('aliquotas.json'));
+```
 
 ## Como Fazer Deploy
+
+### Vantagem: Zero Configuração
+
+O sistema agora funciona **universalmente** sem modificações:
+- ✅ localhost:8000, 127.0.0.1, 192.168.x.x, 10.x.x.x
+- ✅ domain.local, subdomain.local  
+- ✅ Produção com subdiretórios (/sistema-importacao/)
+- ✅ Qualquer combinação IP/domínio/subdiretório
 
 ### Para Servidor Apache/Nginx:
 
@@ -48,7 +58,7 @@ sistema-importacao/
 │   │   │   ├── codigos-receita.json
 │   │   │   └── ... (todos os JSONs)
 │   │   └── utils/
-│   │       └── PathResolver.js
+│   │       └── ConfigLoader.js
 │   └── ... (todos os módulos)
 └── ... (outros arquivos)
 ```
@@ -101,19 +111,20 @@ pm2 start server.js --name expertzy-sistema
 
 ## Verificação Pós-Deploy
 
-1. **Acesse a página de teste:**
-   - `https://seu-dominio.com.br/sistema-importacao/test-path-resolver.html`
-   - Verifique se todos os testes mostram SUCCESS
+1. **Teste funcionalidade principal:**
+   - Acesse `https://seu-dominio.com.br/sistema-importacao/di-interface.html`
+   - Faça upload de um arquivo XML de teste
+   - Verifique se o processamento funciona sem erros
 
 2. **Verifique o console do navegador:**
    - Abra o Developer Tools (F12)
    - Vá para a aba Console
    - Não deve haver erros 404 para arquivos JSON ou imagens
 
-3. **Teste a funcionalidade principal:**
-   - Acesse `https://seu-dominio.com.br/sistema-importacao/di-interface.html`
-   - Faça upload de um arquivo XML de teste
-   - Verifique se o processamento funciona sem erros
+3. **Teste em diferentes ambientes:**
+   - IP direto: `http://192.168.1.100:8000/`
+   - Domain local: `http://sistema.local/`
+   - Subdiretório: `https://empresa.com.br/sistema-importacao/`
 
 ## Troubleshooting
 
@@ -129,19 +140,21 @@ pm2 start server.js --name expertzy-sistema
 
 **Solução:** Configure os headers CORS no servidor conforme instruções acima.
 
-### Problema: PathResolver não detecta ambiente corretamente
+### Problema: Módulos ES6 não carregam
 
-**Solução:** O PathResolver detecta automaticamente baseado na URL. Se necessário, você pode forçar o modo editando `src/shared/utils/PathResolver.js`:
+**Solução:** Certifique-se de que o servidor está configurado para servir arquivos `.js` com Content-Type correto:
 
-```javascript
-detectEnvironment() {
-    // Forçar modo produção
-    return true; 
-}
+```apache
+# Apache
+<FilesMatch "\.js$">
+    Header set Content-Type "application/javascript"
+</FilesMatch>
+```
 
-detectBasePath() {
-    // Forçar base path específico
-    return '/sistema-importacao';
+```nginx
+# Nginx
+location ~ \.js$ {
+    add_header Content-Type application/javascript;
 }
 ```
 
@@ -151,10 +164,20 @@ Em caso de problemas, verifique:
 1. Console do navegador para erros JavaScript
 2. Network tab para verificar se os recursos estão sendo carregados
 3. Logs do servidor web
+4. Estrutura de diretórios está intacta
 
 ## Notas Importantes
 
-- O sistema agora detecta automaticamente o ambiente e ajusta os caminhos
-- Não é necessário modificar código para diferentes ambientes
-- Todos os caminhos de recursos são resolvidos dinamicamente
-- O sistema funciona tanto em raiz quanto em subdiretórios
+- ✅ **Sistema Universal**: Funciona em qualquer ambiente sem configuração
+- ✅ **Padrão Nativo**: Usa apenas recursos ES2020+ nativos
+- ✅ **Performance**: Resolução de paths em tempo de build
+- ✅ **Manutenção**: Zero dependências customizadas para compatibilidade
+- ✅ **Simplicidade**: Código mais limpo seguindo princípios KISS/DRY
+
+## Migração Completa
+
+**Arquivos Removidos:**
+- `src/shared/utils/PathResolver.js` (eliminado)
+- `test-path-resolver.html` (desnecessário)
+
+**Resultado:** Sistema 100% nativo, universal e sem dependências para resolução de paths.

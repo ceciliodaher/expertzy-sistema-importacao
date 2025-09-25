@@ -13,6 +13,7 @@
  * @description Gera croqui de NF em Excel e PDF seguindo padrão brasileiro
  */
 
+
 class CroquiNFExporter {
     constructor(diData, calculosData = null, incentiveManager = null) {
         // NO FALLBACKS - validar dados obrigatórios
@@ -50,12 +51,7 @@ class CroquiNFExporter {
      */
     async loadIncentiveConfig() {
         try {
-            // Usar PathResolver se disponível
-            const pathResolver = typeof PathResolver !== 'undefined' ? new PathResolver() : null;
-            const configPath = pathResolver ? 
-                pathResolver.resolveDataPath('beneficios.json') : 
-                '/src/shared/data/beneficios.json';
-                
+            const configPath = new URL('../../shared/data/beneficios.json', import.meta.url);
             const response = await fetch(configPath);
             if (!response.ok) {
                 throw new Error(`Erro ao carregar beneficios.json: ${response.status}`);

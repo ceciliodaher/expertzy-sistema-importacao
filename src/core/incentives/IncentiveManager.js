@@ -16,15 +16,15 @@
  * @description Gerencia aplicação de incentivos fiscais e prepara para reforma tributária
  */
 
-class IncentiveManager {
+// ES6 Module Import
+// PathResolver removido - usando new URL() nativo
+
+export class IncentiveManager {
     constructor() {
         this.beneficios = null;
         this.reformaConfig = null;
         this.ncmsVedados = null;
         this.loadedAt = null;
-        
-        // Inicializar PathResolver se disponível (compatibilidade universal)
-        this.pathResolver = typeof PathResolver !== 'undefined' ? new PathResolver() : null;
         
         console.log('🎯 IncentiveManager v1.0: Inicializando sistema de incentivos fiscais');
         
@@ -56,10 +56,7 @@ class IncentiveManager {
      */
     async loadBeneficios() {
         try {
-            // Usar PathResolver se disponível, senão usar path direto
-            const path = this.pathResolver ? 
-                this.pathResolver.resolveDataPath('beneficios.json') : 
-                '/src/shared/data/beneficios.json';
+            const path = new URL('../../shared/data/beneficios.json', import.meta.url);
                 
             const response = await fetch(path);
             if (!response.ok) {
@@ -82,10 +79,7 @@ class IncentiveManager {
      */
     async loadReformaConfig() {
         try {
-            // Usar PathResolver se disponível, senão usar path direto
-            const path = this.pathResolver ? 
-                this.pathResolver.resolveDataPath('reforma-tributaria.json') : 
-                '/src/shared/data/reforma-tributaria.json';
+            const path = new URL('../../shared/data/reforma-tributaria.json', import.meta.url);
                 
             const response = await fetch(path);
             if (!response.ok) {
@@ -108,10 +102,7 @@ class IncentiveManager {
      */
     async loadNCMsVedados() {
         try {
-            // Usar PathResolver se disponível, senão usar path direto
-            const path = this.pathResolver ? 
-                this.pathResolver.resolveDataPath('ncms-vedados.json') : 
-                '/src/shared/data/ncms-vedados.json';
+            const path = new URL('../../shared/data/ncms-vedados.json', import.meta.url);
                 
             const response = await fetch(path);
             if (!response.ok) {
@@ -838,9 +829,5 @@ class IncentiveManager {
     }
 }
 
-// Exportar para uso em outros módulos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = IncentiveManager;
-} else if (typeof window !== 'undefined') {
-    window.IncentiveManager = IncentiveManager;
-}
+// ES6 Module Export
+export default IncentiveManager;

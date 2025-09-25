@@ -5,7 +5,6 @@
  * Maintains KISS principle - don't over-engineer what works
  */
 
-import pathResolver from './PathResolver.js';
 
 class ConfigLoader {
     constructor() {
@@ -26,12 +25,12 @@ class ConfigLoader {
 
             // Load existing working configurations + estados e moedas
             const configs = await Promise.all([
-                fetch(pathResolver.resolveDataPath('aliquotas.json')).then(r => r.json()),
-                fetch(pathResolver.resolveDataPath('beneficios.json')).then(r => r.json()),
-                fetch(pathResolver.resolveDataPath('config.json')).then(r => r.json()),
-                fetch(pathResolver.resolveDataPath('import-fees.json')).then(r => r.json()),
-                fetch(pathResolver.resolveDataPath('estados-brasil.json')).then(r => r.json()),
-                fetch(pathResolver.resolveDataPath('moedas-siscomex.json')).then(r => r.json())
+                fetch(new URL('../data/aliquotas.json', import.meta.url)).then(r => r.json()),
+                fetch(new URL('../data/beneficios.json', import.meta.url)).then(r => r.json()),
+                fetch(new URL('../data/config.json', import.meta.url)).then(r => r.json()),
+                fetch(new URL('../data/import-fees.json', import.meta.url)).then(r => r.json()),
+                fetch(new URL('../data/estados-brasil.json', import.meta.url)).then(r => r.json()),
+                fetch(new URL('../data/moedas-siscomex.json', import.meta.url)).then(r => r.json())
             ]);
 
             this.cache = {

@@ -11,7 +11,6 @@
  */
 
 import ProductMemoryManager from '../memory/ProductMemoryManager.js';
-import pathResolver from '../../shared/utils/PathResolver.js';
 
 export class ComplianceCalculator {
     constructor() {
@@ -31,11 +30,11 @@ export class ComplianceCalculator {
     async loadConfigurations() {
         try {
             // Carrega alíquotas ICMS
-            const response = await fetch(pathResolver.resolveDataPath('aliquotas.json'));
+            const response = await fetch(new URL('../../shared/data/aliquotas.json', import.meta.url));
             this.aliquotasData = await response.json();
             
             // Carrega códigos de receita
-            const codigosResponse = await fetch(pathResolver.resolveDataPath('codigos-receita.json'));
+            const codigosResponse = await fetch(new URL('../../shared/data/codigos-receita.json', import.meta.url));
             this.codigosReceita = await codigosResponse.json();
             
             // Estruturar configurações para acesso unificado
@@ -526,9 +525,9 @@ export class ComplianceCalculator {
             
             // Carregar arquivos de configuração existentes (como no sistema legado)
             const [aliquotasResponse, beneficiosResponse, configResponse] = await Promise.all([
-                fetch(pathResolver.resolveDataPath('aliquotas.json')),
-                fetch(pathResolver.resolveDataPath('beneficios.json')),
-                fetch(pathResolver.resolveDataPath('config.json'))
+                fetch(new URL('../../shared/data/aliquotas.json', import.meta.url)),
+                fetch(new URL('../../shared/data/beneficios.json', import.meta.url)),
+                fetch(new URL('../../shared/data/config.json', import.meta.url))
             ]);
 
             if (!aliquotasResponse.ok || !beneficiosResponse.ok || !configResponse.ok) {

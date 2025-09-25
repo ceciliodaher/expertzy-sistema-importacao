@@ -1115,30 +1115,9 @@
     <!-- Dexie.js for IndexedDB -->
     <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
     
-    <!-- PathResolver and Core Classes -->
-    <script type="module">
-        // Import PathResolver to fix image paths dynamically
-        import pathResolver from './src/shared/utils/PathResolver.js';
-        
-        // Fix all images on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const images = document.querySelectorAll('img[src*="images/"]');
-            images.forEach(img => {
-                const originalSrc = img.src;
-                const filename = originalSrc.split('/').pop();
-                const resolvedPath = pathResolver.resolveImagePath(filename);
-                if (resolvedPath !== originalSrc) {
-                    img.src = resolvedPath;
-                }
-            });
-        });
-        
-        // Make PathResolver available globally
-        window.PathResolver = (await import('./src/shared/utils/PathResolver.js')).default;
-    </script>
+    <!-- Sistema migrado para new URL() - sem necessidade de PathResolver -->
     
-    <!-- IncentiveManager - Sistema completo de incentivos fiscais -->
-    <script src="src/core/incentives/IncentiveManager.js"></script>
+    <!-- IncentiveManager now loaded as ES6 module in di-interface.js -->
     
     <!-- Main ES6 Module -->
     <script type="module" src="src/di-interface.js"></script>

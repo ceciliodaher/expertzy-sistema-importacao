@@ -8,7 +8,6 @@
  * - NO HARDCODED DATA: Todos os códigos e configurações em arquivos externos
  */
 
-import pathResolver from '../../shared/utils/PathResolver.js';
 
 // Dexie is loaded via CDN in HTML - access it globally
 const Dexie = window.Dexie;
@@ -37,7 +36,7 @@ class IndexedDBManager {
     async initialize() {
         try {
             // Carregar códigos de receita do arquivo JSON
-            const response = await fetch(pathResolver.resolveDataPath('codigos-receita.json'));
+            const response = await fetch(new URL('../../shared/data/codigos-receita.json', import.meta.url));
             if (!response.ok) {
                 throw new Error(`Erro ao carregar códigos de receita: ${response.status}`);
             }
