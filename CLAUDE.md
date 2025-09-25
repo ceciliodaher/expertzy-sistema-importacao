@@ -10,7 +10,8 @@ Sistema web modular para processamento automatizado de Declarações de Importa�
 **IMPLEMENTAÇÃO SISTEMA PROGRESSIVO**: 23/09/2025  
 **STATUS ATUAL**: Sistema progressivo 98% funcional desde XML  
 **MIGRAÇÃO new URL() COMPLETA**: 24/09/2025 - Sistema universal sem PathResolver  
-**PRÓXIMA FASE**: Sistema de backup completo (opcional)
+**MÓDULO PRECIFICAÇÃO EM DESENVOLVIMENTO**: 25/09/2025 - Integração com cálculo de custos e formação de preços  
+**PRÓXIMA FASE**: Módulo de precificação completo com 4 tipos de custos
 
 ## 🏛️ NOMENCLATURA OFICIAL - AUTORIDADE ÚNICA
 
@@ -38,6 +39,19 @@ Sistema web modular para processamento automatizado de Declarações de Importa�
 | **Totais**         | `totais`              | ~~totals~~                    | DIProcessor.js:864  | ✅ CORRETO   |
 | **Importador**     | `importador`          | ~~importer~~                  | DIProcessor.js:168  | ✅ CORRETO   |
 | **Carga**          | `carga`               | ~~cargo~~                     | DIProcessor.js:179  | ✅ CORRETO   |
+
+### Nomenclatura Módulo de Precificação (25/09/2025)
+
+| Entidade              | Nome OFICIAL             | Nome PROIBIDO             | Módulo Criador        | Status       |
+| --------------------- | ------------------------ | ------------------------- | --------------------- | ------------ |
+| **Regime Tributário** | `regime_tributario`      | ~~tax_regime~~           | PricingEngine.js      | 🆕 A CRIAR   |
+| **Custo Base**        | `custo_base`            | ~~base_cost~~            | PricingEngine.js      | 🆕 A CRIAR   |
+| **Custo Desembolso**  | `custo_desembolso`      | ~~disbursement_cost~~    | PricingEngine.js      | 🆕 A CRIAR   |
+| **Custo Contábil**    | `custo_contabil`        | ~~accounting_cost~~      | PricingEngine.js      | 🆕 A CRIAR   |
+| **Base Preço**        | `base_formacao_preco`   | ~~price_base~~           | PricingEngine.js      | 🆕 A CRIAR   |
+| **Margem**            | `margem_configurada`    | ~~margin~~, ~~markup~~   | PricingEngine.js      | 🆕 A CRIAR   |
+| **Preço Sugerido**    | `preco_venda_sugerido`  | ~~suggested_price~~      | PricingEngine.js      | 🆕 A CRIAR   |
+| **Config Pricing**    | `pricing_configurations`| ~~pricing_config~~       | IndexedDBManager.js   | 🆕 A CRIAR   |
 
 ### Violations Corrigidas (23/09/2025)
 
@@ -689,13 +703,107 @@ const cenarios = incentiveManager.projectReformScenarios(2025);
     extra_expenses_configured: false
 }
 
+// Após configuração de precificação (novo)
+{
+    processing_state: 'PRICING_CONFIGURED',
+    icms_configured: true,
+    pricing_configured: true,
+    extra_expenses_configured: false
+}
+
 // Sistema completo (opcional)
 {
     processing_state: 'FINAL_COMPLETE',
     icms_configured: true,
+    pricing_configured: true,
     extra_expenses_configured: true
 }
 ```
+
+## 💰 MÓDULO DE PRECIFICAÇÃO (Em Desenvolvimento - 25/09/2025)
+
+### Sistema de Cálculo de Custos e Formação de Preços
+
+Módulo integrado para cálculo preciso de custos de importação com suporte a múltiplos regimes tributários e formação estratégica de preços de venda.
+
+#### Tipos de Custos Calculados
+
+**1. Custo Base**
+```javascript
+custo_base = valor_aduaneiro + II + IPI + PIS + COFINS + ICMS + despesas_aduaneiras
+// Custo total de importação sem considerar créditos
+```
+
+**2. Custo de Desembolso**
+```javascript
+custo_desembolso = custo_base - creditos_tributarios
+// Créditos variam por regime: Lucro Real, Presumido, Simples Nacional
+```
+
+**3. Custo Contábil**
+```javascript
+custo_contabil = custo_desembolso + encargos_financeiros - tributos_recuperaveis
+// Para controle patrimonial e contabilização
+```
+
+**4. Base para Formação de Preço**
+```javascript
+base_formacao_preco = custo_contabil + custos_indiretos + margem_operacional
+// Base estratégica para precificação de venda
+```
+
+#### Regimes Tributários Suportados
+
+| Regime | PIS/COFINS | IPI | ICMS | Adicional COFINS |
+|:--- |:--- |:--- |:--- |:--- |
+| **Lucro Real** | Crédito integral (11,75%) | Crédito integral | Crédito integral | SEM crédito |
+| **Lucro Presumido** | SEM crédito | Crédito integral | Crédito integral | N/A |
+| **Simples Nacional** | SEM crédito | SEM crédito* | Crédito integral | N/A |
+
+*Exceção: Simples pode destacar IPI para transferir crédito
+
+#### Integração com Sistema Existente
+
+**Pipeline de Precificação:**
+```javascript
+XML Import → DIProcessor → ComplianceCalculator → 
+  PricingAdapter → PricingEngine → CostCalculationEngine → 
+  MarginConfigManager → PricingInterface
+```
+
+**Novos Módulos:**
+- `PricingAdapter.js` - Adaptador entre ComplianceCalculator e PricingEngine
+- `MarginConfigManager.js` - Gestão de margens por categoria
+- `pricing-interface.js` - Interface web de configuração
+- `ScenarioComparator.js` - Comparação de cenários multi-estado
+
+#### Schema IndexedDB v4 (Expansão)
+
+```javascript
+// Novos campos em produtos
+produtos: '... margem_configurada, preco_venda_sugerido, categoria_produto'
+
+// Nova tabela de configurações
+pricing_configurations: '++id, di_id, regime_tributario, margens_padrao, estados_preferenciais, timestamp'
+
+// Tabela de cenários expandida
+cenarios_precificacao: '... custos_calculados, comparativo_regimes, impacto_incentivos'
+```
+
+#### Status de Implementação
+
+- **FASE 1** (Em Progresso): Infraestrutura base e adapter
+- **FASE 2**: Motor de cálculo com 4 tipos de custos
+- **FASE 3**: Interface de usuário e configuração
+- **FASE 4**: Cenários comparativos e simulações
+- **FASE 5**: Relatórios e exportação
+- **FASE 6**: Otimização e polish
+
+#### Documentação de Acompanhamento
+
+- [ACOMPANHAMENTO-Modulo-Precificacao.md](./documentos/ACOMPANHAMENTO-Modulo-Precificacao.md)
+- [PRD-Custos.md](./documentos/PRD-Custos.md)
+- [Manual de Cálculo v2](./documentos/Manual%20Completo%20de%20Cálculo%20de%20Custos%20na%20Importação-v2.md)
 
 ## Comandos de Desenvolvimento
 

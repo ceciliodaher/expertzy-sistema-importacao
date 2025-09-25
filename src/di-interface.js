@@ -1595,13 +1595,14 @@ async function initializeIncentives(estado, ncms = []) {
             console.log('✅ IncentiveManager inicializado');
         }
         
-        // Get available programs for this state, or all programs if no state
+        // ALWAYS load ALL programs for simulation flexibility
+        // Users can select any incentive regardless of company state
+        programas_disponiveis = await getAllIncentivePrograms();
+        console.log(`📋 Carregando TODOS os programas para simulação: ${programas_disponiveis.length}`);
+        
         if (estado) {
-            programas_disponiveis = incentiveManager.getAvailablePrograms(estado);
-            console.log(`📋 Programas disponíveis para ${estado}:`, programas_disponiveis);
-        } else {
-            programas_disponiveis = getAllIncentivePrograms();
-            console.log('📋 Carregando TODOS os programas para simulação:', programas_disponiveis.length);
+            console.log(`💼 Empresa localizada em: ${estado}`);
+            console.log(`🎯 Programas do próprio estado disponíveis: ${programas_disponiveis.filter(p => p.estado === estado).length}`);
         }
         
         // Populate program options
@@ -1731,7 +1732,7 @@ async function onProgramSelectionChange() {
             programa: programCodigo,
             nome: programa.nome,
             tipo: programa.tipo,
-            estado: estado,
+            estado: estadoValidacao,
             elegivel: true
         };
         

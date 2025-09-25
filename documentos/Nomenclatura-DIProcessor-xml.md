@@ -176,10 +176,83 @@ O sistema utiliza conversões específicas para diferentes tipos de dados:
 - **unit_value**: Valores unitários com 7 decimais (÷10000000)
 - **percentage**: Alíquotas em centésimos (÷100)
 
+### **Dados de Precificação (Registro: `diData.precificacao`)** - NOVO (25/09/2025)
+
+| Campo JavaScript        | Módulo Criador      | Tipo       | Descrição                                            |
+|:----------------------- |:------------------- |:---------- |:---------------------------------------------------- |
+| `regime_tributario`     | PricingEngine.js    | string     | Regime tributário (lucro_real/presumido/simples)    |
+| `custo_base`           | PricingEngine.js    | monetary   | Custo base calculado (sem créditos)                 |
+| `custo_desembolso`     | PricingEngine.js    | monetary   | Custo de desembolso (com créditos)                  |
+| `custo_contabil`       | PricingEngine.js    | monetary   | Custo contábil (com encargos)                       |
+| `base_formacao_preco`  | PricingEngine.js    | monetary   | Base para formação de preço                         |
+| `creditos_pis`         | PricingEngine.js    | monetary   | Valor de crédito PIS                                |
+| `creditos_cofins`      | PricingEngine.js    | monetary   | Valor de crédito COFINS                             |
+| `creditos_ipi`         | PricingEngine.js    | monetary   | Valor de crédito IPI                                |
+| `creditos_icms`        | PricingEngine.js    | monetary   | Valor de crédito ICMS                               |
+| `total_creditos`       | PricingEngine.js    | monetary   | Total de créditos tributários                       |
+
+### **Configurações de Precificação (Registro: `diData.precificacao.configuracao`)**
+
+| Campo JavaScript        | Módulo Criador         | Tipo       | Descrição                                       |
+|:----------------------- |:---------------------- |:---------- |:----------------------------------------------- |
+| `margem_configurada`    | MarginConfigManager.js | percentage | Margem percentual configurada                   |
+| `markup_configurado`    | MarginConfigManager.js | percentage | Markup percentual configurado                   |
+| `categoria_produto`     | MarginConfigManager.js | string     | Categoria do produto para margem               |
+| `estado_destino`        | PricingEngine.js       | string     | UF de destino para venda                       |
+| `tipo_operacao`         | PricingEngine.js       | string     | Tipo de operação (venda/transferencia)         |
+
+### **Produtos com Precificação (Registro: `diData.adicoes[i].produtos[j].precificacao`)**
+
+| Campo JavaScript        | Módulo Criador      | Tipo       | Descrição                                    |
+|:----------------------- |:------------------- |:---------- |:--------------------------------------------- |
+| `custo_unitario_final`  | PricingEngine.js    | monetary   | Custo unitário final com impostos           |
+| `margem_aplicada`       | PricingEngine.js    | percentage | Margem aplicada ao produto                  |
+| `preco_venda_sugerido`  | PricingEngine.js    | monetary   | Preço de venda sugerido                     |
+| `preco_venda_minimo`    | PricingEngine.js    | monetary   | Preço mínimo para cobrir custos             |
+| `preco_venda_maximo`    | PricingEngine.js    | monetary   | Preço máximo sugerido                       |
+
+### **IndexedDB - Tabelas de Precificação (Schema v4)** - NOVO
+
+| Tabela                   | Campos Principais                                         | Módulo Criador         | Descrição                        |
+|:------------------------ |:--------------------------------------------------------- |:---------------------- |:-------------------------------- |
+| `pricing_configurations` | `di_id`, `regime_tributario`, `margens_padrao`           | IndexedDBManager.js    | Configurações de precificação    |
+| `cenarios_precificacao`  | `di_id`, `nome_cenario`, `custos_calculados`             | PricingEngine.js       | Cenários de precificação         |
+| `historico_precos`       | `produto_id`, `preco_calculado`, `timestamp`             | PricingEngine.js       | Histórico de preços calculados   |
+
+### **Validações de Nomenclatura para Precificação (NO FALLBACKS)**
+
+```javascript
+// ✅ OBRIGATÓRIO: Validação em todos os módulos de precificação
+if (objeto.tax_regime) {
+    throw new Error('VIOLAÇÃO NOMENCLATURA: Use "regime_tributario" não "tax_regime"');
+}
+
+if (objeto.base_cost !== undefined) {
+    throw new Error('VIOLAÇÃO NOMENCLATURA: Use "custo_base" não "base_cost"');  
+}
+
+if (objeto.suggested_price) {
+    throw new Error('VIOLAÇÃO NOMENCLATURA: Use "preco_venda_sugerido" não "suggested_price"');
+}
+
+// ✅ IMPLEMENTADO: Nomenclatura correta em uso
+if (precificacao.regime_tributario && precificacao.custo_base) {
+    // Processamento correto seguindo PricingEngine
+}
+```
+
+### **Hierarquia de Autoridade para Precificação**
+
+1. **PricingEngine.js**: PRIMARY CREATOR para nomenclatura de custos e preços
+2. **MarginConfigManager.js**: PRIMARY CREATOR para configurações de margem
+3. **PricingAdapter.js**: CONSUMER (converte dados entre sistemas)
+4. **pricing-interface.js**: CONSUMER (usa nomenclatura para UI)
+5. **IndexedDBManager.js**: CONSUMER (implementa schema seguindo PricingEngine)
+
 Esta nomenclatura padronizada permite o processamento consistente de XMLs de DI, mantendo a rastreabilidade entre os campos originais do XML e a estrutura de dados JavaScript resultante.[^1]
 
 ```
 <div style="text-align: center">⁂</div>
 ```
 
-[^1]: DIProcessor.js
+[^1]: DIProcessor.js, IncentiveManager.js, PricingEngine.js

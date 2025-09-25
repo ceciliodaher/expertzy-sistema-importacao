@@ -43,7 +43,7 @@ export class IncentiveManager {
             
             console.log('✅ Configurações carregadas:', {
                 programas: Object.keys(this.beneficios.programas).length,
-                anos_reforma: Object.keys(this.reformaConfig.cronograma).length,
+                anos_reforma: Object.keys(this.reformaConfig.cronograma_tributario).length,
                 ncms_vedados: Object.keys(this.ncmsVedados.vedacoes_por_programa).length
             });
         } catch (error) {
@@ -128,6 +128,10 @@ export class IncentiveManager {
     getAvailablePrograms(estado) {
         if (!estado) {
             throw new Error('Estado do importador obrigatório para listar programas disponíveis');
+        }
+        
+        if (!this.beneficios) {
+            throw new Error('IncentiveManager não foi inicializado - execute initializeConfiguration() primeiro');
         }
         
         if (!this.beneficios || !this.beneficios.programas) {

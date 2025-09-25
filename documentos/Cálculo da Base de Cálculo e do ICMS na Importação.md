@@ -1,5 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" class="logo" width="120"/>
-
 # Cálculo da Base de Cálculo e do ICMS na Importação
 
 **Principais conclusões:**
@@ -16,7 +14,7 @@ $$
 Onde:
 
 - **VDI (Valor Aduaneiro)**
-= valor da mercadoria (FOB) + frete internacional + seguro + despesas aduaneiras pré-desembaraço
+  = valor da mercadoria (FOB) + frete internacional + seguro + despesas aduaneiras pré-desembaraço
 - **II (Imposto de Importação)**
 - **IPI (Imposto sobre Produtos Industrializados)**
 - **PIS/COFINS de importação**
@@ -28,17 +26,16 @@ A divisão por $1 - \text{alíquota ICMS}$ “insere” o próprio ICMS na base,
 
 Suponha importação com os seguintes valores e alíquota de 18%:
 
-
-| Item | Valor (R\$) |
-| :-- | --: |
-| Mercadoria (FOB) | 10.000,00 |
-| Frete Internacional | 2.000,00 |
-| Seguro Internacional | 500,00 |
-| Despesas Aduaneiras | 300,00 |
-| **Valor Aduaneiro (VDI)** | 12.800,00 |
-| II (10% sobre VDI) | 1.280,00 |
-| PIS/COFINS (9,65% sobre VDI) | 1.236,00 |
-| **Somatório antes da inclusão do ICMS** | 15.316,00 |
+| Item                                    | Valor (R\$) |
+|:--------------------------------------- | -----------:|
+| Mercadoria (FOB)                        | 10.000,00   |
+| Frete Internacional                     | 2.000,00    |
+| Seguro Internacional                    | 500,00      |
+| Despesas Aduaneiras                     | 300,00      |
+| **Valor Aduaneiro (VDI)**               | 12.800,00   |
+| II (10% sobre VDI)                      | 1.280,00    |
+| PIS/COFINS (9,65% sobre VDI)            | 1.236,00    |
+| **Somatório antes da inclusão do ICMS** | 15.316,00   |
 
 Cálculo da base com inserção do ICMS:
 
@@ -66,12 +63,10 @@ $$
 - Para importações diretas, a alíquota interna varia de 7% a 18% (cada UF tem sua tabela).
 - Em operações interestaduais, aplica-se 4% para todos os produtos importados (convênio Senadº 13/2012), restando o **DIFAL** (diferença entre alíquota interna e 4%) quando houver substituição tributária[^2].
 
-
 ## 4. Responsabilidade e Momento de Ocorrência
 
 - **Fato gerador:** desembaraço aduaneiro.
 - **Responsável:** importador (pessoa física ou jurídica) no desembaraço[^3].
-
 
 ## 5. Resumo do Procedimento
 
@@ -110,4 +105,3 @@ Este método garante o correto enquadramento tributário das importações, evit
 [^12]: https://atendimento.receita.rs.gov.br/calculo-do-icms-importacao
 
 [^13]: https://internet.sefaz.es.gov.br/informacoes/tributacao/detalharParecer.php?tipo=7\&numero=201502693
-

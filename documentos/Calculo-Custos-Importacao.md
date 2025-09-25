@@ -1,11 +1,6 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
+# Cálculos dos custos de mercadorias importadas
 
-# Apresente como devem ser calculados os custos de mercadorias importadas, desde a nacionalização das mercadorias e de acordo com o regime tributário, real, presumido ou simples. construa uma tabela comparativa bastante detalhada, apresentando os impostos que são creditados por imposto, tipo de regime e os impostos na saída por tipo de regime.
-
-As alíquotas de PIS e COFINS podem ser diferentes das gerais, incluindo o adicional de alíquota. Há casos, também, de mercadorias sujeitas ao sistema monofásico do pis e cofins e ainda mercadorias sujeitas à substituição tributária do icms. é preciso considerar todas essas possibilidades. Na importação, gera crédito de PIS e COFINS, mesmo no caso de mercadorias sujeitas ao regime monofásico. Até mesmo porque na saída irá haver nova incidência, desta vez realmente monofásica.
-Seja didático.
-
-Resumo direto: O cálculo do custo de mercadorias importadas parte do valor aduaneiro (CIF) e soma os tributos do desembaraço (II, IPI, PIS/COFINS‑Importação, ICMS “por dentro” e despesas aduaneiras), e depois desconta os créditos permitidos conforme o regime (Lucro Real, Presumido ou Simples) e a natureza do produto (comum, regime **monofásico** de PIS/COFINS e/ou ICMS‑ST) para chegar ao **custo nacionalizado** efetivo por regime. As saídas são tributadas de modo distinto por regime (alíquotas e cumulatividade), com regras específicas para monofásico de PIS/COFINS e para ICMS‑ST, inclusive quando o importador é o substituto tributário.
+**Resumo direto:** O cálculo do custo de mercadorias importadas parte do valor aduaneiro (CIF) e soma os tributos do desembaraço (II, IPI, PIS/COFINS‑Importação, ICMS “por dentro” e despesas aduaneiras), e depois desconta os créditos permitidos conforme o regime (Lucro Real, Presumido ou Simples) e a natureza do produto (comum, regime **monofásico** de PIS/COFINS e/ou ICMS‑ST) para chegar ao **custo nacionalizado** efetivo por regime. As saídas são tributadas de modo distinto por regime (alíquotas e cumulatividade), com regras específicas para monofásico de PIS/COFINS e para ICMS‑ST, inclusive quando o importador é o substituto tributário.
 
 ## Escopo e premissas
 
@@ -13,106 +8,143 @@ Resumo direto: O cálculo do custo de mercadorias importadas parte do valor adua
 - O ICMS na importação é calculado “por dentro”; a base inclui VA, II, IPI, PIS/COFINS‑Import, despesas aduaneiras etc.; muitos estados também incluem o AFRMM, capatazia, taxa Siscomex e outras despesas efetivas.
 - Para PIS/COFINS monofásico: a carga concentra-se no fabricante/importador; revendas posteriores, em regra, têm alíquota zero; no caso do importador, há incidência monofásica na receita de venda além do PIS/COFINS‑Importação, e a apropriação/manutenção de créditos segue regras específicas do regime adotado.
 
-
 ## Passo a passo — nacionalização
 
 1) Valor Aduaneiro (VA): mercadoria + frete internacional + seguro.
 2) Imposto de Importação (II): \$ II = VA \times a_{II} \$.
 3) IPI na importação: \$ IPI = (VA+II) \times a_{IPI} \$.
 4) PIS/COFINS‑Importação (bens):
-    - \$ PIS-Imp = VA \times a_{PIS} \$
-    - \$ COFINS-Imp = VA \times a_{COFINS} \$
-    - Adicional COFINS‑Imp (quando aplicável): \$ Adic = VA \times 1\% \$ (verifique vigência e NCM).
+   - \$ PIS-Imp = VA \times a_{PIS} \$
+   - \$ COFINS-Imp = VA \times a_{COFINS} \$
+   - Adicional COFINS‑Imp (quando aplicável): \$ Adic = VA \times 1\% \$ (verifique vigência e NCM).
 5) Despesas aduaneiras: AFRMM, capatazia, Siscomex, armazenagem, etc.
 6) ICMS “por dentro”: com \$ a_{ICMS} \$ interna do estado de desembaraço,
-    - Base antes do ICMS: \$ S = VA + II + IPI + PIS-Imp + COFINS-Imp + Despesas \$.
-    - Base ICMS “por dentro”: \$ Base_{ICMS} = \dfrac{S}{1 - a_{ICMS}} \$.
-    - ICMS próprio: \$ ICMS = Base_{ICMS} \times a_{ICMS} \$.
+   - Base antes do ICMS: \$ S = VA + II + IPI + PIS-Imp + COFINS-Imp + Despesas \$.
+   - Base ICMS “por dentro”: \$ Base_{ICMS} = \dfrac{S}{1 - a_{ICMS}} \$.
+   - ICMS próprio: \$ ICMS = Base_{ICMS} \times a_{ICMS} \$.
 7) ICMS‑ST na importação (se a NCM estiver no regime de ST e o importador atuar como substituto):
-    - Base presumida: \$ Base_{ST} = S \times (1 + MVA) \$.
-    - ICMS devido na cadeia: \$ ICMS_{cadeia} = Base_{ST} \times a_{ICMS} \$.
-    - ICMS‑ST a recolher: \$ ICMS-ST = ICMS_{cadeia} - ICMS próprio \$.
+   - Base presumida: \$ Base_{ST} = S \times (1 + MVA) \$.
+   - ICMS devido na cadeia: \$ ICMS_{cadeia} = Base_{ST} \times a_{ICMS} \$.
+   - ICMS‑ST a recolher: \$ ICMS-ST = ICMS_{cadeia} - ICMS próprio \$.
 
 Cálculo bruto de desembolso na DI: \$ Desembolso = S + ICMS + ICMS-ST (se houver) \$. O custo contábil líquido dependerá dos créditos permitidos por regime.
 
 ## Créditos na entrada por tributo x regime
 
-| Tributo/Encargo | Lucro Real (não cumulativo) | Lucro Presumido (cumulativo) | Simples Nacional |
-| :-- | :-- | :-- | :-- |
-| II | Não creditável; compõe custo | Não creditável | Não creditável |
-| IPI | Creditável apenas se estabelecimento industrial/equiparado e o insumo for aplicado na industrialização; comércio puro não credita | Idem Real | Em geral não creditável no DAS; compõe custo |
-| PIS‑Import | Em regra creditável como contribuição não cumulativa (na forma legal), inclusive em importações de bens para revenda ou insumo; adicional de 1 p.p. da COFINS‑Imp não é creditável e integra custo | Não há créditos de PIS/COFINS no regime cumulativo; integra custo | Não há créditos; integra custo |
-| COFINS‑Import | Idem PIS‑Import (exceto adicional de 1 p.p., que não gera crédito) | Sem créditos; integra custo | Sem créditos; integra custo |
-| ICMS próprio (DI) | Creditável integralmente se contribuinte do ICMS e a mercadoria for para revenda/industrialização | Idem Real (é regime do IR que muda, não o do ICMS) | Em regra não aproveita crédito no DAS; integra custo |
-| ICMS‑ST (DI) | Não creditável; integra custo (é imposto da cadeia futura) | Não creditável; integra custo | Não creditável; integra custo |
-| Despesas aduaneiras | Integram custo; algumas podem compor base de créditos de PIS/COFINS conforme natureza (ex.: insumos), respeitando vedações | Integram custo | Integram custo |
+| Tributo/Encargo     | Lucro Real (não cumulativo)                                                                                                                                                                        | Lucro Presumido (cumulativo)                                      | Simples Nacional                                     |
+|:------------------- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:----------------------------------------------------------------- |:---------------------------------------------------- |
+| II                  | Não creditável; compõe custo                                                                                                                                                                       | Não creditável                                                    | Não creditável                                       |
+| IPI                 | Creditável apenas se estabelecimento industrial/equiparado e o insumo for aplicado na industrialização; comércio puro não credita                                                                  | Idem Real                                                         | Em geral não creditável no DAS; compõe custo         |
+| PIS‑Import          | Em regra creditável como contribuição não cumulativa (na forma legal), inclusive em importações de bens para revenda ou insumo; adicional de 1 p.p. da COFINS‑Imp não é creditável e integra custo | Não há créditos de PIS/COFINS no regime cumulativo; integra custo | Não há créditos; integra custo                       |
+| COFINS‑Import       | Idem PIS‑Import (exceto adicional de 1 p.p., que não gera crédito)                                                                                                                                 | Sem créditos; integra custo                                       | Sem créditos; integra custo                          |
+| ICMS próprio (DI)   | Creditável integralmente se contribuinte do ICMS e a mercadoria for para revenda/industrialização                                                                                                  | Idem Real (é regime do IR que muda, não o do ICMS)                | Em regra não aproveita crédito no DAS; integra custo |
+| ICMS‑ST (DI)        | Não creditável; integra custo (é imposto da cadeia futura)                                                                                                                                         | Não creditável; integra custo                                     | Não creditável; integra custo                        |
+| Despesas aduaneiras | Integram custo; algumas podem compor base de créditos de PIS/COFINS conforme natureza (ex.: insumos), respeitando vedações                                                                         | Integram custo                                                    | Integram custo                                       |
 
 Observações-chaves:
 
 - Em Lucro Real, a manutenção/ressarcimento de créditos de PIS/COFINS‑Import é possível nas hipóteses legais, inclusive quando a posterior venda tem alíquota zero/desoneração típica (p.ex., itens com monofásico nas etapas seguintes), exceto o adicional de 1 p.p. da COFINS‑Import, que não gera crédito e vai a custo.
 - O ICMS‑ST recolhido na importação não gera crédito ao substituto e forma custo do estoque; o ICMS próprio da DI é creditável.
 
-
 ## Tributação na saída por regime
 
-| Imposto nas saídas | Lucro Real | Lucro Presumido | Simples Nacional |
-| :-- | :-- | :-- | :-- |
-| PIS/COFINS “normal” | Não cumulativos: alíq. usuais 1,65% e 7,6% sobre receita, com abatimento de créditos (inclusive dos pagos na importação, quando cabíveis) | Cumulativos: alíq. usuais 0,65% e 3% sobre receita bruta, sem créditos | Incidência via DAS conforme Anexo/atividade e faixa; sem créditos; destaque apenas contábil |
+| Imposto nas saídas      | Lucro Real                                                                                                                                                                                                                            | Lucro Presumido                                                                    | Simples Nacional                                                                                                  |
+|:----------------------- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |:---------------------------------------------------------------------------------- |:----------------------------------------------------------------------------------------------------------------- |
+| PIS/COFINS “normal”     | Não cumulativos: alíq. usuais 1,65% e 7,6% sobre receita, com abatimento de créditos (inclusive dos pagos na importação, quando cabíveis)                                                                                             | Cumulativos: alíq. usuais 0,65% e 3% sobre receita bruta, sem créditos             | Incidência via DAS conforme Anexo/atividade e faixa; sem créditos; destaque apenas contábil                       |
 | PIS/COFINS “monofásico” | Importador/fabricante: paga alíquotas monofásicas sobre a receita de venda; revendas subsequentes: alíquota zero; mantêm-se créditos permitidos na lei (monofásico não impede manutenção dos créditos de entrada em hipóteses legais) | Importador/fabricante: recolhe monofásico; revendedor: alíquota zero; sem créditos | Receita monofásica deve ser segregada; parcela de PIS/COFINS no DAS fica reduzida/nula conforme regras do Simples |
-| ICMS próprio | Débito normal nas saídas internas, com crédito do ICMS da DI | Idem Real | ICMS via DAS; particularidades com sublimite; sem crédito da DI |
-| ICMS‑ST | Se atuou como substituto na DI, não há débito próprio nas saídas subsequentes do mesmo produto; indica “ICMS‑ST retido”; custo já embute ST | Idem Real | Receita com ICMS‑ST deve ser segregada para apuração correta do DAS (reduz impacto do ICMS no DAS) |
-| IPI (se industrial) | Débito na saída industrial; créditos dos insumos permitidos | Idem (se equiparado) | Em geral fora do DAS; se devido, recolhe-se à parte |
+| ICMS próprio            | Débito normal nas saídas internas, com crédito do ICMS da DI                                                                                                                                                                          | Idem Real                                                                          | ICMS via DAS; particularidades com sublimite; sem crédito da DI                                                   |
+| ICMS‑ST                 | Se atuou como substituto na DI, não há débito próprio nas saídas subsequentes do mesmo produto; indica “ICMS‑ST retido”; custo já embute ST                                                                                           | Idem Real                                                                          | Receita com ICMS‑ST deve ser segregada para apuração correta do DAS (reduz impacto do ICMS no DAS)                |
+| IPI (se industrial)     | Débito na saída industrial; créditos dos insumos permitidos                                                                                                                                                                           | Idem (se equiparado)                                                               | Em geral fora do DAS; se devido, recolhe-se à parte                                                               |
 
 ## Como montar o custo por regime
 
 Defina o custo base nacionalizado antes de créditos:
+
+$$
 \$ C_{base} = VA + II + IPI + PIS-Imp + COFINS-Imp + Despesas + ICMS + ICMS-ST \$
+$$
 
 - Lucro Real:
-    - \$ C_{líquido} = C_{base} - Crédito ICMS - Crédito IPI (se industrial) - Crédito PIS-Imp - Crédito COFINS-Imp \$
-    - Observação: excluir do crédito o adicional de 1 p.p. da COFINS‑Import (vai a custo).
-- Lucro Presumido:
-    - \$ C_{líquido} = C_{base} - Crédito ICMS - Crédito IPI (se industrial/equiparado) \$
-    - PIS/COFINS‑Import e despesas permanecem em custo; não há crédito de PIS/COFINS.
-- Simples Nacional:
-    - \$ C_{líquido} = C_{base} \$ (em regra, sem créditos); controle de segregações afeta a apuração do DAS nas saídas, não o custo de entrada.
+  
+  $$
+  \$ C_{líquido} = C_{base} - Crédito ICMS - Crédito IPI - Crédito PIS_Imp - Crédito COFINS_Imp \$
+  $$
+  
+  - Observação: excluir do crédito o adicional de 1 p.p. da COFINS‑Import (vai a custo).
 
+- Lucro Presumido:
+  
+  $$
+  \$ C_{líquido} = C_{base} - Crédito ICMS - Crédito IPI \$
+  $$
+  
+  - PIS/COFINS‑Import e despesas permanecem em custo; não há crédito de PIS/COFINS.
+
+- Simples Nacional:
+  
+  $$
+  \$ C_{líquido} = C_{base} \$
+  $$
+  
+  - (em regra, sem créditos); controle de segregações afeta a apuração do DAS nas saídas, não o custo de entrada.
 
 ## Casos especiais que mudam o custo/saída
 
 - Produtos no regime **monofásico** de PIS/COFINS:
-    - No importador/fabricante, há incidência concentrada sobre a receita de venda; nas etapas seguintes, alíquota zero; em Lucro Real, os créditos de PIS/COFINS da importação podem ser mantidos nas hipóteses legais; no Presumido e no Simples não há créditos, e o PIS/COFINS‑Import compõe custo.
+  - No importador/fabricante, há incidência concentrada sobre a receita de venda; nas etapas seguintes, alíquota zero; em Lucro Real, os créditos de PIS/COFINS da importação podem ser mantidos nas hipóteses legais; no Presumido e no Simples não há créditos, e o PIS/COFINS‑Import compõe custo.
 - Produtos com **ICMS‑ST**:
-    - Se o importador é substituto e recolhe ST na DI, esse valor integra o custo do estoque; nas saídas subsequentes não há débito próprio de ICMS daquele item; atenção à MVA e à alíquota interna do estado.
+  - Se o importador é substituto e recolhe ST na DI, esse valor integra o custo do estoque; nas saídas subsequentes não há débito próprio de ICMS daquele item; atenção à MVA e à alíquota interna do estado.
 - Adicional de 1 p.p. da **COFINS‑Importação**:
-    - Quando aplicável por NCM e vigência, não gera crédito de COFINS e integra o custo de aquisição; monitore alterações legislativas.
+  - Quando aplicável por NCM e vigência, não gera crédito de COFINS e integra o custo de aquisição; monitore alterações legislativas.
 - IPI:
-    - Comércio puro não credita IPI; industrial/equiparado pode creditar o IPI de insumos e debitar na saída, afetando o custo líquido.
-
+  - Comércio puro não credita IPI; industrial/equiparado pode creditar o IPI de insumos e debitar na saída, afetando o custo líquido.
 
 ## Exemplo numérico simplificado
 
 Premissas: VA = 100.000; II 12%; IPI 10% (sobre VA+II); PIS‑Imp 2,1%; COFINS‑Imp 9,65%; sem adicional; Despesas = 3.000; ICMS 17%; produto sem ST.
 
 - II = $100.000 \times 12\% = 12.000$.
+
 - IPI = $(100.000 + 12.000) \times 10\% = 11.200$.
+
 - PIS‑Imp = $100.000 \times 2{,}1\% = 2.100$.
+
 - COFINS‑Imp = $100.000 \times 9{,}65\% = 9.650$.
-- Soma antes do ICMS: \$ S = 100.000 + 12.000 + 11.200 + 2.100 + 9.650 + 3.000 = 137.950 \$.
-- Base ICMS: \$ Base_{ICMS} = \dfrac{137.950}{1 - 0{,}17} = 166.807{,}23 \$.
-- ICMS: \$ 166.807{,}23 \times 17\% = 28.357{,}23 \$.
-- Desembolso DI: \$ 137.950 + 28.357{,}23 = 166.307{,}23 \$.
+
+- Soma antes do ICMS: 
+  
+  $$
+  \$ S = 100.000 + 12.000 + 11.200 + 2.100 + 9.650 + 3.000 = 137.950 \$
+  $$
+
+- Base ICMS: 
+  
+  $$
+  \$ Base_{ICMS} = \dfrac{137.950}{1 - 0{,}17} = 166.807{,}23 \$
+  $$
+
+- ICMS:
+
+$$
+\$ 166.807{,}23 \times 17\% = 28.357{,}23 \$
+$$
+
+- Desembolso DI: 
+
+$$
+\$ 137.950 + 28.357{,}23 = 166.307{,}23 \$
+$$
 
 Custo líquido por regime:
 
-- Lucro Real (com ICMS crédito integral; PIS/COFINS‑Imp creditáveis; sem IPI crédito para comércio):
-    - Créditos: ICMS 28.357,23; PIS 2.100; COFINS 9.650.
-    - \$ C_{líquido} \approx 166.307{,}23 - 28.357{,}23 - 2.100 - 9.650 = 126.200 \$.
+- Lucro Real (com ICMS crédito integral; PIS/COFINS‑Imp creditáveis; com IPI crédito integral):
+  - Créditos: ICMS 28.357,23; PIS 2.100; COFINS 9.650.
+  - \$ C_{líquido} \approx 166.307{,}23 - 28.357{,}23 - 2.100 - 9.650 = 126.200 \$.
 - Lucro Presumido (ICMS crédito; sem crédito de PIS/COFINS; comércio sem crédito de IPI):
-    - Créditos: ICMS 28.357,23.
-    - \$ C_{líquido} \approx 166.307{,}23 - 28.357{,}23 = 137.950 \$.
+  - Créditos: ICMS 28.357,23.
+  - \$ C_{líquido} \approx 166.307{,}23 - 28.357{,}23 = 137.950 \$.
 - Simples (sem créditos):
-    - \$ C_{líquido} \approx 166.307{,}23 \$.
+  - \$ C_{líquido} \approx 166.307{,}23 \$.
 
 Se houver ICMS‑ST com MVA de 40% (exemplo):
 
@@ -120,14 +152,12 @@ Se houver ICMS‑ST com MVA de 40% (exemplo):
 - ICMS da cadeia: \$ 193.130 \times 17\% = 32.832{,}10 \$.
 - ICMS‑ST: \$ 32.832{,}10 - 28.357{,}23 = 4.474{,}87 \$ (acresce ao custo em todos os regimes).
 
-
 ## Boas práticas de apuração
 
 - Amarrar DI/DUIMP à NF‑e de importação, parametrizando bases e tributos conforme NCM e regras estaduais (ICMS e ST).
 - Manter cadastros por NCM com flags de monofásico PIS/COFINS, adicional de COFINS‑Imp, e sujeição a ICMS‑ST (com MVA por UF).
 - Separar contabilmente custo base e créditos recuperáveis por tributo e regime, com memória de cálculo por item/lote.
 - No Simples, segregar receitas monofásicas e sujeitas a ST para correta apuração do DAS (reduzindo a parcela de PIS/COFINS ou ICMS conforme o caso).
-
 
 ## Observação sobre fontes
 
@@ -281,4 +311,3 @@ Para esta resposta, não houve acesso a repositórios oficiais em tempo real; an
 [^72]: https://agismedical.com.br/product/fa88905-steel-monof-5-4x45cm-mtr48/
 
 [^73]: https://www.gov.br/receitafederal/pt-br/assuntos/noticias/2022/dezembro/receita-federal-atualiza-legislacao-sobre-pis-pasep-e-cofins
-
