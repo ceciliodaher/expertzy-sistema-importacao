@@ -1291,7 +1291,5 @@ export class ComplianceCalculator {
     }
 }
 
-// Export para uso em outros módulos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ComplianceCalculator;
-}
+// ES6 Module Export
+export { ComplianceCalculator };
