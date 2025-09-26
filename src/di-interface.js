@@ -1541,6 +1541,35 @@ function prepararParaPrecificacao() {
             timestamp: new Date().toISOString()
         };
         
+        // CRIAR TOTAIS OBRIGATÓRIOS - NO FALLBACKS
+        if (!currentCalculation || !currentCalculation.impostos) {
+            throw new Error('Cálculo de impostos obrigatório não disponível - impossível prosseguir para precificação');
+        }
+        
+        if (!currentCalculation.valores_base) {
+            throw new Error('Valores base obrigatórios não disponíveis - cálculo incompleto');
+        }
+        
+        // Estruturar totais conforme nomenclatura oficial
+        dadosParaPrecificacao.di_data.totais = {
+            valor_aduaneiro: currentCalculation.valores_base.valor_aduaneiro_total,
+            ii_devido: currentCalculation.impostos.ii.valor_devido,
+            ipi_devido: currentCalculation.impostos.ipi.valor_devido,
+            pis_devido: currentCalculation.impostos.pis.valor_devido,
+            cofins_devido: currentCalculation.impostos.cofins.valor_devido,
+            icms_devido: currentCalculation.impostos.icms.valor_devido,
+            despesas_aduaneiras: currentCalculation.valores_base.despesas_totais
+        };
+        
+        // Validar que todos são números
+        Object.entries(dadosParaPrecificacao.di_data.totais).forEach(([campo, valor]) => {
+            if (typeof valor !== 'number' || isNaN(valor)) {
+                throw new Error(`Campo ${campo} obrigatório ausente ou inválido no cálculo - valor: ${valor}`);
+            }
+        });
+        
+        console.log('✅ Estrutura totais criada com sucesso:', dadosParaPrecificacao.di_data.totais);
+        
         // Passar dados via sessionStorage para próxima fase
         sessionStorage.setItem('di_compliance_data', JSON.stringify(dadosParaPrecificacao));
         
@@ -1550,7 +1579,7 @@ function prepararParaPrecificacao() {
         // Aguardar um pouco para o download e então redirecionar
         setTimeout(() => {
             if (confirm('Dados salvos! Deseja prosseguir para a fase de precificação?')) {
-                window.location.href = '../pricing-strategy/pricing-system.html';
+                window.location.href = 'src/modules/pricing/pricing-interface.html';
             }
         }, 1000);
         
