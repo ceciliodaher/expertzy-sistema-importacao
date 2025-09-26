@@ -7,7 +7,7 @@
  * Utiliza IndexedDBManager para persistência - NO FALLBACKS
  */
 
-import indexedDBManager from '../../services/database/IndexedDBManager.js';
+import indexedDBManager from '@services/database/IndexedDBManager.js';
 
 // Global instances
 let pricingEngine = null;

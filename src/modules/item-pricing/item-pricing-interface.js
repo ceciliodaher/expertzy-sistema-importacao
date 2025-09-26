@@ -13,9 +13,9 @@
  * @version FASE 2.5.1
  */
 
-import ItemPricingCalculator from '../../core/calculators/ItemPricingCalculator.js';
-import IndexedDBManager from '../../services/database/IndexedDBManager.js';
-import { ConfigLoader } from '../../shared/utils/ConfigLoader.js';
+import ItemPricingCalculator from '@core/calculators/ItemPricingCalculator.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
+import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 
 class ItemPricingInterface {
     constructor() {

@@ -8,7 +8,7 @@
  * @author Expertzy System
  */
 
-import indexedDBManager from '../../services/database/IndexedDBManager.js';
+import indexedDBManager from '@services/database/IndexedDBManager.js';
 
 class ProductMemoryManager {
     constructor() {

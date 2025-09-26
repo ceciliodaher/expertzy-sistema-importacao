@@ -3,8 +3,8 @@
  * Migrated from legacy system to new ES6 module architecture
  */
 
-import { ExcelExporter } from './ExcelExporter.js';
-import { CroquiNFExporter } from './CroquiNFExporter.js';
+import { ExcelExporter } from '@core/exporters/ExcelExporter.js';
+import { CroquiNFExporter } from '@core/exporters/CroquiNFExporter.js';
 
 export class ExportManager {
     constructor() {

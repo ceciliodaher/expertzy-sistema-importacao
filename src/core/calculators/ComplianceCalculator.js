@@ -10,7 +10,7 @@
  * PERFORMANCE FIX: Single calculation execution (no repetitions)
  */
 
-import ProductMemoryManager from '../memory/ProductMemoryManager.js';
+import ProductMemoryManager from '@core/memory/ProductMemoryManager.js';
 
 export class ComplianceCalculator {
     constructor() {
@@ -1291,5 +1291,4 @@ export class ComplianceCalculator {
     }
 }
 
-// ES6 Module Export
-export { ComplianceCalculator };
+// ES6 Module Export - já exportado na linha 15 com export class

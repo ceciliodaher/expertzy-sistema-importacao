@@ -14,7 +14,7 @@
  */
 
 
-class CroquiNFExporter {
+export class CroquiNFExporter {
     constructor(diData, calculosData = null, incentiveManager = null) {
         // NO FALLBACKS - validar dados obrigatórios
         if (!diData) {
@@ -1330,5 +1330,4 @@ window.gerarCroquiPDFNovo = async function(diData, incentiveManager = null) {
     }
 };
 
-// ES6 Module Export
-export { CroquiNFExporter };
+// ES6 Module Export - já exportado no início com export class

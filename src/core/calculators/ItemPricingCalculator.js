@@ -14,7 +14,7 @@
  * @version FASE 2.5.1
  */
 
-import { ConfigLoader } from '../../shared/utils/ConfigLoader.js';
+import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 
 export class ItemPricingCalculator {
     constructor() {

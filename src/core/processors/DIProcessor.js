@@ -3,7 +3,7 @@
  * Migrated from legacy system to new ES6 module architecture
  */
 
-import { ConfigLoader } from '../../shared/utils/ConfigLoader.js';
+import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 
 export class DIProcessor {
     constructor() {
@@ -1416,5 +1416,4 @@ export class DIProcessor {
     }
 }
 
-// ES6 Module Export
-export { DIProcessor };
+// ES6 Module Export - já exportado na linha 8 com export class

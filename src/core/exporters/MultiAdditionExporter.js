@@ -3,7 +3,7 @@
  * Migrated from legacy system to new ES6 module architecture
  */
 
-import { ExcelProfessionalStyles } from '../../shared/utils/excel-professional-styles.js';
+import { ExcelProfessionalStyles } from '@shared/utils/excel-professional-styles.js';
 
 export class MultiAdditionExporter {
     constructor(diData) {
@@ -397,5 +397,4 @@ export class MultiAdditionExporter {
     }
 }
 
-// Export for use in other modules
-export { MultiAdditionExporter };
+// Export for use in other modules - já exportado na linha 8 com export class

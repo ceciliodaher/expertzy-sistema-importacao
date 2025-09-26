@@ -9,7 +9,7 @@
  */
 
 
-class ItemCalculator {
+export class ItemCalculator {
     constructor() {
         this.aliquotasCache = null;
         this.icmsConfig = {
@@ -462,4 +462,4 @@ if (typeof window !== 'undefined') {
     window.ItemCalculator = ItemCalculator;
 }
 
-export { ItemCalculator };
+// Export - já exportado no início com export class

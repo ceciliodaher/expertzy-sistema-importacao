@@ -453,5 +453,4 @@ export class CalculationValidator {
     }
 }
 
-// Export for use in other modules
-export { CalculationValidator };
+// Export for use in other modules - já exportado na linha 6 com export class

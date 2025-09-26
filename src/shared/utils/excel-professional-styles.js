@@ -411,5 +411,4 @@ export class ExcelProfessionalStyles {
     }
 }
 
-// Export para uso em outros módulos
-export { ExcelProfessionalStyles };
+// Export para uso em outros módulos - já exportado no início com export class

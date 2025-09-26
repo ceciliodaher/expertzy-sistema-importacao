@@ -6,7 +6,7 @@
  * Includes complete DI data, calculations, validation, and memory trace
  */
 
-import { ExcelProfessionalStyles } from '../../shared/utils/excel-professional-styles.js';
+import { ExcelProfessionalStyles } from '@shared/utils/excel-professional-styles.js';
 
 export class ExcelExporter {
     constructor() {

@@ -8,16 +8,16 @@
  */
 
 // ES6 Module Imports
-import indexedDBManager from './services/database/IndexedDBManager.js';
+import indexedDBManager from '@services/database/IndexedDBManager.js';
 // DataMigration removida - não há dados legados para migrar
-import { DIProcessor } from './core/processors/DIProcessor.js';
-import { ComplianceCalculator } from './core/calculators/ComplianceCalculator.js';
-import { CalculationValidator } from './core/validators/CalculationValidator.js';
-import { ExportManager } from './core/exporters/ExportManager.js';
-import { MultiAdditionExporter } from './core/exporters/MultiAdditionExporter.js';
-import { ItemCalculator } from './core/calculators/ItemCalculator.js';
-import { DataViewer } from './modules/DataViewer.js';
-import IncentiveManager from './core/incentives/IncentiveManager.js';
+import { DIProcessor } from '@core/processors/DIProcessor.js';
+import { ComplianceCalculator } from '@core/calculators/ComplianceCalculator.js';
+import { CalculationValidator } from '@core/validators/CalculationValidator.js';
+import { ExportManager } from '@core/exporters/ExportManager.js';
+import { MultiAdditionExporter } from '@core/exporters/MultiAdditionExporter.js';
+import { ItemCalculator } from '@core/calculators/ItemCalculator.js';
+import { DataViewer } from '@modules/DataViewer.js';
+import IncentiveManager from '@core/incentives/IncentiveManager.js';
 
 // Global instances
 let diProcessor = null;
