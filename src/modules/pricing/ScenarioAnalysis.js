@@ -570,6 +570,4 @@ class ScenarioAnalysis {
 }
 
 // Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ScenarioAnalysis;
-}
+export { ScenarioAnalysis };
