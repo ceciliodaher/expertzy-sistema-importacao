@@ -1359,6 +1359,12 @@ function exibirResultadosCustos(custos4Tipos) {
     if (salvarBtn) {
         salvarBtn.style.display = 'inline-block';
     }
+
+    // Mostrar botão de precificação individual (FASE 2.5)
+    const itemPricingBtn = document.getElementById('itemPricingBtn');
+    if (itemPricingBtn) {
+        itemPricingBtn.style.display = 'inline-block';
+    }
 }
 
 /**
@@ -1473,6 +1479,44 @@ function salvarConfiguracoes() {
 }
 
 /**
+ * Abrir módulo de precificação por itens (FASE 2.5)
+ */
+function abrirPrecificacaoItens() {
+    // Verificar se há custos calculados
+    if (!sistemaGlobal.custos4Tipos || sistemaGlobal.custos4Tipos.tipo_1_custo_base <= 0) {
+        mostrarAlerta('Erro: É necessário calcular os custos primeiro antes de precificar itens individuais.', 'error');
+        return;
+    }
+
+    // Verificar se há DI selecionada
+    if (!sistemaGlobal.diSelecionada || !sistemaGlobal.diSelecionada.numero_di) {
+        mostrarAlerta('Erro: É necessário ter uma DI selecionada com custos calculados.', 'error');
+        return;
+    }
+
+    try {
+        // Navegar para o módulo de item pricing
+        const itemPricingURL = '../item-pricing/item-pricing-interface.html';
+        
+        // Salvar estado atual no sessionStorage para manter contexto
+        sessionStorage.setItem('expertzy_pricing_context', JSON.stringify({
+            di_numero: sistemaGlobal.diSelecionada.numero_di,
+            custos_calculados: sistemaGlobal.custos4Tipos,
+            timestamp: new Date().toISOString()
+        }));
+
+        // Confirmar navegação
+        if (confirm('Deseja navegar para o módulo de Precificação Individual por Item?\n\nOs custos calculados serão mantidos para precificar itens específicos.')) {
+            window.location.href = itemPricingURL;
+        }
+
+    } catch (error) {
+        console.error('❌ Erro ao navegar para precificação de itens:', error);
+        mostrarAlerta('Erro interno ao navegar para precificação de itens.', 'error');
+    }
+}
+
+/**
  * Exportar funções para uso global
  */
 if (typeof window !== 'undefined') {
@@ -1480,6 +1524,7 @@ if (typeof window !== 'undefined') {
     window.toggleParametersSection = toggleParametersSection;
     window.selectCalculationMode = selectCalculationMode;
     window.salvarConfiguracoes = salvarConfiguracoes;
+    window.abrirPrecificacaoItens = abrirPrecificacaoItens;
     window.sistemaGlobal = sistemaGlobal;
 }
 

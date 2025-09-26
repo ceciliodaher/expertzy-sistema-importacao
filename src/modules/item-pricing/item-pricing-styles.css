@@ -1,0 +1,407 @@
+/**
+ * Item Pricing Styles
+ * FASE 2.5: Precificação por Item
+ * 
+ * Estilos específicos para o módulo de precificação individual
+ * Seguindo o design system Expertzy
+ */
+
+/* === Layout Principal === */
+.main-content {
+    padding-top: 100px; /* Compensar navbar fixa */
+    min-height: calc(100vh - 200px);
+}
+
+/* === Loading Overlay === */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-overlay.hidden {
+    display: none !important;
+}
+
+.spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.3rem solid rgba(255, 255, 255, 0.3);
+    border-top: 0.3rem solid #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* === Cards e Componentes === */
+.card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1.25rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* === Formulário de Precificação === */
+.form-check-input:checked {
+    background-color: var(--expertzy-primary);
+    border-color: var(--expertzy-primary);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--expertzy-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--expertzy-primary-rgb), 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--bs-gray-700);
+    margin-bottom: 0.75rem;
+}
+
+/* === Radio Groups === */
+.form-check {
+    margin-bottom: 0.5rem;
+}
+
+.form-check-label {
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.form-control[disabled] {
+    background-color: var(--bs-gray-100);
+    opacity: 0.6;
+}
+
+/* === Botões === */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1.5rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--expertzy-primary), #0056b3);
+    border: none;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    border: none;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    border: none;
+    color: #000;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* === Resultados === */
+.results-card {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border: 2px solid var(--expertzy-primary);
+}
+
+.result-item {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--expertzy-primary);
+    transition: all 0.3s ease;
+}
+
+.result-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(5px);
+}
+
+.result-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--bs-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--bs-gray-800);
+}
+
+.result-currency {
+    color: var(--expertzy-primary);
+}
+
+/* === Detalhes do Item === */
+.item-detail {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-left: 3px solid var(--expertzy-secondary);
+}
+
+.item-detail-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bs-gray-600);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.item-detail-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--bs-gray-800);
+}
+
+/* === Badges de Regime === */
+.regime-badge {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0.25rem;
+}
+
+.regime-badge.monofasico {
+    background: linear-gradient(135deg, #17a2b8, #138496);
+    color: white;
+}
+
+.regime-badge.st {
+    background: linear-gradient(135deg, #ffc107, #e0a800);
+    color: #000;
+}
+
+.regime-badge.beneficio {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+    color: white;
+}
+
+/* === Tabela de Comparação === */
+.table-striped > tbody > tr:nth-of-type(odd) > td {
+    background-color: rgba(var(--expertzy-primary-rgb), 0.05);
+}
+
+.table th {
+    background: var(--expertzy-primary);
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+}
+
+.table td {
+    text-align: center;
+    vertical-align: middle;
+    font-weight: 500;
+}
+
+.scenario-name {
+    font-weight: 600;
+    color: var(--bs-gray-800);
+}
+
+.price-value {
+    font-weight: 700;
+    color: var(--expertzy-primary);
+}
+
+.tax-value {
+    color: var(--bs-gray-600);
+    font-size: 0.9rem;
+}
+
+.margin-value {
+    font-weight: 600;
+}
+
+.margin-positive {
+    color: #28a745;
+}
+
+.margin-negative {
+    color: #dc3545;
+}
+
+/* === Alertas e Mensagens === */
+.alert-custom {
+    border-radius: 10px;
+    border: none;
+    font-weight: 500;
+}
+
+.alert-info-custom {
+    background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+    color: #0c5460;
+}
+
+.alert-warning-custom {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+}
+
+.alert-success-custom {
+    background: linear-gradient(135deg, #d4edda, #c3e6cb);
+    color: #155724;
+}
+
+/* === Animações === */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--expertzy-primary-rgb), 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(var(--expertzy-primary-rgb), 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--expertzy-primary-rgb), 0);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .main-content {
+        padding-top: 80px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn:last-child {
+        margin-bottom: 0;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .result-value {
+        font-size: 1.1rem;
+    }
+    
+    .item-detail {
+        padding: 0.75rem;
+    }
+    
+    .regime-badge {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
+/* === Estados de Validação === */
+.is-valid {
+    border-color: #28a745;
+}
+
+.is-invalid {
+    border-color: #dc3545;
+}
+
+.valid-feedback {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+/* === Tooltip Customizado === */
+.tooltip-inner {
+    background-color: var(--expertzy-primary);
+    color: white;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: var(--expertzy-primary);
+}
+
+/* === Utilitários === */
+.text-expertzy-primary {
+    color: var(--expertzy-primary) !important;
+}
+
+.bg-expertzy-primary {
+    background-color: var(--expertzy-primary) !important;
+}
+
+.border-expertzy-primary {
+    border-color: var(--expertzy-primary) !important;
+}
+
+.shadow-expertzy {
+    box-shadow: 0 8px 25px rgba(var(--expertzy-primary-rgb), 0.15) !important;
+}

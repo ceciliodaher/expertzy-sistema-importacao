@@ -1,0 +1,21 @@
+GET
+https://importa-precifica.local/images/expertzy-it.png
+[HTTP/1.1 404 Not Found 0ms]
+
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+GET
+https://importa-precifica.local/favicon.ico
+[HTTP/1.1 404 Not Found 0ms]
+
+	
+GET
+	https://importa-precifica.local/favicon.ico
+Status
+404
+Not Found
+VersãoHTTP/1.1
+Transferido153 B (tamanho 153 B)
+Referrer Policystrict-origin-when-cross-origin
+Resolução de DNSSistema
+

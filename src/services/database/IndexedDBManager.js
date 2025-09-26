@@ -180,7 +180,50 @@ class IndexedDBManager {
             pipeline_metrics: '++id, di_id, etapa, tempo_processamento, status, resultado_resumo, timestamp, [di_id+etapa]'
         });
 
-        console.log('✅ Schema v5 com pipeline completo inicializado');
+        // Versão 6 - Adiciona tabela de precificação individual por item (FASE 2.5)
+        this.db.version(6).stores({
+            // Manter todas as tabelas existentes da v5
+            declaracoes: '++id, numero_di, importador_cnpj, importador_nome, importador_endereco_uf, importador_endereco_logradouro, importador_endereco_numero, importador_endereco_complemento, importador_endereco_bairro, importador_endereco_cidade, importador_endereco_municipio, importador_endereco_cep, importador_representante_nome, importador_representante_cpf, importador_telefone, importador_endereco_completo, data_processamento, data_registro, urf_despacho_codigo, urf_despacho_nome, modalidade_codigo, modalidade_nome, situacao_entrega, total_adicoes, incoterm_identificado, taxa_cambio, informacao_complementar, valor_total_fob_usd, valor_total_fob_brl, valor_total_frete_usd, valor_total_frete_brl, valor_aduaneiro_total_brl, *ncms, xml_hash, xml_content, processing_state, icms_configured, extra_expenses_configured, pricing_configured, pricing_timestamp, [importador_cnpj+data_processamento]',
+            
+            adicoes: '++id, di_id, numero_adicao, ncm, descricao_ncm, peso_liquido, condicao_venda_incoterm, moeda_negociacao_codigo, moeda_negociacao_nome, valor_moeda_negociacao, valor_reais, frete_valor_reais, seguro_valor_reais, taxa_cambio, metodo_valoracao_codigo, metodo_valoracao_nome, codigo_naladi_sh, codigo_naladi_ncca, quantidade_estatistica, unidade_estatistica, aplicacao_mercadoria, condicao_mercadoria, condicao_venda_local, ii_aliquota_ad_valorem, ii_valor_devido, ii_valor_recolher, ii_base_calculo, ipi_aliquota_ad_valorem, ipi_valor_devido, ipi_valor_recolher, pis_aliquota_ad_valorem, pis_valor_devido, pis_valor_recolher, cofins_aliquota_ad_valorem, cofins_valor_devido, cofins_valor_recolher, cide_valor_devido, cide_valor_recolher, pis_cofins_base_calculo, icms_aliquota, fornecedor_nome, fornecedor_logradouro, fornecedor_numero, fornecedor_complemento, fornecedor_cidade, fornecedor_estado, fabricante_nome, fabricante_logradouro, fabricante_numero, fabricante_cidade, fabricante_estado, processing_state, custo_basico_federal, [di_id+numero_adicao]',
+            
+            produtos: '++id, adicao_id, numero_sequencial_item, descricao_mercadoria, ncm, quantidade, unidade_medida, valor_unitario_usd, valor_unitario_brl, valor_total_usd, valor_total_brl, taxa_cambio, processing_state, custo_produto_federal, is_virtual, margem_configurada, preco_venda_sugerido, custo_unitario_final, categoria_produto, [adicao_id+numero_sequencial_item]',
+            
+            despesas_aduaneiras: '++id, di_id, tipo, valor, codigo_receita, processing_state, origem, [di_id+tipo]',
+            
+            dados_carga: '++id, di_id, peso_bruto, peso_liquido, pais_procedencia_codigo, pais_procedencia_nome, urf_entrada_codigo, urf_entrada_nome, data_chegada, via_transporte_codigo, via_transporte_nome, nome_veiculo, nome_transportador',
+            
+            // Tabelas de apoio existentes
+            incentivos_entrada: '++id, di_id, estado, tipo_beneficio, percentual_reducao, economia_calculada, [di_id+estado]',
+            incentivos_saida: '++id, di_id, estado, operacao, credito_aplicado, contrapartidas, [di_id+estado+operacao]',
+            elegibilidade_ncm: '++id, ncm, estado, incentivo_codigo, elegivel, motivo_rejeicao, [ncm+estado+incentivo_codigo]',
+            metricas_dashboard: '++id, periodo, tipo_metrica, valor, breakdown_estados, [periodo+tipo_metrica]',
+            cenarios_precificacao: '++id, di_id, nome_cenario, configuracao, resultados_comparativos, [di_id+nome_cenario]',
+            historico_operacoes: '++id, timestamp, operacao, modulo, detalhes, resultado',
+            snapshots: '++id, di_id, nome_customizado, timestamp, dados_completos',
+            configuracoes_usuario: 'chave, valor, timestamp, validado',
+            
+            // Tabelas de precificação existentes
+            pricing_configurations: '++id, di_id, regime_tributario, custo_base, custo_desembolso, custo_contabil, base_formacao_preco, total_creditos, creditos_pis, creditos_cofins, creditos_ipi, creditos_icms, margem_configurada, markup_configurado, estado_destino, tipo_operacao, incentivo_aplicado, incentivo_simulacao, incentivo_economia, margens_padrao, estados_preferenciais, timestamp, [di_id+regime_tributario]',
+            
+            historico_precos: '++id, produto_id, di_id, preco_calculado, margem_aplicada, custo_base_momento, regime_tributario, incentivos_ativos, timestamp, usuario, [produto_id+timestamp]',
+            
+            margens_categoria: '++id, categoria, margem_padrao, markup_padrao, margem_minima, margem_maxima, ultima_atualizacao, [categoria]',
+            
+            simulacoes_pricing: '++id, di_id, nome_simulacao, parametros_simulacao, resultado_simulacao, comparacao_original, timestamp, [di_id+nome_simulacao]',
+            
+            // Tabelas pipeline v5
+            costing_results: '++id, di_id, numero_di, regime_tributario, custos_4_tipos, detalhamento_completo, total_creditos, economia_creditos, percentual_economia, ready_for_pricing, timestamp, versao_calculo, [di_id+regime_tributario]',
+            
+            pricing_results: '++id, di_id, costing_result_id, cenarios_precos, recomendacoes, analise_comparativa, melhor_cenario, economia_maxima, estados_analisados, timestamp, [di_id+timestamp]',
+            
+            pipeline_metrics: '++id, di_id, etapa, tempo_processamento, status, resultado_resumo, timestamp, [di_id+etapa]',
+            
+            // NOVA TABELA v6 - FASE 2.5: Precificação Individual por Item
+            item_pricing_results: '++id, di_id, item_id, numero_adicao, ncm, descricao_item, custo_contabil_item, preco_margem_zero, margem_aplicada_tipo, margem_aplicada_valor, preco_com_margem, cenario_tributario, estado_origem, estado_destino, tipo_cliente, regime_vendedor, impostos_venda_breakdown, preco_final, regimes_especiais_detectados, beneficios_aplicaveis, calculo_detalhado, timestamp_calculo, usuario_calculo, [di_id+numero_adicao]'
+        });
+
+        console.log('✅ Schema v6 com precificação individual por item inicializado (FASE 2.5)');
     }
 
     /**
@@ -2011,6 +2054,245 @@ class IndexedDBManager {
                 tempo_medio_custos: 0,
                 tempo_medio_precos: 0
             };
+        }
+    }
+
+    // === MÉTODOS PARA ITEM PRICING (FASE 2.5) ===
+
+    /**
+     * Salvar resultado de precificação individual por item
+     * @param {Object} itemPricingResult - Resultado completo do cálculo
+     * @returns {Promise<number>} ID do registro salvo
+     */
+    async saveItemPricingResult(itemPricingResult) {
+        if (!this.initialized) {
+            throw new Error('IndexedDBManager não inicializado');
+        }
+
+        // Validações obrigatórias
+        this._validateItemPricingResult(itemPricingResult);
+
+        try {
+            const resultado = await this.db.item_pricing_results.add({
+                di_id: itemPricingResult.di_id,
+                item_id: itemPricingResult.item_id,
+                numero_adicao: itemPricingResult.numero_adicao,
+                ncm: itemPricingResult.ncm,
+                descricao_item: itemPricingResult.descricao_item,
+                
+                // Custos calculados
+                custo_contabil_item: itemPricingResult.custo_contabil_item,
+                preco_margem_zero: itemPricingResult.preco_margem_zero,
+                
+                // Margem aplicada
+                margem_aplicada_tipo: itemPricingResult.margem_aplicada.tipo,
+                margem_aplicada_valor: itemPricingResult.margem_aplicada.valor,
+                preco_com_margem: itemPricingResult.preco_com_margem,
+                
+                // Cenário tributário
+                cenario_tributario: JSON.stringify(itemPricingResult.cenario_tributario),
+                estado_origem: itemPricingResult.cenario_tributario.estado_origem,
+                estado_destino: itemPricingResult.cenario_tributario.estado_destino,
+                tipo_cliente: itemPricingResult.cenario_tributario.tipo_cliente,
+                regime_vendedor: itemPricingResult.cenario_tributario.regime_vendedor,
+                
+                // Impostos e preço final
+                impostos_venda_breakdown: JSON.stringify(itemPricingResult.impostos_venda),
+                preco_final: itemPricingResult.preco_final,
+                
+                // Regimes especiais
+                regimes_especiais_detectados: JSON.stringify(itemPricingResult.regimes_especiais || {}),
+                beneficios_aplicaveis: JSON.stringify(itemPricingResult.beneficios_aplicaveis || []),
+                
+                // Detalhamento completo
+                calculo_detalhado: JSON.stringify(itemPricingResult.calculo_detalhado || {}),
+                
+                // Metadados
+                timestamp_calculo: new Date().toISOString(),
+                usuario_calculo: itemPricingResult.usuario_calculo || 'sistema'
+            });
+
+            console.log(`✅ Item pricing salvo com ID: ${resultado}`);
+            return resultado;
+
+        } catch (error) {
+            console.error('❌ Erro ao salvar item pricing:', error);
+            throw new Error(`Falha ao salvar resultado de precificação: ${error.message}`);
+        }
+    }
+
+    /**
+     * Buscar resultados de precificação por DI
+     * @param {string} diId - ID da DI
+     * @returns {Promise<Array>} Lista de resultados de precificação
+     */
+    async getItemPricingResultsByDI(diId) {
+        if (!this.initialized) {
+            throw new Error('IndexedDBManager não inicializado');
+        }
+
+        if (!diId) {
+            throw new Error('DI ID obrigatório para buscar resultados de precificação');
+        }
+
+        try {
+            const resultados = await this.db.item_pricing_results
+                .where('di_id')
+                .equals(diId)
+                .toArray();
+
+            // Deserializar campos JSON
+            return resultados.map(resultado => ({
+                ...resultado,
+                cenario_tributario: JSON.parse(resultado.cenario_tributario || '{}'),
+                impostos_venda_breakdown: JSON.parse(resultado.impostos_venda_breakdown || '{}'),
+                regimes_especiais_detectados: JSON.parse(resultado.regimes_especiais_detectados || '{}'),
+                beneficios_aplicaveis: JSON.parse(resultado.beneficios_aplicaveis || '[]'),
+                calculo_detalhado: JSON.parse(resultado.calculo_detalhado || '{}')
+            }));
+
+        } catch (error) {
+            console.error('❌ Erro ao buscar item pricing por DI:', error);
+            throw new Error(`Falha ao buscar resultados de precificação: ${error.message}`);
+        }
+    }
+
+    /**
+     * Buscar resultado de precificação específico por item
+     * @param {string} diId - ID da DI
+     * @param {string} numeroAdicao - Número da adição
+     * @returns {Promise<Object|null>} Resultado de precificação ou null
+     */
+    async getItemPricingResult(diId, numeroAdicao) {
+        if (!this.initialized) {
+            throw new Error('IndexedDBManager não inicializado');
+        }
+
+        if (!diId || !numeroAdicao) {
+            throw new Error('DI ID e número da adição obrigatórios');
+        }
+
+        try {
+            const resultado = await this.db.item_pricing_results
+                .where('[di_id+numero_adicao]')
+                .equals([diId, numeroAdicao])
+                .first();
+
+            if (!resultado) {
+                return null;
+            }
+
+            // Deserializar campos JSON
+            return {
+                ...resultado,
+                cenario_tributario: JSON.parse(resultado.cenario_tributario || '{}'),
+                impostos_venda_breakdown: JSON.parse(resultado.impostos_venda_breakdown || '{}'),
+                regimes_especiais_detectados: JSON.parse(resultado.regimes_especiais_detectados || '{}'),
+                beneficios_aplicaveis: JSON.parse(resultado.beneficios_aplicaveis || '[]'),
+                calculo_detalhado: JSON.parse(resultado.calculo_detalhado || '{}')
+            };
+
+        } catch (error) {
+            console.error('❌ Erro ao buscar item pricing específico:', error);
+            throw new Error(`Falha ao buscar resultado específico: ${error.message}`);
+        }
+    }
+
+    /**
+     * Obter estatísticas de precificação por item
+     * @returns {Promise<Object>} Estatísticas agregadas
+     */
+    async getItemPricingStatistics() {
+        if (!this.initialized) {
+            throw new Error('IndexedDBManager não inicializado');
+        }
+
+        try {
+            const resultados = await this.db.item_pricing_results.toArray();
+            
+            if (resultados.length === 0) {
+                return {
+                    total_itens_precificados: 0,
+                    margem_media: 0,
+                    preco_medio: 0,
+                    distribuicao_por_estado: {},
+                    regimes_mais_usados: {},
+                    tipos_cliente_distribuicao: {}
+                };
+            }
+
+            // Calcular estatísticas
+            const precoMedio = resultados.reduce((acc, r) => acc + r.preco_final, 0) / resultados.length;
+            
+            // Distribuição por estado
+            const estadosCount = {};
+            const regimesCount = {};
+            const clientesCount = {};
+
+            resultados.forEach(resultado => {
+                const estado = resultado.estado_destino;
+                const regime = resultado.regime_vendedor;
+                const cliente = resultado.tipo_cliente;
+
+                estadosCount[estado] = (estadosCount[estado] || 0) + 1;
+                regimesCount[regime] = (regimesCount[regime] || 0) + 1;
+                clientesCount[cliente] = (clientesCount[cliente] || 0) + 1;
+            });
+
+            return {
+                total_itens_precificados: resultados.length,
+                preco_medio: precoMedio,
+                distribuicao_por_estado: estadosCount,
+                regimes_mais_usados: regimesCount,
+                tipos_cliente_distribuicao: clientesCount,
+                ultimo_calculo: resultados[resultados.length - 1]?.timestamp_calculo
+            };
+
+        } catch (error) {
+            console.error('❌ Erro ao calcular estatísticas de item pricing:', error);
+            return {
+                total_itens_precificados: 0,
+                margem_media: 0,
+                preco_medio: 0,
+                distribuicao_por_estado: {},
+                regimes_mais_usados: {},
+                tipos_cliente_distribuicao: {}
+            };
+        }
+    }
+
+    /**
+     * Validar resultado de precificação de item
+     * @private
+     */
+    _validateItemPricingResult(result) {
+        const requiredFields = [
+            'di_id', 'item_id', 'numero_adicao', 'ncm',
+            'custo_contabil_item', 'preco_margem_zero', 'preco_final',
+            'margem_aplicada', 'cenario_tributario'
+        ];
+
+        for (const field of requiredFields) {
+            if (!result[field] && result[field] !== 0) {
+                throw new Error(`Campo obrigatório ausente: ${field}`);
+            }
+        }
+
+        // Validações específicas
+        if (typeof result.custo_contabil_item !== 'number') {
+            throw new Error('custo_contabil_item deve ser numérico');
+        }
+
+        if (typeof result.preco_final !== 'number') {
+            throw new Error('preco_final deve ser numérico');
+        }
+
+        if (!result.margem_aplicada.tipo || !result.margem_aplicada.valor) {
+            throw new Error('margem_aplicada deve ter tipo e valor');
+        }
+
+        if (!result.cenario_tributario.estado_origem || !result.cenario_tributario.regime_vendedor) {
+            throw new Error('cenario_tributario deve ter estado_origem e regime_vendedor');
         }
     }
 

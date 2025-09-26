@@ -24,7 +24,8 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         dashboard: resolve(__dirname, 'dashboard.html'),
         di: resolve(__dirname, 'di-interface.html'),
-        pricing: resolve(__dirname, 'src/modules/pricing/pricing-interface.html')
+        pricing: resolve(__dirname, 'src/modules/pricing/pricing-interface.html'),
+        itemPricing: resolve(__dirname, 'src/modules/item-pricing/item-pricing-interface.html')
       }
     },
     // Otimização de chunks
