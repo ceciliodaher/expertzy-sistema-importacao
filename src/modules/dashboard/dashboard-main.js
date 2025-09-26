@@ -3,34 +3,37 @@
  * Orchesta todos os componentes do dashboard
  */
 
-// Importar core components
-import './dashboard-core.js';
-import './dashboard-components.js'; 
-import './dashboard-charts.js';
+// Importar core components como ES6 modules
+import { DashboardCore } from './dashboard-core.js';
+import { DashboardComponents } from './dashboard-components.js'; 
+import { DashboardCharts } from './dashboard-charts.js';
 
 // Inicializar dashboard quando DOM estiver pronto
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 Dashboard Expertzy iniciado - Vite Mode');
     
-    // Verificar se as classes globais estão disponíveis
-    if (typeof DashboardCore !== 'undefined') {
-        window.dashboardCore = new DashboardCore();
+    try {
+        // Inicializar DashboardCore com async/await
+        window.dashboardCore = await new DashboardCore().initialize();
         console.log('✅ DashboardCore inicializado');
-    } else {
-        console.error('❌ DashboardCore não encontrado');
+    } catch (error) {
+        console.error('❌ Erro ao inicializar DashboardCore:', error);
+        return;
     }
     
-    if (typeof DashboardComponents !== 'undefined') {
-        window.dashboardComponents = new DashboardComponents();
+    try {
+        window.dashboardComponents = new DashboardComponents(window.dashboardCore);
         console.log('✅ DashboardComponents inicializado');
-    } else {
-        console.error('❌ DashboardComponents não encontrado');
+    } catch (error) {
+        console.error('❌ Erro ao inicializar DashboardComponents:', error);
+        return;
     }
     
-    if (typeof DashboardCharts !== 'undefined') {
-        window.dashboardCharts = new DashboardCharts();
+    try {
+        window.dashboardCharts = new DashboardCharts(window.dashboardCore);
         console.log('✅ DashboardCharts inicializado');
-    } else {
-        console.error('❌ DashboardCharts não encontrado');
+    } catch (error) {
+        console.error('❌ Erro ao inicializar DashboardCharts:', error);
+        return;
     }
 });

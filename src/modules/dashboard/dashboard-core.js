@@ -6,49 +6,23 @@
  */
 
 // ES6 Module Import
-import Dexie from 'dexie';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 class DashboardCore {
     constructor() {
-        this.db = new Dexie('ExpertzyDB');
-        this.initializeSchema();
+        this.dbManager = new IndexedDBManager();
+        this.db = this.dbManager.db; // Usar instância centralizada
         this.initializeEventListeners();
     }
     
     /**
-     * Inicializar schema v3 - nomenclatura oficial DIProcessor.js
+     * Inicializar sistema - OBRIGATÓRIO antes de usar
      */
-    initializeSchema() {
-        // Schema v3 - NOMENCLATURA OFICIAL DIProcessor.js (PRIMARY CREATOR)
-        this.db.version(3).stores({
-            // DECLARAÇÕES - Nomenclatura oficial DIProcessor
-            declaracoes: '++id, numero_di, importador_cnpj, importador_nome, importador_endereco_uf, importador_endereco_logradouro, importador_endereco_numero, importador_endereco_complemento, importador_endereco_bairro, importador_endereco_cidade, importador_endereco_municipio, importador_endereco_cep, importador_representante_nome, importador_representante_cpf, importador_telefone, importador_endereco_completo, data_processamento, data_registro, urf_despacho_codigo, urf_despacho_nome, modalidade_codigo, modalidade_nome, situacao_entrega, total_adicoes, incoterm_identificado, taxa_cambio, informacao_complementar, valor_total_fob_usd, valor_total_fob_brl, valor_total_frete_usd, valor_total_frete_brl, valor_aduaneiro_total_brl, *ncms, xml_hash, xml_content, processing_state, icms_configured, extra_expenses_configured, [importador_cnpj+data_processamento]',
-            
-            // ADIÇÕES - Nomenclatura oficial com tributos completos
-            adicoes: '++id, di_id, numero_adicao, ncm, descricao_ncm, peso_liquido, condicao_venda_incoterm, moeda_negociacao_codigo, moeda_negociacao_nome, valor_moeda_negociacao, valor_reais, frete_valor_reais, seguro_valor_reais, taxa_cambio, metodo_valoracao_codigo, metodo_valoracao_nome, codigo_naladi_sh, codigo_naladi_ncca, quantidade_estatistica, unidade_estatistica, aplicacao_mercadoria, condicao_mercadoria, condicao_venda_local, ii_aliquota_ad_valorem, ii_valor_devido, ii_valor_recolher, ii_base_calculo, ipi_aliquota_ad_valorem, ipi_valor_devido, ipi_valor_recolher, pis_aliquota_ad_valorem, pis_valor_devido, pis_valor_recolher, cofins_aliquota_ad_valorem, cofins_valor_devido, cofins_valor_recolher, cide_valor_devido, cide_valor_recolher, pis_cofins_base_calculo, icms_aliquota, fornecedor_nome, fornecedor_logradouro, fornecedor_numero, fornecedor_complemento, fornecedor_cidade, fornecedor_estado, fabricante_nome, fabricante_logradouro, fabricante_numero, fabricante_cidade, fabricante_estado, processing_state, custo_basico_federal, [di_id+numero_adicao]',
-            
-            // PRODUTOS - Nomenclatura oficial DIProcessor
-            produtos: '++id, adicao_id, numero_sequencial_item, descricao_mercadoria, ncm, quantidade, unidade_medida, valor_unitario_usd, valor_unitario_brl, valor_total_usd, valor_total_brl, taxa_cambio, processing_state, custo_produto_federal, is_virtual, [adicao_id+numero_sequencial_item]',
-            
-            // DESPESAS - Nomenclatura oficial
-            despesas_aduaneiras: '++id, di_id, tipo, valor, codigo_receita, processing_state, origem, [di_id+tipo]',
-            
-            // DADOS CARGA - Nomenclatura oficial expandida
-            dados_carga: '++id, di_id, peso_bruto, peso_liquido, pais_procedencia_codigo, pais_procedencia_nome, urf_entrada_codigo, urf_entrada_nome, data_chegada, via_transporte_codigo, via_transporte_nome, nome_veiculo, nome_transportador',
-            
-            // Tabelas de apoio (mantidas)
-            incentivos_entrada: '++id, di_id, estado, tipo_beneficio, percentual_reducao, economia_calculada, [di_id+estado]',
-            incentivos_saida: '++id, di_id, estado, operacao, credito_aplicado, contrapartidas, [di_id+estado+operacao]',
-            elegibilidade_ncm: '++id, ncm, estado, incentivo_codigo, elegivel, motivo_rejeicao, [ncm+estado+incentivo_codigo]',
-            metricas_dashboard: '++id, periodo, tipo_metrica, valor, breakdown_estados, [periodo+tipo_metrica]',
-            cenarios_precificacao: '++id, di_id, nome_cenario, configuracao, resultados_comparativos, [di_id+nome_cenario]',
-            historico_operacoes: '++id, timestamp, operacao, modulo, detalhes, resultado',
-            snapshots: '++id, di_id, nome_customizado, timestamp, dados_completos',
-            configuracoes_usuario: 'chave, valor, timestamp, validado'
-        });
-        
-        console.log('🗃️ Dashboard conectado ao IndexedDB v3 - nomenclatura oficial');
+    async initialize() {
+        await this.dbManager.initialize();
+        return this;
     }
+    
     
     /**
      * Inicializar event listeners
@@ -1028,5 +1002,10 @@ class DashboardCore {
     }
 }
 
-// Exportar para uso global
-window.DashboardCore = DashboardCore;
+// ES6 Module Export
+export { DashboardCore };
+
+// Exportar para uso global (backward compatibility)
+if (typeof window !== 'undefined') {
+    window.DashboardCore = DashboardCore;
+}

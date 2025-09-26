@@ -518,4 +518,10 @@ if (typeof Chart !== 'undefined') {
 }
 
 // Exportar para uso global
-window.DashboardCharts = DashboardCharts;
+// ES6 Module Export
+export { DashboardCharts };
+
+// Exportar para uso global (backward compatibility)
+if (typeof window !== 'undefined') {
+    window.DashboardCharts = DashboardCharts;
+}

@@ -2153,4 +2153,10 @@ class DashboardComponents {
 }
 
 // Exportar para uso global
-window.DashboardComponents = DashboardComponents;
+// ES6 Module Export
+export { DashboardComponents };
+
+// Exportar para uso global (backward compatibility)
+if (typeof window !== 'undefined') {
+    window.DashboardComponents = DashboardComponents;
+}
