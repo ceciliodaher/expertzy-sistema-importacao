@@ -27,7 +27,7 @@
     <nav class="navbar navbar-expand-lg expertzy-navbar fixed-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="https://expertzy.com.br" target="_blank">
-                <img src="images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo" onerror="this.onerror=null; this.src='./images/expertzy-it.png';">
+                <img src="public/images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -47,7 +47,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="pricing-strategy/pricing-system.html">
+                        <a class="nav-link text-white" href="src/modules/pricing/pricing-interface.html">
                             <i class="bi bi-graph-up-arrow"></i> Precificação
                         </a>
                     </li>
@@ -1112,8 +1112,7 @@
     <!-- Cleave.js for currency formatting -->
     <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
     
-    <!-- Dexie.js for IndexedDB -->
-    <script src="https://unpkg.com/dexie@3.2.4/dist/dexie.min.js"></script>
+    <!-- Dexie.js agora carregado via ES6 modules no IndexedDBManager -->
     
     <!-- Sistema migrado para new URL() - sem necessidade de PathResolver -->
     

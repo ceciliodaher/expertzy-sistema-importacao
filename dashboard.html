@@ -32,7 +32,7 @@
     <nav class="navbar navbar-expand-lg expertzy-navbar fixed-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="https://expertzy.com.br" target="_blank">
-                <img src="images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo">
+                <img src="public/images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -236,12 +236,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
     
     <!-- Dexie.js for IndexedDB -->
-    <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.4/dist/dexie.min.js"></script>
     
-    <!-- Dashboard Modules -->
-    <script src="src/modules/dashboard/dashboard-core.js"></script>
-    <script src="src/modules/dashboard/dashboard-components.js"></script>
-    <script src="src/modules/dashboard/dashboard-charts.js"></script>
+    <!-- Dashboard Main Module (Vite) -->
+    <script type="module" src="src/modules/dashboard/dashboard-main.js"></script>
     
     <!-- Loading Overlay Utilities -->
     <style>

@@ -1,0 +1,254 @@
+/**
+ * pricing-styles.css - Estilos modulares para interface de precificação
+ * Segue padrão Expertzy com CSS modular separado
+ */
+
+:root {
+    --expertzy-red: #dc3545;
+    --expertzy-navy: #2c3e50;
+    --expertzy-gray: #6c757d;
+    --expertzy-light: #f8f9fa;
+    --expertzy-white: #ffffff;
+    --expertzy-success: #28a745;
+    --expertzy-warning: #ffc107;
+    --expertzy-info: #17a2b8;
+    --expertzy-transition: all 0.3s ease;
+}
+
+body {
+    background-color: var(--expertzy-light);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    background: linear-gradient(135deg, var(--expertzy-navy) 0%, var(--expertzy-red) 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: var(--expertzy-white) !important;
+    font-weight: 600;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: var(--expertzy-transition);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--expertzy-navy) 0%, var(--expertzy-red) 100%);
+    color: var(--expertzy-white);
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1.25rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--expertzy-navy);
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 0.75rem;
+    transition: var(--expertzy-transition);
+}
+
+.form-control:focus {
+    border-color: var(--expertzy-red);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--expertzy-red) 0%, #e74c3c 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: var(--expertzy-transition);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #c82333 0%, var(--expertzy-red) 100%);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--expertzy-gray);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+}
+
+.alert {
+    border: none;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.input-group-text {
+    background: var(--expertzy-light);
+    border: 2px solid #e9ecef;
+    border-right: none;
+    color: var(--expertzy-navy);
+    font-weight: 600;
+}
+
+.regime-selector {
+    background: var(--expertzy-white);
+    border: 2px solid var(--expertzy-red);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.custo-display {
+    background: linear-gradient(135deg, var(--expertzy-light) 0%, var(--expertzy-white) 100%);
+    border: 2px solid var(--expertzy-info);
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.custo-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--expertzy-navy);
+}
+
+.help-text {
+    font-size: 0.875rem;
+    color: var(--expertzy-gray);
+    margin-top: 0.25rem;
+}
+
+.loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--expertzy-light);
+    border-top: 5px solid var(--expertzy-red);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.step {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--expertzy-gray);
+    color: var(--expertzy-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin: 0 0.5rem;
+    transition: var(--expertzy-transition);
+}
+
+.step.active {
+    background: var(--expertzy-red);
+    transform: scale(1.1);
+}
+
+.step.completed {
+    background: var(--expertzy-success);
+}
+
+.optional-section {
+    border: 2px dashed var(--expertzy-gray);
+    border-radius: 10px;
+    padding: 1.5rem;
+    background: var(--expertzy-white);
+    opacity: 0.8;
+    transition: var(--expertzy-transition);
+}
+
+.optional-section.enabled {
+    border: 2px solid var(--expertzy-info);
+    opacity: 1;
+}
+
+.optional-toggle {
+    margin-bottom: 1rem;
+}
+
+.basic-calculation {
+    background: linear-gradient(135deg, var(--expertzy-success) 0%, #20c997 100%);
+    color: var(--expertzy-white);
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.advanced-calculation {
+    background: linear-gradient(135deg, var(--expertzy-info) 0%, #138496 100%);
+    color: var(--expertzy-white);
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.calculation-mode-selector {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.mode-option {
+    flex: 1;
+    max-width: 300px;
+    margin: 0 1rem;
+    padding: 1.5rem;
+    border: 2px solid var(--expertzy-gray);
+    border-radius: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--expertzy-transition);
+    background: var(--expertzy-white);
+}
+
+.mode-option:hover {
+    border-color: var(--expertzy-red);
+    transform: translateY(-2px);
+}
+
+.mode-option.selected {
+    border-color: var(--expertzy-red);
+    background: linear-gradient(135deg, var(--expertzy-red) 0%, #e74c3c 100%);
+    color: var(--expertzy-white);
+}

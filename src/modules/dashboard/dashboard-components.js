@@ -64,6 +64,18 @@ class DashboardComponents {
                     <div class="stat-label">Incentivos</div>
                     <div class="stat-description">Benefícios fiscais</div>
                 </div>
+                
+                <div class="stat-card pricing-card">
+                    <div class="stat-value">${stats.itemsPrecificados || 0}</div>
+                    <div class="stat-label">Itens Precificados</div>
+                    <div class="stat-description">Precificação individual</div>
+                </div>
+                
+                <div class="stat-card pricing-card">
+                    <div class="stat-value">R$ ${this.formatCurrency(stats.precoMedio || 0)}</div>
+                    <div class="stat-label">Preço Médio</div>
+                    <div class="stat-description">Preços de venda calculados</div>
+                </div>
             `;
             
             container.innerHTML = cardsHTML;

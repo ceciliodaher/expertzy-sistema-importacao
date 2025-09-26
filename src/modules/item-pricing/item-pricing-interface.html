@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precificação por Item - Sistema Expertzy</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Expertzy Brand System -->
+    <link href="../../shared/styles/expertzy-brand.css" rel="stylesheet">
+    <link href="../../shared/styles/business-theme.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="item-pricing-styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="text-center">
+            <div class="spinner"></div>
+            <div class="text-white mt-3">Carregando precificação por item...</div>
+        </div>
+    </div>
+
+    <!-- Professional Navigation -->
+    <nav class="navbar navbar-expand-lg expertzy-navbar fixed-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="../../../index.html">
+                <img src="../../../public/images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="expertzy-complete-logo">
+            </a>
+
+            <!-- Breadcrumb Navigation -->
+            <div class="navbar-nav mx-auto">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="../../../index.html" class="text-white">
+                                <i class="bi bi-house"></i> Início
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="../../../di-interface.html" class="text-white">
+                                <i class="bi bi-file-earmark-text"></i> Processamento DI
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="../pricing/pricing-interface.html" class="text-white">
+                                <i class="bi bi-calculator"></i> Precificação
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active text-white" aria-current="page">
+                            <i class="bi bi-tag"></i> Precificação por Item
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="navbar-nav">
+                <a href="../../../dashboard.html" class="btn btn-outline-light me-2">
+                    <i class="bi bi-graph-up"></i> Dashboard
+                </a>
+                <a href="../pricing/pricing-interface.html" class="btn btn-expertzy-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container mt-4">
+            
+            <!-- Header Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body bg-gradient-primary text-white">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h1 class="h3 mb-1">
+                                        <i class="bi bi-tag me-2"></i>
+                                        Precificação por Item Individual
+                                    </h1>
+                                    <p class="mb-0 opacity-90">
+                                        Calcule preços de venda considerando cenários tributários específicos
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="d-flex flex-column">
+                                        <small class="opacity-75">FASE 2.5</small>
+                                        <strong>Cálculo Individual</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DI Selection Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-search me-2"></i>
+                                Seleção de DI e Item
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="diSelector" class="form-label">
+                                        <strong>DI com Custos Calculados</strong>
+                                    </label>
+                                    <select class="form-select" id="diSelector">
+                                        <option value="">Selecione uma DI processada...</option>
+                                    </select>
+                                    <small class="text-muted">
+                                        Apenas DIs com precificação calculada aparecerão na lista
+                                    </small>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="itemSelector" class="form-label">
+                                        <strong>Item para Precificar</strong>
+                                    </label>
+                                    <select class="form-select" id="itemSelector" disabled>
+                                        <option value="">Primeiro selecione uma DI...</option>
+                                    </select>
+                                    <small class="text-muted">
+                                        Itens individuais da DI selecionada
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item Details Section -->
+            <div class="row mb-4" id="itemDetailsSection" style="display: none;">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Dados do Item Selecionado
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="itemDetailsContent">
+                                <!-- Preenchido dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Calculator Section -->
+            <div class="row mb-4" id="pricingSection" style="display: none;">
+                <div class="col-md-8">
+                    <!-- Calculation Form -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-calculator me-2"></i>
+                                Configuração de Preços
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="pricingForm">
+                                <!-- Margin Configuration -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary">
+                                        <i class="bi bi-percent"></i>
+                                        Configuração de Margem
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="marginType" id="marginPercentual" value="percentual" checked>
+                                                <label class="form-check-label" for="marginPercentual">
+                                                    Margem Percentual
+                                                </label>
+                                            </div>
+                                            <input type="number" class="form-control mt-2" id="marginPercentualValue" 
+                                                   placeholder="Ex: 25.5" step="0.1" min="0" max="99">
+                                            <small class="text-muted">Margem desejada em %</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="marginType" id="markupFixo" value="markup_fixo">
+                                                <label class="form-check-label" for="markupFixo">
+                                                    Markup Fixo
+                                                </label>
+                                            </div>
+                                            <input type="number" class="form-control mt-2" id="markupFixoValue" 
+                                                   placeholder="Ex: 150.00" step="0.01" min="0" disabled>
+                                            <small class="text-muted">Valor fixo em R$</small>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="marginType" id="precoManual" value="preco_manual">
+                                                <label class="form-check-label" for="precoManual">
+                                                    Preço Manual
+                                                </label>
+                                            </div>
+                                            <input type="number" class="form-control mt-2" id="precoManualValue" 
+                                                   placeholder="Ex: 500.00" step="0.01" min="0" disabled>
+                                            <small class="text-muted">Preço final em R$</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tax Scenario Configuration -->
+                                <div class="mb-4">
+                                    <h6 class="text-primary">
+                                        <i class="bi bi-geo-alt"></i>
+                                        Cenário Tributário
+                                    </h6>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <label for="estadoOrigem" class="form-label">Estado de Origem</label>
+                                            <select class="form-select" id="estadoOrigem" required>
+                                                <option value="">Selecione o estado...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="estadoDestino" class="form-label">Estado de Destino</label>
+                                            <select class="form-select" id="estadoDestino" required>
+                                                <option value="">Selecione o estado...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-3">
+                                        <div class="col-md-6">
+                                            <label for="tipoCliente" class="form-label">Tipo de Cliente</label>
+                                            <select class="form-select" id="tipoCliente" required>
+                                                <option value="">Selecione o tipo...</option>
+                                                <option value="contribuinte">Contribuinte (B2B)</option>
+                                                <option value="consumidor_final">Consumidor Final (B2C)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="regimeVendedor" class="form-label">Regime do Vendedor</label>
+                                            <select class="form-select" id="regimeVendedor" required>
+                                                <option value="">Selecione o regime...</option>
+                                                <option value="simples_nacional">Simples Nacional</option>
+                                                <option value="lucro_presumido">Lucro Presumido</option>
+                                                <option value="lucro_real">Lucro Real</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-primary" id="calculateBtn" disabled>
+                                        <i class="bi bi-calculator"></i>
+                                        Calcular Preços
+                                    </button>
+                                    <button type="button" class="btn btn-success" id="saveBtn" disabled>
+                                        <i class="bi bi-save"></i>
+                                        Salvar Cálculo
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary">
+                                        <i class="bi bi-arrow-clockwise"></i>
+                                        Limpar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-warning text-dark">
+                            <h5 class="mb-0">
+                                <i class="bi bi-bar-chart me-2"></i>
+                                Resultados
+                            </h5>
+                        </div>
+                        <div class="card-body" id="resultsContent">
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-calculator display-4 mb-3"></i>
+                                <p>Configure os parâmetros e clique em "Calcular Preços" para ver os resultados</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Regimes Detection -->
+                    <div class="card border-0 shadow-sm mt-3" id="specialRegimesCard" style="display: none;">
+                        <div class="card-header bg-secondary text-white">
+                            <h6 class="mb-0">
+                                <i class="bi bi-shield-check me-2"></i>
+                                Regimes Especiais Detectados
+                            </h6>
+                        </div>
+                        <div class="card-body" id="specialRegimesContent">
+                            <!-- Preenchido dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scenario Comparison Section -->
+            <div class="row mb-4" id="scenarioSection" style="display: none;">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">
+                                <i class="bi bi-graph-up me-2"></i>
+                                Comparativo de Cenários
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="scenarioComparisonTable">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Cenário</th>
+                                            <th>Preço Base</th>
+                                            <th>ICMS</th>
+                                            <th>DIFAL</th>
+                                            <th>PIS/COFINS</th>
+                                            <th>Total</th>
+                                            <th>Margem Real</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Preenchido dinamicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="expertzy-footer">
+        <div class="container">
+            <div class="row align-items-center py-4">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <img src="../../../public/images/expertzy-it.png" alt="Expertzy - Inteligência Tributária" class="footer-logo me-3">
+                        <div>
+                            <p class="mb-0 fw-bold">Sistema Expertzy v3.0</p>
+                            <small class="text-light opacity-75">FASE 2.5: Precificação por Item</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0 small text-light opacity-75">
+                        Precificação Individual • Cenários Tributários • Análise Comparativa
+                    </p>
+                    <p class="mb-0 small text-light opacity-50 mt-1">
+                        © 2025 Expertzy. Todos os direitos reservados.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Item Pricing Interface JS -->
+    <script type="module" src="item-pricing-interface.js"></script>
+</body>
+</html>
