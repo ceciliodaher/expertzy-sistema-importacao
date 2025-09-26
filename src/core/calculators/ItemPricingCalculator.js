@@ -355,5 +355,3 @@ export class ItemPricingCalculator {
         return impostos;
     }
 }
-
-export default ItemPricingCalculator;

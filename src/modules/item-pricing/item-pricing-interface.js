@@ -13,15 +13,16 @@
  * @version FASE 2.5.1
  */
 
-import ItemPricingCalculator from '@core/calculators/ItemPricingCalculator.js';
+import { ItemPricingCalculator } from '@core/calculators/ItemPricingCalculator.js';
 import IndexedDBManager from '@services/database/IndexedDBManager.js';
 import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 
 class ItemPricingInterface {
     constructor() {
-        this.calculator = new ItemPricingCalculator();
-        this.dbManager = new IndexedDBManager();
-        this.configLoader = new ConfigLoader();
+        // Componentes serão inicializados no método initialize()
+        this.calculator = null;
+        this.dbManager = null;
+        this.configLoader = null;
         
         this.currentDI = null;
         this.currentItem = null;
@@ -70,6 +71,24 @@ class ItemPricingInterface {
      * @private
      */
     async _initializeDependencies() {
+        // Validar dependências obrigatórias - NO FALLBACKS
+        if (typeof ItemPricingCalculator === 'undefined') {
+            throw new Error('ItemPricingCalculator não disponível - componente obrigatório não carregado');
+        }
+        
+        if (typeof IndexedDBManager === 'undefined') {
+            throw new Error('IndexedDBManager não disponível - componente obrigatório não carregado');
+        }
+        
+        if (typeof ConfigLoader === 'undefined') {
+            throw new Error('ConfigLoader não disponível - componente obrigatório não carregado');
+        }
+        
+        // Inicializar componentes
+        this.calculator = new ItemPricingCalculator();
+        this.dbManager = new IndexedDBManager();
+        this.configLoader = new ConfigLoader();
+        
         // Inicializar calculator (obrigatório)
         await this.calculator.initialize();
         
