@@ -493,6 +493,4 @@ class RegimeConfigManager {
 export default RegimeConfigManager;
 
 // Exportar para uso global se não estiver em ambiente de módulos (backward compatibility)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = RegimeConfigManager;
-}
+export { RegimeConfigManager };
