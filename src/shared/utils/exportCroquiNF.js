@@ -1155,6 +1155,4 @@ window.gerarCroquiPDFNovo = async function(diData) {
 };
 
 // Exportar classe para uso em testes
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CroquiNFExporter;
-}
+export { CroquiNFExporter };
