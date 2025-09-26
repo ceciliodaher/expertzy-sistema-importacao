@@ -1388,6 +1388,6 @@ class PricingEngine {
 }
 
 // Export for use in other modules
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = PricingEngine;
+// ES6 Module Export
+export default PricingEngine;
 }
