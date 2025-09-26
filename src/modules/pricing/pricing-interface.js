@@ -792,6 +792,45 @@ class InterfacePrecificacao {
     carregarDadosDI(dadosDI) {
         this.validarInicializacao();
 
+        // Aplicar parsing numérico nos campos obrigatórios antes da validação
+        if (dadosDI.totais) {
+            dadosDI.totais.valor_aduaneiro = parseFloat(dadosDI.totais.valor_aduaneiro);
+            dadosDI.totais.ii_devido = parseFloat(dadosDI.totais.ii_devido);
+            dadosDI.totais.ipi_devido = parseFloat(dadosDI.totais.ipi_devido);
+            dadosDI.totais.pis_devido = parseFloat(dadosDI.totais.pis_devido);
+            dadosDI.totais.cofins_devido = parseFloat(dadosDI.totais.cofins_devido);
+            dadosDI.totais.icms_devido = parseFloat(dadosDI.totais.icms_devido);
+            dadosDI.totais.despesas_aduaneiras = parseFloat(dadosDI.totais.despesas_aduaneiras);
+            
+            // Validar que conversão foi bem-sucedida - falhar se NaN
+            const campos = ['valor_aduaneiro', 'ii_devido', 'ipi_devido', 'pis_devido', 'cofins_devido', 'icms_devido', 'despesas_aduaneiras'];
+            for (const campo of campos) {
+                if (isNaN(dadosDI.totais[campo])) {
+                    throw new Error(`Campo ${campo} obrigatório inválido: deve ser numérico`);
+                }
+            }
+        }
+
+        // Aplicar parsing em outros campos numéricos se existirem
+        if (dadosDI.valor_aduaneiro !== undefined) {
+            dadosDI.valor_aduaneiro = parseFloat(dadosDI.valor_aduaneiro);
+            if (isNaN(dadosDI.valor_aduaneiro)) {
+                throw new Error('Campo valor_aduaneiro deve ser numérico');
+            }
+        }
+        if (dadosDI.valor_frete !== undefined) {
+            dadosDI.valor_frete = parseFloat(dadosDI.valor_frete);
+            if (isNaN(dadosDI.valor_frete)) {
+                throw new Error('Campo valor_frete deve ser numérico');
+            }
+        }
+        if (dadosDI.valor_seguro !== undefined) {
+            dadosDI.valor_seguro = parseFloat(dadosDI.valor_seguro);
+            if (isNaN(dadosDI.valor_seguro)) {
+                throw new Error('Campo valor_seguro deve ser numérico');
+            }
+        }
+
         // Validar estrutura da DI rigorosamente
         this.dadosDI = ValidadorParametros.validarDadosDI(dadosDI);
 
@@ -822,7 +861,9 @@ class InterfacePrecificacao {
             const custoBase = this.calcularCustoBase();
 
             // TIPO 2: Custo de Desembolso (custo_base - créditos)
-            const custoDesembolso = await this.calcularCustoDesembolso(custoBase, regimeValidado);
+            const resultadoDesembolso = await this.calcularCustoDesembolso(custoBase, regimeValidado);
+            const custoDesembolso = resultadoDesembolso.valor;
+            const creditosDetalhados = resultadoDesembolso.creditos;
 
             // TIPO 3: Custo Contábil (custo_desembolso + encargos - recuperáveis)
             const custoContabil = this.calcularCustoContabil(custoDesembolso, parametrosValidados);
@@ -830,16 +871,18 @@ class InterfacePrecificacao {
             // TIPO 4: Base para Formação de Preço (custo_contábil + indiretos + margem operacional)
             const baseFormacaoPreco = this.calcularBaseFormacaoPreco(custoContabil, parametrosValidados);
 
-            // Estruturar resultado completo
+            // Estruturar resultado completo com informações de créditos
             this.custos4Tipos = {
                 tipo_1_custo_base: custoBase,
                 tipo_2_custo_desembolso: custoDesembolso,
                 tipo_3_custo_contabil: custoContabil,
                 tipo_4_base_formacao_preco: baseFormacaoPreco,
                 regime_tributario: regimeValidado,
+                creditos_aplicados: creditosDetalhados,
                 parametros_utilizados: parametrosValidados,
                 di_numero: this.dadosDI.numero_di,
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
+                versao_sistema: 'FASE 2.4.3 - v2025.1'
             };
 
             console.log(`✅ 4 tipos de custos calculados: Base R$ ${custoBase.toFixed(2)} → Desembolso R$ ${custoDesembolso.toFixed(2)} → Contábil R$ ${custoContabil.toFixed(2)} → Formação Preço R$ ${baseFormacaoPreco.toFixed(2)}`);
@@ -982,7 +1025,15 @@ class InterfacePrecificacao {
         // Base para créditos: valor_aduaneiro + IPI (sem despesas aduaneiras)
         const baseCreditos = totais.valor_aduaneiro + totais.ipi_devido;
 
-        let totalCreditos = 0;
+        // Estrutura detalhada de créditos
+        const creditosDetalhados = {
+            pis: 0,
+            cofins: 0,
+            ipi: 0,
+            icms: 0,
+            total: 0,
+            regime: regimeTributario
+        };
 
         // Calcular créditos por regime
         const regrasCredito = this.motorTributario.obterRegrasCreditoRegime(regimeTributario);
@@ -990,22 +1041,30 @@ class InterfacePrecificacao {
         if (regimeTributario === 'lucro_real') {
             // Lucro Real: crédito integral mesmo para monofásicos
             if (regrasCredito.permite_credito_importacao) {
-                totalCreditos += totais.pis_devido;
-                totalCreditos += totais.cofins_devido;
-                totalCreditos += totais.ipi_devido;
-                totalCreditos += totais.icms_devido;
+                creditosDetalhados.pis = totais.pis_devido;
+                creditosDetalhados.cofins = totais.cofins_devido;
+                creditosDetalhados.ipi = totais.ipi_devido;
+                creditosDetalhados.icms = totais.icms_devido;
             }
         } else if (regimeTributario === 'lucro_presumido') {
             // Lucro Presumido: sem créditos PIS/COFINS, mas permite IPI e ICMS
-            totalCreditos += totais.ipi_devido;
-            totalCreditos += totais.icms_devido;
+            creditosDetalhados.ipi = totais.ipi_devido;
+            creditosDetalhados.icms = totais.icms_devido;
         }
-        // Simples Nacional: sem créditos
+        // Simples Nacional: sem créditos (já zerados na inicialização)
 
-        const custoDesembolso = custoBase - totalCreditos;
+        // Calcular total
+        creditosDetalhados.total = creditosDetalhados.pis + creditosDetalhados.cofins + 
+                                  creditosDetalhados.ipi + creditosDetalhados.icms;
 
-        console.log(`💳 Custo Desembolso: R$ ${custoDesembolso.toFixed(2)} (créditos: R$ ${totalCreditos.toFixed(2)})`);
-        return custoDesembolso;
+        const custoDesembolso = custoBase - creditosDetalhados.total;
+
+        console.log(`💳 Custo Desembolso: R$ ${custoDesembolso.toFixed(2)} (créditos: R$ ${creditosDetalhados.total.toFixed(2)})`);
+        
+        return {
+            valor: custoDesembolso,
+            creditos: creditosDetalhados
+        };
     }
 
     /**
@@ -1356,6 +1415,49 @@ function exibirResultadosCustos(custos4Tipos) {
     custosDisplay.innerHTML = tiposHtml;
     resultadosCard.style.display = 'block';
 
+    // Preencher campos de informações que estavam vazios
+    if (custos4Tipos.creditos_aplicados) {
+        const creditos = custos4Tipos.creditos_aplicados;
+        
+        // Total Créditos
+        const totalCreditosEl = document.getElementById('totalCreditos');
+        if (totalCreditosEl) {
+            totalCreditosEl.textContent = `R$ ${creditos.total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        }
+
+        // Economia Percentual
+        const economiaPercentualEl = document.getElementById('economiaPercentual');
+        if (economiaPercentualEl && custos4Tipos.tipo_1_custo_base > 0) {
+            const economiaPercentual = ((creditos.total / custos4Tipos.tipo_1_custo_base) * 100).toFixed(1);
+            economiaPercentualEl.textContent = `${economiaPercentual}%`;
+        }
+
+        // Adicionar breakdown detalhado de créditos após os cards principais
+        adicionarBreakdownCreditos(creditos);
+    }
+
+    // Regime Aplicado
+    const regimeAplicadoEl = document.getElementById('regimeAplicado');
+    if (regimeAplicadoEl && custos4Tipos.regime_tributario) {
+        const regimeFormatado = custos4Tipos.regime_tributario
+            .replace('_', ' ')
+            .replace(/\b\w/g, l => l.toUpperCase());
+        regimeAplicadoEl.textContent = regimeFormatado;
+    }
+
+    // Versão do Sistema
+    const versaoCalculoEl = document.getElementById('versaoCalculo');
+    if (versaoCalculoEl && custos4Tipos.versao_sistema) {
+        versaoCalculoEl.textContent = custos4Tipos.versao_sistema;
+    }
+
+    // Timestamp
+    const timestampCalculoEl = document.getElementById('timestampCalculo');
+    if (timestampCalculoEl && custos4Tipos.timestamp) {
+        const timestamp = new Date(custos4Tipos.timestamp).toLocaleString('pt-BR');
+        timestampCalculoEl.textContent = timestamp;
+    }
+
     if (salvarBtn) {
         salvarBtn.style.display = 'inline-block';
     }
@@ -1364,6 +1466,98 @@ function exibirResultadosCustos(custos4Tipos) {
     const itemPricingBtn = document.getElementById('itemPricingBtn');
     if (itemPricingBtn) {
         itemPricingBtn.style.display = 'inline-block';
+    }
+}
+
+/**
+ * Adicionar breakdown detalhado de créditos na interface
+ */
+function adicionarBreakdownCreditos(creditos) {
+    // Procurar por um container existente ou criar um novo
+    let breakdownContainer = document.getElementById('creditosBreakdownContainer');
+    
+    if (!breakdownContainer) {
+        // Criar container para o breakdown se não existir
+        breakdownContainer = document.createElement('div');
+        breakdownContainer.id = 'creditosBreakdownContainer';
+        breakdownContainer.className = 'mt-4';
+        
+        // Inserir após o container de custos
+        const custosDisplay = document.getElementById('custosDisplay');
+        if (custosDisplay && custosDisplay.parentNode) {
+            custosDisplay.parentNode.insertBefore(breakdownContainer, custosDisplay.nextSibling);
+        }
+    }
+
+    // Criar HTML do breakdown somente se há créditos aplicados
+    if (creditos.total > 0) {
+        const breakdownHtml = `
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">
+                        <i class="bi bi-piggy-bank"></i> Detalhamento de Créditos Tributários
+                        <small class="float-end">Regime: ${creditos.regime.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</small>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        ${creditos.pis > 0 ? `
+                        <div class="col-md-3">
+                            <div class="text-center p-2 border rounded bg-light">
+                                <small class="text-muted">Crédito PIS</small>
+                                <div class="fw-bold text-success">R$ ${creditos.pis.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                            </div>
+                        </div>` : ''}
+                        ${creditos.cofins > 0 ? `
+                        <div class="col-md-3">
+                            <div class="text-center p-2 border rounded bg-light">
+                                <small class="text-muted">Crédito COFINS</small>
+                                <div class="fw-bold text-success">R$ ${creditos.cofins.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                            </div>
+                        </div>` : ''}
+                        ${creditos.ipi > 0 ? `
+                        <div class="col-md-3">
+                            <div class="text-center p-2 border rounded bg-light">
+                                <small class="text-muted">Crédito IPI</small>
+                                <div class="fw-bold text-success">R$ ${creditos.ipi.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                            </div>
+                        </div>` : ''}
+                        ${creditos.icms > 0 ? `
+                        <div class="col-md-3">
+                            <div class="text-center p-2 border rounded bg-light">
+                                <small class="text-muted">Crédito ICMS</small>
+                                <div class="fw-bold text-success">R$ ${creditos.icms.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</div>
+                            </div>
+                        </div>` : ''}
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <h5 class="text-success mb-0">
+                                <i class="bi bi-calculator"></i> Total de Créditos: 
+                                <strong>R$ ${creditos.total.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</strong>
+                            </h5>
+                            <small class="text-muted">Economia tributária aplicada conforme regime ${creditos.regime.replace('_', ' ')}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        breakdownContainer.innerHTML = breakdownHtml;
+    } else {
+        // Se não há créditos, mostrar informativo
+        const noCreditsHtml = `
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-info-circle text-warning"></i>
+                    <strong>Regime ${creditos.regime.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong>: 
+                    Nenhum crédito tributário aplicável para esta importação.
+                </div>
+            </div>
+        `;
+        
+        breakdownContainer.innerHTML = noCreditsHtml;
     }
 }
 

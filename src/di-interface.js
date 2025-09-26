@@ -1573,15 +1573,10 @@ function prepararParaPrecificacao() {
         // Passar dados via sessionStorage para próxima fase
         sessionStorage.setItem('di_compliance_data', JSON.stringify(dadosParaPrecificacao));
         
-        // Salvar automaticamente antes de prosseguir
-        salvarDadosEmArquivo();
-        
-        // Aguardar um pouco para o download e então redirecionar
-        setTimeout(() => {
-            if (confirm('Dados salvos! Deseja prosseguir para a fase de precificação?')) {
-                window.location.href = 'src/modules/pricing/pricing-interface.html';
-            }
-        }, 1000);
+        // Prosseguir diretamente para precificação
+        if (confirm('Deseja prosseguir para a fase de precificação?')) {
+            window.location.href = 'src/modules/pricing/pricing-interface.html';
+        }
         
     } catch (error) {
         console.error('Erro ao preparar para precificação:', error);
