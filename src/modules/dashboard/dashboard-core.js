@@ -5,6 +5,9 @@
  * Nomenclatura oficial DIProcessor.js
  */
 
+// ES6 Module Import
+import Dexie from 'dexie';
+
 class DashboardCore {
     constructor() {
         this.db = new Dexie('ExpertzyDB');
