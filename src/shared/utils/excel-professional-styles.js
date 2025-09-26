@@ -412,6 +412,4 @@ export class ExcelProfessionalStyles {
 }
 
 // Export para uso em outros módulos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ExcelProfessionalStyles;
-}
+export { ExcelProfessionalStyles };
