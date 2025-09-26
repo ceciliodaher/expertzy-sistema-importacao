@@ -1482,15 +1482,19 @@ function salvarConfiguracoes() {
  * Abrir módulo de precificação por itens (FASE 2.5)
  */
 function abrirPrecificacaoItens() {
-    // Verificar se há custos calculados
-    if (!sistemaGlobal.custos4Tipos || sistemaGlobal.custos4Tipos.tipo_1_custo_base <= 0) {
-        mostrarAlerta('Erro: É necessário calcular os custos primeiro antes de precificar itens individuais.', 'error');
+    // Verificar se há custos calculados (estrutura completa)
+    if (!sistemaGlobal.custos4Tipos || 
+        typeof sistemaGlobal.custos4Tipos.tipo_1_custo_base === 'undefined' ||
+        typeof sistemaGlobal.custos4Tipos.tipo_2_custo_desembolso === 'undefined' ||
+        typeof sistemaGlobal.custos4Tipos.tipo_3_custo_contabil === 'undefined' ||
+        typeof sistemaGlobal.custos4Tipos.tipo_4_base_formacao_preco === 'undefined') {
+        showAlert('Erro: É necessário calcular os custos primeiro antes de precificar itens individuais.', 'danger');
         return;
     }
 
     // Verificar se há DI selecionada
     if (!sistemaGlobal.diSelecionada || !sistemaGlobal.diSelecionada.numero_di) {
-        mostrarAlerta('Erro: É necessário ter uma DI selecionada com custos calculados.', 'error');
+        showAlert('Erro: É necessário ter uma DI selecionada com custos calculados.', 'danger');
         return;
     }
 
@@ -1512,7 +1516,7 @@ function abrirPrecificacaoItens() {
 
     } catch (error) {
         console.error('❌ Erro ao navegar para precificação de itens:', error);
-        mostrarAlerta('Erro interno ao navegar para precificação de itens.', 'error');
+        showAlert('Erro interno ao navegar para precificação de itens.', 'danger');
     }
 }
 
