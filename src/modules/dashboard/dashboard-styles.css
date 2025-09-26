@@ -66,6 +66,15 @@
     background: linear-gradient(180deg, var(--expertzy-red) 0%, var(--expertzy-red-light) 100%);
 }
 
+/* Pricing specific stat cards */
+.stat-card.pricing-card::before {
+    background: linear-gradient(180deg, #ffc107 0%, #fff3cd 100%);
+}
+
+.stat-card.pricing-card .stat-value {
+    color: #856404;
+}
+
 .stat-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--expertzy-shadow-lg);

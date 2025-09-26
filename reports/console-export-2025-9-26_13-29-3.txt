@@ -1,0 +1,23 @@
+🚀 Iniciando sistema de precificação... pricing-interface.js:1137:17
+✅ Dados da DI 2300120746 carregados do sessionStorage pricing-interface.js:1201:17
+✅ Estrutura totais validada: 
+Object { valor_aduaneiro: 565511.2599999999, ii_devido: 79184.33999999997, ipi_devido: 33319.88, pis_devido: 14050.24, cofins_devido: 67647.66, icms_devido: 178614.94432098756, despesas_aduaneiras: 1750.3300000000002 }
+pricing-interface.js:1202:17
+🚀 Inicializando sistema de precificação... pricing-interface.js:772:21
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+✅ Alíquotas ICMS carregadas dos dados oficiais pricing-interface.js:68:21
+✅ Regras de tributação monofásica carregadas dos dados oficiais pricing-interface.js:91:21
+✅ MotorCalculoTributario inicializado com dados externos pricing-interface.js:45:21
+✅ Sistema de precificação inicializado com sucesso pricing-interface.js:781:21
+✅ Dados da DI validados com sucesso pricing-interface.js:584:17
+✅ Dados da DI 2300120746 carregados para precificação pricing-interface.js:798:17
+✅ Interface atualizada com dados da DI pricing-interface.js:1237:17
+✅ Sistema de precificação inicializado com sucesso pricing-interface.js:1155:17
+✅ Parâmetros gerenciais validados com sucesso pricing-interface.js:681:17
+🏭 Calculando os 4 tipos de custos... pricing-interface.js:819:21
+💰 Custo Base: R$ 940078.65 pricing-interface.js:971:17
+💳 Custo Desembolso: R$ 646445.93 (créditos: R$ 293632.72) pricing-interface.js:1007:17
+📊 Custo Contábil: R$ 646445.93 pricing-interface.js:1021:17
+🎯 Base Formação Preço: R$ 646445.93 pricing-interface.js:1035:17
+✅ 4 tipos de custos calculados: Base R$ 940078.65 → Desembolso R$ 646445.93 → Contábil R$ 646445.93 → Formação Preço R$ 646445.93 pricing-interface.js:845:21

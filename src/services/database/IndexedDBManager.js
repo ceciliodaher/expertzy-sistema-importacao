@@ -8,15 +8,13 @@
  * - NO HARDCODED DATA: Todos os códigos e configurações em arquivos externos
  */
 
-
-// Dexie is loaded via CDN in HTML - access it globally
-const Dexie = window.Dexie;
+import Dexie from 'dexie';
 
 class IndexedDBManager {
     constructor() {
-        // Validar se Dexie está disponível
+        // Validar se Dexie está disponível via ES6 import
         if (!Dexie) {
-            throw new Error('Dexie.js não está disponível - verifique se foi carregado corretamente');
+            throw new Error('Dexie.js não está disponível - falha no import ES6');
         }
         
         // Inicializar banco de dados Dexie
@@ -25,8 +23,8 @@ class IndexedDBManager {
         // Códigos de receita serão carregados via fetch no initialize()
         this.codigosReceita = null;
         
-        // Definir schema conforme CLAUDE.md
-        this.initializeSchema();
+        // Schema será inicializado no initialize() para garantir timing correto
+        this.schemaInitialized = false;
     }
 
     /**
@@ -35,6 +33,12 @@ class IndexedDBManager {
      */
     async initialize() {
         try {
+            // Inicializar schema se ainda não foi feito
+            if (!this.schemaInitialized) {
+                this.initializeSchema();
+                this.schemaInitialized = true;
+            }
+            
             // Carregar códigos de receita do arquivo JSON
             const response = await fetch(new URL('../../shared/data/codigos-receita.json', import.meta.url));
             if (!response.ok) {

@@ -15,7 +15,7 @@
 
 import ItemPricingCalculator from '../../core/calculators/ItemPricingCalculator.js';
 import IndexedDBManager from '../../services/database/IndexedDBManager.js';
-import ConfigLoader from '../../shared/utils/ConfigLoader.js';
+import { ConfigLoader } from '../../shared/utils/ConfigLoader.js';
 
 class ItemPricingInterface {
     constructor() {
@@ -731,11 +731,11 @@ class ItemPricingInterface {
 // Inicializar interface quando DOM estiver pronto
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const interface = new ItemPricingInterface();
-        await interface.initialize();
+        const pricingInterface = new ItemPricingInterface();
+        await pricingInterface.initialize();
         
         // Tornar disponível globalmente para debug
-        window.itemPricingInterface = interface;
+        window.itemPricingInterface = pricingInterface;
         
     } catch (error) {
         console.error('❌ FALHA CRÍTICA na inicialização da interface:', error);

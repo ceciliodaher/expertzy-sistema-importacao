@@ -71,7 +71,8 @@ class DashboardCore {
                 totalDespesas,
                 totalCarga,
                 totalIncentivos,
-                recentDIs
+                recentDIs,
+                itemPricingStats
             ] = await Promise.all([
                 this.db.declaracoes.count(),
                 this.db.adicoes.count(),
@@ -83,7 +84,8 @@ class DashboardCore {
                     .orderBy('data_processamento')
                     .reverse()
                     .limit(5)
-                    .toArray()
+                    .toArray(),
+                this.getItemPricingStats()
             ]);
             
             // Calcular estatísticas derivadas
@@ -100,6 +102,9 @@ class DashboardCore {
                 avgProdutosPorDI,
                 avgAdicoesPorDI,
                 recentDIs,
+                // Estatísticas de precificação individual (FASE 2.5)
+                itemsPrecificados: itemPricingStats.total_itens_precificados,
+                precoMedio: itemPricingStats.preco_medio,
                 lastUpdate: new Date()
             };
             
@@ -979,6 +984,37 @@ class DashboardCore {
         }, {});
     }
     
+    /**
+     * Obter estatísticas de precificação individual (FASE 2.5)
+     */
+    async getItemPricingStats() {
+        try {
+            // Verificar se tabela de item pricing existe
+            if (!this.db.item_pricing_results) {
+                return {
+                    total_itens_precificados: 0,
+                    preco_medio: 0,
+                    distribuicao_por_estado: {},
+                    regimes_mais_usados: {},
+                    tipos_cliente_distribuicao: {}
+                };
+            }
+
+            // Usar o método já implementado no IndexedDBManager
+            return await this.db.getItemPricingStatistics();
+
+        } catch (error) {
+            console.error('❌ Erro ao obter estatísticas de item pricing:', error);
+            return {
+                total_itens_precificados: 0,
+                preco_medio: 0,
+                distribuicao_por_estado: {},
+                regimes_mais_usados: {},
+                tipos_cliente_distribuicao: {}
+            };
+        }
+    }
+
     /**
      * Refresh das estatísticas (chamado automaticamente)
      */
