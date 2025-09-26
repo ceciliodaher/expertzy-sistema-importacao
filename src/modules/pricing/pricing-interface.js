@@ -1482,32 +1482,18 @@ function salvarConfiguracoes() {
  * Abrir módulo de precificação por itens (FASE 2.5)
  */
 function abrirPrecificacaoItens() {
-    // Verificar se há custos calculados (estrutura completa)
-    if (!sistemaGlobal.custos4Tipos || 
-        typeof sistemaGlobal.custos4Tipos.tipo_1_custo_base === 'undefined' ||
-        typeof sistemaGlobal.custos4Tipos.tipo_2_custo_desembolso === 'undefined' ||
-        typeof sistemaGlobal.custos4Tipos.tipo_3_custo_contabil === 'undefined' ||
-        typeof sistemaGlobal.custos4Tipos.tipo_4_base_formacao_preco === 'undefined') {
-        showAlert('Erro: É necessário calcular os custos primeiro antes de precificar itens individuais.', 'danger');
-        return;
-    }
-
-    // Verificar se há DI selecionada
-    if (!sistemaGlobal.diSelecionada || !sistemaGlobal.diSelecionada.numero_di) {
-        showAlert('Erro: É necessário ter uma DI selecionada com custos calculados.', 'danger');
-        return;
-    }
-
     try {
         // Navegar para o módulo de item pricing
         const itemPricingURL = '../item-pricing/item-pricing-interface.html';
         
         // Salvar estado atual no sessionStorage para manter contexto
-        sessionStorage.setItem('expertzy_pricing_context', JSON.stringify({
-            di_numero: sistemaGlobal.diSelecionada.numero_di,
-            custos_calculados: sistemaGlobal.custos4Tipos,
-            timestamp: new Date().toISOString()
-        }));
+        if (sistemaGlobal.diSelecionada && sistemaGlobal.custos4Tipos) {
+            sessionStorage.setItem('expertzy_pricing_context', JSON.stringify({
+                di_numero: sistemaGlobal.diSelecionada.numero_di,
+                custos_calculados: sistemaGlobal.custos4Tipos,
+                timestamp: new Date().toISOString()
+            }));
+        }
 
         // Confirmar navegação
         if (confirm('Deseja navegar para o módulo de Precificação Individual por Item?\n\nOs custos calculados serão mantidos para precificar itens específicos.')) {
@@ -1516,7 +1502,8 @@ function abrirPrecificacaoItens() {
 
     } catch (error) {
         console.error('❌ Erro ao navegar para precificação de itens:', error);
-        showAlert('Erro interno ao navegar para precificação de itens.', 'danger');
+        // Navegação simplificada em caso de erro
+        window.location.href = '../item-pricing/item-pricing-interface.html';
     }
 }
 
