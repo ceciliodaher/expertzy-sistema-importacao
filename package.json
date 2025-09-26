@@ -4,24 +4,27 @@
   "description": "Sistema Brasileiro de Tributação e Precificação de Importação - Expertzy",
   "main": "index.html",
   "scripts": {
-    "dev": "node server.js",
+    "dev": "vite",
     "test": "npm run test:e2e",
     "test:e2e": "playwright test",
     "test:e2e:fase1": "playwright test tests/e2e/fase1-foundation",
-    "test:e2e:fase2": "playwright test tests/e2e/fase2-incentivos-entrada", 
+    "test:e2e:fase2": "playwright test tests/e2e/fase2-incentivos-entrada",
     "test:e2e:fase3": "playwright test tests/e2e/fase3-incentivos-saida",
     "test:e2e:fase4": "playwright test tests/e2e/fase4-dashboard",
     "test:e2e:fase5": "playwright test tests/e2e/fase5-regimes",
     "test:e2e:fase6": "playwright test tests/e2e/fase6-integracao",
     "test:xml-real": "playwright test xml-real-processing",
-    "test:logs": "playwright test log-validation", 
+    "test:logs": "playwright test log-validation",
     "test:init": "playwright test system-initialization",
     "test:performance": "playwright test --project=performance",
     "test:memory": "playwright test tests/e2e/memory",
     "test:coverage": "playwright test --project=coverage",
-    "build": "echo 'Building production version...' && npm run test:e2e:fase1",
+    "build": "vite build",
     "lint": "echo 'Running lint checks...'",
-    "serve": "python3 -m http.server 8000",
+    "preview": "vite preview",
+    "serve": "vite preview --port 8000",
+    "legacy:dev": "node server.legacy.js",
+    "test:vite": "npm run build && npm run preview & sleep 3 && playwright test && pkill -f 'vite preview'",
     "setup": "npm install && npx playwright install"
   },
   "dependencies": {
@@ -32,7 +35,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
-    "express": "^4.18.2"
+    "@vitejs/plugin-legacy": "^7.2.1",
+    "express": "^4.18.2",
+    "vite": "^7.1.7"
   },
   "keywords": [
     "importacao",

@@ -292,7 +292,7 @@ Preço Final = Preço Base × (1 + % IPI)
 #### Método do Markup
 
 ```
-Markup = 100 ÷ (100 - Despesas Fixas% - Despesas Variáveis% - Margem Lucro% - Impostos Por Dentro%)
+Markup = 100 ÷ (100 - Margem Lucro% - Impostos Por Dentro%)
 Preço Base = Custo × Markup
 Preço Final = Preço Base × (1 + % IPI)
 ```

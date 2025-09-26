@@ -63,6 +63,483 @@ class PricingEngine {
         }
     }
 
+    // ========================================
+    // FASE 2: MOTOR DE CÁLCULO - 4 TIPOS DE CUSTOS
+    // Implementação conforme PLANO FASE 2 DEFINITIVO
+    // ========================================
+
+    /**
+     * TIPO 1: Cálculo do Custo Base
+     * Fórmula: valor_aduaneiro + II + IPI + PIS + COFINS + ICMS + despesas_aduaneiras
+     * @param {Object} engineData - Dados estruturados para cálculo
+     * @returns {Object} Estrutura completa do custo base
+     */
+    calculateCustoBase(engineData) {
+        // Validações NO FALLBACKS obrigatórias
+        if (!engineData) {
+            throw new Error('engineData obrigatório para cálculo de custo base - não fornecido');
+        }
+
+        if (!engineData.totais) {
+            throw new Error('engineData.totais obrigatório para cálculo de custo base - estrutura ausente');
+        }
+
+        const totais = engineData.totais;
+
+        // Validar cada componente obrigatório
+        if (typeof totais.valor_aduaneiro !== 'number') {
+            throw new Error('Valor aduaneiro obrigatório e deve ser numérico para cálculo de custo base');
+        }
+
+        if (typeof totais.ii_devido !== 'number') {
+            throw new Error('II devido obrigatório e deve ser numérico para cálculo de custo base');
+        }
+
+        if (typeof totais.ipi_devido !== 'number') {
+            throw new Error('IPI devido obrigatório e deve ser numérico para cálculo de custo base');
+        }
+
+        if (typeof totais.pis_devido !== 'number') {
+            throw new Error('PIS devido obrigatório e deve ser numérico para cálculo de custo base');
+        }
+
+        if (typeof totais.cofins_devido !== 'number') {
+            throw new Error('COFINS devido obrigatório e deve ser numérico para cálculo de custo base');
+        }
+
+        if (typeof totais.icms_devido !== 'number') {
+            throw new Error('ICMS devido obrigatório e deve ser numérico para cálculo de custo base');
+        }
+
+        if (typeof totais.despesas_aduaneiras !== 'number') {
+            throw new Error('Despesas aduaneiras obrigatório e deve ser numérico para cálculo de custo base');
+        }
+
+        // Calcular custo base conforme fórmula oficial
+        const custo_base = 
+            totais.valor_aduaneiro +
+            totais.ii_devido +
+            totais.ipi_devido +
+            totais.pis_devido +
+            totais.cofins_devido +
+            totais.icms_devido +
+            totais.despesas_aduaneiras;
+
+        console.log(`💰 Custo Base calculado: R$ ${custo_base.toFixed(2)}`);
+
+        return {
+            custo_base: custo_base,
+            detalhamento: {
+                valor_aduaneiro: totais.valor_aduaneiro,
+                impostos_federais: totais.ii_devido + totais.ipi_devido + totais.pis_devido + totais.cofins_devido,
+                icms: totais.icms_devido,
+                despesas_aduaneiras: totais.despesas_aduaneiras
+            },
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * TIPO 2: Cálculo do Custo de Desembolso
+     * Fórmula: custo_base - creditos_tributarios_por_regime
+     * @param {number} custoBase - Custo base calculado anteriormente
+     * @param {string} regimeTributario - lucro_real | lucro_presumido | simples_nacional
+     * @param {Object} engineData - Dados para cálculo de créditos
+     * @returns {Object} Estrutura completa do custo de desembolso
+     */
+    async calculateCustoDesembolso(custoBase, regimeTributario, engineData) {
+        // Validações NO FALLBACKS obrigatórias
+        if (typeof custoBase !== 'number') {
+            throw new Error('Custo base deve ser numérico para cálculo de custo de desembolso');
+        }
+
+        if (custoBase <= 0) {
+            throw new Error('Custo base deve ser positivo para cálculo de custo de desembolso');
+        }
+
+        if (!regimeTributario) {
+            throw new Error('Regime tributário obrigatório para cálculo de custo de desembolso - não fornecido');
+        }
+
+        const regimesValidos = ['lucro_real', 'lucro_presumido', 'simples_nacional'];
+        if (!regimesValidos.includes(regimeTributario)) {
+            throw new Error(`Regime tributário inválido: ${regimeTributario}. Válidos: ${regimesValidos.join(', ')}`);
+        }
+
+        if (!engineData) {
+            throw new Error('engineData obrigatório para cálculo de créditos tributários');
+        }
+
+        // Calcular créditos por regime tributário
+        const creditos = await this.calculateCreditos(custoBase, regimeTributario, engineData);
+
+        const custo_desembolso = custoBase - creditos.total_creditos;
+
+        console.log(`💳 Custo Desembolso calculado: R$ ${custo_desembolso.toFixed(2)} (créditos: R$ ${creditos.total_creditos.toFixed(2)})`);
+
+        return {
+            custo_desembolso: custo_desembolso,
+            custo_base_original: custoBase,
+            total_creditos_aplicados: creditos.total_creditos,
+            economia_creditos: creditos.total_creditos,
+            percentual_economia: ((creditos.total_creditos / custoBase) * 100),
+            regime_tributario: regimeTributario,
+            detalhamento_creditos: creditos.detalhamento,
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * TIPO 3: Cálculo do Custo Contábil
+     * Fórmula: custo_desembolso + encargos_financeiros - tributos_recuperáveis
+     * @param {number} custoDesembolso - Custo de desembolso calculado anteriormente
+     * @param {Object} parametrosGerenciais - Parâmetros obrigatórios do usuário
+     * @returns {Object} Estrutura completa do custo contábil
+     */
+    calculateCustoContabil(custoDesembolso, parametrosGerenciais) {
+        // Validações NO FALLBACKS obrigatórias
+        if (typeof custoDesembolso !== 'number') {
+            throw new Error('Custo de desembolso deve ser numérico para cálculo de custo contábil');
+        }
+
+        if (custoDesembolso <= 0) {
+            throw new Error('Custo de desembolso deve ser positivo para cálculo de custo contábil');
+        }
+
+        if (!parametrosGerenciais) {
+            throw new Error('Parâmetros gerenciais obrigatórios - devem ser preenchidos pelo usuário na interface');
+        }
+
+        if (typeof parametrosGerenciais.encargos_financeiros_percentual !== 'number') {
+            throw new Error('Encargos financeiros (%) obrigatório - deve ser configurado pelo usuário');
+        }
+
+        if (typeof parametrosGerenciais.tributos_recuperaveis_outros !== 'number') {
+            throw new Error('Tributos recuperáveis outros (valor) obrigatório - deve ser configurado pelo usuário');
+        }
+
+        // Validar percentuais dentro de limites razoáveis
+        if (parametrosGerenciais.encargos_financeiros_percentual < 0 || parametrosGerenciais.encargos_financeiros_percentual > 100) {
+            throw new Error('Encargos financeiros % deve estar entre 0 e 100');
+        }
+
+        if (parametrosGerenciais.tributos_recuperaveis_outros < 0) {
+            throw new Error('Tributos recuperáveis outros deve ser >= 0');
+        }
+
+        // Calcular componentes do custo contábil
+        const encargosFinanceiros = custoDesembolso * (parametrosGerenciais.encargos_financeiros_percentual / 100);
+        const tributosRecuperaveis = parametrosGerenciais.tributos_recuperaveis_outros;
+
+        const custo_contabil = custoDesembolso + encargosFinanceiros - tributosRecuperaveis;
+
+        console.log(`📊 Custo Contábil calculado: R$ ${custo_contabil.toFixed(2)}`);
+
+        return {
+            custo_contabil: custo_contabil,
+            custo_desembolso_original: custoDesembolso,
+            encargos_financeiros: encargosFinanceiros,
+            encargos_financeiros_percentual: parametrosGerenciais.encargos_financeiros_percentual,
+            tributos_recuperaveis_outros: tributosRecuperaveis,
+            ajuste_liquido: encargosFinanceiros - tributosRecuperaveis,
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * TIPO 4: Cálculo da Base para Formação de Preço
+     * Fórmula: custo_contabil + custos_indiretos + margem_operacional
+     * @param {number} custoContabil - Custo contábil calculado anteriormente
+     * @param {Object} parametrosGerenciais - Parâmetros obrigatórios do usuário
+     * @returns {Object} Estrutura completa da base para formação de preço
+     */
+    calculateBaseFormacaoPreco(custoContabil, parametrosGerenciais) {
+        // Validações NO FALLBACKS obrigatórias
+        if (typeof custoContabil !== 'number') {
+            throw new Error('Custo contábil deve ser numérico para cálculo de base de formação de preço');
+        }
+
+        if (custoContabil <= 0) {
+            throw new Error('Custo contábil deve ser positivo para cálculo de base de formação de preço');
+        }
+
+        if (!parametrosGerenciais) {
+            throw new Error('Parâmetros gerenciais obrigatórios - devem ser preenchidos pelo usuário na interface');
+        }
+
+        if (typeof parametrosGerenciais.custos_indiretos_percentual !== 'number') {
+            throw new Error('Custos indiretos (%) obrigatório - deve ser configurado pelo usuário');
+        }
+
+        if (typeof parametrosGerenciais.margem_operacional_percentual !== 'number') {
+            throw new Error('Margem operacional (%) obrigatório - deve ser configurado pelo usuário');
+        }
+
+        // Validar percentuais dentro de limites razoáveis
+        if (parametrosGerenciais.custos_indiretos_percentual < 0 || parametrosGerenciais.custos_indiretos_percentual > 100) {
+            throw new Error('Custos indiretos % deve estar entre 0 e 100');
+        }
+
+        if (parametrosGerenciais.margem_operacional_percentual < 0 || parametrosGerenciais.margem_operacional_percentual > 1000) {
+            throw new Error('Margem operacional % deve estar entre 0 e 1000');
+        }
+
+        // Calcular componentes da base de formação de preço
+        const custosIndiretos = custoContabil * (parametrosGerenciais.custos_indiretos_percentual / 100);
+        const margemOperacional = custoContabil * (parametrosGerenciais.margem_operacional_percentual / 100);
+
+        const base_formacao_preco = custoContabil + custosIndiretos + margemOperacional;
+
+        console.log(`🎯 Base Formação Preço calculada: R$ ${base_formacao_preco.toFixed(2)}`);
+
+        return {
+            base_formacao_preco: base_formacao_preco,
+            custo_contabil_original: custoContabil,
+            custos_indiretos: custosIndiretos,
+            custos_indiretos_percentual: parametrosGerenciais.custos_indiretos_percentual,
+            margem_operacional: margemOperacional,
+            margem_operacional_percentual: parametrosGerenciais.margem_operacional_percentual,
+            incremento_total: custosIndiretos + margemOperacional,
+            markup_sobre_contabil: ((base_formacao_preco - custoContabil) / custoContabil) * 100,
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * Cálculo de Créditos Tributários conforme Lei 10.865/2004
+     * Base correta: valor_aduaneiro + ipi_capitalizado (SEM despesas aduaneiras)
+     * @param {number} custoBase - Custo base para referência
+     * @param {string} regimeTributario - Regime tributário da empresa
+     * @param {Object} engineData - Dados da DI para cálculo
+     * @returns {Object} Créditos detalhados por imposto e regime
+     */
+    async calculateCreditos(custoBase, regimeTributario, engineData) {
+        // Validações NO FALLBACKS obrigatórias
+        if (!engineData || !engineData.totais) {
+            throw new Error('Dados de totais obrigatórios para cálculo de créditos tributários');
+        }
+
+        const totais = engineData.totais;
+        
+        // Base de cálculo CORRETA conforme Lei 10.865/2004
+        const baseCreditos = totais.valor_aduaneiro + totais.ipi_devido;
+        if (baseCreditos <= 0) {
+            throw new Error('Base de créditos inválida - valor aduaneiro + IPI deve ser positivo');
+        }
+
+        // Identificar tipo de importação (monofásico vs normal)
+        const importType = await this.identifyImportationType(engineData);
+        
+        console.log(`🔍 Tipo importação detectado: ${importType.type} | Base créditos: R$ ${baseCreditos.toFixed(2)}`);
+
+        let creditos = {
+            creditos_pis: 0,
+            creditos_cofins: 0,
+            creditos_ipi: 0,
+            creditos_icms: 0,
+            total_creditos: 0
+        };
+
+        // Calcular créditos por regime tributário
+        switch (regimeTributario) {
+            case 'lucro_real':
+                // Lucro Real: permite crédito integral mesmo para monofásicos
+                creditos.creditos_pis = baseCreditos * (importType.pis_aliquota / 100);
+                creditos.creditos_cofins = baseCreditos * (importType.cofins_aliquota / 100);
+                creditos.creditos_ipi = totais.ipi_devido;
+                creditos.creditos_icms = totais.icms_devido;
+                
+                // IMPORTANTE: Adicional COFINS (1%) NUNCA gera crédito
+                if (totais.cofins_adicional) {
+                    console.log(`⚠️ Adicional COFINS R$ ${totais.cofins_adicional.toFixed(2)} não gera crédito (§21 art.8º)`);
+                }
+                break;
+
+            case 'lucro_presumido':
+                // Lucro Presumido: SEM créditos PIS/COFINS (regime cumulativo)
+                creditos.creditos_pis = 0;
+                creditos.creditos_cofins = 0;
+                creditos.creditos_ipi = totais.ipi_devido; // IPI permite crédito (importadora = indústria)
+                creditos.creditos_icms = totais.icms_devido;
+                break;
+
+            case 'simples_nacional':
+                // Simples Nacional: ZERO créditos em todos os impostos
+                creditos.creditos_pis = 0;
+                creditos.creditos_cofins = 0;
+                creditos.creditos_ipi = 0;
+                creditos.creditos_icms = 0;
+                break;
+
+            default:
+                throw new Error(`Regime tributário não suportado para cálculo de créditos: ${regimeTributario}`);
+        }
+
+        creditos.total_creditos = creditos.creditos_pis + creditos.creditos_cofins + creditos.creditos_ipi + creditos.creditos_icms;
+
+        return {
+            total_creditos: creditos.total_creditos,
+            detalhamento: creditos,
+            regime_tributario: regimeTributario,
+            import_type: importType.type,
+            base_calculo_creditos: baseCreditos,
+            aliquotas_aplicadas: {
+                pis: importType.pis_aliquota,
+                cofins: importType.cofins_aliquota
+            },
+            observacoes: [
+                regimeTributario === 'lucro_real' ? 'Crédito integral permitido (regime não-cumulativo)' : null,
+                regimeTributario === 'lucro_presumido' ? 'SEM crédito PIS/COFINS (regime cumulativo)' : null,
+                regimeTributario === 'simples_nacional' ? 'SEM créditos (tributação unificada DAS)' : null,
+                importType.type === 'monofasic' ? 'Produto monofásico - mesmas alíquotas importação' : null
+            ].filter(Boolean),
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * Identificar tipo de importação: produtos monofásicos vs normais
+     * @param {Object} engineData - Dados da DI com adições/produtos
+     * @returns {Object} Tipo de importação e alíquotas aplicáveis
+     */
+    async identifyImportationType(engineData) {
+        // Validações NO FALLBACKS obrigatórias
+        if (!engineData || !engineData.adicoes) {
+            throw new Error('Adições obrigatórias para identificar tipo de importação (monofásico vs normal)');
+        }
+
+        if (!Array.isArray(engineData.adicoes) || engineData.adicoes.length === 0) {
+            throw new Error('Array de adições deve conter pelo menos um item para identificação do tipo');
+        }
+
+        // Carregar dados de tributação monofásica
+        let tributacaoMonofasica;
+        try {
+            const response = await fetch(new URL('../../shared/data/tributacao-monofasica.json', import.meta.url));
+            if (!response.ok) {
+                throw new Error('Erro ao carregar dados de tributação monofásica');
+            }
+            tributacaoMonofasica = await response.json();
+        } catch (error) {
+            throw new Error(`Erro ao carregar tributacao-monofasica.json: ${error.message}`);
+        }
+
+        if (!tributacaoMonofasica.deteccao_automatica || !tributacaoMonofasica.deteccao_automatica.padroes_ncm_4digitos) {
+            throw new Error('Dados de detecção automática inválidos no arquivo tributacao-monofasica.json');
+        }
+
+        // Verificar se alguma adição contém produto monofásico
+        const padroesMonofasicos = tributacaoMonofasica.deteccao_automatica.padroes_ncm_4digitos;
+        const hasMonofasicProduct = engineData.adicoes.some(adicao => {
+            if (!adicao.ncm) {
+                throw new Error(`NCM obrigatório para identificação - adição sem NCM encontrada`);
+            }
+            return padroesMonofasicos.some(padrao => adicao.ncm.startsWith(padrao));
+        });
+
+        // Retornar tipo de importação com alíquotas
+        const importType = hasMonofasicProduct ? 'monofasic' : 'normal';
+        const aliquotas = tributacaoMonofasica.aliquotas_importacao.padrao_monofasico;
+
+        return {
+            type: importType,
+            pis_aliquota: aliquotas.pis_import,
+            cofins_aliquota: aliquotas.cofins_import,
+            cofins_adicional: aliquotas.cofins_adicional,
+            ncms_monofasicos: hasMonofasicProduct ? 
+                engineData.adicoes.filter(adicao => 
+                    padroesMonofasicos.some(padrao => adicao.ncm.startsWith(padrao))
+                ).map(adicao => adicao.ncm) : []
+        };
+    }
+
+    /**
+     * Método principal: Calcular todos os 4 tipos de custos sequencialmente
+     * @param {Object} engineData - Dados estruturados da DI
+     * @returns {Object} Resultado completo com os 4 tipos de custos
+     */
+    async calculatePricing(engineData) {
+        console.log('🏭 Iniciando cálculo completo dos 4 tipos de custos...');
+
+        // Validação geral obrigatória
+        if (!engineData) {
+            throw new Error('engineData obrigatório para cálculo de precificação');
+        }
+
+        if (!engineData.regime_tributario) {
+            throw new Error('Regime tributário obrigatório - deve ser especificado no engineData');
+        }
+
+        if (!engineData.parametros_gerenciais) {
+            throw new Error('Parâmetros gerenciais obrigatórios - devem ser preenchidos pelo usuário');
+        }
+
+        try {
+            // TIPO 1: Custo Base
+            const resultadoCustoBase = this.calculateCustoBase(engineData);
+            
+            // TIPO 2: Custo de Desembolso
+            const resultadoCustoDesembolso = await this.calculateCustoDesembolso(
+                resultadoCustoBase.custo_base, 
+                engineData.regime_tributario, 
+                engineData
+            );
+            
+            // TIPO 3: Custo Contábil
+            const resultadoCustoContabil = this.calculateCustoContabil(
+                resultadoCustoDesembolso.custo_desembolso, 
+                engineData.parametros_gerenciais
+            );
+            
+            // TIPO 4: Base para Formação de Preço
+            const resultadoBaseFormacaoPreco = this.calculateBaseFormacaoPreco(
+                resultadoCustoContabil.custo_contabil, 
+                engineData.parametros_gerenciais
+            );
+
+            // Estruturar resultado final completo
+            const resultadoFinal = {
+                di_id: engineData.di_id,
+                numero_di: engineData.numero_di,
+                regime_tributario: engineData.regime_tributario,
+                
+                // 4 TIPOS DE CUSTOS
+                custo_base: resultadoCustoBase.custo_base,
+                custo_desembolso: resultadoCustoDesembolso.custo_desembolso,
+                custo_contabil: resultadoCustoContabil.custo_contabil,
+                base_formacao_preco: resultadoBaseFormacaoPreco.base_formacao_preco,
+                
+                // Análises principais
+                total_creditos: resultadoCustoDesembolso.total_creditos_aplicados,
+                economia_creditos: resultadoCustoDesembolso.economia_creditos,
+                percentual_economia: resultadoCustoDesembolso.percentual_economia,
+                
+                // Tipo de importação detectado
+                import_type: resultadoCustoDesembolso.regime_tributario,
+                
+                // Detalhamento completo
+                detalhamento_completo: {
+                    custoBase: resultadoCustoBase,
+                    custoDesembolso: resultadoCustoDesembolso,
+                    custoContabil: resultadoCustoContabil,
+                    baseFormacaoPreco: resultadoBaseFormacaoPreco
+                },
+                
+                timestamp: new Date().toISOString(),
+                versao_calculo: '2.0.0'
+            };
+
+            console.log('✅ Cálculo completo dos 4 tipos de custos finalizado com sucesso');
+            console.log(`📊 Resumo: Base R$ ${resultadoFinal.custo_base.toFixed(2)} → Desembolso R$ ${resultadoFinal.custo_desembolso.toFixed(2)} → Contábil R$ ${resultadoFinal.custo_contabil.toFixed(2)} → Formação Preço R$ ${resultadoFinal.base_formacao_preco.toFixed(2)}`);
+            
+            return resultadoFinal;
+
+        } catch (error) {
+            console.error('❌ Erro no cálculo dos 4 tipos de custos:', error);
+            throw new Error(`Falha no cálculo de precificação: ${error.message}`);
+        }
+    }
+
     /**
      * Load processed DI data from Phase 1
      * @param {Object} processedDI - Data from DI Processor

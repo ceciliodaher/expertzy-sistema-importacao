@@ -1,0 +1,1127 @@
+/**
+ * pricing-interface.js - Sistema de Precificação Completo
+ *
+ * Interface para cálculo de custos de importação e formação de preços
+ * PRINCÍPIOS RIGOROSOS:
+ * - NO FALLBACKS: Falha explícita para dados ausentes
+ * - NO HARDCODED DATA: Todos os dados vem de arquivos externos ou input do usuário
+ * - PORTUGUESE NOMENCLATURE: Seguindo DIProcessor.js
+ * - FAIL-FAST VALIDATION: Erro imediato para estruturas inválidas
+ *
+ * FONTES DE DADOS:
+ * - aliquotas.json: Alíquotas ICMS por estado
+ * - tributacao-monofasica.json: Produtos monofásicos
+ * - IndexedDB: Dados da DI processada
+ * - Input do usuário: Regime tributário, margens, parâmetros gerenciais
+ */
+
+/**
+ * MotorCalculoTributario - Cálculo de percentuais tributários baseado em dados externos
+ * NO HARDCODED VALUES - todos os dados vem de arquivos JSON ou input do usuário
+ */
+class MotorCalculoTributario {
+    constructor() {
+        this.aliquotasData = null;
+        this.tributacaoMonofasicaData = null;
+        this.initialized = false;
+    }
+
+    /**
+     * Inicializar motor com carregamento de dados externos - NO FALLBACKS
+     */
+    async inicializar() {
+        if (this.initialized) {
+            return; // Já inicializado
+        }
+
+        try {
+            // Carregar aliquotas.json - OBRIGATÓRIO
+            await this.carregarAliquotas();
+
+            // Carregar tributacao-monofasica.json - OBRIGATÓRIO
+            await this.carregarTributacaoMonofasica();
+
+            this.initialized = true;
+            console.log('✅ MotorCalculoTributario inicializado com dados externos');
+
+        } catch (error) {
+            throw new Error(`Falha na inicialização do MotorCalculoTributario: ${error.message}`);
+        }
+    }
+
+    /**
+     * Carregar dados de alíquotas - FAIL-FAST se arquivo não existir
+     */
+    async carregarAliquotas() {
+        try {
+            const response = await fetch(new URL('../../shared/data/aliquotas.json', import.meta.url));
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            this.aliquotasData = await response.json();
+
+            if (!this.aliquotasData.aliquotas_icms_2025) {
+                throw new Error('Estrutura inválida: aliquotas_icms_2025 não encontrado');
+            }
+
+            console.log('✅ Alíquotas ICMS carregadas dos dados oficiais');
+
+        } catch (error) {
+            throw new Error(`Erro ao carregar aliquotas.json: ${error.message}`);
+        }
+    }
+
+    /**
+     * Carregar dados de tributação monofásica - FAIL-FAST se arquivo não existir
+     */
+    async carregarTributacaoMonofasica() {
+        try {
+            const response = await fetch(new URL('../../shared/data/tributacao-monofasica.json', import.meta.url));
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            this.tributacaoMonofasicaData = await response.json();
+
+            if (!this.tributacaoMonofasicaData.regras_credito_por_regime) {
+                throw new Error('Estrutura inválida: regras_credito_por_regime não encontrado');
+            }
+
+            console.log('✅ Regras de tributação monofásica carregadas dos dados oficiais');
+
+        } catch (error) {
+            throw new Error(`Erro ao carregar tributacao-monofasica.json: ${error.message}`);
+        }
+    }
+
+    /**
+     * Obter alíquota ICMS para estado específico - NO FALLBACKS
+     * @param {string} estadoUF - Código UF do estado (obrigatório)
+     * @returns {number} Alíquota ICMS + FCP
+     */
+    obterAliquotaICMS(estadoUF) {
+        this.validarInicializacao();
+
+        if (!estadoUF) {
+            throw new Error('Código UF do estado é obrigatório para obter alíquota ICMS');
+        }
+
+        if (typeof estadoUF !== 'string') {
+            throw new Error('Código UF deve ser string');
+        }
+
+        const estadoData = this.aliquotasData.aliquotas_icms_2025[estadoUF.toUpperCase()];
+        if (!estadoData) {
+            throw new Error(`Estado ${estadoUF} não encontrado nos dados de alíquotas oficiais`);
+        }
+
+        if (typeof estadoData.aliquota_interna !== 'number') {
+            throw new Error(`Alíquota interna inválida para estado ${estadoUF} - deve ser numérica`);
+        }
+
+        // Calcular alíquota total (ICMS + FCP se aplicável)
+        let aliquotaTotal = estadoData.aliquota_interna;
+
+        if (estadoData.fcp !== null) {
+            if (typeof estadoData.fcp === 'number') {
+                // FCP fixo
+                aliquotaTotal += estadoData.fcp;
+            } else if (estadoData.fcp && typeof estadoData.fcp.max === 'number') {
+                // FCP variável - usar valor máximo conforme orientação técnica
+                aliquotaTotal += estadoData.fcp.max;
+            }
+        }
+
+        return aliquotaTotal;
+    }
+
+    /**
+     * Obter regras de crédito para regime tributário específico - NO FALLBACKS
+     * @param {string} regimeTributario - lucro_real | lucro_presumido | simples_nacional
+     * @returns {Object} Regras de crédito do regime
+     */
+    obterRegrasCreditoRegime(regimeTributario) {
+        this.validarInicializacao();
+
+        if (!regimeTributario) {
+            throw new Error('Regime tributário é obrigatório para obter regras de crédito');
+        }
+
+        const regimesValidos = ['lucro_real', 'lucro_presumido', 'simples_nacional'];
+        if (!regimesValidos.includes(regimeTributario)) {
+            throw new Error(`Regime tributário inválido: ${regimeTributario}. Válidos: ${regimesValidos.join(', ')}`);
+        }
+
+        const regrasCredito = this.tributacaoMonofasicaData.regras_credito_por_regime[regimeTributario];
+        if (!regrasCredito) {
+            throw new Error(`Regras de crédito não encontradas para regime ${regimeTributario}`);
+        }
+
+        return regrasCredito;
+    }
+
+    /**
+     * Detectar produtos monofásicos em NCM - NO FALLBACKS
+     * @param {string} ncm - Código NCM (obrigatório)
+     * @returns {boolean} Se NCM é monofásico
+     */
+    detectarMonofasico(ncm) {
+        this.validarInicializacao();
+
+        if (!ncm) {
+            throw new Error('NCM é obrigatório para detecção de produto monofásico');
+        }
+
+        if (typeof ncm !== 'string') {
+            throw new Error('NCM deve ser string');
+        }
+
+        const padroesMonofasicos = this.tributacaoMonofasicaData.deteccao_automatica?.padroes_ncm_4digitos;
+        if (!padroesMonofasicos || !Array.isArray(padroesMonofasicos)) {
+            throw new Error('Padrões de detecção monofásica não encontrados nos dados');
+        }
+
+        return padroesMonofasicos.some(padrao => ncm.startsWith(padrao));
+    }
+
+    /**
+     * Calcular percentuais de impostos por dentro para precificação - NO FALLBACKS
+     * @param {string} regimeTributario - Regime tributário da empresa
+     * @param {string} estadoUF - Estado para operações internas
+     * @param {boolean} isMonofasico - Se produto é monofásico
+     * @returns {Object} Percentuais de impostos por dentro
+     */
+    calcularPercentuaisImpostosPorDentro(regimeTributario, estadoUF, isMonofasico = false) {
+        this.validarInicializacao();
+
+        if (!regimeTributario) {
+            throw new Error('Regime tributário é obrigatório para cálculo de percentuais');
+        }
+
+        if (!estadoUF) {
+            throw new Error('Estado UF é obrigatório para cálculo de percentuais');
+        }
+
+        // Obter alíquota ICMS do estado
+        const aliquotaICMS = this.obterAliquotaICMS(estadoUF);
+
+        // Obter regras de crédito do regime
+        const regrasCredito = this.obterRegrasCreditoRegime(regimeTributario);
+
+        let percentuais = {
+            pis: 0,
+            cofins: 0,
+            icms: aliquotaICMS,
+            ipi: 0, // IPI varia por NCM - deve vir dos dados da DI
+            total: aliquotaICMS
+        };
+
+        // Calcular PIS/COFINS baseado no regime
+        if (regimeTributario === 'simples_nacional') {
+            // Simples Nacional: tributação unificada no DAS
+            // Não há PIS/COFINS separados - apenas ICMS nas operações internas
+            percentuais.pis = 0;
+            percentuais.cofins = 0;
+
+        } else if (regimeTributario === 'lucro_real') {
+            // Lucro Real: regime não-cumulativo
+            if (isMonofasico) {
+                // Produtos monofásicos: sem PIS/COFINS na saída (alíquota zero)
+                percentuais.pis = 0;
+                percentuais.cofins = 0;
+            } else {
+                // Produtos normais: alíquotas padrão não-cumulativo
+                const aliquotasPadrao = this.aliquotasData.tributos_federais?.pis_cofins_base;
+                if (!aliquotasPadrao) {
+                    throw new Error('Alíquotas padrão PIS/COFINS não encontradas nos dados');
+                }
+
+                percentuais.pis = aliquotasPadrao.pis_aliquota_basica;
+                percentuais.cofins = aliquotasPadrao.cofins_aliquota_basica;
+            }
+
+        } else if (regimeTributario === 'lucro_presumido') {
+            // Lucro Presumido: regime cumulativo
+            if (isMonofasico) {
+                // Produtos monofásicos: sem PIS/COFINS na saída
+                percentuais.pis = 0;
+                percentuais.cofins = 0;
+            } else {
+                // Produtos normais: alíquotas cumulativas (0,65% + 3%)
+                percentuais.pis = 0.65;
+                percentuais.cofins = 3.00;
+            }
+        }
+
+        // Calcular total
+        percentuais.total = percentuais.pis + percentuais.cofins + percentuais.icms + percentuais.ipi;
+
+        console.log(`📊 Percentuais calculados para ${regimeTributario}/${estadoUF}: ICMS ${percentuais.icms}% + PIS ${percentuais.pis}% + COFINS ${percentuais.cofins}% = ${percentuais.total}%`);
+
+        return percentuais;
+    }
+
+    /**
+     * Validar se motor foi inicializado - FAIL-FAST
+     */
+    validarInicializacao() {
+        if (!this.initialized) {
+            throw new Error('MotorCalculoTributario não foi inicializado - chame inicializar() primeiro');
+        }
+
+        if (!this.aliquotasData) {
+            throw new Error('Dados de alíquotas não carregados - inicialização incompleta');
+        }
+
+        if (!this.tributacaoMonofasicaData) {
+            throw new Error('Dados de tributação monofásica não carregados - inicialização incompleta');
+        }
+    }
+}
+
+/**
+ * CalculadoraMetodosPrecificacao - Implementação dos 4 métodos de precificação
+ * Utiliza fórmulas matemáticas exatas conforme especificação técnica
+ */
+class CalculadoraMetodosPrecificacao {
+    constructor(motorTributario) {
+        if (!motorTributario) {
+            throw new Error('MotorCalculoTributario é obrigatório para CalculadoraMetodosPrecificacao');
+        }
+        this.motorTributario = motorTributario;
+    }
+
+    /**
+     * MÉTODO 1: Método da Margem
+     * Fórmula: preco_base = custo_contabil / (1 - margem_desejada - percentual_impostos_por_dentro)
+     * @param {number} custoContabil - Custo contábil calculado
+     * @param {number} margemDesejada - Margem desejada em decimal (ex: 0.25 para 25%)
+     * @param {Object} percentuaisImpostos - Percentuais de impostos por dentro
+     * @param {number} aliquotaIPI - Alíquota IPI específica do produto (se aplicável)
+     * @returns {Object} Resultado do método da margem
+     */
+    calcularMetodoMargem(custoContabil, margemDesejada, percentuaisImpostos, aliquotaIPI = 0) {
+        // Validações NO FALLBACKS
+        if (typeof custoContabil !== 'number' || custoContabil <= 0) {
+            throw new Error('Custo contábil deve ser numérico e positivo para método da margem');
+        }
+
+        if (typeof margemDesejada !== 'number' || margemDesejada < 0 || margemDesejada >= 1) {
+            throw new Error('Margem desejada deve ser decimal entre 0 e 1 (ex: 0.25 para 25%)');
+        }
+
+        if (!percentuaisImpostos || typeof percentuaisImpostos.total !== 'number') {
+            throw new Error('Percentuais de impostos inválidos - total obrigatório');
+        }
+
+        if (typeof aliquotaIPI !== 'number' || aliquotaIPI < 0) {
+            throw new Error('Alíquota IPI deve ser numérica e >= 0');
+        }
+
+        // Calcular percentual total de impostos por dentro (em decimal)
+        const percentualImpostosPorDentro = percentuaisImpostos.total / 100;
+
+        // Validar se há margem suficiente
+        const margemMaximaPossivel = 1 - percentualImpostosPorDentro;
+        if (margemDesejada >= margemMaximaPossivel) {
+            throw new Error(`Margem desejada (${(margemDesejada * 100).toFixed(2)}%) inviável. Máxima possível: ${(margemMaximaPossivel * 100).toFixed(2)}% considerando impostos`);
+        }
+
+        // Aplicar fórmula do método da margem
+        const denominador = 1 - margemDesejada - percentualImpostosPorDentro;
+        if (denominador <= 0) {
+            throw new Error('Denominador inválido na fórmula - margem + impostos excedem 100%');
+        }
+
+        const precoBase = custoContabil / denominador;
+
+        // Aplicar IPI se aplicável (IPI é por fora)
+        const precoFinal = precoBase * (1 + (aliquotaIPI / 100));
+
+        // Calcular métricas de resultado
+        const valorImpostos = precoBase * percentualImpostosPorDentro;
+        const valorMargem = precoBase * margemDesejada;
+        const valorIPI = precoBase * (aliquotaIPI / 100);
+
+        return {
+            metodo: 'margem',
+            custo_contabil: custoContabil,
+            preco_base: precoBase,
+            preco_final: precoFinal,
+            margem_desejada_percentual: margemDesejada * 100,
+            margem_valor: valorMargem,
+            impostos_valor: valorImpostos,
+            ipi_valor: valorIPI,
+            percentuais_aplicados: percentuaisImpostos,
+            validacao: {
+                denominador: denominador,
+                margem_maxima_possivel: margemMaximaPossivel * 100
+            },
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * MÉTODO 2: Método do Markup
+     * Fórmula: markup_calculado = 100 / (100 - margem_lucro - percentual_impostos_por_dentro)
+     * @param {number} custoContabil - Custo contábil calculado
+     * @param {number} margemLucro - Margem de lucro desejada em percentual (ex: 25 para 25%)
+     * @param {Object} percentuaisImpostos - Percentuais de impostos por dentro
+     * @param {number} aliquotaIPI - Alíquota IPI específica do produto (se aplicável)
+     * @returns {Object} Resultado do método do markup
+     */
+    calcularMetodoMarkup(custoContabil, margemLucro, percentuaisImpostos, aliquotaIPI = 0) {
+        // Validações NO FALLBACKS
+        if (typeof custoContabil !== 'number' || custoContabil <= 0) {
+            throw new Error('Custo contábil deve ser numérico e positivo para método do markup');
+        }
+
+        if (typeof margemLucro !== 'number' || margemLucro < 0 || margemLucro >= 100) {
+            throw new Error('Margem de lucro deve ser percentual entre 0 e 100 (ex: 25 para 25%)');
+        }
+
+        if (!percentuaisImpostos || typeof percentuaisImpostos.total !== 'number') {
+            throw new Error('Percentuais de impostos inválidos - total obrigatório');
+        }
+
+        if (typeof aliquotaIPI !== 'number' || aliquotaIPI < 0) {
+            throw new Error('Alíquota IPI deve ser numérica e >= 0');
+        }
+
+        // Validar se há margem suficiente
+        const margemMaximaPossivel = 100 - percentuaisImpostos.total;
+        if (margemLucro >= margemMaximaPossivel) {
+            throw new Error(`Margem de lucro (${margemLucro}%) inviável. Máxima possível: ${margemMaximaPossivel.toFixed(2)}% considerando impostos`);
+        }
+
+        // Aplicar fórmula do método do markup
+        const denominador = 100 - margemLucro - percentuaisImpostos.total;
+        if (denominador <= 0) {
+            throw new Error('Denominador inválido na fórmula - margem + impostos excedem 100%');
+        }
+
+        const markupCalculado = 100 / denominador;
+        const precoBase = custoContabil * markupCalculado;
+
+        // Aplicar IPI se aplicável (IPI é por fora)
+        const precoFinal = precoBase * (1 + (aliquotaIPI / 100));
+
+        // Calcular métricas de resultado
+        const valorImpostos = precoBase * (percentuaisImpostos.total / 100);
+        const valorMargem = precoBase * (margemLucro / 100);
+        const valorIPI = precoBase * (aliquotaIPI / 100);
+
+        return {
+            metodo: 'markup',
+            custo_contabil: custoContabil,
+            markup_calculado: markupCalculado,
+            preco_base: precoBase,
+            preco_final: precoFinal,
+            margem_lucro_percentual: margemLucro,
+            margem_valor: valorMargem,
+            impostos_valor: valorImpostos,
+            ipi_valor: valorIPI,
+            percentuais_aplicados: percentuaisImpostos,
+            validacao: {
+                denominador: denominador,
+                margem_maxima_possivel: margemMaximaPossivel
+            },
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * MÉTODO 3: Divisão
+     * Fórmula: preco_final = custo_contabil / (1 - percentual_total_impostos_margem)
+     * @param {number} custoContabil - Custo contábil calculado
+     * @param {number} percentualTotal - Percentual total (impostos + margem) em decimal
+     * @param {number} aliquotaIPI - Alíquota IPI específica do produto (se aplicável)
+     * @returns {Object} Resultado do método divisão
+     */
+    calcularMetodoDivisao(custoContabil, percentualTotal, aliquotaIPI = 0) {
+        // Validações NO FALLBACKS
+        if (typeof custoContabil !== 'number' || custoContabil <= 0) {
+            throw new Error('Custo contábil deve ser numérico e positivo para método da divisão');
+        }
+
+        if (typeof percentualTotal !== 'number' || percentualTotal <= 0 || percentualTotal >= 1) {
+            throw new Error('Percentual total deve ser decimal entre 0 e 1 (ex: 0.4 para 40%)');
+        }
+
+        if (typeof aliquotaIPI !== 'number' || aliquotaIPI < 0) {
+            throw new Error('Alíquota IPI deve ser numérica e >= 0');
+        }
+
+        // Aplicar fórmula da divisão
+        const denominador = 1 - percentualTotal;
+        if (denominador <= 0) {
+            throw new Error('Denominador inválido - percentual total >= 100%');
+        }
+
+        const precoBase = custoContabil / denominador;
+
+        // Aplicar IPI se aplicável (IPI é por fora)
+        const precoFinal = precoBase * (1 + (aliquotaIPI / 100));
+
+        // Calcular métricas de resultado
+        const valorImpostosMargem = precoBase * percentualTotal;
+        const valorIPI = precoBase * (aliquotaIPI / 100);
+
+        return {
+            metodo: 'divisao',
+            custo_contabil: custoContabil,
+            percentual_total_decimal: percentualTotal,
+            percentual_total_percentual: percentualTotal * 100,
+            preco_base: precoBase,
+            preco_final: precoFinal,
+            valor_impostos_margem: valorImpostosMargem,
+            ipi_valor: valorIPI,
+            validacao: {
+                denominador: denominador
+            },
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    /**
+     * MÉTODO 4: Multiplicação (Factor)
+     * Fórmula: preco_final = custo_contabil * fator_multiplicador
+     * @param {number} custoContabil - Custo contábil calculado
+     * @param {number} fatorMultiplicador - Fator de multiplicação (ex: 1.67 para markup de 67%)
+     * @param {number} aliquotaIPI - Alíquota IPI específica do produto (se aplicável)
+     * @returns {Object} Resultado do método multiplicação
+     */
+    calcularMetodoMultiplicacao(custoContabil, fatorMultiplicador, aliquotaIPI = 0) {
+        // Validações NO FALLBACKS
+        if (typeof custoContabil !== 'number' || custoContabil <= 0) {
+            throw new Error('Custo contábil deve ser numérico e positivo para método da multiplicação');
+        }
+
+        if (typeof fatorMultiplicador !== 'number' || fatorMultiplicador <= 1) {
+            throw new Error('Fator multiplicador deve ser numérico e > 1 (ex: 1.67 para markup de 67%)');
+        }
+
+        if (typeof aliquotaIPI !== 'number' || aliquotaIPI < 0) {
+            throw new Error('Alíquota IPI deve ser numérica e >= 0');
+        }
+
+        // Aplicar fórmula da multiplicação
+        const precoBase = custoContabil * fatorMultiplicador;
+
+        // Aplicar IPI se aplicável (IPI é por fora)
+        const precoFinal = precoBase * (1 + (aliquotaIPI / 100));
+
+        // Calcular métricas de resultado
+        const valorMarkup = precoBase - custoContabil;
+        const percentualMarkup = ((precoBase - custoContabil) / custoContabil) * 100;
+        const margemBruta = (valorMarkup / precoBase) * 100;
+        const valorIPI = precoBase * (aliquotaIPI / 100);
+
+        return {
+            metodo: 'multiplicacao',
+            custo_contabil: custoContabil,
+            fator_multiplicador: fatorMultiplicador,
+            preco_base: precoBase,
+            preco_final: precoFinal,
+            valor_markup: valorMarkup,
+            percentual_markup: percentualMarkup,
+            margem_bruta_percentual: margemBruta,
+            ipi_valor: valorIPI,
+            timestamp: new Date().toISOString()
+        };
+    }
+}
+
+/**
+ * ValidadorParametros - Validação rigorosa de parâmetros de entrada - NO FALLBACKS
+ */
+class ValidadorParametros {
+    /**
+     * Validar dados da DI carregados do IndexedDB
+     * @param {Object} diData - Dados da DI
+     * @returns {Object} Estrutura validada
+     */
+    static validarDadosDI(diData) {
+        if (!diData) {
+            throw new Error('Dados da DI são obrigatórios - não fornecidos');
+        }
+
+        if (typeof diData !== 'object') {
+            throw new Error('Dados da DI devem ser um objeto válido');
+        }
+
+        // Validar campos obrigatórios básicos
+        const camposObrigatorios = ['numero_di', 'adicoes', 'totais'];
+        for (const campo of camposObrigatorios) {
+            if (!diData[campo]) {
+                throw new Error(`Campo obrigatório ausente nos dados da DI: ${campo}`);
+            }
+        }
+
+        // Validar número da DI
+        if (typeof diData.numero_di !== 'string' || diData.numero_di.trim().length === 0) {
+            throw new Error('Número da DI deve ser uma string não-vazia');
+        }
+
+        // Validar adições
+        if (!Array.isArray(diData.adicoes) || diData.adicoes.length === 0) {
+            throw new Error('DI deve ter pelo menos uma adição válida');
+        }
+
+        // Validar totais
+        if (typeof diData.totais !== 'object') {
+            throw new Error('Totais da DI devem ser um objeto válido');
+        }
+
+        const camposTotaisObrigatorios = ['valor_aduaneiro', 'ii_devido', 'ipi_devido', 'pis_devido', 'cofins_devido', 'icms_devido', 'despesas_aduaneiras'];
+        for (const campo of camposTotaisObrigatorios) {
+            if (typeof diData.totais[campo] !== 'number') {
+                throw new Error(`Campo total obrigatório inválido: ${campo} deve ser numérico`);
+            }
+        }
+
+        console.log('✅ Dados da DI validados com sucesso');
+        return diData;
+    }
+
+    /**
+     * Validar regime tributário
+     * @param {string} regimeTributario - Regime tributário
+     * @returns {string} Regime validado
+     */
+    static validarRegimeTributario(regimeTributario) {
+        if (!regimeTributario) {
+            throw new Error('Regime tributário é obrigatório - não fornecido pelo usuário');
+        }
+
+        if (typeof regimeTributario !== 'string') {
+            throw new Error('Regime tributário deve ser uma string');
+        }
+
+        const regimesValidos = ['lucro_real', 'lucro_presumido', 'simples_nacional'];
+        if (!regimesValidos.includes(regimeTributario)) {
+            throw new Error(`Regime tributário inválido: ${regimeTributario}. Válidos: ${regimesValidos.join(', ')}`);
+        }
+
+        return regimeTributario;
+    }
+
+    /**
+     * Validar estado UF
+     * @param {string} estadoUF - Código UF do estado
+     * @returns {string} Estado validado
+     */
+    static validarEstadoUF(estadoUF) {
+        if (!estadoUF) {
+            throw new Error('Estado UF é obrigatório - não fornecido pelo usuário');
+        }
+
+        if (typeof estadoUF !== 'string') {
+            throw new Error('Estado UF deve ser uma string');
+        }
+
+        if (estadoUF.length !== 2) {
+            throw new Error('Estado UF deve ter exatamente 2 caracteres');
+        }
+
+        return estadoUF.toUpperCase();
+    }
+
+    /**
+     * Validar parâmetros gerenciais do usuário
+     * @param {Object} parametros - Parâmetros gerenciais
+     * @returns {Object} Parâmetros validados
+     */
+    static validarParametrosGerenciais(parametros) {
+        if (!parametros) {
+            throw new Error('Parâmetros gerenciais são obrigatórios - devem ser preenchidos pelo usuário');
+        }
+
+        if (typeof parametros !== 'object') {
+            throw new Error('Parâmetros gerenciais devem ser um objeto válido');
+        }
+
+        // Validar encargos financeiros
+        if (typeof parametros.encargos_financeiros_percentual !== 'number') {
+            throw new Error('Encargos financeiros (%) é obrigatório - deve ser preenchido pelo usuário');
+        }
+
+        if (parametros.encargos_financeiros_percentual < 0 || parametros.encargos_financeiros_percentual > 100) {
+            throw new Error('Encargos financeiros deve estar entre 0 e 100%');
+        }
+
+        // Validar tributos recuperáveis
+        if (typeof parametros.tributos_recuperaveis_outros !== 'number') {
+            throw new Error('Tributos recuperáveis outros é obrigatório - deve ser preenchido pelo usuário');
+        }
+
+        if (parametros.tributos_recuperaveis_outros < 0) {
+            throw new Error('Tributos recuperáveis outros deve ser >= 0');
+        }
+
+        // Validar custos indiretos
+        if (typeof parametros.custos_indiretos_percentual !== 'number') {
+            throw new Error('Custos indiretos (%) é obrigatório - deve ser preenchido pelo usuário');
+        }
+
+        if (parametros.custos_indiretos_percentual < 0 || parametros.custos_indiretos_percentual > 100) {
+            throw new Error('Custos indiretos deve estar entre 0 e 100%');
+        }
+
+        // Validar margem operacional
+        if (typeof parametros.margem_operacional_percentual !== 'number') {
+            throw new Error('Margem operacional (%) é obrigatório - deve ser preenchido pelo usuário');
+        }
+
+        if (parametros.margem_operacional_percentual < 0 || parametros.margem_operacional_percentual > 1000) {
+            throw new Error('Margem operacional deve estar entre 0 e 1000%');
+        }
+
+        console.log('✅ Parâmetros gerenciais validados com sucesso');
+        return parametros;
+    }
+
+    /**
+     * Validar parâmetros de precificação
+     * @param {Object} parametrosPrecificacao - Parâmetros de precificação
+     * @returns {Object} Parâmetros validados
+     */
+    static validarParametrosPrecificacao(parametrosPrecificacao) {
+        if (!parametrosPrecificacao) {
+            throw new Error('Parâmetros de precificação são obrigatórios - devem ser preenchidos pelo usuário');
+        }
+
+        if (typeof parametrosPrecificacao !== 'object') {
+            throw new Error('Parâmetros de precificação devem ser um objeto válido');
+        }
+
+        // Validar método selecionado
+        const metodosValidos = ['margem', 'markup', 'divisao', 'multiplicacao'];
+        if (!parametrosPrecificacao.metodo || !metodosValidos.includes(parametrosPrecificacao.metodo)) {
+            throw new Error(`Método de precificação inválido. Válidos: ${metodosValidos.join(', ')}`);
+        }
+
+        // Validações específicas por método
+        switch (parametrosPrecificacao.metodo) {
+            case 'margem':
+                if (typeof parametrosPrecificacao.margem_desejada !== 'number') {
+                    throw new Error('Margem desejada é obrigatória para método da margem');
+                }
+                if (parametrosPrecificacao.margem_desejada <= 0 || parametrosPrecificacao.margem_desejada >= 100) {
+                    throw new Error('Margem desejada deve estar entre 0 e 100%');
+                }
+                break;
+
+            case 'markup':
+                if (typeof parametrosPrecificacao.margem_lucro !== 'number') {
+                    throw new Error('Margem de lucro é obrigatória para método do markup');
+                }
+                if (parametrosPrecificacao.margem_lucro <= 0 || parametrosPrecificacao.margem_lucro >= 100) {
+                    throw new Error('Margem de lucro deve estar entre 0 e 100%');
+                }
+                break;
+
+            case 'divisao':
+                if (typeof parametrosPrecificacao.percentual_total !== 'number') {
+                    throw new Error('Percentual total é obrigatório para método da divisão');
+                }
+                if (parametrosPrecificacao.percentual_total <= 0 || parametrosPrecificacao.percentual_total >= 100) {
+                    throw new Error('Percentual total deve estar entre 0 e 100%');
+                }
+                break;
+
+            case 'multiplicacao':
+                if (typeof parametrosPrecificacao.fator_multiplicador !== 'number') {
+                    throw new Error('Fator multiplicador é obrigatório para método da multiplicação');
+                }
+                if (parametrosPrecificacao.fator_multiplicador <= 1) {
+                    throw new Error('Fator multiplicador deve ser > 1');
+                }
+                break;
+        }
+
+        console.log('✅ Parâmetros de precificação validados com sucesso');
+        return parametrosPrecificacao;
+    }
+}
+
+/**
+ * InterfacePrecificacao - Classe principal de orquestração
+ * Coordena todos os componentes do sistema de precificação
+ */
+class InterfacePrecificacao {
+    constructor() {
+        this.motorTributario = new MotorCalculoTributario();
+        this.calculadora = null;
+        this.dadosDI = null;
+        this.custos4Tipos = null;
+        this.resultadosPrecificacao = null;
+        this.initialized = false;
+    }
+
+    /**
+     * Inicializar sistema completo de precificação
+     */
+    async inicializar() {
+        if (this.initialized) {
+            return;
+        }
+
+        try {
+            console.log('🚀 Inicializando sistema de precificação...');
+
+            // Inicializar motor tributário com dados externos
+            await this.motorTributario.inicializar();
+
+            // Criar calculadora
+            this.calculadora = new CalculadoraMetodosPrecificacao(this.motorTributario);
+
+            this.initialized = true;
+            console.log('✅ Sistema de precificação inicializado com sucesso');
+
+        } catch (error) {
+            throw new Error(`Falha na inicialização do sistema de precificação: ${error.message}`);
+        }
+    }
+
+    /**
+     * Carregar dados da DI do IndexedDB - INTEGRAÇÃO OBRIGATÓRIA
+     * @param {Object} dadosDI - Dados da DI processados na Fase 1
+     */
+    carregarDadosDI(dadosDI) {
+        this.validarInicializacao();
+
+        // Validar estrutura da DI rigorosamente
+        this.dadosDI = ValidadorParametros.validarDadosDI(dadosDI);
+
+        console.log(`✅ Dados da DI ${this.dadosDI.numero_di} carregados para precificação`);
+    }
+
+    /**
+     * Calcular os 4 tipos de custos conforme PricingEngine
+     * @param {string} regimeTributario - Regime tributário da empresa
+     * @param {Object} parametrosGerenciais - Parâmetros preenchidos pelo usuário
+     * @returns {Object} Resultado dos 4 tipos de custos
+     */
+    async calcular4TiposCustos(regimeTributario, parametrosGerenciais) {
+        this.validarInicializacao();
+
+        if (!this.dadosDI) {
+            throw new Error('Dados da DI não carregados - use carregarDadosDI() primeiro');
+        }
+
+        // Validar parâmetros de entrada
+        const regimeValidado = ValidadorParametros.validarRegimeTributario(regimeTributario);
+        const parametrosValidados = ValidadorParametros.validarParametrosGerenciais(parametrosGerenciais);
+
+        try {
+            console.log('🏭 Calculando os 4 tipos de custos...');
+
+            // TIPO 1: Custo Base (valor_aduaneiro + impostos + despesas)
+            const custoBase = this.calcularCustoBase();
+
+            // TIPO 2: Custo de Desembolso (custo_base - créditos)
+            const custoDesembolso = await this.calcularCustoDesembolso(custoBase, regimeValidado);
+
+            // TIPO 3: Custo Contábil (custo_desembolso + encargos - recuperáveis)
+            const custoContabil = this.calcularCustoContabil(custoDesembolso, parametrosValidados);
+
+            // TIPO 4: Base para Formação de Preço (custo_contábil + indiretos + margem operacional)
+            const baseFormacaoPreco = this.calcularBaseFormacaoPreco(custoContabil, parametrosValidados);
+
+            // Estruturar resultado completo
+            this.custos4Tipos = {
+                tipo_1_custo_base: custoBase,
+                tipo_2_custo_desembolso: custoDesembolso,
+                tipo_3_custo_contabil: custoContabil,
+                tipo_4_base_formacao_preco: baseFormacaoPreco,
+                regime_tributario: regimeValidado,
+                parametros_utilizados: parametrosValidados,
+                di_numero: this.dadosDI.numero_di,
+                timestamp: new Date().toISOString()
+            };
+
+            console.log(`✅ 4 tipos de custos calculados: Base R$ ${custoBase.toFixed(2)} → Desembolso R$ ${custoDesembolso.toFixed(2)} → Contábil R$ ${custoContabil.toFixed(2)} → Formação Preço R$ ${baseFormacaoPreco.toFixed(2)}`);
+
+            return this.custos4Tipos;
+
+        } catch (error) {
+            throw new Error(`Erro no cálculo dos 4 tipos de custos: ${error.message}`);
+        }
+    }
+
+    /**
+     * Gerar preços pelos 4 métodos de precificação
+     * @param {string} estadoUF - Estado para operações de venda
+     * @param {Object} parametrosPrecificacao - Parâmetros específicos por método
+     * @returns {Object} Preços calculados pelos 4 métodos
+     */
+    async gerarPrecos4Metodos(estadoUF, parametrosPrecificacao) {
+        this.validarInicializacao();
+
+        if (!this.custos4Tipos) {
+            throw new Error('4 tipos de custos não calculados - use calcular4TiposCustos() primeiro');
+        }
+
+        // Validar parâmetros
+        const estadoValidado = ValidadorParametros.validarEstadoUF(estadoUF);
+        const parametrosValidados = ValidadorParametros.validarParametrosPrecificacao(parametrosPrecificacao);
+
+        try {
+            console.log('💰 Gerando preços pelos 4 métodos de precificação...');
+
+            // Obter custo contábil para base dos cálculos
+            const custoContabil = this.custos4Tipos.tipo_3_custo_contabil;
+
+            // Detectar se produtos são monofásicos
+            const ncmPrincipal = this.dadosDI.adicoes[0].ncm;
+            const isMonofasico = this.motorTributario.detectarMonofasico(ncmPrincipal);
+
+            // Obter percentuais de impostos por dentro para o estado
+            const percentuaisImpostos = this.motorTributario.calcularPercentuaisImpostosPorDentro(
+                this.custos4Tipos.regime_tributario,
+                estadoValidado,
+                isMonofasico
+            );
+
+            // Obter alíquota IPI (se aplicável) dos dados da DI
+            const aliquotaIPI = this.dadosDI.adicoes[0].ipi_aliquota_ad_valorem || 0;
+
+            let resultados = {};
+
+            // MÉTODO 1: Margem (se parametros fornecidos)
+            if (parametrosValidados.margem_desejada !== undefined) {
+                resultados.metodo_margem = this.calculadora.calcularMetodoMargem(
+                    custoContabil,
+                    parametrosValidados.margem_desejada / 100, // Converter para decimal
+                    percentuaisImpostos,
+                    aliquotaIPI
+                );
+            }
+
+            // MÉTODO 2: Markup (se parametros fornecidos)
+            if (parametrosValidados.margem_lucro !== undefined) {
+                resultados.metodo_markup = this.calculadora.calcularMetodoMarkup(
+                    custoContabil,
+                    parametrosValidados.margem_lucro,
+                    percentuaisImpostos,
+                    aliquotaIPI
+                );
+            }
+
+            // MÉTODO 3: Divisão (se parametros fornecidos)
+            if (parametrosValidados.percentual_total !== undefined) {
+                resultados.metodo_divisao = this.calculadora.calcularMetodoDivisao(
+                    custoContabil,
+                    parametrosValidados.percentual_total / 100, // Converter para decimal
+                    aliquotaIPI
+                );
+            }
+
+            // MÉTODO 4: Multiplicação (se parametros fornecidos)
+            if (parametrosValidados.fator_multiplicador !== undefined) {
+                resultados.metodo_multiplicacao = this.calculadora.calcularMetodoMultiplicacao(
+                    custoContabil,
+                    parametrosValidados.fator_multiplicador,
+                    aliquotaIPI
+                );
+            }
+
+            // Estruturar resultado final
+            this.resultadosPrecificacao = {
+                custos_base: this.custos4Tipos,
+                metodos_precificacao: resultados,
+                configuracao: {
+                    estado_uf: estadoValidado,
+                    ncm_principal: ncmPrincipal,
+                    is_monofasico: isMonofasico,
+                    aliquota_ipi: aliquotaIPI,
+                    percentuais_impostos: percentuaisImpostos
+                },
+                parametros_aplicados: parametrosValidados,
+                timestamp: new Date().toISOString()
+            };
+
+            console.log(`✅ Preços gerados pelos métodos especificados para estado ${estadoValidado}`);
+
+            return this.resultadosPrecificacao;
+
+        } catch (error) {
+            throw new Error(`Erro na geração de preços: ${error.message}`);
+        }
+    }
+
+    /**
+     * TIPO 1: Calcular Custo Base
+     * Fórmula: valor_aduaneiro + II + IPI + PIS + COFINS + ICMS + despesas_aduaneiras
+     */
+    calcularCustoBase() {
+        const totais = this.dadosDI.totais;
+
+        const custoBase =
+            totais.valor_aduaneiro +
+            totais.ii_devido +
+            totais.ipi_devido +
+            totais.pis_devido +
+            totais.cofins_devido +
+            totais.icms_devido +
+            totais.despesas_aduaneiras;
+
+        console.log(`💰 Custo Base: R$ ${custoBase.toFixed(2)}`);
+        return custoBase;
+    }
+
+    /**
+     * TIPO 2: Calcular Custo de Desembolso
+     * Fórmula: custo_base - créditos_tributários
+     */
+    async calcularCustoDesembolso(custoBase, regimeTributario) {
+        const totais = this.dadosDI.totais;
+
+        // Base para créditos: valor_aduaneiro + IPI (sem despesas aduaneiras)
+        const baseCreditos = totais.valor_aduaneiro + totais.ipi_devido;
+
+        let totalCreditos = 0;
+
+        // Calcular créditos por regime
+        const regrasCredito = this.motorTributario.obterRegrasCreditoRegime(regimeTributario);
+
+        if (regimeTributario === 'lucro_real') {
+            // Lucro Real: crédito integral mesmo para monofásicos
+            if (regrasCredito.permite_credito_importacao) {
+                totalCreditos += totais.pis_devido;
+                totalCreditos += totais.cofins_devido;
+                totalCreditos += totais.ipi_devido;
+                totalCreditos += totais.icms_devido;
+            }
+        } else if (regimeTributario === 'lucro_presumido') {
+            // Lucro Presumido: sem créditos PIS/COFINS, mas permite IPI e ICMS
+            totalCreditos += totais.ipi_devido;
+            totalCreditos += totais.icms_devido;
+        }
+        // Simples Nacional: sem créditos
+
+        const custoDesembolso = custoBase - totalCreditos;
+
+        console.log(`💳 Custo Desembolso: R$ ${custoDesembolso.toFixed(2)} (créditos: R$ ${totalCreditos.toFixed(2)})`);
+        return custoDesembolso;
+    }
+
+    /**
+     * TIPO 3: Calcular Custo Contábil
+     * Fórmula: custo_desembolso + encargos_financeiros - tributos_recuperáveis
+     */
+    calcularCustoContabil(custoDesembolso, parametrosGerenciais) {
+        const encargosFinanceiros = custoDesembolso * (parametrosGerenciais.encargos_financeiros_percentual / 100);
+        const tributosRecuperaveis = parametrosGerenciais.tributos_recuperaveis_outros;
+
+        const custoContabil = custoDesembolso + encargosFinanceiros - tributosRecuperaveis;
+
+        console.log(`📊 Custo Contábil: R$ ${custoContabil.toFixed(2)}`);
+        return custoContabil;
+    }
+
+    /**
+     * TIPO 4: Calcular Base para Formação de Preço
+     * Fórmula: custo_contábil + custos_indiretos + margem_operacional
+     */
+    calcularBaseFormacaoPreco(custoContabil, parametrosGerenciais) {
+        const custosIndiretos = custoContabil * (parametrosGerenciais.custos_indiretos_percentual / 100);
+        const margemOperacional = custoContabil * (parametrosGerenciais.margem_operacional_percentual / 100);
+
+        const baseFormacaoPreco = custoContabil + custosIndiretos + margemOperacional;
+
+        console.log(`🎯 Base Formação Preço: R$ ${baseFormacaoPreco.toFixed(2)}`);
+        return baseFormacaoPreco;
+    }
+
+    /**
+     * Obter resumo de resultados para interface
+     */
+    obterResumoResultados() {
+        if (!this.resultadosPrecificacao) {
+            throw new Error('Nenhum resultado de precificação disponível');
+        }
+
+        const custos = this.custos4Tipos;
+        const metodos = this.resultadosPrecificacao.metodos_precificacao;
+
+        // Preparar resumo dos métodos calculados
+        let resumoMetodos = {};
+
+        if (metodos.metodo_margem) {
+            resumoMetodos.margem = {
+                nome: 'Método da Margem',
+                preco_final: metodos.metodo_margem.preco_final,
+                margem_percentual: metodos.metodo_margem.margem_desejada_percentual
+            };
+        }
+
+        if (metodos.metodo_markup) {
+            resumoMetodos.markup = {
+                nome: 'Método do Markup',
+                preco_final: metodos.metodo_markup.preco_final,
+                markup_calculado: metodos.metodo_markup.markup_calculado
+            };
+        }
+
+        if (metodos.metodo_divisao) {
+            resumoMetodos.divisao = {
+                nome: 'Método da Divisão',
+                preco_final: metodos.metodo_divisao.preco_final,
+                percentual_total: metodos.metodo_divisao.percentual_total_percentual
+            };
+        }
+
+        if (metodos.metodo_multiplicacao) {
+            resumoMetodos.multiplicacao = {
+                nome: 'Método da Multiplicação',
+                preco_final: metodos.metodo_multiplicacao.preco_final,
+                fator: metodos.metodo_multiplicacao.fator_multiplicador
+            };
+        }
+
+        return {
+            di_numero: this.dadosDI.numero_di,
+            custos_4_tipos: {
+                custo_base: custos.tipo_1_custo_base,
+                custo_desembolso: custos.tipo_2_custo_desembolso,
+                custo_contabil: custos.tipo_3_custo_contabil,
+                base_formacao_preco: custos.tipo_4_base_formacao_preco
+            },
+            metodos_precificacao: resumoMetodos,
+            configuracao: this.resultadosPrecificacao.configuracao,
+            timestamp: this.resultadosPrecificacao.timestamp
+        };
+    }
+
+    /**
+     * Validar se sistema foi inicializado
+     */
+    validarInicializacao() {
+        if (!this.initialized) {
+            throw new Error('Sistema de precificação não foi inicializado - chame inicializar() primeiro');
+        }
+
+        if (!this.motorTributario || !this.calculadora) {
+            throw new Error('Componentes do sistema não estão disponíveis - inicialização incompleta');
+        }
+    }
+}
+
+// Exportar classes para uso global
+if (typeof window !== 'undefined') {
+    window.MotorCalculoTributario = MotorCalculoTributario;
+    window.CalculadoraMetodosPrecificacao = CalculadoraMetodosPrecificacao;
+    window.ValidadorParametros = ValidadorParametros;
+    window.InterfacePrecificacao = InterfacePrecificacao;
+}
+
+// Export para módulos ES6
+export {
+    MotorCalculoTributario,
+    CalculadoraMetodosPrecificacao,
+    ValidadorParametros,
+    InterfacePrecificacao
+};
