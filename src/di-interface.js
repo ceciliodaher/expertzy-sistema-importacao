@@ -8,7 +8,7 @@
  */
 
 // ES6 Module Imports
-import indexedDBManager from '@services/database/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 // DataMigration removida - não há dados legados para migrar
 import { DIProcessor } from '@core/processors/DIProcessor.js';
 import { ComplianceCalculator } from '@core/calculators/ComplianceCalculator.js';
@@ -72,7 +72,7 @@ async function initializeSystem() {
         console.log('📋 Inicializando componentes do sistema...');
         
         // Initialize IndexedDB first (singleton instance)
-        dbManager = indexedDBManager;
+        dbManager = new IndexedDBManager();
         await dbManager.initialize();
         console.log('✅ IndexedDB inicializado');
         

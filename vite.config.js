@@ -11,9 +11,15 @@ export default defineConfig({
   
   server: {
     port: 8000,
+    host: '0.0.0.0',
     cors: true,
     open: false,
-    host: true
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      'expertzy-importacao.servbay.demo',
+      '.servbay.demo'
+    ]
   },
   
   build: {

@@ -9,7 +9,7 @@
  * @author Expertzy System
  */
 
-import indexedDBManager from '@services/database/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 class RegimeConfigManager {
     constructor() {
@@ -17,6 +17,7 @@ class RegimeConfigManager {
         this.config = null;
         this.regimeAliquotas = null;
         this.initialized = false;
+        this.indexedDBManager = new IndexedDBManager();
         this.initializeConfig();
         this.loadRegimeAliquotas();
     }
@@ -79,13 +80,13 @@ class RegimeConfigManager {
      */
     async initializeConfig() {
         try {
-            if (!indexedDBManager) {
+            if (!this.indexedDBManager) {
                 throw new Error('IndexedDBManager não disponível - obrigatório para RegimeConfigManager');
             }
             
-            await indexedDBManager.initialize();
+            await this.indexedDBManager.initialize();
             
-            const stored = await indexedDBManager.getConfig(this.storageKey);
+            const stored = await this.indexedDBManager.getConfig(this.storageKey);
             if (stored) {
                 this.config = stored;
                 console.log('✅ RegimeConfigManager: Configuração carregada');
@@ -109,7 +110,7 @@ class RegimeConfigManager {
      */
     async saveConfig() {
         try {
-            if (!indexedDBManager) {
+            if (!this.indexedDBManager) {
                 throw new Error('IndexedDBManager não disponível - obrigatório para salvar configuração');
             }
             
@@ -118,7 +119,7 @@ class RegimeConfigManager {
             }
             
             this.config.metadata.updated_at = new Date().toISOString();
-            await indexedDBManager.saveConfig(this.storageKey, this.config);
+            await this.indexedDBManager.saveConfig(this.storageKey, this.config);
             console.log('✅ Configuração de regime salva');
             return true;
         } catch (error) {

@@ -9,7 +9,7 @@
  * @author Expertzy System
  */
 
-import indexedDBManager from '@services/database/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 class CostCalculationEngine {
     constructor() {
@@ -18,6 +18,7 @@ class CostCalculationEngine {
         this.calculatedCosts = [];
         this.storageKey = 'expertzy_calculated_costs';
         this.initialized = false;
+        this.indexedDBManager = new IndexedDBManager();
         this.initializeEngine();
     }
 
@@ -26,11 +27,11 @@ class CostCalculationEngine {
      */
     async initializeEngine() {
         try {
-            if (!indexedDBManager) {
+            if (!this.indexedDBManager) {
                 throw new Error('IndexedDBManager não disponível - obrigatório para CostCalculationEngine');
             }
             
-            await indexedDBManager.initialize();
+            await this.indexedDBManager.initialize();
             
             // Aguardar instâncias dos managers
             this.productMemory = new ProductMemoryManager();
@@ -59,11 +60,11 @@ class CostCalculationEngine {
      */
     async loadCalculatedCosts() {
         try {
-            if (!indexedDBManager) {
+            if (!this.indexedDBManager) {
                 throw new Error('IndexedDBManager não disponível - obrigatório para carregar custos');
             }
             
-            const stored = await indexedDBManager.getConfig(this.storageKey);
+            const stored = await this.indexedDBManager.getConfig(this.storageKey);
             if (stored) {
                 this.calculatedCosts = stored.calculations || [];
                 console.log(`✅ ${this.calculatedCosts.length} custos calculados carregados`);
@@ -79,7 +80,7 @@ class CostCalculationEngine {
      */
     async saveCalculatedCosts() {
         try {
-            if (!indexedDBManager) {
+            if (!this.indexedDBManager) {
                 throw new Error('IndexedDBManager não disponível - obrigatório para salvar custos');
             }
             
@@ -93,7 +94,7 @@ class CostCalculationEngine {
                 version: '2.0.0'
             };
             
-            await indexedDBManager.saveConfig(this.storageKey, data);
+            await this.indexedDBManager.saveConfig(this.storageKey, data);
             
         } catch (error) {
             console.error('❌ Erro ao salvar custos calculados:', error);

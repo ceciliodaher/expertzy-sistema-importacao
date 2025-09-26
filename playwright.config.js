@@ -6,6 +6,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests/e2e',
+  testMatch: '**/*.spec.js',
   
   /* Execução em paralelo com limite para estabilidade */
   fullyParallel: true,

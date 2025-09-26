@@ -5,7 +5,7 @@
  * com foco em nomenclatura oficial e política NO FALLBACKS
  */
 
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test.describe('PricingAdapter - Integração E2E', () => {
     

@@ -2308,6 +2308,5 @@ class IndexedDBManager {
     }
 }
 
-// Export como singleton para garantir única instância
-const indexedDBManager = new IndexedDBManager();
-export default indexedDBManager;
+// Export da classe para uso padrão
+export default IndexedDBManager;

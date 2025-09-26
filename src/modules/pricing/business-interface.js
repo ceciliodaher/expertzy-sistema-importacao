@@ -7,7 +7,7 @@
  * Utiliza IndexedDBManager para persistência - NO FALLBACKS
  */
 
-import indexedDBManager from '@services/database/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 // Global instances
 let pricingEngine = null;
@@ -132,14 +132,14 @@ async function checkForLoadedDI() {
     try {
         console.log('🔍 Verificando dados da DI no IndexedDB...');
         
-        if (!indexedDBManager) {
+        if (!new IndexedDBManager()) {
             throw new Error('IndexedDBManager não disponível - obrigatório para carregar DI');
         }
         
-        await indexedDBManager.initialize();
+        await new IndexedDBManager().initialize();
         
         // Tentar recuperar dados OBRIGATÓRIOS do IndexedDB
-        const storedDI = await indexedDBManager.getConfig('expertzy_processed_di');
+        const storedDI = await new IndexedDBManager().getConfig('expertzy_processed_di');
         
         if (!storedDI) {
             console.log('❌ Nenhuma DI encontrada no IndexedDB');

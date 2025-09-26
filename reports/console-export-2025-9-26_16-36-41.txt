@@ -1,0 +1,34 @@
+GET
+https://expertzy-importacao.servbay.demo/favicon.ico
+[HTTP/1.1 502 Bad Gateway 0ms]
+
+	
+GET
+	https://expertzy-importacao.servbay.demo/favicon.ico
+Status
+502
+Bad Gateway
+VersãoHTTP/1.1
+Transferido157 B (tamanho 157 B)
+Referrer Policystrict-origin-when-cross-origin
+Resolução de DNSSistema
+
+❌ Erro ao inicializar dashboard: ReferenceError: Dexie is not defined
+    DashboardCore dashboard-core.js:10
+    <anonymous> dashboard.html:310
+    EventListener.handleEvent* dashboard.html:302
+dashboard.html:336:25
+    <anonymous> https://expertzy-importacao.servbay.demo/dashboard.html:336
+    (assíncrono: EventListener.handleEvent)
+    <anonymous> https://expertzy-importacao.servbay.demo/dashboard.html:302
+Uncaught ReferenceError: Dexie is not defined
+    DashboardCore dashboard-core.js:10
+    <anonymous> dashboard-main.js:17
+    EventListener.handleEvent* dashboard-main.js:12
+dashboard-core.js:10:9
+    DashboardCore dashboard-core.js:10
+    <anonymous> dashboard-main.js:17
+    (assíncrono: EventListener.handleEvent)
+    <anonymous> dashboard-main.js:12
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap

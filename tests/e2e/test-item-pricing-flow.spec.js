@@ -13,9 +13,9 @@
  * - Complete log analysis
  */
 
-const { test, expect } = require('@playwright/test');
-const fs = require('fs');
-const path = require('path');
+import { test, expect } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
 
 test.describe('Complete Item Pricing Flow E2E', () => {
 

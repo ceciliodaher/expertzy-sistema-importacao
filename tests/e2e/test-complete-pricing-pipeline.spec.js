@@ -14,7 +14,7 @@
  * - Mathematical accuracy validation
  */
 
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 // Test XML data with known expected results for validation
 const TEST_XML_DATA = `<?xml version="1.0" encoding="UTF-8"?>

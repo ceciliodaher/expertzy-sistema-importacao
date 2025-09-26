@@ -8,7 +8,7 @@
  * @author Expertzy System
  */
 
-import indexedDBManager from '@services/database/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 class ProductMemoryManager {
     constructor() {
@@ -16,6 +16,7 @@ class ProductMemoryManager {
         this.products = [];
         this.lastSyncTime = null;
         this.initialized = false;
+        this.indexedDBManager = new IndexedDBManager();
         this.initializeStorage();
     }
 
@@ -24,13 +25,13 @@ class ProductMemoryManager {
      */
     async initializeStorage() {
         try {
-            if (!indexedDBManager) {
+            if (!this.indexedDBManager) {
                 throw new Error('IndexedDBManager não disponível - obrigatório para ProductMemoryManager');
             }
             
-            await indexedDBManager.initialize();
+            await this.indexedDBManager.initialize();
             
-            const stored = await indexedDBManager.getConfig(this.storageKey);
+            const stored = await this.indexedDBManager.getConfig(this.storageKey);
             if (stored) {
                 this.products = stored.products || [];
                 this.lastSyncTime = stored.lastSyncTime || null;
@@ -368,7 +369,7 @@ class ProductMemoryManager {
      */
     async saveToStorage() {
         try {
-            if (!indexedDBManager) {
+            if (!this.indexedDBManager) {
                 throw new Error('IndexedDBManager não disponível - obrigatório para salvar dados');
             }
             
@@ -378,7 +379,7 @@ class ProductMemoryManager {
                 version: '2.0.0'
             };
             
-            await indexedDBManager.saveConfig(this.storageKey, data);
+            await this.indexedDBManager.saveConfig(this.storageKey, data);
             this.lastSyncTime = data.lastSyncTime;
             
         } catch (error) {
