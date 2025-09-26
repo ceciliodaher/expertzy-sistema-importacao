@@ -1330,10 +1330,5 @@ window.gerarCroquiPDFNovo = async function(diData, incentiveManager = null) {
     }
 };
 
-// Exportar classe para uso em módulos ES6
+// ES6 Module Export
 export { CroquiNFExporter };
-
-// Exportar classe para uso em testes
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = CroquiNFExporter;
-}

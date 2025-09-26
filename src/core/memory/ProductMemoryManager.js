@@ -505,6 +505,5 @@ class ProductMemoryManager {
 export default ProductMemoryManager;
 
 // Exportar para uso global se não estiver em ambiente de módulos (backward compatibility)
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = ProductMemoryManager;
-}
+// ES6 Module Export
+export { ProductMemoryManager };
