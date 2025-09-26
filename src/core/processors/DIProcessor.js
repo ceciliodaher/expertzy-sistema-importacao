@@ -1416,7 +1416,5 @@ export class DIProcessor {
     }
 }
 
-// Export para uso em outros módulos
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = DIProcessor;
-}
+// ES6 Module Export
+export { DIProcessor };
