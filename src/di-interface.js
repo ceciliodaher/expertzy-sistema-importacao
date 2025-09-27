@@ -1177,7 +1177,11 @@ async function exportarCroquiNF() {
     let calculosDB = null;
     try {
         const chave = `calculo_${currentDI.numero_di}`;
+        console.log(`🔍 CroquiExport: Tentando carregar cálculo com chave "${chave}"`);
+        console.log(`🔍 CroquiExport: DI number:`, currentDI.numero_di);
+        
         calculosDB = await dbManager.getConfig(chave);
+        console.log(`🔍 CroquiExport: Resultado getConfig:`, calculosDB ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
         
         if (!calculosDB) {
             showAlert('Dados calculados não encontrados. Execute o cálculo de impostos primeiro.', 'warning');

@@ -1,0 +1,28 @@
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+Erro ao carregar dados calculados: Error: Dados calculados não encontrados para DI 2300120746 - execute ComplianceCalculator primeiro
+    loadCalculatedData ExcelExporter.js:40
+    export ExcelExporter.js:67
+    exportExcel ExportManager.js:51
+    export ExportManager.js:30
+    exportarPlanilhaCustos di-interface.js:1145
+    onclick di-interface.html:1
+ExcelExporter.js:53:21
+❌ ExportManager: Erro no export excel: Error: Dados calculados não encontrados para DI 2300120746 - execute ComplianceCalculator primeiro
+    loadCalculatedData ExcelExporter.js:40
+    export ExcelExporter.js:67
+    exportExcel ExportManager.js:51
+    export ExportManager.js:30
+    exportarPlanilhaCustos di-interface.js:1145
+    onclick di-interface.html:1
+ExportManager.js:42:21
+Erro na exportação: Error: Dados calculados não encontrados para DI 2300120746 - execute ComplianceCalculator primeiro
+    loadCalculatedData ExcelExporter.js:40
+    export ExcelExporter.js:67
+    exportExcel ExportManager.js:51
+    export ExportManager.js:30
+    exportarPlanilhaCustos di-interface.js:1145
+    onclick di-interface.html:1
+di-interface.js:1148:17
+    exportarPlanilhaCustos di-interface.js:1148
+    onclick di-interface.html:1

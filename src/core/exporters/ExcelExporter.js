@@ -34,7 +34,11 @@ export class ExcelExporter {
             
             // Buscar dados calculados no IndexedDB usando getConfig
             const chave = `calculo_${numeroDI}`;
+            console.log(`🔍 ExcelExporter: Tentando carregar cálculo com chave "${chave}"`);
+            console.log(`🔍 ExcelExporter: DI number:`, numeroDI);
+            
             const calculosDB = await this.dbManager.getConfig(chave);
+            console.log(`🔍 ExcelExporter: Resultado getConfig:`, calculosDB ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
             
             if (!calculosDB) {
                 throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);

@@ -1168,9 +1168,16 @@ export class ComplianceCalculator {
 
             // Salvar no IndexedDB usando saveConfig para evitar validações de DI completa
             const chave = `calculo_${numeroDI}`;
+            console.log(`💾 ComplianceCalculator: Tentando salvar cálculo com chave "${chave}"`);
+            console.log(`💾 ComplianceCalculator: Dados a serem salvos:`, calculoCompleto);
+            
             await this.dbManager.saveConfig(chave, calculoCompleto);
             
-            console.log(`💾 ComplianceCalculator: Cálculo salvo no IndexedDB com chave ${chave}`);
+            console.log(`✅ ComplianceCalculator: Cálculo salvo no IndexedDB com chave ${chave}`);
+            
+            // Verificar imediatamente se foi salvo
+            const verificacao = await this.dbManager.getConfig(chave);
+            console.log(`🔍 ComplianceCalculator: Verificação - dados recuperados:`, verificacao ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
         } catch (error) {
             console.error('Erro ao salvar cálculo no IndexedDB:', error);
             throw new Error(`Falha ao persistir cálculo: ${error.message}`);
