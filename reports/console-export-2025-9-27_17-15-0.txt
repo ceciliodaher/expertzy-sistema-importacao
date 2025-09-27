@@ -1,0 +1,271 @@
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+🚀 DI Interface: Inicializando sistema... di-interface.js:55:13
+✅ Nomenclatura de incentivos validada di-interface.js:60:17
+📋 Inicializando componentes do sistema... di-interface.js:73:17
+✅ Schema v6 com precificação individual por item inicializado (FASE 2.5) IndexedDBManager.js:285:17
+✅ IndexedDB inicializado di-interface.js:77:17
+🧹 Limpando localStorage para fresh start... di-interface.js:80:17
+✅ localStorage limpo di-interface.js:82:17
+ℹ️ Sistema novo - sem dados legados para migrar di-interface.js:88:17
+🎯 IncentiveManager v1.0: Inicializando sistema de incentivos fiscais IncentiveManager.js:29:17
+[DIProcessor] Configurações carregadas com sucesso DIProcessor.js:29:21
+[DIProcessor] Configurações carregadas com sucesso DIProcessor.js:29:21
+✅ Configurações do DIProcessor carregadas di-interface.js:99:17
+[ComplianceCalculator] Configurações carregadas com sucesso ComplianceCalculator.js:47:21
+✅ Configurações carregadas: 
+Object { programas: 6, anos_reforma: 9, ncms_vedados: 4 }
+IncentiveManager.js:44:21
+[ComplianceCalculator] Configurações carregadas com sucesso ComplianceCalculator.js:47:21
+✅ Configurações do ComplianceCalculator carregadas di-interface.js:103:17
+[ComplianceCalculator] ItemCalculator integrado ComplianceCalculator.js:61:25
+[ComplianceCalculator] ProductMemoryManager integrado e inicializado ComplianceCalculator.js:77:21
+✅ ProductMemoryManager: 567 produtos carregados ProductMemoryManager.js:38:25
+📊 Status do banco: 
+Object { connected: true, hasData: true, stats: {…}, isHealthy: true, version: 6, dbName: "ExpertzyDB" }
+di-interface.js:3191:17
+💾 Encontradas 0 DIs no banco di-interface.js:3201:21
+🎉 Sistema inicializado com sucesso di-interface.js:123:17
+📁 Arquivo arrastado: 2300120746.xml di-interface.js:2225:21
+🚀 processarDI: Iniciando processamento di-interface.js:269:13
+📋 Arquivo para processar: 2300120746.xml di-interface.js:274:13
+🔧 DIProcessor disponível: true di-interface.js:282:13
+⏳ Iniciando carregamento... di-interface.js:285:17
+📖 Lendo conteúdo do arquivo... di-interface.js:289:17
+✅ Arquivo lido. Tamanho: 267199 di-interface.js:291:17
+✅ XML convertido para base64 di-interface.js:295:17
+🔍 Processando XML com DIProcessor... di-interface.js:298:17
+Incoterm identificado: CFR - Cost and Freight - Custo e frete DIProcessor.js:157:25
+✅ Código extraído via codigo_com_traco: "120017" da descrição: "120017 - PARAFUSO PHILIPS 5X16 PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120022" da descrição: "120022 - PARAFUSO FLANGE 8X20 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120026" da descrição: "120026 - PRISIONEIRO ESCAPE 7X7X32 PARA MOTOCICLET..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120031" da descrição: "120031 - PRISIONEIRO PARA MOTOCICLETA MARCA DURA R..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120032" da descrição: "120032 - PARAFUSO MANETE PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120038" da descrição: "120038 - PARAFUSO COROA 8X31 PARA MOTOCICLETA MARC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120047" da descrição: "120047 - BUCHA M6X1.00 X M8X1.25 X 15MM PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120050" da descrição: "120050 - PARAFUSO TAMPA BUJAO DE OLEO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120056" da descrição: "120056 - PARAFUSO TAMPA LATERAL PARA MOTOCICLETA M..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120061" da descrição: "120061 - PARAFUSO FLANGE 8X40 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120068" da descrição: "120068 - PARAFUSO FLANGEADO 6X20 PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120074" da descrição: "120074 - PARAFUSO 6X14 PARA MOTOCICLETA MARCA DURA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120076" da descrição: "120076 - PARAFUSO TAMPA VALVULA PARA MOTOCICLETA M..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120080" da descrição: "120080 - PARAFUSO FLANGE 8X18 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120088" da descrição: "120088 - PINO 10X14 PARA MOTOCICLETA MARCA DURA RA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120091" da descrição: "120091 - PARAFUSO FLANGE 8X36 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120093" da descrição: "120093 - PARAFUSO PHILIPS 4X14 PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120094" da descrição: "120094 - PARAFUSO REGULAGEM DE VALVULA PARA MOTOCI..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120124" da descrição: "120124 - PARAFUSO FLANGE 8X32 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120131" da descrição: "120131 - BUCHA M8X1.25 X M12X1.25 X 22MM PARA MOTO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120137" da descrição: "120137 - PARAFUSO FLANGE 8X50 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120138" da descrição: "120138 - PARAFUSO REGULAGEM FAROL PARA MOTOCICLETA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120139" da descrição: "120139 - PARAFUSO TAMPA BENGALA SUPERIOR PARA MOTO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120141" da descrição: "120141 - PARAFUSO FLANGE 8X45 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120154" da descrição: "120154 - PARAFUSO DISCO FREIO PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120155" da descrição: "120155 - PARAFUSO PHILIPS 4X25 PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120178" da descrição: "120178 - PARAFUSO FLANGE 8X12 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120180" da descrição: "120180 - PARAFUSO EXCENTRICO PARA MOTOCICLETA MARC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120196" da descrição: "120196 - PRISIONEIRO CILINDRO 8X10X130 PARA MOTOCI..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120202" da descrição: "120202 - PARAFUSO FLANGE 8X90 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120206" da descrição: "120206 - PARAFUSO ALLEN CALIPER 10X40 PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120208" da descrição: "120208 - PARAFUSO SEXTAVADO 8X80 PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120219" da descrição: "120219 - PRISIONEIRO DA COROA PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120225" da descrição: "120225 - PARAFUSO SEXTAVADO PARA MOTOCICLETA MARCA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120238" da descrição: "120238 - PRISIONEIRO MOTOR 8X8X140 PARA MOTOCICLET..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120253" da descrição: "120253 - BUJAO DE OLEO 14MM PARA MOTOCICLETA MARCA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120259" da descrição: "120259 - PARAFUSO TORK 8X16 PARA MOTOCICLETA MARCA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120263" da descrição: "120263 - PARAFUSO SEXTAVADO 8X25 PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120277" da descrição: "120277 - PARAFUSO TAMPA DE VALVULA PARA MOTOCICLET..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120286" da descrição: "120286 - PARAFUSO TAMPA GERADOR PARA MOTOCICLETA M..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120294" da descrição: "120294 - PARAFUSO SEXTAVADO 8X60 PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120329" da descrição: "120329 - PRISIONEIRO 6X6X35 PARA MOTOCICLETA MARCA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120331" da descrição: "120331 - PRISIONEIRO MOTOR 8X8X130 PARA MOTOCICLET..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120337" da descrição: "120337 - PARAFUSO ESPECIAL 10X118 PARA MOTOCICLETA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120342" da descrição: "120342 - PARAFUSO FIXAR MOTOR 10X118 PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120345" da descrição: "120345 - PARAFUSO CARENAGEM PARA MOTOCICLETA MARCA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120351" da descrição: "120351 - PRISIONEIRO DA COROA PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120355" da descrição: "120355 - PARFUSO FLANGE 10X65 AMORTECEDOR TRASEIRO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120364" da descrição: "120364 - PARAFUSO BUJAO DE OLEO PARA MOTOCICLETA M..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120372" da descrição: "120372 - PARAFUSO EXENTRICO 6X45 PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120373" da descrição: "120373 - PARAFUSO PHILIPS 5X20 PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120379" da descrição: "120379 - PARAFUSO FLANGE 8X80 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120380" da descrição: "120380 - PARAFUSO FLANGE 8X90 PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120381" da descrição: "120381 - PARAFUSO FLANGE 8X110 PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120004" da descrição: "120004 - PORCA FLANGEADA 6MM PARA MOTOCICLETA MARC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120045" da descrição: "120045 - PORCA U TRAVANTE 14MM PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120067" da descrição: "120067 - PORCA DA COROA PARA MOTOCICLETA MARCA DUR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120168" da descrição: "120168 - PORCA FLANGE 14MM GERADOR PARA MOTOCICLET..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120254" da descrição: "120254 - PORCA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120268" da descrição: "120268 - PORCA COLUNA DE DIRECAO PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120357" da descrição: "120357 - PORCA DO EIXO DA ENGRENAGEM PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120021" da descrição: "120021 - ARRUELA DA COROA PARA MOTOCICLETA MARCA D..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120034" da descrição: "120034 - ARRUELA UNIVERSAL PARA MOTOCICLETA MARCA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120120" da descrição: "120120 - ARRUELA SUPERIOR BENGALA 10,3MM PARA MOTO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120173" da descrição: "120173 - ARRUELA VEDACAO COBRE PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120175" da descrição: "120175 - ARRUELA EIXO TRASEIRO PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120365" da descrição: "120365 - ARRUELA TAMPA CARTER ESQUERDA 14,1X29X2,8..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120008" da descrição: "120008 - MOLA PEDAL DE FREIO PARA MOTOCICLETA MARC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120134" da descrição: "120134 - MOLA DESCANSO CENTRAL PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120152" da descrição: "120152 - MOLA TENSOR DE CORRENTE PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120316" da descrição: "120316 - MOLA FAROL PARA MOTOCICLETA MARCA DURA RA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "8888" da descrição: "8888 - DUCHA DE TETO 70*38CM (EMBUTIR)COR PRETA EM..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110001" da descrição: "110001 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110002" da descrição: "110002 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110003" da descrição: "110003 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110005" da descrição: "110005 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110007" da descrição: "110007 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110009" da descrição: "110009 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110011" da descrição: "110011 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110014" da descrição: "110014 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110015" da descrição: "110015 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110017" da descrição: "110017 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110022" da descrição: "110022 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110023" da descrição: "110023 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110004" da descrição: "110004 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110008" da descrição: "110008 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110010" da descrição: "110010 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110012" da descrição: "110012 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110013" da descrição: "110013 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110016" da descrição: "110016 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110018" da descrição: "110018 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110019" da descrição: "110019 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110020" da descrição: "110020 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "110021" da descrição: "110021 - BIELA PARA MOTOCICLETA MARCA DURA RACE CO..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "380010" da descrição: "380010 - VALVULA ESCAPE PARA MOTOCICLETA MARCA DUR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "380014" da descrição: "380014 - VALVULA ESCAPE PARA MOTOCICLETA MARCA DUR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "380017" da descrição: "380017 - VALVULA ESCAPE PARA MOTOCICLETA MARCA DUR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390001" da descrição: "390001 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390002" da descrição: "390002 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390003" da descrição: "390003 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390004" da descrição: "390004 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390005" da descrição: "390005 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390006" da descrição: "390006 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390007" da descrição: "390007 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390008" da descrição: "390008 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390009" da descrição: "390009 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "390010" da descrição: "390010 - GUIA DE VALVULA PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "180006" da descrição: "180006 - CARBURADOR PARA MOTOCICLETA MARCA DURA RA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "180007" da descrição: "180007 - CARBURADOR PARA MOTOCICLETA MARCA DURA RA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "9999" da descrição: "9999 - MAQUINA DE MARCACAO A LASER 30W..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "130005" da descrição: "130005 - ARVORE DE COMANDO PARA MOTOCICLETA MARCA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "130009" da descrição: "130009 - ARVORE DE COMANDO PARA MOTOCICLETA MARCA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "130012" da descrição: "130012 - ARVORE DE COMANDO PARA MOTOCICLETA MARCA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340001" da descrição: "340001 - RAIO CROMADO 3,2MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340002" da descrição: "340002 - RAIO CROMADO 3,2MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340003" da descrição: "340003 - RAIO CROMADO 3,2MM DIANTEIRO/TRASEIRO PAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340004" da descrição: "340004 - RAIO CROMADO 3,2MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340005" da descrição: "340005 - RAIO CROMADO 3,5MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340008" da descrição: "340008 - RAIO CROMADO 3,5MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340009" da descrição: "340009 - RAIO CROMADO 3,5MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340012" da descrição: "340012 - RAIO CROMADO 3,5MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340013" da descrição: "340013 - RAIO CROMADO 3,5MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340018" da descrição: "340018 - RAIO CROMADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340019" da descrição: "340019 - RAIO CROMADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340020" da descrição: "340020 - RAIO CROMADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340022" da descrição: "340022 - RAIO CROMADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340023" da descrição: "340023 - RAIO CROMADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340024" da descrição: "340024 - RAIO CROMADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340025" da descrição: "340025 - RAIO CROMADO 4,0MM DIANTEIRO/ TRASEIRO PA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340026" da descrição: "340026 - RAIO CROMADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340027" da descrição: "340027 - RAIO CROMADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340028" da descrição: "340028 - RAIO CROMADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340030" da descrição: "340030 - RAIO CROMADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340033" da descrição: "340033 - RAIO ZINCADO 3,2MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340038" da descrição: "340038 - RAIO ZINCADO 3,5MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340041" da descrição: "340041 - RAIO ZINCADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340042" da descrição: "340042 - RAIO ZINCADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340043" da descrição: "340043 - RAIO ZINCADO 4,0MM DIANTEIRO PARA MOTOCIC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340044" da descrição: "340044 - RAIO ZINCADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340045" da descrição: "340045 - RAIO ZINCADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340046" da descrição: "340046 - RAIO ZINCADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "340047" da descrição: "340047 - RAIO ZINCADO 4,0MM TRASEIRO PARA MOTOCICL..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120010" da descrição: "120010 - ESTICADOR DE CORRENTE PARA MOTOCICLETA MA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120015" da descrição: "120015 - TRAVA DO PINHAO PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120049" da descrição: "120049 - TRAVA DO PINHAO PARA MOTOCICLETA MARCA DU..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120083" da descrição: "120083 - CHAPINHA ESTICADOR DE CORRENTE PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120118" da descrição: "120118 - CHAVETA 4MM PARA MOTOCICLETA MARCA DURA R..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120146" da descrição: "120146 - ESTICADOR CORRENTE PARA MOTOCICLETA MARCA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120212" da descrição: "120212 - SUPORTE PARALAMA PARA MOTOCICLETA MARCA D..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120231" da descrição: "120231 - SUPORTE PARALAMA PARA MOTOCICLETA MARCA D..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120242" da descrição: "120242 - RETENTOR DA COLUNA DIRECAO PARA MOTOCICLE..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120245" da descrição: "120245 - SUPORTE PARALAMA PARA MOTOCICLETA MARCA D..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120264" da descrição: "120264 - CHAPINHA ESTICADOR PARA MOTOCICLETA MARCA..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "120271" da descrição: "120271 - PRESILHA FIXAR FAROL PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "130016" da descrição: "130016 - EIXO BRACO OSCILANTE PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "130018" da descrição: "130018 - EIXO BRACO OSCILANTE PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "130030" da descrição: "130030 - ARVORE DE COMANDO PARA MOTOCICLETA MARCA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230001" da descrição: "230001 - DISCO EMBREAGEM 2 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230002" da descrição: "230002 - DISCO EMBREAGEM 3 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230003" da descrição: "230003 - DISCO EMBREAGEM 3 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230004" da descrição: "230004 - DISCO EMBREAGEM 4 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230005" da descrição: "230005 - DISCO EMBREAGEM 4 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230006" da descrição: "230006 - DISCO EMBREAGEM 4 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230007" da descrição: "230007 - DISCO EMBREAGEM 4 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230008" da descrição: "230008 - DISCO EMBREAGEM 5 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230009" da descrição: "230009 - DISCO EMBREAGEM 5 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230010" da descrição: "230010 - DISCO EMBREAGEM 5 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230011" da descrição: "230011 - DISCO EMBREAGEM 6 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230012" da descrição: "230012 - DISCO EMBREAGEM 6 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "230013" da descrição: "230013 - DISCO EMBREAGEM 7 PECAS PARA MOTOCICLETA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "639502" da descrição: "639502 - EMBREAGEM HIDRAULICA PARA MOTOCICLETA MAR..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "6666" da descrição: "6666 - PLACA ACIONADORA EMBREAGEM POP 100..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153001" da descrição: "153001 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153002" da descrição: "153002 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153003" da descrição: "153003 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153005" da descrição: "153005 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153006" da descrição: "153006 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153007" da descrição: "153007 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153008" da descrição: "153008 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153009" da descrição: "153009 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153010" da descrição: "153010 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153011" da descrição: "153011 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153012" da descrição: "153012 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153013" da descrição: "153013 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153014" da descrição: "153014 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "153015" da descrição: "153015 - SONDA LAMBDA (SENSOR OXIGENIO) PARA MOTOC..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "150001" da descrição: "150001 - SENSOR VELOCIDADE PARA MOTOCICLETA MARCA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "150002" da descrição: "150002 - SENSOR VELOCIDADE PARA MOTOCICLETA MARCA ..." DIProcessor.js:1652:33
+✅ Código extraído via codigo_com_traco: "320025" da descrição: "320025 - Pistao c/ aneis , pino e trava para motoc..." DIProcessor.js:1652:33
+🔍 Extraindo despesas aduaneiras... DIProcessor.js:1231:17
+  ⚠️ II_OUTROS é imposto, não despesa: R$ 79185.09 DIProcessor.js:1298:29
+📋 Pagamento extraído: II_OUTROS (0086) = R$ 79185.09 DIProcessor.js:1304:25
+  ⚠️ IPI_VINCULADO é imposto, não despesa: R$ 33320.00 DIProcessor.js:1298:29
+📋 Pagamento extraído: IPI_VINCULADO (1038) = R$ 33320.00 DIProcessor.js:1304:25
+  ⚠️ PIS é imposto, não despesa: R$ 14050.41 DIProcessor.js:1298:29
+📋 Pagamento extraído: PIS (5602) = R$ 14050.41 DIProcessor.js:1304:25
+  ⚠️ COFINS é imposto, não despesa: R$ 67648.25 DIProcessor.js:1298:29
+📋 Pagamento extraído: COFINS (5629) = R$ 67648.25 DIProcessor.js:1304:25
+📋 Pagamento extraído: SISCOMEX (7811) = R$ 493.56 DIProcessor.js:1304:25
+✅ AFRMM extraído das informações complementares: R$ 1256.77 DIProcessor.js:1357:21
+💰 Total despesas aduaneiras para base ICMS: R$ 1750.33 DIProcessor.js:1389:17
+✅ Despesas aduaneiras extraídas: 
+Object { siscomex: 493.56, afrmm: 1256.77, capatazia: 0, total: 1750.33 }
+DIProcessor.js:1255:17
+📊 Moeda VMLE/VMLD: 220, Taxa: 5.2177 BRL DIProcessor.js:730:17
+📂 ConfigLoader: Carregando configurações essenciais... ConfigLoader.js:24:21
+✅ ConfigLoader: Configurações carregadas com sucesso ConfigLoader.js:48:21
+✅ Moeda processada DATA-DRIVEN: USD (5.2177) DIProcessor.js:797:17
+Erro no parsing XML: TypeError: can't access property "querySelector", node is undefined
+    getTextContent DIProcessor.js:1154
+    calculateTotals DIProcessor.js:918
+    parseXML DIProcessor.js:125
+    processarDI di-interface.js:299
+    setupEventListeners di-interface.js:142
+    <anonymous> di-interface.js:65
+    EventListener.handleEvent* di-interface.js:54
+DIProcessor.js:133:21
+❌ ERRO no processamento da DI: Error: Erro ao processar XML: can't access property "querySelector", node is undefined
+    parseXML DIProcessor.js:134
+    processarDI di-interface.js:299
+    setupEventListeners di-interface.js:142
+    <anonymous> di-interface.js:65
+    EventListener.handleEvent* di-interface.js:54
+di-interface.js:365:17
+Stack trace completo: parseXML@http://localhost:8000/src/core/processors/DIProcessor.js?t=1759004065341:134:19
+async*processarDI@http://localhost:8000/src/di-interface.js?t=1759004065341:299:39
+async*setupEventListeners@http://localhost:8000/src/di-interface.js?t=1759004065341:142:22
+@http://localhost:8000/src/di-interface.js?t=1759004065341:65:5
+EventListener.handleEvent*@http://localhost:8000/src/di-interface.js?t=1759004065341:54:10
+di-interface.js:366:17
+Detalhes do erro: 
+Object { name: "Error", message: `Erro ao processar XML: can't access property "querySelector", node is undefined`, stack: "parseXML@http://localhost:8000/src/core/processors/DIProcessor.js?t=1759004065341:134:19\nasync*processarDI@http://localhost:8000/src/di-interface.js?t=1759004065341:299:39\nasync*setupEventListeners@http://localhost:8000/src/di-interface.js?t=1759004065341:142:22\n@http://localhost:8000/src/di-interface.js?t=1759004065341:65:5\nEventListener.handleEvent*@http://localhost:8000/src/di-interface.js?t=1759004065341:54:10\n" }
+di-interface.js:367:17

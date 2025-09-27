@@ -91,6 +91,9 @@ export class DIProcessor {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
             
+            // Armazenar referência XML para uso em outros métodos (critical fix)
+            this.xml = xmlDoc;
+            
             // Verificar se houve erros no parsing
             const parseError = xmlDoc.querySelector("parsererror");
             if (parseError) {
@@ -913,10 +916,39 @@ export class DIProcessor {
      * Calcula totais da DI
      */
     calculateTotals() {
+        // Extrair totais globais de frete e seguro do XML (informativos/validação)
+        const diNode = this.xml;
+        const freteTotal = this.convertValue(this.getTextContent(diNode, 'freteTotalReais'), 'monetary');
+        const seguroTotal = this.convertValue(this.getTextContent(diNode, 'seguroTotalReais'), 'monetary');
+        
+        // NO FALLBACKS - campos obrigatórios do XML (podem ser zero)
+        if (freteTotal === null || freteTotal === undefined) {
+            throw new Error('freteTotalReais ausente no XML - campo obrigatório na DI');
+        }
+        if (seguroTotal === null || seguroTotal === undefined) {
+            throw new Error('seguroTotalReais ausente no XML - campo obrigatório na DI');
+        }
+        
+        // Determinar tratamento baseado no INCOTERM da primeira adição
+        const primeiraAdicao = this.diData.adicoes[0];
+        const incoterm = primeiraAdicao.condicao_venda_incoterm;
+        const freteIncluso = this.isFreteIncluidoIncoterm(incoterm);
+        const seguroIncluso = this.isSeguroIncluidoIncoterm(incoterm);
+        
         let totals = {
             valor_total_fob_usd: 0,
             valor_total_fob_brl: 0,
-            valor_total_mercadorias: 0
+            valor_total_mercadorias: 0,
+            // Valores XML (informativos/auditoria)
+            valor_frete_xml: freteTotal,
+            valor_seguro_xml: seguroTotal,
+            // Valores para cálculos (INCOTERM-aware: zero se incluso)
+            valor_frete_calculo: freteIncluso ? 0 : freteTotal,
+            valor_seguro_calculo: seguroIncluso ? 0 : seguroTotal,
+            // Flags INCOTERM para transparência
+            frete_incluso_incoterm: freteIncluso,
+            seguro_incluso_incoterm: seguroIncluso,
+            incoterm_aplicado: incoterm
         };
 
         this.diData.adicoes.forEach(adicao => {
@@ -950,7 +982,57 @@ export class DIProcessor {
             }
         });
 
+        // FASE 3: Validação cross-reference e logs informativos INCOTERM
+        this.validateFreteSeguroConsistency(totals);
+        
         this.diData.totais = totals;
+    }
+
+    /**
+     * Valida consistência frete/seguro XML vs adições e logs informativos INCOTERM
+     * @param {Object} totals - Objeto totals com valores XML e flags INCOTERM
+     */
+    validateFreteSeguroConsistency(totals) {
+        // Somar frete e seguro das adições para comparação
+        let freteCalculado = 0;
+        let seguroCalculado = 0;
+        
+        this.diData.adicoes.forEach(adicao => {
+            freteCalculado += adicao.frete_valor_reais || 0;
+            seguroCalculado += adicao.seguro_valor_reais || 0;
+        });
+        
+        // Logs informativos sobre tratamento INCOTERM
+        console.log(`🚢 INCOTERM ${totals.incoterm_aplicado} aplicado:`);
+        
+        if (totals.frete_incluso_incoterm) {
+            console.log(`📦 Frete XML: R$ ${totals.valor_frete_xml.toFixed(2)} → Cálculo: R$ 0,00 (INCLUSO no preço)`);
+            if (totals.valor_frete_xml > 0) {
+                console.log(`ℹ️ Frete valor informativo - já considerado no FOB, zero para cálculos`);
+            }
+        } else {
+            console.log(`🚛 Frete XML: R$ ${totals.valor_frete_xml.toFixed(2)} → Cálculo: R$ ${totals.valor_frete_calculo.toFixed(2)} (ADICIONADO aos custos)`);
+        }
+        
+        if (totals.seguro_incluso_incoterm) {
+            console.log(`🛡️ Seguro XML: R$ ${totals.valor_seguro_xml.toFixed(2)} → Cálculo: R$ 0,00 (INCLUSO no preço)`);
+            if (totals.valor_seguro_xml > 0) {
+                console.log(`ℹ️ Seguro valor informativo - já considerado no FOB, zero para cálculos`);
+            }
+        } else {
+            console.log(`🔒 Seguro XML: R$ ${totals.valor_seguro_xml.toFixed(2)} → Cálculo: R$ ${totals.valor_seguro_calculo.toFixed(2)} (ADICIONADO aos custos)`);
+        }
+        
+        // Validação cross-reference (não fatal - apenas alerta)
+        const diferencaFrete = Math.abs(freteCalculado - totals.valor_frete_xml);
+        const diferencaSeguro = Math.abs(seguroCalculado - totals.valor_seguro_xml);
+        
+        if (diferencaFrete > 0.01) {
+            console.warn(`⚠️ Diferença frete: Adições R$ ${freteCalculado.toFixed(2)} vs XML R$ ${totals.valor_frete_xml.toFixed(2)}`);
+        }
+        if (diferencaSeguro > 0.01) {
+            console.warn(`⚠️ Diferença seguro: Adições R$ ${seguroCalculado.toFixed(2)} vs XML R$ ${totals.valor_seguro_xml.toFixed(2)}`);
+        }
     }
 
     /**
