@@ -19,10 +19,14 @@
  * MotorCalculoTributario - Cálculo de percentuais tributários baseado em dados externos
  * NO HARDCODED VALUES - todos os dados vem de arquivos JSON ou input do usuário
  */
+// Importar IncentiveManager para aplicação de incentivos
+import { IncentiveManager } from '@core/incentives/IncentiveManager.js';
+
 class MotorCalculoTributario {
     constructor() {
         this.aliquotasData = null;
         this.tributacaoMonofasicaData = null;
+        this.incentiveManager = new IncentiveManager();
         this.initialized = false;
     }
 
@@ -41,8 +45,11 @@ class MotorCalculoTributario {
             // Carregar tributacao-monofasica.json - OBRIGATÓRIO
             await this.carregarTributacaoMonofasica();
 
+            // Inicializar IncentiveManager - OBRIGATÓRIO para aplicação de incentivos
+            await this.incentiveManager.initializeConfiguration();
+
             this.initialized = true;
-            console.log('✅ MotorCalculoTributario inicializado com dados externos');
+            console.log('✅ MotorCalculoTributario inicializado com dados externos + incentivos');
 
         } catch (error) {
             throw new Error(`Falha na inicialização do MotorCalculoTributario: ${error.message}`);
@@ -276,6 +283,85 @@ class MotorCalculoTributario {
 
         if (!this.tributacaoMonofasicaData) {
             throw new Error('Dados de tributação monofásica não carregados - inicialização incompleta');
+        }
+    }
+
+    /**
+     * Aplicar incentivos fiscais nos percentuais calculados
+     * @param {Object} percentuais - Percentuais base calculados
+     * @param {string} estadoUF - Estado de destino
+     * @param {Array} ncms - Lista de NCMs da operação
+     * @param {string} incentivosEscolhidos - Códigos dos incentivos escolhidos pelo usuário
+     * @returns {Object} Percentuais com incentivos aplicados + detalhamento
+     */
+    aplicarIncentivosFiscais(percentuais, estadoUF, ncms = [], incentivosEscolhidos = null) {
+        this.validarInicializacao();
+
+        if (!percentuais || typeof percentuais !== 'object') {
+            throw new Error('Percentuais base obrigatórios para aplicação de incentivos');
+        }
+
+        if (!estadoUF) {
+            throw new Error('Estado UF obrigatório para aplicação de incentivos');
+        }
+
+        const resultado = {
+            percentuais_originais: { ...percentuais },
+            percentuais_com_incentivos: { ...percentuais },
+            incentivos_aplicados: [],
+            economia_total: 0,
+            detalhamento: {}
+        };
+
+        try {
+            if (incentivosEscolhidos) {
+                // Usuário escolheu incentivos específicos - validar e aplicar
+                const programas = incentivosEscolhidos.split(',').map(p => p.trim());
+                
+                for (const programa of programas) {
+                    const validacao = this.incentiveManager.validateEligibility(estadoUF, programa, ncms);
+                    
+                    if (validacao.elegivel && validacao.beneficios_estimados) {
+                        // Aplicar benefícios reais vindos do beneficios.json
+                        const beneficio = validacao.beneficios_estimados;
+                        
+                        resultado.incentivos_aplicados.push({
+                            programa: programa,
+                            beneficio: beneficio,
+                            economia_percentual: beneficio.percentual_reducao || 0
+                        });
+                        
+                        // Aplicar redução nos percentuais baseada nos dados reais
+                        if (beneficio.tipo === 'reducao_base_icms' && beneficio.percentual_reducao) {
+                            resultado.percentuais_com_incentivos.icms *= (1 - beneficio.percentual_reducao / 100);
+                        }
+                    }
+                }
+            } else {
+                // Auto-detectar incentivos disponíveis (apenas informativamente)
+                const programasDisponiveis = this.incentiveManager.getAvailablePrograms(estadoUF);
+                resultado.detalhamento.programas_disponiveis = programasDisponiveis;
+            }
+
+            // Recalcular total
+            resultado.percentuais_com_incentivos.total = 
+                resultado.percentuais_com_incentivos.pis + 
+                resultado.percentuais_com_incentivos.cofins + 
+                resultado.percentuais_com_incentivos.icms + 
+                resultado.percentuais_com_incentivos.ipi;
+
+            // Calcular economia total
+            resultado.economia_total = resultado.percentuais_originais.total - resultado.percentuais_com_incentivos.total;
+
+            return resultado;
+
+        } catch (error) {
+            console.error('Erro ao aplicar incentivos fiscais:', error);
+            return {
+                ...resultado,
+                erro: error.message,
+                incentivos_aplicados: []
+            };
         }
     }
 }
