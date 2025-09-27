@@ -76,8 +76,8 @@ class ItemPricingInterface {
             throw new Error('ItemPricingCalculator não disponível - componente obrigatório não carregado');
         }
         
-        if (typeof IndexedDBManager === 'undefined') {
-            throw new Error('IndexedDBManager não disponível - componente obrigatório não carregado');
+        if (!dbManager || typeof dbManager.initialize !== 'function') {
+            throw new Error('dbManager não disponível - instância singleton obrigatória');
         }
         
         if (typeof ConfigLoader === 'undefined') {
