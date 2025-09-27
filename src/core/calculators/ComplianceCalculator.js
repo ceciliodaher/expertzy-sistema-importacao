@@ -11,7 +11,7 @@
  */
 
 import ProductMemoryManager from '@core/memory/ProductMemoryManager.js';
-import IndexedDBManager from '@services/db/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class ComplianceCalculator {
     constructor() {

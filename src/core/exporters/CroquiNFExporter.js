@@ -12,7 +12,7 @@
  * @description Gera croqui de NF em Excel e PDF seguindo padrão brasileiro
  */
 
-import IndexedDBManager from '@services/db/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class CroquiNFExporter {
     constructor(diData, calculosData = null, incentiveManager = null) {

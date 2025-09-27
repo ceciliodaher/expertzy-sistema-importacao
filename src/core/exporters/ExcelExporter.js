@@ -8,7 +8,7 @@
 
 import { ExcelProfessionalStyles } from '@shared/utils/excel-professional-styles.js';
 
-import IndexedDBManager from '@services/db/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class ExcelExporter {
     constructor() {
