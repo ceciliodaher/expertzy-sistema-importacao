@@ -218,6 +218,17 @@ export class CalculationValidator {
         };
 
         const icms = calculation.impostos.icms;
+        // NO FALLBACKS - validar estrutura obrigatória
+        if (!calculation.impostos) {
+            throw new Error('calculation.impostos ausente - obrigatório para validação ICMS');
+        }
+        if (!calculation.despesas) {
+            throw new Error('calculation.despesas ausente - obrigatório para validação ICMS');
+        }
+        if (calculation.despesas.total_base_icms === undefined || calculation.despesas.total_base_icms === null) {
+            throw new Error('calculation.despesas.total_base_icms ausente - obrigatório para validação ICMS');
+        }
+        
         const expectedBaseBefore = 
             calculation.valores_base.cif_brl +
             calculation.impostos.ii.valor_devido +
@@ -272,15 +283,29 @@ export class CalculationValidator {
             details: {}
         };
 
-        const despesasDI = diData.despesas_aduaneiras?.total_despesas_aduaneiras || 0;
-        const despesasCalculo = calculation.despesas.total_base_icms || 0;
+        // NO FALLBACKS - validar dados obrigatórios
+        if (!diData.despesas_aduaneiras?.total_despesas_aduaneiras && diData.despesas_aduaneiras?.total_despesas_aduaneiras !== 0) {
+            throw new Error('diData.despesas_aduaneiras.total_despesas_aduaneiras ausente - obrigatório para validação');
+        }
+        if (!calculation.despesas?.total_base_icms && calculation.despesas?.total_base_icms !== 0) {
+            throw new Error('calculation.despesas.total_base_icms ausente - obrigatório para validação');
+        }
+        
+        const despesasDI = diData.despesas_aduaneiras.total_despesas_aduaneiras;
+        const despesasCalculo = calculation.despesas.total_base_icms;
 
+        // Validar estrutura calculadas (pode ser zero mas deve existir)
+        const calculadas = diData.despesas_aduaneiras?.calculadas;
+        if (!calculadas) {
+            throw new Error('diData.despesas_aduaneiras.calculadas ausente - obrigatório para validação detalhada');
+        }
+        
         test.details = {
             despesas_di: despesasDI,
             despesas_calculo: despesasCalculo,
-            siscomex_di: diData.despesas_aduaneiras?.calculadas?.siscomex || 0,
-            afrmm_di: diData.despesas_aduaneiras?.calculadas?.afrmm || 0,
-            capatazia_di: diData.despesas_aduaneiras?.calculadas?.capatazia || 0,
+            siscomex_di: calculadas.siscomex || 0,
+            afrmm_di: calculadas.afrmm || 0,
+            capatazia_di: calculadas.capatazia || 0,
             diferenca: Math.abs(despesasDI - despesasCalculo)
         };
 
