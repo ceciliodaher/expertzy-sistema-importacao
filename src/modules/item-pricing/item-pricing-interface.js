@@ -14,7 +14,7 @@
  */
 
 import { ItemPricingCalculator } from '@core/calculators/ItemPricingCalculator.js';
-import { dbManager } from '@services/database/IndexedDBManager.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 
 class ItemPricingInterface {
@@ -86,13 +86,11 @@ class ItemPricingInterface {
         
         // Inicializar componentes
         this.calculator = new ItemPricingCalculator();
-        this.dbManager = dbManager; // Usar instância singleton
+        this.dbManager = IndexedDBManager.getInstance(); // CORREÇÃO: Usar padrão dos módulos funcionais
         this.configLoader = new ConfigLoader();
         
-        // Garantir que dbManager esteja inicializado antes de acessar this.dbManager.db
-        if (!this.dbManager.initialized) {
-            await this.dbManager.initialize();
-        }
+        // Garantir que dbManager esteja inicializado
+        await this.dbManager.initialize();
         
         // Inicializar calculator (obrigatório)
         await this.calculator.initialize();

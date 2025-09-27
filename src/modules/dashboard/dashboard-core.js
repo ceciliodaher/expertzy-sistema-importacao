@@ -5,13 +5,14 @@
  * Nomenclatura oficial DIProcessor.js
  */
 
-// ES6 Module Import - Usar instância singleton
-import { dbManager } from '@services/database/IndexedDBManager.js';
+// ES6 Module Import - Usar padrão dos módulos funcionais
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 class DashboardCore {
     constructor() {
-        this.dbManager = dbManager; // Usar instância singleton
-        this.db = this.dbManager.db; // Usar instância centralizada
+        // CORREÇÃO: Usar padrão dos módulos funcionais
+        this.dbManager = IndexedDBManager.getInstance();
+        this.db = null; // Será definido após inicialização
         this.initializeEventListeners();
     }
     
@@ -20,6 +21,7 @@ class DashboardCore {
      */
     async initialize() {
         await this.dbManager.initialize();
+        this.db = this.dbManager.db; // Definir após inicialização
         return this;
     }
     
