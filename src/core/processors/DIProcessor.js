@@ -110,7 +110,7 @@ export class DIProcessor {
             this.extractDadosCarga(xmlDoc);
             
             // Extrair adições
-            this.extractAdicoes(xmlDoc);
+            await this.extractAdicoes(xmlDoc);
             
             // Extrair informações complementares
             this.extractInformacoesComplementares(xmlDoc);
@@ -287,20 +287,21 @@ export class DIProcessor {
     /**
      * Extrai todas as adições
      */
-    extractAdicoes(xmlDoc) {
+    async extractAdicoes(xmlDoc) {
         const adicaoNodes = xmlDoc.querySelectorAll('adicao');
         this.diData.adicoes = [];
 
-        adicaoNodes.forEach((adicaoNode, index) => {
-            const adicao = this.extractAdicao(adicaoNode, index + 1);
+        for (let index = 0; index < adicaoNodes.length; index++) {
+            const adicaoNode = adicaoNodes[index];
+            const adicao = await this.extractAdicao(adicaoNode, index + 1);
             this.diData.adicoes.push(adicao);
-        });
+        }
     }
 
     /**
      * Extrai uma adição específica
      */
-    extractAdicao(adicaoNode, numeroAdicao) {
+    async extractAdicao(adicaoNode, numeroAdicao) {
         const incoterm = this.getTextContent(adicaoNode, 'condicaoVendaIncoterm');
         
         const adicao = {
