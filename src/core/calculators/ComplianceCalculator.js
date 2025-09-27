@@ -174,7 +174,7 @@ export class ComplianceCalculator {
             }
             
             // Calcular impostos para esta adição
-            const calculoAdicao = this.calcularImpostosImportacao(adicao, despesasAdicao);
+            const calculoAdicao = await this.calcularImpostosImportacao(adicao, despesasAdicao);
             calculosIndividuais.push(calculoAdicao);
             
             // NOVO: Calcular impostos para cada produto individual usando ItemCalculator
@@ -578,7 +578,7 @@ export class ComplianceCalculator {
      * ENTRADA: Dados da DI + despesas consolidadas
      * SAÍDA: Estrutura completa de impostos calculados
      */
-    calcularImpostosImportacao(adicao, despesasConsolidadas = null) {
+    async calcularImpostosImportacao(adicao, despesasConsolidadas = null) {
         console.log('🧮 ComplianceCalculator: Iniciando cálculo de impostos...');
         
         try {
