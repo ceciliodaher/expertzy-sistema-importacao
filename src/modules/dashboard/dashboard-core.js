@@ -39,35 +39,42 @@ class DashboardCore {
      */
     async getGeneralStats() {
         try {
-            console.log('📊 Carregando estatísticas gerais...');
+            console.log('📊 Carregando estatísticas gerais (padrão export)...');
             
-            const [
-                totalDIs,
-                totalAdicoes,
-                totalProdutos,
-                totalDespesas,
-                totalCarga,
-                totalIncentivos,
-                recentDIs,
-                itemPricingStats
-            ] = await Promise.all([
-                this.db.declaracoes.count(),
-                this.db.adicoes.count(),
-                this.db.produtos.count(),
-                this.db.despesas_aduaneiras.count(),
-                this.db.dados_carga.count(),
-                this.db.incentivos_entrada.count(),
-                this.db.declaracoes
-                    .orderBy('data_processamento')
-                    .reverse()
-                    .limit(5)
-                    .toArray(),
-                this.getItemPricingStats()
+            // SOLUÇÃO: Usar mesmo padrão que funciona no export - acesso direto às propriedades
+            const [declaracoes, adicoes, produtos, despesas, carga, incentivos] = await Promise.all([
+                this.db.declaracoes.toArray(),
+                this.db.adicoes.toArray(),
+                this.db.produtos.toArray(),
+                this.db.despesas_aduaneiras.toArray(),
+                this.db.dados_carga.toArray(),
+                this.db.incentivos_entrada.toArray()
             ]);
+            
+            // Contar registros dos arrays
+            const totalDIs = declaracoes.length;
+            const totalAdicoes = adicoes.length;
+            const totalProdutos = produtos.length;
+            const totalDespesas = despesas.length;
+            const totalCarga = carga.length;
+            const totalIncentivos = incentivos.length;
+            
+            // Recent DIs - pegar os 5 mais recentes
+            const recentDIs = declaracoes
+                .filter(di => di.data_processamento)
+                .sort((a, b) => new Date(b.data_processamento) - new Date(a.data_processamento))
+                .slice(0, 5);
+            
+            // Item pricing stats
+            const itemPricingStats = await this.getItemPricingStats();
             
             // Calcular estatísticas derivadas
             const avgProdutosPorDI = totalDIs > 0 ? (totalProdutos / totalDIs).toFixed(1) : 0;
             const avgAdicoesPorDI = totalDIs > 0 ? (totalAdicoes / totalDIs).toFixed(1) : 0;
+            
+            console.log('✅ Estatísticas carregadas com sucesso:', {
+                totalDIs, totalAdicoes, totalProdutos, totalDespesas, totalCarga, totalIncentivos
+            });
             
             return {
                 totalDIs,
@@ -966,8 +973,10 @@ class DashboardCore {
      */
     async getItemPricingStats() {
         try {
-            // Verificar se tabela de item pricing existe
-            if (!this.db.item_pricing_results) {
+            // Verificar se tabela existe usando acesso direto
+            const itemPricingResults = await this.db.item_pricing_results.toArray();
+            
+            if (itemPricingResults.length === 0) {
                 return {
                     total_itens_precificados: 0,
                     preco_medio: 0,
@@ -977,8 +986,36 @@ class DashboardCore {
                 };
             }
 
-            // Usar o método já implementado no IndexedDBManager
-            return await this.db.getItemPricingStatistics();
+            // Calcular estatísticas dos dados reais
+            const totalItens = itemPricingResults.length;
+            const precoMedio = itemPricingResults.reduce((sum, item) => sum + (item.preco_final || 0), 0) / totalItens;
+            
+            // Distribuições
+            const estadosCount = {};
+            const regimesCount = {};
+            const clientesCount = {};
+            
+            itemPricingResults.forEach(item => {
+                // Estados
+                const estado = item.estado_destino || 'N/A';
+                estadosCount[estado] = (estadosCount[estado] || 0) + 1;
+                
+                // Regimes
+                const regime = item.regime_vendedor || 'N/A';
+                regimesCount[regime] = (regimesCount[regime] || 0) + 1;
+                
+                // Tipos de cliente
+                const cliente = item.tipo_cliente || 'N/A';
+                clientesCount[cliente] = (clientesCount[cliente] || 0) + 1;
+            });
+
+            return {
+                total_itens_precificados: totalItens,
+                preco_medio: precoMedio.toFixed(2),
+                distribuicao_por_estado: estadosCount,
+                regimes_mais_usados: regimesCount,
+                tipos_cliente_distribuicao: clientesCount
+            };
 
         } catch (error) {
             console.error('❌ Erro ao obter estatísticas de item pricing:', error);
@@ -998,6 +1035,91 @@ class DashboardCore {
     async refreshStats() {
         if (window.dashboardComponents && window.dashboardComponents.refreshStats) {
             await window.dashboardComponents.refreshStats();
+        }
+    }
+
+    /**
+     * MÉTODOS DE DEBUG - FASE 1 DIAGNÓSTICO
+     */
+    
+    /**
+     * Debug detalhado dos stores disponíveis
+     */
+    async debugStores() {
+        try {
+            console.log('🔍 Debug stores - Estado atual:');
+            
+            if (!this.db) {
+                console.error('❌ this.db é undefined');
+                return;
+            }
+            
+            if (!this.db.isOpen()) {
+                console.warn('⚠️ Banco não está aberto, tentando abrir...');
+                await this.db.open();
+            }
+            
+            console.log('📋 Stores no schema:', this.db._dbSchema ? Object.keys(this.db._dbSchema) : 'schema undefined');
+            
+            // Verificar cada store individualmente
+            const expectedStores = ['declaracoes', 'adicoes', 'produtos', 'despesas_aduaneiras', 'dados_carga'];
+            
+            for (const storeName of expectedStores) {
+                try {
+                    const store = this.db[storeName];
+                    if (store) {
+                        const count = await store.count();
+                        console.log(`✅ Store '${storeName}': ${count} registros`);
+                        
+                        if (count > 0) {
+                            const firstRecord = await store.limit(1).toArray();
+                            console.log(`📄 Primeiro registro '${storeName}':`, firstRecord[0]);
+                            console.log(`📝 Campos disponíveis '${storeName}':`, Object.keys(firstRecord[0]));
+                        }
+                    } else {
+                        console.error(`❌ Store '${storeName}' não encontrado`);
+                    }
+                } catch (error) {
+                    console.error(`❌ Erro ao acessar store '${storeName}':`, error);
+                }
+            }
+            
+        } catch (error) {
+            console.error('❌ Erro no debug stores:', error);
+        }
+    }
+    
+    /**
+     * Count seguro que captura erros detalhados
+     */
+    async safeCount(storeName) {
+        try {
+            if (!this.db[storeName]) {
+                console.error(`❌ Store '${storeName}' não existe`);
+                return 0;
+            }
+            
+            const count = await this.db[storeName].count();
+            console.log(`📊 Count '${storeName}': ${count}`);
+            return count;
+            
+        } catch (error) {
+            console.error(`❌ Erro ao contar '${storeName}':`, error);
+            return 0;
+        }
+    }
+    
+    /**
+     * Query segura com fallback
+     */
+    async safeQuery(queryFn, fallback = null) {
+        try {
+            const result = await queryFn();
+            console.log('✅ Query executada com sucesso, resultado:', result);
+            return result;
+        } catch (error) {
+            console.error('❌ Query falhou:', error);
+            return fallback;
         }
     }
 }

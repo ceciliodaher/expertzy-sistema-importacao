@@ -195,8 +195,8 @@ class ItemPricingInterface {
      */
     async loadAvailableDIs() {
         try {
-            // Buscar DIs com dados de precificação calculados
-            const dis = await this.dbManager.getAllDIs();
+            // SOLUÇÃO: Usar mesmo padrão que funciona no export - acesso direto
+            const dis = await this.dbManager.db.declaracoes.toArray();
             
             if (!dis || dis.length === 0) {
                 throw new Error('Nenhuma DI processada encontrada no sistema');
@@ -261,14 +261,14 @@ class ItemPricingInterface {
         try {
             this.showLoading('Carregando itens da DI...');
             
-            // Carregar dados completos da DI
-            this.currentDI = await this.dbManager.getDIByNumber(diNumber);
+            // Carregar dados completos da DI - padrão export
+            this.currentDI = await this.dbManager.db.declaracoes.where('numero_di').equals(diNumber).first();
             if (!this.currentDI) {
                 throw new Error(`DI ${diNumber} não encontrada no banco de dados`);
             }
 
-            // Carregar itens da DI
-            const items = await this.dbManager.getItemsByDI(diNumber);
+            // Carregar itens da DI - padrão export
+            const items = await this.dbManager.db.adicoes.where('di_id').equals(this.currentDI.id).toArray();
             if (!items || items.length === 0) {
                 throw new Error(`Nenhum item encontrado para DI ${diNumber}`);
             }
