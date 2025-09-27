@@ -654,7 +654,11 @@ export class ComplianceCalculator {
             this.lastCalculation = calculo;
             
             // NOVO: Salvar no IndexedDB para exportadores lerem
-            await this.salvarCalculoIndexedDB(adicao.numero_di || adicao.numeroDI, calculo);
+            const numeroDI = adicao.numero_di || adicao.numeroDI || adicao.numero_adicao;
+            if (!numeroDI) {
+                throw new Error(`Número da DI não encontrado nos dados da adição. Propriedades disponíveis: ${Object.keys(adicao).join(', ')}`);
+            }
+            await this.salvarCalculoIndexedDB(numeroDI, calculo);
             
             console.log('✅ ComplianceCalculator: Cálculo de impostos concluído');
             console.log('📊 Resumo:', {
