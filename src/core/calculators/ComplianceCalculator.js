@@ -1167,7 +1167,7 @@ export class ComplianceCalculator {
             };
 
             // Salvar no IndexedDB
-            await this.dbManager.saveDI(numeroDI, calculoCompleto);
+            await this.dbManager.saveDI(calculoCompleto);
             
             console.log(`💾 ComplianceCalculator: Cálculo salvo no IndexedDB para DI ${numeroDI}`);
         } catch (error) {
