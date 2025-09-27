@@ -6,6 +6,8 @@
  * Works with processed DI data from Phase 1
  */
 
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
+
 class PricingEngine {
     constructor() {
         this.diData = null;
@@ -15,10 +17,10 @@ class PricingEngine {
         this.configurations = {};
         this.configLoader = new ConfigLoader();
         
-        // NOVA INTEGRAÇÃO: Sistema de cálculo de custos por regime
+        // CORREÇÃO: Sistema de cálculo usando APENAS IndexedDB como fonte única
         this.costCalculationEngine = null;
         this.regimeConfigManager = null;
-        this.productMemoryManager = null;
+        this.indexedDBManager = null;
         this.initializeCostSystem();
     }
     
@@ -45,11 +47,13 @@ class PricingEngine {
                 missingComponents.push('RegimeConfigManager');
             }
             
-            if (typeof ProductMemoryManager !== 'undefined') {
-                this.productMemoryManager = new ProductMemoryManager();
-                console.log('✅ ProductMemoryManager integrado ao PricingEngine');
+            // CORREÇÃO: Usar IndexedDBManager diretamente (single source of truth)
+            if (typeof IndexedDBManager !== 'undefined') {
+                this.indexedDBManager = IndexedDBManager.getInstance();
+                await this.indexedDBManager.initialize();
+                console.log('✅ IndexedDBManager integrado ao PricingEngine como fonte única');
             } else {
-                missingComponents.push('ProductMemoryManager');
+                missingComponents.push('IndexedDBManager');
             }
             
             // FAIL-FAST: Se componentes obrigatórios não estão disponíveis

@@ -2,7 +2,7 @@
  * CostCalculationEngine.js - Motor de Cálculo de Custos por Regime Tributário
  * 
  * Calcula custos líquidos aplicando créditos conforme regime tributário
- * Integra com ProductMemoryManager e RegimeConfigManager
+ * Integra com IndexedDBManager (single source of truth) e RegimeConfigManager
  * Utiliza IndexedDBManager para persistência - NO FALLBACKS
  * 
  * @version 2.0.0
@@ -13,7 +13,7 @@ import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 class CostCalculationEngine {
     constructor() {
-        this.productMemory = null;
+        this.indexedDBManager = null;
         this.regimeConfig = null;
         this.calculatedCosts = [];
         this.storageKey = 'expertzy_calculated_costs';
@@ -33,9 +33,8 @@ class CostCalculationEngine {
             
             await this.indexedDBManager.initialize();
             
-            // Aguardar instâncias dos managers
-            this.productMemory = new ProductMemoryManager();
-            await this.productMemory.initializeStorage();
+            // Instanciar manager singleton
+            this.indexedDBManager = IndexedDBManager.getInstance();
             
             this.regimeConfig = new RegimeConfigManager();
             await this.regimeConfig.initializeConfig();
@@ -111,7 +110,7 @@ class CostCalculationEngine {
         }
         try {
             // Obter produto da memória
-            const product = this.productMemory.getProductById(productId);
+            const product = await this.indexedDBManager.getProductById(productId);
             if (!product) {
                 throw new Error(`Produto ${productId} não encontrado`);
             }
@@ -300,7 +299,7 @@ class CostCalculationEngine {
             throw new Error('CostCalculationEngine não inicializado - chame initializeEngine() primeiro');
         }
         try {
-            const products = this.productMemory.getProductsByDI(diNumber);
+            const products = await this.indexedDBManager.getProductsByDI(diNumber);
             if (!products || products.length === 0) {
                 throw new Error(`Nenhum produto encontrado para DI ${diNumber}`);
             }
