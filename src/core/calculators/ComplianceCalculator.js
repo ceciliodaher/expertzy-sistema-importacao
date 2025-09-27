@@ -251,6 +251,9 @@ export class ComplianceCalculator {
         // INTEGRAÇÃO: Salvar no IndexedDB (NO FALLBACKS)
         await this.atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas);
         
+        // NOVO: Salvar totaisConsolidados completos para exportadores (SOLID principle)
+        await this.salvarCalculoIndexedDB(di.numero_di, totaisConsolidados);
+        
         // NOVO: Preparar e processar dados de precificação se PricingAdapter estiver disponível
         if (window.pricingAdapter) {
             try {
@@ -361,6 +364,14 @@ export class ComplianceCalculator {
             adicoes_detalhes: adicoesComRateioCompleto,
             calculos_individuais: calculosIndividuais,
             produtos_individuais: produtosIndividuais, // NOVO: Produtos com tributos por item
+            
+            // Campos obrigatórios para exportadores (NO FALLBACKS)
+            totais_relatorio: this.calcularTotaisRelatorio(
+                di,
+                despesasConsolidadas,
+                produtosIndividuais
+            ),
+            totais_por_coluna: this.calcularTotaisPorColuna(di.adicoes),
             
             // Metadados para rastreabilidade
             estado: this.estadoDestino,
@@ -638,7 +649,13 @@ export class ComplianceCalculator {
             if (calculo.produtos_individuais && calculo.produtos_individuais.length > 0) {
                 calculo.totais_relatorio = this.calcularTotaisRelatorio(
                     adicao.dadosDI || adicao,
-                    calculo,
+                    {
+                        despesas: {
+                            totais: {
+                                geral: calculo.despesas?.total_custos || calculo.totais?.custo_total || 0
+                            }
+                        }
+                    },
                     calculo.produtos_individuais
                 );
             }
@@ -649,16 +666,15 @@ export class ComplianceCalculator {
                 calculo.totais_por_coluna = this.calcularTotaisPorColuna(adicao.adicoes);
             }
             
-            // Salvar cálculo na memória e no IndexedDB
+            // Salvar cálculo na memória
             this.salvarCalculoMemoria(calculo);
             this.lastCalculation = calculo;
             
-            // NOVO: Salvar no IndexedDB para exportadores lerem
+            // DEBUG: Validar número da DI (mantido para auditoria)
             const numeroDI = adicao.numero_di || adicao.numeroDI || adicao.numero_adicao;
             if (!numeroDI) {
                 throw new Error(`Número da DI não encontrado nos dados da adição. Propriedades disponíveis: ${Object.keys(adicao).join(', ')}`);
             }
-            await this.salvarCalculoIndexedDB(numeroDI, calculo);
             
             console.log('✅ ComplianceCalculator: Cálculo de impostos concluído');
             console.log('📊 Resumo:', {
@@ -1146,24 +1162,36 @@ export class ComplianceCalculator {
      * @param {string} numeroDI - Número da DI
      * @param {Object} calculo - Cálculo completo
      */
-    async salvarCalculoIndexedDB(numeroDI, calculo) {
+    async salvarCalculoIndexedDB(numeroDI, totaisConsolidados) {
         if (!numeroDI) {
             throw new Error('Número da DI é obrigatório para salvar cálculo no IndexedDB');
         }
 
-        if (!calculo) {
-            throw new Error('Cálculo é obrigatório para salvar no IndexedDB');
+        if (!totaisConsolidados) {
+            throw new Error('TotaisConsolidados é obrigatório para salvar no IndexedDB');
         }
 
         try {
-            // Estrutura completa para exportadores
+            // Validar estrutura obrigatória (NO FALLBACKS)
+            if (!totaisConsolidados.totais_relatorio) {
+                throw new Error('totais_relatorio ausente - ComplianceCalculator deve calcular campo obrigatório');
+            }
+            if (!totaisConsolidados.totais_por_coluna) {
+                throw new Error('totais_por_coluna ausente - ComplianceCalculator deve calcular campo obrigatório');
+            }
+            if (!totaisConsolidados.produtos_individuais) {
+                throw new Error('produtos_individuais ausente - ComplianceCalculator deve calcular campo obrigatório');
+            }
+            if (!totaisConsolidados.adicoes_detalhes) {
+                throw new Error('adicoes_detalhes ausente - ComplianceCalculator deve calcular campo obrigatório');
+            }
+
+            // Estrutura completa para exportadores (SOLID - dados já calculados)
             const calculoCompleto = {
                 numero_di: numeroDI,
                 timestamp: new Date(),
-                ...calculo,
-                // Garantir que os novos campos estejam presentes
-                totais_relatorio: calculo.totais_relatorio,
-                totais_por_coluna: calculo.totais_por_coluna
+                tipo: 'DI_COMPLETA',
+                ...totaisConsolidados
             };
 
             // Salvar no IndexedDB usando saveConfig para evitar validações de DI completa
