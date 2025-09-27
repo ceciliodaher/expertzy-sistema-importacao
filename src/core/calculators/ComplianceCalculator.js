@@ -636,9 +636,25 @@ export class ComplianceCalculator {
             // 7. Calcular totais para relatórios (NOVO - movido do CroquiNFExporter)
             // Verificar se há produtos individuais calculados
             if (calculo.produtos_individuais && calculo.produtos_individuais.length > 0) {
+                // NO FALLBACKS - validar estrutura obrigatória
+                if (!calculo.despesas) {
+                    throw new Error('calculo.despesas ausente - obrigatório para calcularTotaisRelatorio');
+                }
+                if (!calculo.despesas.total_custos && !calculo.totais?.custo_total) {
+                    throw new Error('total_custos ausente em calculo.despesas - obrigatório para totais_relatorio');
+                }
+                
+                const despesasParaRelatorio = {
+                    despesas: {
+                        totais: {
+                            geral: calculo.despesas.total_custos || calculo.totais.custo_total
+                        }
+                    }
+                };
+                
                 calculo.totais_relatorio = this.calcularTotaisRelatorio(
                     adicao.dadosDI || adicao,
-                    calculo,
+                    despesasParaRelatorio,
                     calculo.produtos_individuais
                 );
             }
