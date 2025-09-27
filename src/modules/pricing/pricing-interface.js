@@ -127,9 +127,9 @@ class MotorCalculoTributario {
             if (typeof estadoData.fcp === 'number') {
                 // FCP fixo
                 aliquotaTotal += estadoData.fcp;
-            } else if (estadoData.fcp && typeof estadoData.fcp.max === 'number') {
-                // FCP variável - usar valor máximo conforme orientação técnica
-                aliquotaTotal += estadoData.fcp.max;
+            } else if (estadoData.fcp && typeof estadoData.fcp.min === 'number') {
+                // FCP variável - usar valor MÍNIMO (piso) conforme especificação
+                aliquotaTotal += estadoData.fcp.min;
             }
         }
 

@@ -4,6 +4,7 @@
  */
 
 import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
+import { IncentiveManager } from '@core/incentives/IncentiveManager.js';
 
 export class DIProcessor {
     constructor() {
@@ -11,6 +12,7 @@ export class DIProcessor {
         this.originalXmlContent = null;
         this.incotermIdentificado = null;
         this.configsLoaded = false;
+        this.incentiveManager = new IncentiveManager();
         this.loadConfigurations();
     }
     
@@ -365,7 +367,74 @@ export class DIProcessor {
         // Extrair produtos após ter os dados da adição
         adicao.produtos = this.extractProdutos(adicaoNode, numeroAdicao, adicao);
 
+        // NOVO: Detectar incentivos fiscais para esta adição
+        adicao.incentivos_detectados = this.detectIncentivosParaAdicao(adicao);
+
         return adicao;
+    }
+
+    /**
+     * Detecta incentivos fiscais aplicáveis para uma adição
+     * @param {object} adicao - Dados da adição processada
+     * @returns {object} Incentivos detectados e aplicabilidade
+     */
+    detectIncentivosParaAdicao(adicao) {
+        try {
+            if (!this.incentiveManager || !adicao.ncm) {
+                return {
+                    aplicaveis: [],
+                    detectados: false,
+                    motivo: 'IncentiveManager não disponível ou NCM ausente'
+                };
+            }
+
+            // Estado de destino vem da DI (importador)
+            const estadoDestino = this.diData.importador_endereco_uf;
+            if (!estadoDestino) {
+                return {
+                    aplicaveis: [],
+                    detectados: false,
+                    motivo: 'Estado de destino não identificado na DI'
+                };
+            }
+
+            // Obter programas disponíveis para o estado (método existente)
+            const programasDisponiveis = this.incentiveManager.getAvailablePrograms(estadoDestino);
+            
+            const incentivosAplicaveis = [];
+            for (const programa of programasDisponiveis) {
+                try {
+                    // Usar método existente validateEligibility
+                    const validacao = this.incentiveManager.validateEligibility(estadoDestino, programa.codigo, [adicao.ncm]);
+                    if (validacao.elegivel) {
+                        incentivosAplicaveis.push({
+                            programa: programa.codigo,
+                            nome: programa.nome,
+                            elegivel: true,
+                            beneficios: validacao.beneficios_estimados
+                        });
+                    }
+                } catch (error) {
+                    console.warn(`Erro ao validar programa ${programa.codigo} para NCM ${adicao.ncm}:`, error.message);
+                }
+            }
+            
+            return {
+                aplicaveis: incentivosAplicaveis,
+                detectados: incentivosAplicaveis.length > 0,
+                estado_destino: estadoDestino,
+                ncm_analisado: adicao.ncm,
+                motivo: incentivosAplicaveis.length > 0 ? 'Incentivos disponíveis' : 'Nenhum incentivo aplicável'
+            };
+
+        } catch (error) {
+            console.error('Erro ao detectar incentivos para adição:', error);
+            return {
+                aplicaveis: [],
+                detectados: false,
+                motivo: `Erro na detecção: ${error.message}`
+            };
+        }
     }
 
     /**
