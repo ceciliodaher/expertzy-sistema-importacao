@@ -89,6 +89,11 @@ class ItemPricingInterface {
         this.dbManager = dbManager; // Usar instância singleton
         this.configLoader = new ConfigLoader();
         
+        // Garantir que dbManager esteja inicializado antes de acessar this.dbManager.db
+        if (!this.dbManager.initialized) {
+            await this.dbManager.initialize();
+        }
+        
         // Inicializar calculator (obrigatório)
         await this.calculator.initialize();
         
