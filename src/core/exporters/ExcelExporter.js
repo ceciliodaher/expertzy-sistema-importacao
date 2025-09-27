@@ -32,8 +32,9 @@ export class ExcelExporter {
                 throw new Error('Número da DI é obrigatório para carregar dados calculados');
             }
             
-            // Buscar dados calculados no IndexedDB
-            const calculosDB = await this.dbManager.getDI(numeroDI);
+            // Buscar dados calculados no IndexedDB usando getConfig
+            const chave = `calculo_${numeroDI}`;
+            const calculosDB = await this.dbManager.getConfig(chave);
             
             if (!calculosDB) {
                 throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);

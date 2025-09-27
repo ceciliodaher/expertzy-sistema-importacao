@@ -366,7 +366,7 @@ export class DIProcessor {
         };
 
         // Extrair produtos após ter os dados da adição
-        adicao.produtos = this.extractProdutos(adicaoNode, numeroAdicao, adicao);
+        adicao.produtos = await this.extractProdutos(adicaoNode, numeroAdicao, adicao);
 
         // NOVO: Detectar incentivos fiscais para esta adição
         adicao.incentivos_detectados = this.detectIncentivosParaAdicao(adicao);
@@ -520,7 +520,7 @@ export class DIProcessor {
     /**
      * Extrai produtos de uma adição
      */
-    extractProdutos(adicaoNode, numeroAdicao, adicaoData) {
+    async extractProdutos(adicaoNode, numeroAdicao, adicaoData) {
         const produtoNodes = adicaoNode.querySelectorAll('mercadoria');
         const produtos = [];
 

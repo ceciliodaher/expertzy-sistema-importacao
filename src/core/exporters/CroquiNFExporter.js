@@ -39,11 +39,11 @@ export class CroquiNFExporter {
         console.log('🏭 CroquiNFExporter v2.1: Inicializando com DI:', diData.numero_di);
         
         this.initializeStyles();
-        this.loadIncentiveConfig().then(() => {
-            this.prepareAllData();
-        }).catch(error => {
+        this.loadIncentiveConfig().then(async () => {
+            await this.prepareAllData();
+        }).catch(async (error) => {
             console.warn('⚠️ Erro ao carregar configuração de incentivos:', error);
-            this.prepareAllData(); // Continuar sem incentivos
+            await this.prepareAllData(); // Continuar sem incentivos
         });
     }
     
@@ -143,10 +143,10 @@ export class CroquiNFExporter {
     
     // ========== PREPARAÇÃO DE DADOS ==========
     
-    prepareAllData() {
+    async prepareAllData() {
         console.log('📊 Preparando dados do croqui...');
         this.header = this.prepareHeader();
-        this.produtos = this.prepareProdutos();
+        this.produtos = await this.prepareProdutos();
         this.totais = this.prepareTotais();
         console.log('✅ Dados preparados:', { 
             produtos: this.produtos.length, 
@@ -199,7 +199,7 @@ export class CroquiNFExporter {
         };
     }
     
-    prepareProdutos() {
+    async prepareProdutos() {
         const produtos = [];
         let itemCounter = 1;
         
@@ -207,7 +207,7 @@ export class CroquiNFExporter {
         if (this.calculos && this.calculos.produtos_individuais && this.calculos.produtos_individuais.length > 0) {
             console.log('📦 Usando produtos individuais já calculados:', this.calculos.produtos_individuais.length);
             
-            this.calculos.produtos_individuais.forEach(produto => {
+            for (const produto of this.calculos.produtos_individuais) {
                 // FASE 2: Buscar dados da adição e produto correspondentes - OBRIGATÓRIO
                 const adicaoCorrespondente = this.di.adicoes.find(ad => ad.numero_adicao.toString().padStart(3, '0') === produto.adicao_numero);
                 
@@ -275,7 +275,7 @@ export class CroquiNFExporter {
                 
                 produtos.push(produtoProcessado);
                 itemCounter++;
-            });
+            }
             
         } else {
             // NO FALLBACKS - produtos individuais são obrigatórios
@@ -748,8 +748,9 @@ export class CroquiNFExporter {
                 return;
             }
             
-            // Buscar dados calculados no IndexedDB
-            const calculosDB = await this.dbManager.getDI(numeroDI);
+            // Buscar dados calculados no IndexedDB usando getConfig
+            const chave = `calculo_${numeroDI}`;
+            const calculosDB = await this.dbManager.getConfig(chave);
             
             if (!calculosDB) {
                 throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);
@@ -1317,6 +1318,76 @@ export class CroquiNFExporter {
             }
         }
         throw new Error(`Alíquota IPI não encontrada para NCM ${ncm}`);
+    }
+
+    /**
+     * Mapeia unidades de medida para formato padrão (ex: "QUILOGRAMA LIQUIDO" → "KG")
+     * @param {string} unidadeOriginal - Unidade original da DI
+     * @returns {Promise<string>} Unidade mapeada
+     */
+    async mapUnidade(unidadeOriginal) {
+        if (!unidadeOriginal) {
+            throw new Error('Unidade não fornecida - obrigatória para mapeamento');
+        }
+
+        const config = await this.loadUnitsMapping();
+        const mapeamento = config.mapeamento_unidades;
+        
+        const unidadeNormalizada = unidadeOriginal.toUpperCase().trim();
+        const unidadeMapeada = mapeamento[unidadeNormalizada];
+        
+        if (unidadeMapeada) {
+            return unidadeMapeada;
+        }
+        
+        // Se não tem mapeamento, usar a unidade original
+        return unidadeOriginal;
+    }
+
+    /**
+     * Carrega configuração de mapeamento de unidades
+     * @returns {Promise<Object>} Configuração de unidades
+     */
+    async loadUnitsMapping() {
+        if (!this.unitsMapping) {
+            const response = await fetch(new URL('../../shared/data/unidades-medida.json', import.meta.url));
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar unidades-medida.json: ${response.status}`);
+            }
+            this.unitsMapping = await response.json();
+        }
+        return this.unitsMapping;
+    }
+
+    /**
+     * Extrai quantidade por caixa da descrição da mercadoria
+     * @param {string} descricao - Descrição da mercadoria
+     * @returns {number} Quantidade por caixa
+     */
+    extractQuantidadePorCaixa(descricao) {
+        if (!descricao) {
+            throw new Error('Descrição não fornecida - obrigatória para extrair quantidade por caixa');
+        }
+
+        // Padrões para detectar quantidade por caixa/embalagem
+        const patterns = [
+            /(\d+)\s*(?:un|und|unidades|pcs|peças|pçs)[\s\/]*(?:por|p|\/)\s*(?:caixa|cx|embalagem|emb)/i,
+            /(\d+)\s*(?:x|×)\s*\d+/i, // Formato "12x500g"
+            /(\d+)\s*(?:un|und|unidades|pcs|peças|pçs)/i // Quantidade simples
+        ];
+
+        for (const pattern of patterns) {
+            const match = descricao.match(pattern);
+            if (match) {
+                const quantidade = parseInt(match[1]);
+                if (!isNaN(quantidade) && quantidade > 0) {
+                    return quantidade;
+                }
+            }
+        }
+
+        // Se não conseguir extrair, retornar 1 como padrão
+        return 1;
     }
 }
 

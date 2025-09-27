@@ -1,0 +1,24 @@
+downloadable font: rejected by sanitizer (font-family: "BRFirma-Medium" style:normal weight:500 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap
+downloadable font: rejected by sanitizer (font-family: "gadeg thin" style:normal weight:300 stretch:100 src index:0) source: https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap
+❌ ComplianceCalculator: Erro no cálculo: Error: Número da DI é obrigatório para salvar cálculo no IndexedDB
+    salvarCalculoIndexedDB ComplianceCalculator.js:1147
+    calcularImpostosImportacao ComplianceCalculator.js:657
+    calcularTodasAdicoes ComplianceCalculator.js:177
+    calcularImpostos di-interface.js:926
+    onclick di-interface.html:1
+ComplianceCalculator.js:674:21
+[DI Interface] Erro no cálculo de impostos: Error: Número da DI é obrigatório para salvar cálculo no IndexedDB
+    salvarCalculoIndexedDB ComplianceCalculator.js:1147
+    calcularImpostosImportacao ComplianceCalculator.js:657
+    calcularTodasAdicoes ComplianceCalculator.js:177
+    calcularImpostos di-interface.js:926
+    onclick di-interface.html:1
+di-interface.js:959:17
+Uncaught (in promise) ReferenceError: currentCalculation is not defined
+    exportarPlanilhaCustos di-interface.js:1138
+    onclick di-interface.html:1
+di-interface.js:1138:9
+Erro ao salvar arquivo: ReferenceError: currentCalculation is not defined
+    salvarDadosEmArquivo di-interface.js:1367
+    onclick di-interface.html:1
+di-interface.js:1396:17
