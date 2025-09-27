@@ -13,6 +13,7 @@ Sistema web modular para processamento automatizado de Declarações de Importa�
 **MÓDULO PRECIFICAÇÃO COMPLETO**: 25/09/2025 - FASE 2.4.3 CONCLUÍDA - Pipeline completo DI → Custos → Preços
 **MIGRAÇÃO VITE CONCLUÍDA**: 26/09/2025 - Sistema migrado do Express para Vite com otimizações modernas
 **CORREÇÕES CRÍTICAS FINALIZADAS**: 26/09/2025 - Todos erros Dexie/ES6 corrigidos, arquitetura estabilizada
+**FRETE/SEGURO INCOTERM IMPLEMENTADO**: 27/09/2025 - Lógica INCOTERM zero correta, NO FALLBACKS, SOLID aplicado
 **PRÓXIMA FASE**: Cenários comparativos e relatórios avançados
 
 ## 🏛️ NOMENCLATURA OFICIAL
@@ -28,6 +29,50 @@ Sistema web modular para processamento automatizado de Declarações de Importa�
 3. **Demais módulos**: CONSUMERS (seguem nomenclatura estabelecida)
 
 **Para consultar tabelas completas, mapeamentos XML e exemplos detalhados, consulte: `documentos/Nomenclatura-DIProcessor-xml-detalhada.md`**
+
+## 🔧 PRINCÍPIOS DE DESENVOLVIMENTO - SOLID
+
+### Princípios Fundamentais Aplicados
+
+#### **✅ SOLID Principles**
+- **S - Single Responsibility**: Cada classe tem uma única responsabilidade
+  - `DIProcessor`: Apenas processamento XML e extração de dados
+  - `ComplianceCalculator`: Apenas cálculos tributários
+  - `ExcelExporter`/`CroquiNFExporter`: Apenas formatação e export
+  
+- **O - Open/Closed**: Aberto para extensão, fechado para modificação
+  - Novos regimes tributários via configuração JSON
+  - Extensibilidade via plugins sem alterar código base
+
+- **L - Liskov Substitution**: Subtipos substituíveis sem quebrar funcionalidade
+  - Interfaces de exporters intercambiáveis
+  - Validators polimórficos
+
+- **I - Interface Segregation**: Interfaces específicas e focadas
+  - Separação clara entre interfaces de cálculo, validação e export
+  - Módulos não dependem de interfaces que não usam
+
+- **D - Dependency Inversion**: Dependência de abstrações, não concretizações
+  - IndexedDB como abstração de persistência
+  - Configurações JSON como abstrações de regras tributárias
+
+#### **✅ NO FALLBACKS Principle**
+- **Falha rápida**: Sistema deve falhar explicitamente quando dados obrigatórios ausentes
+- **Mensagens claras**: Erros específicos indicam exatamente o que está faltando
+- **Zero hardcoded data**: Configurações externas, nunca valores padrão no código
+- **Exemplo**: `throw new Error('campo_obrigatório ausente')` ao invés de `|| valorPadrao`
+
+#### **✅ Single Source of Truth**
+- **DIProcessor**: PRIMARY CREATOR de nomenclatura de campos
+- **IndexedDB**: Única fonte de dados persistidos
+- **JSON configs**: Única fonte de regras tributárias
+- **Dados fluem**: XML → DIProcessor → ComplianceCalculator → IndexedDB → Exporters
+
+#### **✅ INCOTERM Business Logic**
+- **CIF/CFR**: `valor_frete_calculo = 0, valor_seguro_calculo = 0` (já inclusos no preço)
+- **FOB**: `valor_frete_calculo = valor_xml, valor_seguro_calculo = valor_xml` (adicionar aos custos)
+- **Transparência**: Logs mostram `XML → Cálculo` com justificativa INCOTERM
+- **Campos separados**: `valor_frete_xml` (auditoria) vs `valor_frete_calculo` (processamento)
 
 ## 🚀 STATUS ATUAL - FASE 2.4.3 CONCLUÍDA
 
@@ -77,6 +122,39 @@ src/
 **Status**: CORRIGIDO - Singleton pattern implementado em `IndexedDBManager.js`
 
 **Documentação Técnica**: Ver `ARCHITECTURE.md` e `TROUBLESHOOTING.md` para detalhes completos
+
+## 🔧 Correções SOLID e INCOTERM (27/09/2025)
+
+### ✅ Parameter Mismatch TypeError Fix 
+**Problema**: `TypeError: can't access property "totais", calculosCompletos.despesas is undefined`
+**Status**: CORRIGIDO - Parameter structure padronizada em `calcularTotaisRelatorio` seguindo SOLID (NO FALLBACKS)
+
+### ✅ INCOTERM Zero Logic Implementation
+**Problema**: Frete/seguro sempre incluídos nos cálculos independente do INCOTERM
+**Status**: CORRIGIDO - Business logic correta implementada:
+- **CIF/CFR**: `valor_frete_calculo = 0, valor_seguro_calculo = 0` (já inclusos no preço)
+- **FOB**: `valor_frete_calculo = valor_xml, valor_seguro_calculo = valor_xml` (adicionar aos custos)
+- **Transparência**: Logs explicam tratamento por INCOTERM
+- **Campos separados**: XML (auditoria) vs Cálculo (processamento)
+
+### ✅ Exporters INCOTERM-Aware Update
+**Problema**: Exporters usavam fallbacks e campos incorretos
+**Status**: CORRIGIDO - Removidos fallbacks, validação rigorosa implementada
+- **Croquis NF**: Mostram zero quando INCOTERM inclui frete/seguro
+- **Excel**: Valores corretos baseados na lógica INCOTERM
+- **NO FALLBACKS**: Falha explícita se dados obrigatórios ausentes
+
+### ✅ Missing Field Validation Enhancement
+**Problema**: Validadores usavam fallbacks (|| 0) mascarando problemas
+**Status**: CORRIGIDO - Validação rigorosa implementada em `CalculationValidator.js`
+- **NO FALLBACKS**: Sistema falha rapidamente com mensagens claras
+- **SOLID compliance**: Validação explícita de estruturas obrigatórias
+
+### ✅ Commits Granulares Implementation
+**Metodologia**: 5 commits individuais implementados seguindo boas práticas
+- Facilita rollback e manutenção
+- Histórico claro de mudanças
+- Princípios SOLID aplicados consistentemente
 
 ## 🚀 SISTEMA VITE (26/09/2025)
 
@@ -129,7 +207,11 @@ src/              # Código fonte com aliases (@core, @shared, etc.)
 ✅ **Singleton Pattern** - IndexedDBManager centralizado  
 ✅ **Documentação Completa** - Técnica e funcional  
 ✅ **Performance Otimizada** - Vite build system  
+✅ **SOLID Principles** - Aplicados consistentemente em todo o sistema
+✅ **NO FALLBACKS** - Falha rápida com mensagens claras
+✅ **INCOTERM Business Logic** - Frete/seguro zero quando apropriado
 ✅ **Zero Bugs Conhecidos** - Todos erros críticos corrigidos
 
-**Versão**: Vite v7.1.7 + ES6 Modules  
-**Data de Estabilização**: 26/09/2025
+**Versão**: Vite v7.1.7 + ES6 Modules + SOLID Architecture  
+**Data de Estabilização**: 27/09/2025
+**Princípios**: SOLID, KISS, DRY, NO FALLBACKS, Single Source of Truth
