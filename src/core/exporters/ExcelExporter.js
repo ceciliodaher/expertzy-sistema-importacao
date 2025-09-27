@@ -8,6 +8,8 @@
 
 import { ExcelProfessionalStyles } from '@shared/utils/excel-professional-styles.js';
 
+import IndexedDBManager from '@services/db/IndexedDBManager.js';
+
 export class ExcelExporter {
     constructor() {
         this.name = 'ExcelExporter';
@@ -16,6 +18,40 @@ export class ExcelExporter {
         this.calculationData = null;
         this.memoryData = null;
         this.styles = new ExcelProfessionalStyles();
+        this.dbManager = IndexedDBManager.getInstance();  // Para ler dados calculados
+        this.calculos = null;  // Dados calculados do IndexedDB
+    }
+
+    /**
+     * Carrega dados calculados do IndexedDB
+     * SOLID: Não calcula, apenas lê dados já calculados
+     */
+    async loadCalculatedData(numeroDI) {
+        try {
+            if (!numeroDI) {
+                throw new Error('Número da DI é obrigatório para carregar dados calculados');
+            }
+            
+            // Buscar dados calculados no IndexedDB
+            const calculosDB = await this.dbManager.getDI(numeroDI);
+            
+            if (!calculosDB) {
+                throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);
+            }
+            
+            // Validar campos obrigatórios para Excel
+            if (!calculosDB.totais_por_coluna) {
+                throw new Error('Totais por coluna não encontrados - execute ComplianceCalculator.calcularTotaisPorColuna() primeiro');
+            }
+            
+            // Atualizar cálculos com dados do IndexedDB
+            this.calculos = calculosDB;
+            
+            console.log(`✅ ExcelExporter: Dados calculados carregados do IndexedDB para DI ${numeroDI}`);
+        } catch (error) {
+            console.error('Erro ao carregar dados calculados:', error);
+            throw error;
+        }
     }
 
     /**
@@ -25,6 +61,10 @@ export class ExcelExporter {
      * @param {Object} memoryData - Calculation memory trace (optional)
      */
     async export(diData, calculationData, memoryData = null) {
+        // Carregar dados calculados do IndexedDB se necessário
+        if (diData && diData.numero_di) {
+            await this.loadCalculatedData(diData.numero_di);
+        }
         if (!diData) {
             throw new Error('DI data é obrigatório para export Excel');
         }
@@ -916,31 +956,17 @@ this.calculationData.produtos_individuais ? this.calculationData.produtos_indivi
     }
 
     /**
-     * Calculate totals by column for summary sheets
+     * REFATORADO: Não calcula mais, apenas lê dados já calculados
+     * Seguindo princípio Single Responsibility - cálculos movidos para ComplianceCalculator
      */
     calculateTotalsByColumn(adicoes) {
-        return adicoes.reduce((totals, adicao) => {
-            // Trust processed data structure from ComplianceCalculator
-            const despesas = adicao.despesas_rateadas || {};
-            const impostos = adicao.impostos || {};
-            
-            return {
-                valor_aduaneiro: totals.valor_aduaneiro + adicao.valor_aduaneiro,
-                frete: totals.frete + despesas.frete,
-                seguro: totals.seguro + despesas.seguro,
-                afrmm: totals.afrmm + despesas.afrmm,
-                siscomex: totals.siscomex + despesas.siscomex,
-                ii: totals.ii + impostos.ii,
-                ipi: totals.ipi + impostos.ipi,
-                pis: totals.pis + impostos.pis,
-                cofins: totals.cofins + impostos.cofins,
-                icms: totals.icms + impostos.icms,
-                custo_total: totals.custo_total + adicao.custo_total
-            };
-        }, {
-            valor_aduaneiro: 0, frete: 0, seguro: 0, afrmm: 0, siscomex: 0,
-            ii: 0, ipi: 0, pis: 0, cofins: 0, icms: 0, custo_total: 0
-        });
+        // Verificar se totais já foram calculados
+        if (this.calculos && this.calculos.totais_por_coluna) {
+            return this.calculos.totais_por_coluna;
+        }
+        
+        // Se não foram calculados, lançar erro - NO FALLBACKS
+        throw new Error('Totais por coluna não encontrados - execute ComplianceCalculator.calcularTotaisPorColuna() primeiro');
     }
 
     

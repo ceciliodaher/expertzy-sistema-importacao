@@ -117,6 +117,14 @@ function garantirTiposNumericos(dadosDI) {
 
 ## Histórico de Correções
 
+### 27/09/2025 - Refatoração Arquitetural SOLID
+- **Separação de Responsabilidades**: Cálculos movidos dos exportadores para calculators
+- **Novos campos calculados**:
+  - `totais_relatorio`: Totais agregados para relatórios (croqui NF, PDF)
+  - `totais_por_coluna`: Totais agregados por tipo para planilhas Excel
+- **Origem**: ComplianceCalculator (métodos calcularTotaisRelatorio e calcularTotaisPorColuna)
+- **Consumidores**: CroquiNFExporter, ExcelExporter (read-only, sem cálculos)
+
 ### 26/09/2025 - Correção Bug Validação Numérica
 - **Problema**: Campos numéricos armazenados como strings no IndexedDB
 - **Solução**: Parsing obrigatório com parseFloat() antes da validação

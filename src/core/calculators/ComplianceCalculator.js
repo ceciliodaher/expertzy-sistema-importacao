@@ -11,6 +11,7 @@
  */
 
 import ProductMemoryManager from '@core/memory/ProductMemoryManager.js';
+import IndexedDBManager from '@services/db/IndexedDBManager.js';
 
 export class ComplianceCalculator {
     constructor() {
@@ -20,6 +21,7 @@ export class ComplianceCalculator {
         this.lastCalculation = null;
         this.aliquotasData = null;
         this.codigosReceita = null;
+        this.dbManager = IndexedDBManager.getInstance();
         
         this.loadConfigurations();
     }
@@ -631,9 +633,28 @@ export class ComplianceCalculator {
             // 6. Aplicar benefícios fiscais se aplicáveis
             calculo.beneficios = this.aplicarBeneficios(calculo);
             
-            // Salvar cálculo na memória
+            // 7. Calcular totais para relatórios (NOVO - movido do CroquiNFExporter)
+            // Verificar se há produtos individuais calculados
+            if (calculo.produtos_individuais && calculo.produtos_individuais.length > 0) {
+                calculo.totais_relatorio = this.calcularTotaisRelatorio(
+                    adicao.dadosDI || adicao,
+                    calculo,
+                    calculo.produtos_individuais
+                );
+            }
+            
+            // 8. Calcular totais por coluna para Excel (NOVO - movido do ExcelExporter)
+            // Processar todas as adições para totais agregados
+            if (adicao.adicoes && adicao.adicoes.length > 0) {
+                calculo.totais_por_coluna = this.calcularTotaisPorColuna(adicao.adicoes);
+            }
+            
+            // Salvar cálculo na memória e no IndexedDB
             this.salvarCalculoMemoria(calculo);
             this.lastCalculation = calculo;
+            
+            // NOVO: Salvar no IndexedDB para exportadores lerem
+            await this.salvarCalculoIndexedDB(adicao.numero_di || adicao.numeroDI, calculo);
             
             console.log('✅ ComplianceCalculator: Cálculo de impostos concluído');
             console.log('📊 Resumo:', {
@@ -850,6 +871,117 @@ export class ComplianceCalculator {
     }
 
     /**
+     * Calcula totais específicos para relatórios (ex: croqui NF)
+     * MOVIDO do CroquiNFExporter - seguindo princípio Single Responsibility
+     * @param {Object} dadosDI - Dados da DI processados
+     * @param {Object} calculosCompletos - Cálculos de impostos completos
+     * @param {Array} produtosIndividuais - Produtos individuais calculados
+     * @returns {Object} Totais formatados para relatórios
+     */
+    calcularTotaisRelatorio(dadosDI, calculosCompletos, produtosIndividuais) {
+        if (!produtosIndividuais || produtosIndividuais.length === 0) {
+            throw new Error('Produtos individuais são obrigatórios para calcular totais do relatório');
+        }
+
+        if (!dadosDI) {
+            throw new Error('Dados da DI são obrigatórios para calcular totais do relatório');
+        }
+
+        if (!calculosCompletos) {
+            throw new Error('Cálculos de impostos são obrigatórios para calcular totais do relatório');
+        }
+
+        const totais = {
+            base_calculo_icms: 0,
+            valor_icms: 0,
+            base_calculo_icms_st: 0,
+            valor_icms_st: 0,
+            valor_total_produtos: 0,
+            valor_frete: dadosDI.totais.valor_frete,
+            valor_seguro: dadosDI.totais.valor_seguro,
+            valor_desconto: 0,
+            outras_despesas: calculosCompletos.despesas.totais.geral,
+            valor_ii: calculosCompletos.impostos.ii.valor_devido,
+            valor_ipi: calculosCompletos.impostos.ipi.valor_devido,
+            valor_pis: calculosCompletos.impostos.pis.valor_devido,
+            valor_cofins: calculosCompletos.impostos.cofins.valor_devido,
+            valor_total_nota: 0
+        };
+
+        // Somar valores dos produtos individuais
+        produtosIndividuais.forEach(produto => {
+            if (!produto.bc_icms) {
+                throw new Error(`Base de cálculo ICMS ausente para produto ${produto.item}`);
+            }
+            totais.base_calculo_icms += produto.bc_icms;
+            totais.valor_icms += produto.valor_icms;
+            totais.valor_total_produtos += produto.valor_total;
+            totais.valor_ipi += produto.valor_ipi;
+            totais.valor_pis += produto.valor_pis;
+            totais.valor_cofins += produto.valor_cofins;
+        });
+
+        // ===== CALCULAR TOTAL DA NOTA CONFORME LEGISLAÇÃO =====
+        // Para importação, total da nota = Base ICMS (que já inclui mercadoria + tributos + despesas)
+        // O ICMS não é cobrado na importação (fica exonerado), mas a base é usada para o total
+        totais.valor_total_nota = totais.base_calculo_icms;
+
+        return totais;
+    }
+
+    /**
+     * Calcula totais agregados por coluna para planilhas Excel
+     * MOVIDO do ExcelExporter - seguindo princípio Single Responsibility
+     * @param {Array} adicoes - Lista de adições com impostos calculados
+     * @returns {Object} Totais agregados por tipo de despesa/imposto
+     */
+    calcularTotaisPorColuna(adicoes) {
+        if (!adicoes || adicoes.length === 0) {
+            throw new Error('Lista de adições é obrigatória para calcular totais por coluna');
+        }
+
+        const totais = {
+            valor_aduaneiro: 0,
+            frete: 0,
+            seguro: 0,
+            afrmm: 0,
+            siscomex: 0,
+            ii: 0,
+            ipi: 0,
+            pis: 0,
+            cofins: 0,
+            icms: 0,
+            custo_total: 0
+        };
+
+        adicoes.forEach(adicao => {
+            // Validar estrutura obrigatória
+            if (!adicao.despesas_rateadas) {
+                throw new Error(`Despesas rateadas ausentes para adição ${adicao.numero_adicao}`);
+            }
+            
+            if (!adicao.impostos) {
+                throw new Error(`Impostos ausentes para adição ${adicao.numero_adicao}`);
+            }
+
+            // Somar valores
+            totais.valor_aduaneiro += adicao.valor_aduaneiro;
+            totais.frete += adicao.despesas_rateadas.frete;
+            totais.seguro += adicao.despesas_rateadas.seguro;
+            totais.afrmm += adicao.despesas_rateadas.afrmm;
+            totais.siscomex += adicao.despesas_rateadas.siscomex;
+            totais.ii += adicao.impostos.ii;
+            totais.ipi += adicao.impostos.ipi;
+            totais.pis += adicao.impostos.pis;
+            totais.cofins += adicao.impostos.cofins;
+            totais.icms += adicao.impostos.icms;
+            totais.custo_total += adicao.custo_total;
+        });
+
+        return totais;
+    }
+
+    /**
      * Aplica benefícios fiscais por estado
      */
     aplicarBeneficios(calculo) {
@@ -1001,6 +1133,42 @@ export class ComplianceCalculator {
         // Manter apenas últimos 50 cálculos
         if (this.calculationMemory.length > 50) {
             this.calculationMemory = this.calculationMemory.slice(-50);
+        }
+    }
+
+    /**
+     * Salva cálculo completo no IndexedDB para exportadores
+     * Seguindo SOLID - Single Source of Truth
+     * @param {string} numeroDI - Número da DI
+     * @param {Object} calculo - Cálculo completo
+     */
+    async salvarCalculoIndexedDB(numeroDI, calculo) {
+        if (!numeroDI) {
+            throw new Error('Número da DI é obrigatório para salvar cálculo no IndexedDB');
+        }
+
+        if (!calculo) {
+            throw new Error('Cálculo é obrigatório para salvar no IndexedDB');
+        }
+
+        try {
+            // Estrutura completa para exportadores
+            const calculoCompleto = {
+                numero_di: numeroDI,
+                timestamp: new Date(),
+                ...calculo,
+                // Garantir que os novos campos estejam presentes
+                totais_relatorio: calculo.totais_relatorio,
+                totais_por_coluna: calculo.totais_por_coluna
+            };
+
+            // Salvar no IndexedDB
+            await this.dbManager.saveDI(numeroDI, calculoCompleto);
+            
+            console.log(`💾 ComplianceCalculator: Cálculo salvo no IndexedDB para DI ${numeroDI}`);
+        } catch (error) {
+            console.error('Erro ao salvar cálculo no IndexedDB:', error);
+            throw new Error(`Falha ao persistir cálculo: ${error.message}`);
         }
     }
 
