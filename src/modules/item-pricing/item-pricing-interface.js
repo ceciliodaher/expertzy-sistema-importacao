@@ -14,7 +14,7 @@
  */
 
 import { ItemPricingCalculator } from '@core/calculators/ItemPricingCalculator.js';
-import IndexedDBManager from '@services/database/IndexedDBManager.js';
+import { dbManager } from '@services/database/IndexedDBManager.js';
 import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 
 class ItemPricingInterface {
@@ -86,7 +86,7 @@ class ItemPricingInterface {
         
         // Inicializar componentes
         this.calculator = new ItemPricingCalculator();
-        this.dbManager = new IndexedDBManager();
+        this.dbManager = dbManager; // Usar instância singleton
         this.configLoader = new ConfigLoader();
         
         // Inicializar calculator (obrigatório)

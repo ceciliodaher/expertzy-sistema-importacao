@@ -10,8 +10,16 @@
 
 import Dexie from 'dexie';
 
+// Singleton instance
+let instance = null;
+
 class IndexedDBManager {
     constructor() {
+        // Retornar instância existente se já criada (Singleton Pattern)
+        if (instance) {
+            return instance;
+        }
+        
         // Validar se Dexie está disponível via ES6 import
         if (!Dexie) {
             throw new Error('Dexie.js não está disponível - falha no import ES6');
@@ -25,13 +33,60 @@ class IndexedDBManager {
         
         // Schema será inicializado no initialize() para garantir timing correto
         this.schemaInitialized = false;
+        
+        // Flags de controle
+        this.initialized = false;
+        this._initializationPromise = null; // Para evitar múltiplas inicializações simultâneas
+        
+        // Salvar instância única
+        instance = this;
+    }
+    
+    /**
+     * Obtém a instância singleton do IndexedDBManager
+     * @returns {IndexedDBManager} Instância única
+     */
+    static getInstance() {
+        if (!instance) {
+            instance = new IndexedDBManager();
+        }
+        return instance;
     }
 
     /**
      * Inicializa o sistema de banco de dados
      * Carrega configurações e abre conexão
+     * Implementa lazy initialization para evitar múltiplas inicializações
      */
     async initialize() {
+        // Se já está inicializando, retornar a promise existente
+        if (this._initializationPromise) {
+            return this._initializationPromise;
+        }
+        
+        // Se já foi inicializado, retornar sucesso
+        if (this.initialized) {
+            return true;
+        }
+        
+        // Criar nova promise de inicialização
+        this._initializationPromise = this._doInitialize();
+        
+        try {
+            await this._initializationPromise;
+            this.initialized = true;
+            return true;
+        } catch (error) {
+            this._initializationPromise = null; // Reset para permitir retry
+            throw error;
+        }
+    }
+    
+    /**
+     * Executa a inicialização real do banco de dados
+     * @private
+     */
+    async _doInitialize() {
         try {
             // Inicializar schema se ainda não foi feito
             if (!this.schemaInitialized) {
@@ -1217,12 +1272,33 @@ class IndexedDBManager {
      */
     async checkDatabaseStatus() {
         try {
+            // Garantir inicialização completa
+            if (!this.initialized) {
+                await this.initialize();
+            }
+            
+            // Garantir que banco está aberto
+            if (!this.db.isOpen()) {
+                await this.db.open();
+            }
+            
             const stats = await this.getDataStatistics();
+            
+            // Verificar se houve erro nas estatísticas
+            if (stats.error) {
+                return {
+                    connected: false,
+                    hasData: false,
+                    error: stats.error,
+                    isHealthy: false
+                };
+            }
             
             // Verificar se há dados em qualquer tabela
             const hasData = stats.total > 0;
             
             return {
+                connected: true,
                 hasData,
                 stats,
                 isHealthy: true,
@@ -1232,6 +1308,7 @@ class IndexedDBManager {
         } catch (error) {
             console.error('Erro ao verificar status do banco:', error);
             return {
+                connected: false,
                 hasData: false,
                 stats: null,
                 isHealthy: false,
@@ -2310,3 +2387,9 @@ class IndexedDBManager {
 
 // Export da classe para uso padrão
 export default IndexedDBManager;
+
+// Exportar tanto a classe quanto a instância singleton
+export { IndexedDBManager };
+
+// Instância singleton pronta para uso
+export const dbManager = IndexedDBManager.getInstance();
