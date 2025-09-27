@@ -127,14 +127,15 @@ export class ExportManager {
         if (!diData.adicoes || diData.adicoes.length === 0) {
             throw new Error('DI deve conter pelo menos uma adição para export');
         }
-        // Frete e seguro são opcionais - podem não existir na DI
-        if (diData.frete_brl === undefined) {
-            diData.frete_brl = 0;
-            console.log('⚠️ ExportManager: frete_brl não informado na DI - assumindo 0');
+        // NO FALLBACKS - frete e seguro devem estar sempre disponíveis no totais
+        if (!diData.totais) {
+            throw new Error('DI.totais ausente - DIProcessor deve calcular totais com frete/seguro INCOTERM-aware');
         }
-        if (diData.seguro_brl === undefined) {
-            diData.seguro_brl = 0;
-            console.log('⚠️ ExportManager: seguro_brl não informado na DI - assumindo 0');
+        if (diData.totais.valor_frete_calculo === undefined || diData.totais.valor_frete_calculo === null) {
+            throw new Error('valor_frete_calculo ausente em DI.totais - obrigatório para exports');
+        }
+        if (diData.totais.valor_seguro_calculo === undefined || diData.totais.valor_seguro_calculo === null) {
+            throw new Error('valor_seguro_calculo ausente em DI.totais - obrigatório para exports');
         }
 
         // Validar calculation data
