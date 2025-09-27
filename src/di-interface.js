@@ -1167,14 +1167,25 @@ function exportarRelatórioImpostos() {
     }
 }
 
-function exportarCroquiNF() {
+async function exportarCroquiNF() {
     if (!currentDI) {
         showAlert('Nenhuma DI carregada para gerar croqui.', 'warning');
         return;
     }
     
-    if (!window.currentCalculation) {
-        showAlert('Nenhum cálculo disponível. Execute o cálculo de impostos primeiro.', 'warning');
+    // Carregar dados calculados do IndexedDB (Single Source of Truth)
+    let calculosDB = null;
+    try {
+        const chave = `calculo_${currentDI.numero_di}`;
+        calculosDB = await dbManager.getConfig(chave);
+        
+        if (!calculosDB) {
+            showAlert('Dados calculados não encontrados. Execute o cálculo de impostos primeiro.', 'warning');
+            return;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar cálculos do IndexedDB:', error);
+        showAlert('Erro ao carregar dados de cálculo: ' + error.message, 'danger');
         return;
     }
     
