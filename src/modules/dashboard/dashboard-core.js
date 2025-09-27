@@ -537,7 +537,17 @@ class DashboardCore {
      */
     async getTableSample(tableName, limit = 10) {
         try {
-            const table = this.db[tableName];
+            // SOLUÇÃO: Usar acesso direto sem notação de colchetes
+            const tableMap = {
+                'declaracoes': this.db.declaracoes,
+                'adicoes': this.db.adicoes,
+                'produtos': this.db.produtos,
+                'despesas_aduaneiras': this.db.despesas_aduaneiras,
+                'dados_carga': this.db.dados_carga,
+                'incentivos_entrada': this.db.incentivos_entrada
+            };
+            
+            const table = tableMap[tableName];
             if (!table) {
                 return {
                     count: 0,
@@ -637,7 +647,19 @@ class DashboardCore {
      */
     async getTopFieldValues(tableName, fieldName, limit = 10) {
         try {
-            const table = this.db[tableName];
+            // SOLUÇÃO: Usar acesso direto
+            const tableMap = {
+                'declaracoes': this.db.declaracoes,
+                'adicoes': this.db.adicoes,
+                'produtos': this.db.produtos,
+                'despesas_aduaneiras': this.db.despesas_aduaneiras,
+                'dados_carga': this.db.dados_carga,
+                'incentivos_entrada': this.db.incentivos_entrada
+            };
+            
+            const table = tableMap[tableName];
+            if (!table) return [];
+            
             const allRecords = await table.toArray();
             
             const valueCounts = {};
