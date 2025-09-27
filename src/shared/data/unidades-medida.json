@@ -1,0 +1,38 @@
+{
+  "mapeamento_unidades": {
+    "QUILOGRAMA": "KG",
+    "QUILOGRAMA LIQUIDO": "KG", 
+    "QUILOGRAMAS": "KG",
+    "KG": "KG",
+    "UNIDADE": "UN",
+    "UNIDADES": "UN",
+    "UNI": "UN",
+    "UN": "UN",
+    "METRO": "M",
+    "METROS": "M",
+    "M": "M",
+    "LITRO": "L",
+    "LITROS": "L",
+    "L": "L",
+    "CAIXA": "CX",
+    "CAIXAS": "CX",
+    "CX": "CX",
+    "TONELADA": "T",
+    "TONELADAS": "T",
+    "T": "T",
+    "PECA": "PC",
+    "PECAS": "PC",
+    "PC": "PC"
+  },
+  "unidades_padrao": {
+    "peso": "KG",
+    "quantidade": "UN",
+    "volume": "L",
+    "comprimento": "M"
+  },
+  "prioridade_unidades": [
+    "unidade_estatistica",
+    "unidade_medida", 
+    "unidade_comercial"
+  ]
+}

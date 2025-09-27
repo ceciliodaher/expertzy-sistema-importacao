@@ -536,37 +536,56 @@ export class DIProcessor {
         // Adicionar taxa de câmbio aos dados da adição
         adicaoData.taxa_cambio = taxa_cambio;
 
-        produtoNodes.forEach(produtoNode => {
+        // FASE 1: Processar produtos com métodos assíncronos
+        for (const produtoNode of produtoNodes) {
             // Extrair dados originais da DI
             const quantidadeOriginal = this.convertValue(this.getTextContent(produtoNode, 'quantidade'), 'weight');
             const unidadeOriginal = this.getTextContent(produtoNode, 'unidadeMedida').trim();
             const valorUnitarioUSD = this.convertValue(this.getTextContent(produtoNode, 'valorUnitario'), 'unit_value');
+            const descricaoCompleta = this.getTextContent(produtoNode, 'descricaoMercadoria').trim();
+            
+            // FASE 1: Extrair código do produto da descrição usando patterns JSON
+            const codigoExtraido = await this.extractProductCodeFromDescription(descricaoCompleta);
+            const descricaoLimpa = await this.cleanProductDescription(descricaoCompleta, codigoExtraido);
+            
+            // FASE 1: Validação robusta de campos críticos
+            await this.validateCriticalProductFields(quantidadeOriginal, valorUnitarioUSD, descricaoCompleta, numeroAdicao);
+            
+            // FASE 1: Mapear unidades comerciais vs estatísticas (usar dados da adição)
+            const unidadeMapeada = await this.mapProductUnits(unidadeOriginal, adicaoData.unidade_estatistica);
             
             const produto = {
                 adicao_numero: numeroAdicao.toString().padStart(3, '0'),
                 numero_sequencial_item: this.getTextContent(produtoNode, 'numeroSequencialItem'),
-                descricao_mercadoria: this.getTextContent(produtoNode, 'descricaoMercadoria').trim(),
                 
-                // Quantidade e unidade
+                // CORRIGIDO: Separar código do produto da descrição
+                codigo_produto: codigoExtraido || this.generateProductCode(numeroAdicao, this.getTextContent(produtoNode, 'numeroSequencialItem')),
+                descricao_mercadoria: descricaoLimpa,
+                descricao_completa: descricaoCompleta, // Manter original para auditoria
+                
+                // CORRIGIDO: Unidades padronizadas
                 quantidade: quantidadeOriginal,
-                unidade_medida: unidadeOriginal,
+                unidade_medida: unidadeOriginal, // Unidade comercial original
+                unidade_estatistica: adicaoData.unidade_estatistica, // Unidade estatística da adição
+                unidade_mapeada: unidadeMapeada, // Unidade para relatórios
+                quantidade_estatistica: adicaoData.quantidade_estatistica, // Da adição
                 
-                // Valores em USD (moeda original da DI)
+                // MELHORADO: Conversão monetária com validação
                 valor_unitario_usd: valorUnitarioUSD,
-                valor_total_usd: quantidadeOriginal * valorUnitarioUSD,
+                valor_total_usd: await this.calculateSecureValue(quantidadeOriginal, valorUnitarioUSD, 'total_usd'),
                 
                 // Valores em BRL (convertidos pela taxa de câmbio da DI)
-                valor_unitario_brl: valorUnitarioUSD * taxa_cambio,
-                valor_total_brl: quantidadeOriginal * valorUnitarioUSD * taxa_cambio,
+                valor_unitario_brl: await this.calculateSecureValue(valorUnitarioUSD, taxa_cambio, 'unit_brl'),
+                valor_total_brl: await this.calculateSecureValue(quantidadeOriginal * valorUnitarioUSD, taxa_cambio, 'total_brl'),
                 taxa_cambio: taxa_cambio,
                 
                 // Campos para compatibilidade (USD por padrão)
                 valor_unitario: valorUnitarioUSD,
-                valor_total_item: quantidadeOriginal * valorUnitarioUSD
+                valor_total_item: await this.calculateSecureValue(quantidadeOriginal, valorUnitarioUSD, 'item_total')
             };
 
             produtos.push(produto);
-        });
+        }
 
         return produtos;
     }
@@ -1482,6 +1501,259 @@ export class DIProcessor {
                 maximumFractionDigits: decimais 
             })}`;
         }
+    }
+
+    // ========== FASE 1: MÉTODOS AUXILIARES PARA CORREÇÃO DE EXTRAÇÃO ==========
+
+    /**
+     * Carrega configuração de patterns de código de produto
+     */
+    async loadProductCodePatterns() {
+        if (!this.productCodePatterns) {
+            const response = await fetch(new URL('../../shared/data/patterns-codigo-produto.json', import.meta.url));
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar patterns-codigo-produto.json: ${response.status}`);
+            }
+            this.productCodePatterns = await response.json();
+        }
+        return this.productCodePatterns;
+    }
+
+    /**
+     * Carrega configuração de unidades de medida
+     */
+    async loadUnitsMapping() {
+        if (!this.unitsMapping) {
+            const response = await fetch(new URL('../../shared/data/unidades-medida.json', import.meta.url));
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar unidades-medida.json: ${response.status}`);
+            }
+            this.unitsMapping = await response.json();
+        }
+        return this.unitsMapping;
+    }
+
+    /**
+     * Carrega configuração de validação de campos
+     */
+    async loadValidationConfig() {
+        if (!this.validationConfig) {
+            const response = await fetch(new URL('../../shared/data/validacao-campos.json', import.meta.url));
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar validacao-campos.json: ${response.status}`);
+            }
+            this.validationConfig = await response.json();
+        }
+        return this.validationConfig;
+    }
+
+    /**
+     * FASE 1: Extrai código do produto da descrição usando patterns configuráveis
+     * @param {string} descricao - Descrição completa da mercadoria
+     * @returns {Promise<string|null>} Código extraído ou null se não encontrado
+     */
+    async extractProductCodeFromDescription(descricao) {
+        if (!descricao || typeof descricao !== 'string') {
+            return null;
+        }
+
+        const patterns = await this.loadProductCodePatterns();
+        
+        for (const patternConfig of patterns.patterns_extracao) {
+            const flags = patternConfig.flags || '';
+            const regex = new RegExp(patternConfig.regex, flags);
+            const match = descricao.match(regex);
+            
+            if (match && match[1]) {
+                const codigo = match[1].trim().toUpperCase();
+                
+                // Validar tamanho do código
+                if (codigo.length >= patterns.configuracao.tamanho_minimo_codigo && 
+                    codigo.length <= patterns.configuracao.tamanho_maximo_codigo) {
+                    
+                    if (patterns.configuracao.log_extracoes) {
+                        console.log(`✅ Código extraído via ${patternConfig.nome}: "${codigo}" da descrição: "${descricao.substring(0, 50)}..."`);
+                    }
+                    return codigo;
+                }
+            }
+        }
+
+        console.log(`📋 Nenhum código encontrado na descrição: "${descricao.substring(0, 50)}..."`);
+        return null;
+    }
+
+    /**
+     * FASE 1: Remove código extraído da descrição usando patterns configuráveis
+     * @param {string} descricaoCompleta - Descrição completa original
+     * @param {string|null} codigoExtraido - Código que foi extraído
+     * @returns {Promise<string>} Descrição limpa sem o código
+     */
+    async cleanProductDescription(descricaoCompleta, codigoExtraido) {
+        if (!codigoExtraido || !descricaoCompleta) {
+            return descricaoCompleta;
+        }
+
+        const patterns = await this.loadProductCodePatterns();
+        let descricaoLimpa = descricaoCompleta;
+        
+        // Escapar código para uso em regex
+        const codigoEscapado = this.escapeRegex(codigoExtraido);
+        
+        for (const patternConfig of patterns.patterns_limpeza) {
+            const flags = patternConfig.flags || 'i';
+            const regexPattern = patternConfig.template.replace('{codigo}', codigoEscapado);
+            const regex = new RegExp(regexPattern, flags);
+            
+            descricaoLimpa = descricaoLimpa.replace(regex, '');
+        }
+
+        const resultado = descricaoLimpa.trim();
+        
+        // Validar tamanho mínimo da descrição limpa
+        if (resultado.length < patterns.configuracao.tamanho_minimo_descricao_limpa) {
+            console.warn(`⚠️ Descrição muito curta após limpeza: "${resultado}" (original: "${descricaoCompleta}")`);
+            return descricaoCompleta; // Manter descrição original se ficar muito curta
+        }
+
+        return resultado;
+    }
+
+    /**
+     * Escapa caracteres especiais para uso em regex
+     * @param {string} string - String para escapar
+     * @returns {string} String escapada
+     */
+    escapeRegex(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    /**
+     * FASE 1: Gera código do produto baseado na adição e item quando não há código extraível
+     * @param {number} numeroAdicao - Número da adição
+     * @param {string} numeroSequencialItem - Número sequencial do item
+     * @returns {string} Código gerado
+     */
+    generateProductCode(numeroAdicao, numeroSequencialItem) {
+        const adicaoPadded = numeroAdicao.toString().padStart(3, '0');
+        const itemPadded = numeroSequencialItem.toString().padStart(3, '0');
+        return `ADC${adicaoPadded}IT${itemPadded}`;
+    }
+
+    /**
+     * FASE 1: Validação robusta de campos críticos do produto
+     * @param {number} quantidade - Quantidade do produto
+     * @param {number} valorUnitario - Valor unitário
+     * @param {string} descricao - Descrição do produto
+     * @param {number} numeroAdicao - Número da adição para contexto do erro
+     */
+    async validateCriticalProductFields(quantidade, valorUnitario, descricao, numeroAdicao) {
+        const config = await this.loadValidationConfig();
+        const campos = config.campos_criticos.produto;
+        const mensagens = config.mensagens_erro;
+        const errors = [];
+
+        // Validar quantidade
+        const quantConfig = campos.quantidade;
+        if (quantidade === null || quantidade === undefined || isNaN(quantidade) || 
+            quantidade < quantConfig.valor_minimo || quantidade > quantConfig.valor_maximo) {
+            errors.push(mensagens.quantidade_invalida
+                .replace('{min}', quantConfig.valor_minimo)
+                .replace('{max}', quantConfig.valor_maximo) + ` (valor: ${quantidade})`);
+        }
+
+        // Validar valor unitário
+        const valorConfig = campos.valor_unitario;
+        if (valorUnitario === null || valorUnitario === undefined || isNaN(valorUnitario) || 
+            valorUnitario < valorConfig.valor_minimo || valorUnitario > valorConfig.valor_maximo) {
+            errors.push(mensagens.valor_unitario_invalido
+                .replace('{min}', valorConfig.valor_minimo)
+                .replace('{max}', valorConfig.valor_maximo) + ` (valor: ${valorUnitario})`);
+        }
+
+        // Validar descrição
+        const descConfig = campos.descricao;
+        if (!descricao || typeof descricao !== 'string' || 
+            descricao.trim().length < descConfig.tamanho_minimo || 
+            descricao.trim().length > descConfig.tamanho_maximo) {
+            errors.push(mensagens.descricao_invalida
+                .replace('{min}', descConfig.tamanho_minimo)
+                .replace('{max}', descConfig.tamanho_maximo) + ` (valor: "${descricao}")`);
+        }
+
+        if (errors.length > 0) {
+            throw new Error(`Campos críticos inválidos na adição ${numeroAdicao}: ${errors.join(', ')}`);
+        }
+    }
+
+    /**
+     * FASE 1: Mapeia unidades comerciais vs estatísticas usando configuração JSON
+     * @param {string} unidadeComercial - Unidade comercial do produto
+     * @param {string} unidadeEstatistica - Unidade estatística da adição
+     * @returns {Promise<string>} Unidade mapeada para uso em relatórios
+     */
+    async mapProductUnits(unidadeComercial, unidadeEstatistica) {
+        const config = await this.loadUnitsMapping();
+        const mapeamento = config.mapeamento_unidades;
+        const prioridade = config.prioridade_unidades;
+        
+        // Definir unidades disponíveis por prioridade
+        const unidades = {
+            'unidade_estatistica': unidadeEstatistica,
+            'unidade_medida': unidadeComercial,
+            'unidade_comercial': unidadeComercial
+        };
+        
+        // Tentar usar unidade na ordem de prioridade
+        for (const tipoUnidade of prioridade) {
+            const unidade = unidades[tipoUnidade];
+            if (unidade && unidade.trim() !== '') {
+                const unidadeNormalizada = unidade.toUpperCase().trim();
+                const unidadeMapeada = mapeamento[unidadeNormalizada];
+                if (unidadeMapeada) {
+                    return unidadeMapeada;
+                }
+                // Se não tem mapeamento, usar a unidade original
+                return unidade;
+            }
+        }
+        
+        // Fallback para unidade padrão
+        return config.unidades_padrao.quantidade;
+    }
+
+    /**
+     * FASE 1: Cálculo seguro de valores monetários com configuração de arredondamento
+     * @param {number} value1 - Primeiro valor
+     * @param {number} value2 - Segundo valor  
+     * @param {string} operation - Tipo de operação para contexto do erro
+     * @returns {Promise<number>} Resultado do cálculo validado
+     */
+    async calculateSecureValue(value1, value2, operation) {
+        const config = await this.loadValidationConfig();
+        const mensagens = config.mensagens_erro;
+        
+        // Validar inputs
+        if (value1 === null || value1 === undefined || isNaN(value1)) {
+            throw new Error(`Valor 1 inválido para ${operation}: ${value1}`);
+        }
+        if (value2 === null || value2 === undefined || isNaN(value2)) {
+            throw new Error(`Valor 2 inválido para ${operation}: ${value2}`);
+        }
+
+        const result = value1 * value2;
+
+        // Validar resultado
+        if (isNaN(result) || !isFinite(result)) {
+            throw new Error(mensagens.calculo_nan
+                .replace('{operacao}', operation)
+                .replace('{valor1}', value1)
+                .replace('{valor2}', value2));
+        }
+
+        // Arredondamento financeiro baseado na configuração
+        const decimais = config.configuracao_arredondamento.decimais_financeiro;
+        return Math.round((result + Number.EPSILON) * Math.pow(10, decimais)) / Math.pow(10, decimais);
     }
 }
 

@@ -1,0 +1,74 @@
+{
+  "campos_criticos": {
+    "produto": {
+      "quantidade": {
+        "obrigatorio": true,
+        "tipo": "number",
+        "valor_minimo": 0.001,
+        "valor_maximo": 999999999,
+        "decimais_maximos": 6
+      },
+      "valor_unitario": {
+        "obrigatorio": true,
+        "tipo": "number", 
+        "valor_minimo": 0.01,
+        "valor_maximo": 999999999,
+        "decimais_maximos": 8
+      },
+      "descricao": {
+        "obrigatorio": true,
+        "tipo": "string",
+        "tamanho_minimo": 3,
+        "tamanho_maximo": 500
+      },
+      "taxa_cambio": {
+        "obrigatorio": true,
+        "tipo": "number",
+        "valor_minimo": 0.0001,
+        "valor_maximo": 100,
+        "decimais_maximos": 8
+      }
+    },
+    "adicao": {
+      "numero_adicao": {
+        "obrigatorio": true,
+        "tipo": "number",
+        "valor_minimo": 1,
+        "valor_maximo": 999
+      },
+      "ncm": {
+        "obrigatorio": true,
+        "tipo": "string",
+        "tamanho_exato": 8,
+        "pattern": "^\\d{8}$"
+      },
+      "valor_moeda_negociacao": {
+        "obrigatorio": true,
+        "tipo": "number",
+        "valor_minimo": 0.01,
+        "valor_maximo": 999999999
+      },
+      "valor_reais": {
+        "obrigatorio": true,
+        "tipo": "number", 
+        "valor_minimo": 0.01,
+        "valor_maximo": 999999999
+      }
+    }
+  },
+  "configuracao_arredondamento": {
+    "decimais_financeiro": 2,
+    "decimais_taxa_cambio": 8,
+    "decimais_quantidade": 6,
+    "decimais_valor_unitario": 8,
+    "metodo": "bankers_rounding"
+  },
+  "mensagens_erro": {
+    "quantidade_invalida": "Quantidade deve ser um número positivo entre {min} e {max}",
+    "valor_unitario_invalido": "Valor unitário deve ser um número positivo entre {min} e {max}",
+    "descricao_invalida": "Descrição deve ter entre {min} e {max} caracteres",
+    "taxa_cambio_invalida": "Taxa de câmbio deve ser um número positivo entre {min} e {max}",
+    "ncm_invalido": "NCM deve ter exatamente 8 dígitos numéricos",
+    "calculo_nan": "Erro no cálculo de {operacao}: resultado inválido ({valor1} * {valor2})"
+  }
+}

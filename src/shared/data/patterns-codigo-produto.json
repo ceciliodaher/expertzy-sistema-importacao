@@ -1,0 +1,66 @@
+{
+  "patterns_extracao": [
+    {
+      "nome": "codigo_com_traco",
+      "regex": "^([A-Z0-9-]{3,15})\\s*[-–]\\s*",
+      "descricao": "Códigos alfanuméricos no início seguidos de traço"
+    },
+    {
+      "nome": "codigo_entre_parenteses", 
+      "regex": "^\\(([A-Z0-9-]{2,15})\\)\\s*",
+      "descricao": "Códigos entre parênteses no início"
+    },
+    {
+      "nome": "codigo_com_dois_pontos",
+      "regex": "^([A-Z0-9-]{3,15}):\\s*",
+      "descricao": "Códigos seguidos de dois pontos"
+    },
+    {
+      "nome": "ref_codigo",
+      "regex": "^REF\\.?\\s*([A-Z0-9-]{3,15})\\s*[-–]\\s*",
+      "flags": "i",
+      "descricao": "Códigos precedidos por REF"
+    },
+    {
+      "nome": "cod_codigo",
+      "regex": "^COD\\.?\\s*([A-Z0-9-]{3,15})\\s*[-–]\\s*",
+      "flags": "i", 
+      "descricao": "Códigos precedidos por COD"
+    },
+    {
+      "nome": "codigo_numerico_longo",
+      "regex": "^(\\d{6,15})\\s*[-–]\\s*",
+      "descricao": "Códigos numéricos longos no início"
+    }
+  ],
+  "patterns_limpeza": [
+    {
+      "nome": "remover_codigo_traco",
+      "template": "^{codigo}\\s*[-–]\\s*"
+    },
+    {
+      "nome": "remover_codigo_parenteses",
+      "template": "^\\({codigo}\\)\\s*"
+    },
+    {
+      "nome": "remover_codigo_dois_pontos", 
+      "template": "^{codigo}:\\s*"
+    },
+    {
+      "nome": "remover_ref_codigo",
+      "template": "^REF\\.?\\s*{codigo}\\s*[-–]\\s*",
+      "flags": "i"
+    },
+    {
+      "nome": "remover_cod_codigo",
+      "template": "^COD\\.?\\s*{codigo}\\s*[-–]\\s*",
+      "flags": "i"
+    }
+  ],
+  "configuracao": {
+    "tamanho_minimo_codigo": 3,
+    "tamanho_maximo_codigo": 15,
+    "tamanho_minimo_descricao_limpa": 3,
+    "log_extracoes": true
+  }
+}
