@@ -27,6 +27,7 @@ let exportManager = null;
 // dbManager importado como singleton
 let dataViewer = null;
 let currentDI = null;
+let currentCalculation = null;
 let currentStep = 1;
 let expenseCounter = 0;
 let currencyMasks = [];
@@ -943,7 +944,7 @@ async function calcularImpostos() {
         }
         
         // Make calculation available globally for export modules
-        window.currentCalculation = taxCalculation;
+        currentCalculation = taxCalculation;
         
         // Populate step 3 with results
         populateStep3Results(taxCalculation);
