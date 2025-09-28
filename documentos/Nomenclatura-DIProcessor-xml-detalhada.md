@@ -115,13 +115,60 @@ function garantirTiposNumericos(dadosDI) {
 }
 ```
 
+## CAMPOS CALCULADOS (ComplianceCalculator - SECONDARY CREATOR)
+
+### Hierarquia de Autoridade
+1. **DIProcessor.js**: PRIMARY CREATOR (dados XML)
+2. **ComplianceCalculator.js**: SECONDARY CREATOR (dados calculados)
+3. **IndexedDBManager.js**: Implementa schema seguindo ambos
+4. **Demais módulos**: CONSUMERS (seguem nomenclatura estabelecida)
+
+### Campos Criados pelo ComplianceCalculator
+
+| Campo | Tipo | Criador | Uso | Status |
+|-------|------|---------|-----|--------|
+| `totais_relatorio` | Object | ComplianceCalculator.js:367 | CroquiNF exports | ✅ DOCUMENTADO |
+| `totais_por_coluna` | Object | ComplianceCalculator.js:368 | Excel exports | ✅ DOCUMENTADO |
+| `produtos_individuais` | Array | ComplianceCalculator.js:363 | Ambos exports | ✅ DOCUMENTADO |
+
+### Estrutura dos Campos Calculados
+
+```javascript
+// totais_relatorio - Para CroquiNF e relatórios PDF
+{
+    impostos_consolidados: { ii: 1000, ipi: 500, pis: 100, cofins: 400, icms: 2000 },
+    totais_gerais: { total_impostos: 4000, custo_total: 24000 },
+    breakdown_por_adicao: [ /* detalhes por adição */ ]
+}
+
+// totais_por_coluna - Para Excel multi-sheet
+{
+    colunas_impostos: { ii: [...], ipi: [...], pis: [...] },
+    colunas_totais: { custos: [...], pesos: [...] },
+    metadados: { total_adicoes: 16, total_produtos: 45 }
+}
+
+// produtos_individuais - Para detalhamento granular
+[
+    {
+        adicao_numero: "001",
+        produto_index: 1,
+        impostos_calculados: { ii: 50, ipi: 25, ... },
+        custo_total: 1200
+    }
+]
+```
+
 ## Histórico de Correções
+
+### 28/09/2025 - Correção Pipeline Excel/PDF
+- **Problema**: Campos calculados não salvos no IndexedDB
+- **Solução**: Incluir `totais_relatorio`, `totais_por_coluna`, `produtos_individuais` em `calculos_compliance`
+- **Validação**: NO FALLBACKS - falha explícita se campos ausentes
 
 ### 27/09/2025 - Refatoração Arquitetural SOLID
 - **Separação de Responsabilidades**: Cálculos movidos dos exportadores para calculators
-- **Novos campos calculados**:
-  - `totais_relatorio`: Totais agregados para relatórios (croqui NF, PDF)
-  - `totais_por_coluna`: Totais agregados por tipo para planilhas Excel
+- **Implementação Single Source of Truth**: IndexedDB como única fonte para exporters
 - **Origem**: ComplianceCalculator (métodos calcularTotaisRelatorio e calcularTotaisPorColuna)
 - **Consumidores**: CroquiNFExporter, ExcelExporter (read-only, sem cálculos)
 
