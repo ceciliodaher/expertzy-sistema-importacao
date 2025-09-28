@@ -67,3 +67,6 @@ Thumbs.db
 
 # Local storage files
 local-storage/
+
+# Generated reports (test artifacts)
+/reports
