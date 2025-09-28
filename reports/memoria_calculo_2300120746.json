@@ -1,10 +1,10 @@
 {
   "di_numero": "2300120746",
-  "timestamp": "2025-09-28T12:00:06.354Z",
+  "timestamp": "2025-09-28T12:33:25.114Z",
   "calculationMemory": [
     {
-      "id": "calc_1759060778344_yrp8fflb8",
-      "timestamp": "2025-09-28T11:59:38.344Z",
+      "id": "calc_1759062778409_tdeqr29lc",
+      "timestamp": "2025-09-28T12:32:58.409Z",
       "tipo": "IMPOSTOS_IMPORTACAO",
       "adicao": "001",
       "resumo": {
@@ -15,7 +15,7 @@
       "detalhes": {
         "adicao_numero": "001",
         "ncm": "73181500",
-        "timestamp": "2025-09-28T11:59:38.344Z",
+        "timestamp": "2025-09-28T12:32:58.409Z",
         "valores_base": {
           "cif_usd": 6346.13,
           "cif_brl": 33112.2,
@@ -76,67 +76,1192 @@
           "motivo": "Sem benefícios para o estado"
         }
       }
+    },
+    {
+      "id": "calc_1759062778425_8zjf4wbn8",
+      "timestamp": "2025-09-28T12:32:58.425Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "002",
+      "resumo": {
+        "total_impostos": 3515.626148832187,
+        "custo_total": 8771.453414906253,
+        "custo_por_kg": 26.921163264705214
+      },
+      "detalhes": {
+        "adicao_numero": "002",
+        "ncm": "73181600",
+        "timestamp": "2025-09-28T12:32:58.425Z",
+        "valores_base": {
+          "cif_usd": 1004.2,
+          "cif_brl": 5239.61,
+          "taxa_cambio": 5.217695678151762,
+          "peso_liquido": 325.82
+        },
+        "despesas": {
+          "automaticas": 16.217266074065442,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 16.217266074065442,
+          "total_custos": 16.217266074065442
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 5239.61,
+            "valor_calculado": 838.33,
+            "valor_devido": 838.33,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 6.5,
+            "base_calculo": 6077.94,
+            "valor_calculado": 395.07,
+            "valor_devido": 395.07,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 5239.61,
+            "valor_calculado": 110.03,
+            "valor_devido": 110.03
+          },
+          "cofins": {
+            "aliquota": 9.65,
+            "base_calculo": 5239.61,
+            "valor_calculado": 505.62,
+            "valor_devido": 505.62
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 7104.877266074064,
+            "base_calculo_final": 8771.453414906251,
+            "fator_divisao": 0.81,
+            "valor_devido": 1666.5761488321868,
+            "despesas_inclusas": 16.217266074065442
+          }
+        },
+        "totais": {
+          "total_impostos": 3515.626148832187,
+          "custo_total": 8771.453414906253,
+          "custo_por_kg": 26.921163264705214
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778431_wz94ebavx",
+      "timestamp": "2025-09-28T12:32:58.431Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "003",
+      "resumo": {
+        "total_impostos": 3467.9796560373943,
+        "custo_total": 8652.577137038923,
+        "custo_por_kg": 39.502269617599175
+      },
+      "detalhes": {
+        "adicao_numero": "003",
+        "ncm": "73182200",
+        "timestamp": "2025-09-28T12:32:58.431Z",
+        "valores_base": {
+          "cif_usd": 990.59,
+          "cif_brl": 5168.6,
+          "taxa_cambio": 5.217698543292381,
+          "peso_liquido": 219.04
+        },
+        "despesas": {
+          "automaticas": 15.997481001527719,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 15.997481001527719,
+          "total_custos": 15.997481001527719
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 5168.6,
+            "valor_calculado": 826.97,
+            "valor_devido": 826.97,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 6.5,
+            "base_calculo": 5995.570000000001,
+            "valor_calculado": 389.72,
+            "valor_devido": 389.72,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 5168.6,
+            "valor_calculado": 108.54,
+            "valor_devido": 108.54
+          },
+          "cofins": {
+            "aliquota": 9.65,
+            "base_calculo": 5168.6,
+            "valor_calculado": 498.76,
+            "valor_devido": 498.76
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 7008.587481001528,
+            "base_calculo_final": 8652.577137038923,
+            "fator_divisao": 0.81,
+            "valor_devido": 1643.9896560373945,
+            "despesas_inclusas": 15.997481001527719
+          }
+        },
+        "totais": {
+          "total_impostos": 3467.9796560373943,
+          "custo_total": 8652.577137038923,
+          "custo_por_kg": 39.502269617599175
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778437_op87pljku",
+      "timestamp": "2025-09-28T12:32:58.437Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "004",
+      "resumo": {
+        "total_impostos": 1310.7267540831615,
+        "custo_total": 3143.1408109640092,
+        "custo_por_kg": 49.39715245896604
+      },
+      "detalhes": {
+        "adicao_numero": "004",
+        "ncm": "73202010",
+        "timestamp": "2025-09-28T12:32:58.437Z",
+        "valores_base": {
+          "cif_usd": 350.11,
+          "cif_brl": 1826.76,
+          "taxa_cambio": 5.2176744451743735,
+          "peso_liquido": 63.63
+        },
+        "despesas": {
+          "automaticas": 5.654056880847961,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 5.654056880847961,
+          "total_custos": 5.654056880847961
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 1826.76,
+            "valor_calculado": 292.28,
+            "valor_devido": 292.28,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 9.75,
+            "base_calculo": 2119.04,
+            "valor_calculado": 206.61,
+            "valor_devido": 206.61,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 1826.76,
+            "valor_calculado": 38.36,
+            "valor_devido": 38.36
+          },
+          "cofins": {
+            "aliquota": 9.65,
+            "base_calculo": 1826.76,
+            "valor_calculado": 176.28,
+            "valor_devido": 176.28
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 2545.944056880848,
+            "base_calculo_final": 3143.1408109640097,
+            "fator_divisao": 0.81,
+            "valor_devido": 597.1967540831615,
+            "despesas_inclusas": 5.654056880847961
+          }
+        },
+        "totais": {
+          "total_impostos": 1310.7267540831615,
+          "custo_total": 3143.1408109640092,
+          "custo_por_kg": 49.39715245896604
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778442_zy78pva6z",
+      "timestamp": "2025-09-28T12:32:58.442Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "005",
+      "resumo": {
+        "total_impostos": 1380.1522289027214,
+        "custo_total": 3510.2748889616923,
+        "custo_por_kg": 184.75130994535223
+      },
+      "detalhes": {
+        "adicao_numero": "005",
+        "ncm": "73249000",
+        "timestamp": "2025-09-28T12:32:58.442Z",
+        "valores_base": {
+          "cif_usd": 406.99,
+          "cif_brl": 2123.55,
+          "taxa_cambio": 5.217695766480749,
+          "peso_liquido": 19
+        },
+        "despesas": {
+          "automaticas": 6.5726600589703565,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 6.5726600589703565,
+          "total_custos": 6.5726600589703565
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 14.4,
+            "base_calculo": 2123.55,
+            "valor_calculado": 305.79,
+            "valor_devido": 305.79,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 6.5,
+            "base_calculo": 2429.34,
+            "valor_calculado": 157.9,
+            "valor_devido": 157.9,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 2123.55,
+            "valor_calculado": 44.59,
+            "valor_devido": 44.59
+          },
+          "cofins": {
+            "aliquota": 9.65,
+            "base_calculo": 2123.55,
+            "valor_calculado": 204.92,
+            "valor_devido": 204.92
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 2843.322660058971,
+            "base_calculo_final": 3510.2748889616923,
+            "fator_divisao": 0.81,
+            "valor_devido": 666.9522289027213,
+            "despesas_inclusas": 6.5726600589703565
+          }
+        },
+        "totais": {
+          "total_impostos": 1380.1522289027214,
+          "custo_total": 3510.2748889616923,
+          "custo_por_kg": 184.75130994535223
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778445_t8l997rd9",
+      "timestamp": "2025-09-28T12:32:58.445Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "006",
+      "resumo": {
+        "total_impostos": 123289.72231530088,
+        "custo_total": 298055.6963963206,
+        "custo_por_kg": 48.46276485257725
+      },
+      "detalhes": {
+        "adicao_numero": "006",
+        "ncm": "84099111",
+        "timestamp": "2025-09-28T12:32:58.445Z",
+        "valores_base": {
+          "cif_usd": 33391.48,
+          "cif_brl": 174226.72,
+          "taxa_cambio": 5.2176998443914435,
+          "peso_liquido": 6150.2
+        },
+        "despesas": {
+          "automaticas": 539.2540810197131,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 539.2540810197131,
+          "total_custos": 539.2540810197131
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 174226.72,
+            "valor_calculado": 27876.27,
+            "valor_devido": 27876.27,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 3.25,
+            "base_calculo": 202102.99,
+            "valor_calculado": 6568.36,
+            "valor_devido": 6568.36,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 3.12,
+            "base_calculo": 174226.72,
+            "valor_calculado": 5435.87,
+            "valor_devido": 5435.87
+          },
+          "cofins": {
+            "aliquota": 15.37,
+            "base_calculo": 174226.72,
+            "valor_calculado": 26778.64,
+            "valor_devido": 26778.64
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 241425.1140810197,
+            "base_calculo_final": 298055.6963963206,
+            "fator_divisao": 0.81,
+            "valor_devido": 56630.58231530088,
+            "despesas_inclusas": 539.2540810197131
+          }
+        },
+        "totais": {
+          "total_impostos": 123289.72231530088,
+          "custo_total": 298055.6963963206,
+          "custo_por_kg": 48.46276485257725
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778450_3cughhi3j",
+      "timestamp": "2025-09-28T12:32:58.450Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "007",
+      "resumo": {
+        "total_impostos": 6491.479339884416,
+        "custo_total": 15693.312315181141,
+        "custo_por_kg": 189.53275742972394
+      },
+      "detalhes": {
+        "adicao_numero": "007",
+        "ncm": "84099114",
+        "timestamp": "2025-09-28T12:32:58.450Z",
+        "valores_base": {
+          "cif_usd": 1758.14,
+          "cif_brl": 9173.44,
+          "taxa_cambio": 5.217695974154505,
+          "peso_liquido": 82.8
+        },
+        "despesas": {
+          "automaticas": 28.392975296725307,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 28.392975296725307,
+          "total_custos": 28.392975296725307
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 9173.44,
+            "valor_calculado": 1467.75,
+            "valor_devido": 1467.75,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 3.25,
+            "base_calculo": 10641.19,
+            "valor_calculado": 345.84,
+            "valor_devido": 345.84,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 3.12,
+            "base_calculo": 9173.44,
+            "valor_calculado": 286.21,
+            "valor_devido": 286.21
+          },
+          "cofins": {
+            "aliquota": 15.37,
+            "base_calculo": 9173.44,
+            "valor_calculado": 1409.95,
+            "valor_devido": 1409.95
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 12711.582975296726,
+            "base_calculo_final": 15693.312315181141,
+            "fator_divisao": 0.81,
+            "valor_devido": 2981.729339884416,
+            "despesas_inclusas": 28.392975296725307
+          }
+        },
+        "totais": {
+          "total_impostos": 6491.479339884416,
+          "custo_total": 15693.312315181141,
+          "custo_por_kg": 189.53275742972394
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778455_iv91b09lv",
+      "timestamp": "2025-09-28T12:32:58.455Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "008",
+      "resumo": {
+        "total_impostos": 9908.389695258147,
+        "custo_total": 23953.787869779728,
+        "custo_por_kg": 98.94170949929669
+      },
+      "detalhes": {
+        "adicao_numero": "008",
+        "ncm": "84099117",
+        "timestamp": "2025-09-28T12:32:58.455Z",
+        "valores_base": {
+          "cif_usd": 2683.57,
+          "cif_brl": 14002.06,
+          "taxa_cambio": 5.217698811657605,
+          "peso_liquido": 242.1
+        },
+        "despesas": {
+          "automaticas": 43.33817452158248,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 43.33817452158248,
+          "total_custos": 43.33817452158248
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 14002.06,
+            "valor_calculado": 2240.32,
+            "valor_devido": 2240.32,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 3.25,
+            "base_calculo": 16242.38,
+            "valor_calculado": 527.88,
+            "valor_devido": 527.88,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 3.12,
+            "base_calculo": 14002.06,
+            "valor_calculado": 436.86,
+            "valor_devido": 436.86
+          },
+          "cofins": {
+            "aliquota": 15.37,
+            "base_calculo": 14002.06,
+            "valor_calculado": 2152.11,
+            "valor_devido": 2152.11
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 19402.56817452158,
+            "base_calculo_final": 23953.787869779728,
+            "fator_divisao": 0.81,
+            "valor_devido": 4551.219695258147,
+            "despesas_inclusas": 43.33817452158248
+          }
+        },
+        "totais": {
+          "total_impostos": 9908.389695258147,
+          "custo_total": 23953.787869779728,
+          "custo_por_kg": 98.94170949929669
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778458_8u3wi9xcq",
+      "timestamp": "2025-09-28T12:32:58.458Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "009",
+      "resumo": {
+        "total_impostos": 1721.8546219964885,
+        "custo_total": 4162.655905244677,
+        "custo_por_kg": 136.48052148343206
+      },
+      "detalhes": {
+        "adicao_numero": "009",
+        "ncm": "84099118",
+        "timestamp": "2025-09-28T12:32:58.458Z",
+        "valores_base": {
+          "cif_usd": 466.35,
+          "cif_brl": 2433.27,
+          "taxa_cambio": 5.217690575747828,
+          "peso_liquido": 30.5
+        },
+        "despesas": {
+          "automaticas": 7.5312832481885525,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 7.5312832481885525,
+          "total_custos": 7.5312832481885525
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 2433.27,
+            "valor_calculado": 389.32,
+            "valor_devido": 389.32,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 3.25,
+            "base_calculo": 2822.59,
+            "valor_calculado": 91.73,
+            "valor_devido": 91.73,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 3.12,
+            "base_calculo": 2433.27,
+            "valor_calculado": 75.91,
+            "valor_devido": 75.91
+          },
+          "cofins": {
+            "aliquota": 15.37,
+            "base_calculo": 2433.27,
+            "valor_calculado": 373.99,
+            "valor_devido": 373.99
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 3371.751283248189,
+            "base_calculo_final": 4162.655905244677,
+            "fator_divisao": 0.81,
+            "valor_devido": 790.9046219964885,
+            "despesas_inclusas": 7.5312832481885525
+          }
+        },
+        "totais": {
+          "total_impostos": 1721.8546219964885,
+          "custo_total": 4162.655905244677,
+          "custo_por_kg": 136.48052148343206
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778462_loo2ra7ip",
+      "timestamp": "2025-09-28T12:32:58.462Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "010",
+      "resumo": {
+        "total_impostos": 6276.029489614231,
+        "custo_total": 18132.5236295486,
+        "custo_por_kg": 259.03605185069426
+      },
+      "detalhes": {
+        "adicao_numero": "010",
+        "ncm": "84561190",
+        "timestamp": "2025-09-28T12:32:58.462Z",
+        "valores_base": {
+          "cif_usd": 2265.35,
+          "cif_brl": 11819.91,
+          "taxa_cambio": 5.217697044606794,
+          "peso_liquido": 70
+        },
+        "despesas": {
+          "automaticas": 36.584139934366654,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 36.584139934366654,
+          "total_custos": 36.584139934366654
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 11.2,
+            "base_calculo": 11819.91,
+            "valor_calculado": 1323.82,
+            "valor_devido": 1323.82,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 0,
+            "base_calculo": 13143.73,
+            "valor_calculado": 0,
+            "valor_devido": 0,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 11819.91,
+            "valor_calculado": 248.21,
+            "valor_devido": 248.21
+          },
+          "cofins": {
+            "aliquota": 10.65,
+            "base_calculo": 11819.91,
+            "valor_calculado": 1258.82,
+            "valor_devido": 1258.82
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 14687.344139934365,
+            "base_calculo_final": 18132.523629548596,
+            "fator_divisao": 0.81,
+            "valor_devido": 3445.179489614231,
+            "despesas_inclusas": 36.584139934366654
+          }
+        },
+        "totais": {
+          "total_impostos": 6276.029489614231,
+          "custo_total": 18132.5236295486,
+          "custo_por_kg": 259.03605185069426
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778466_2zxkevz46",
+      "timestamp": "2025-09-28T12:32:58.466Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "011",
+      "resumo": {
+        "total_impostos": 3596.1164504192457,
+        "custo_total": 9052.612896943405,
+        "custo_por_kg": 76.45787919715713
+      },
+      "detalhes": {
+        "adicao_numero": "011",
+        "ncm": "84831020",
+        "timestamp": "2025-09-28T12:32:58.466Z",
+        "valores_base": {
+          "cif_usd": 1042.54,
+          "cif_brl": 5439.66,
+          "taxa_cambio": 5.217699081090414,
+          "peso_liquido": 118.4
+        },
+        "despesas": {
+          "automaticas": 16.8364465241594,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 16.8364465241594,
+          "total_custos": 16.8364465241594
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 5439.66,
+            "valor_calculado": 870.34,
+            "valor_devido": 870.34,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 0,
+            "base_calculo": 6310,
+            "valor_calculado": 0,
+            "valor_devido": 0,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 3.12,
+            "base_calculo": 5439.66,
+            "valor_calculado": 169.71,
+            "valor_devido": 169.71
+          },
+          "cofins": {
+            "aliquota": 15.37,
+            "base_calculo": 5439.66,
+            "valor_calculado": 836.07,
+            "valor_devido": 836.07
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 7332.616446524159,
+            "base_calculo_final": 9052.612896943405,
+            "fator_divisao": 0.81,
+            "valor_devido": 1719.9964504192458,
+            "despesas_inclusas": 16.8364465241594
+          }
+        },
+        "totais": {
+          "total_impostos": 3596.1164504192457,
+          "custo_total": 9052.612896943405,
+          "custo_por_kg": 76.45787919715713
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778471_blvxyg4nu",
+      "timestamp": "2025-09-28T12:32:58.471Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "012",
+      "resumo": {
+        "total_impostos": 90057.9939642011,
+        "custo_total": 226165.91560105854,
+        "custo_por_kg": 17.171506764942567
+      },
+      "detalhes": {
+        "adicao_numero": "012",
+        "ncm": "87141000",
+        "timestamp": "2025-09-28T12:32:58.471Z",
+        "valores_base": {
+          "cif_usd": 26005.32,
+          "cif_brl": 135687.95,
+          "taxa_cambio": 5.217699686064236,
+          "peso_liquido": 13171
+        },
+        "despesas": {
+          "automaticas": 419.9716368574165,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 419.9716368574165,
+          "total_custos": 419.9716368574165
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 12.8,
+            "base_calculo": 135687.95,
+            "valor_calculado": 17368.05,
+            "valor_devido": 17368.05,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 9,
+            "base_calculo": 153056,
+            "valor_calculado": 13775.1,
+            "valor_devido": 13775.1,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 135687.95,
+            "valor_calculado": 2849.44,
+            "valor_devido": 2849.44
+          },
+          "cofins": {
+            "aliquota": 9.65,
+            "base_calculo": 135687.95,
+            "valor_calculado": 13093.88,
+            "valor_devido": 13093.88
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 183194.39163685744,
+            "base_calculo_final": 226165.91560105854,
+            "fator_divisao": 0.81,
+            "valor_devido": 42971.5239642011,
+            "despesas_inclusas": 419.9716368574165
+          }
+        },
+        "totais": {
+          "total_impostos": 90057.9939642011,
+          "custo_total": 226165.91560105854,
+          "custo_por_kg": 17.171506764942567
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778474_hy1ggsmw4",
+      "timestamp": "2025-09-28T12:32:58.474Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "013",
+      "resumo": {
+        "total_impostos": 49705.34849479289,
+        "custo_total": 124826.78155154159,
+        "custo_por_kg": 52.55023682591484
+      },
+      "detalhes": {
+        "adicao_numero": "013",
+        "ncm": "87141000",
+        "timestamp": "2025-09-28T12:32:58.474Z",
+        "valores_base": {
+          "cif_usd": 14353,
+          "cif_brl": 74889.64,
+          "taxa_cambio": 5.217699435658051,
+          "peso_liquido": 2375.38
+        },
+        "despesas": {
+          "automaticas": 231.7930567486844,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 231.7930567486844,
+          "total_custos": 231.7930567486844
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 12.8,
+            "base_calculo": 74889.64,
+            "valor_calculado": 9585.87,
+            "valor_devido": 9585.87,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 9,
+            "base_calculo": 84475.51,
+            "valor_calculado": 7602.86,
+            "valor_devido": 7602.86,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 74889.64,
+            "valor_calculado": 1572.68,
+            "valor_devido": 1572.68
+          },
+          "cofins": {
+            "aliquota": 9.65,
+            "base_calculo": 74889.64,
+            "valor_calculado": 7226.85,
+            "valor_devido": 7226.85
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 101109.69305674869,
+            "base_calculo_final": 124826.78155154157,
+            "fator_divisao": 0.81,
+            "valor_devido": 23717.088494792886,
+            "despesas_inclusas": 231.7930567486844
+          }
+        },
+        "totais": {
+          "total_impostos": 49705.34849479289,
+          "custo_total": 124826.78155154159,
+          "custo_por_kg": 52.55023682591484
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778478_km3yhmmth",
+      "timestamp": "2025-09-28T12:32:58.478Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "014",
+      "resumo": {
+        "total_impostos": 43778.339789197074,
+        "custo_total": 126482.84099577411,
+        "custo_por_kg": 689.6556215691063
+      },
+      "detalhes": {
+        "adicao_numero": "014",
+        "ncm": "90271000",
+        "timestamp": "2025-09-28T12:32:58.478Z",
+        "valores_base": {
+          "cif_usd": 15801.85,
+          "cif_brl": 82449.31,
+          "taxa_cambio": 5.217699826286163,
+          "peso_liquido": 183.4
+        },
+        "despesas": {
+          "automaticas": 255.19120657703616,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 255.19120657703616,
+          "total_custos": 255.19120657703616
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 11.2,
+            "base_calculo": 82449.31,
+            "valor_calculado": 9234.32,
+            "valor_devido": 9234.32,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 0,
+            "base_calculo": 91683.63,
+            "valor_calculado": 0,
+            "valor_devido": 0,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 2.1,
+            "base_calculo": 82449.31,
+            "valor_calculado": 1731.43,
+            "valor_devido": 1731.43
+          },
+          "cofins": {
+            "aliquota": 10.65,
+            "base_calculo": 82449.31,
+            "valor_calculado": 8780.85,
+            "valor_devido": 8780.85
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 102451.10120657703,
+            "base_calculo_final": 126482.84099577411,
+            "fator_divisao": 0.81,
+            "valor_devido": 24031.739789197076,
+            "despesas_inclusas": 255.19120657703616
+          }
+        },
+        "totais": {
+          "total_impostos": 43778.339789197074,
+          "custo_total": 126482.84099577411,
+          "custo_por_kg": 689.6556215691063
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778481_6eonnelsq",
+      "timestamp": "2025-09-28T12:32:58.481Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "015",
+      "resumo": {
+        "total_impostos": 4846.8233250065305,
+        "custo_total": 11013.701710560692,
+        "custo_por_kg": 860.445446137554
+      },
+      "detalhes": {
+        "adicao_numero": "015",
+        "ncm": "90299010",
+        "timestamp": "2025-09-28T12:32:58.481Z",
+        "valores_base": {
+          "cif_usd": 1178.27,
+          "cif_brl": 6147.85,
+          "taxa_cambio": 5.217692040024782,
+          "peso_liquido": 12.8
+        },
+        "despesas": {
+          "automaticas": 19.02838555416209,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 19.02838555416209,
+          "total_custos": 19.02838555416209
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 6147.85,
+            "valor_calculado": 983.65,
+            "valor_devido": 983.65,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 9.75,
+            "base_calculo": 7131.5,
+            "valor_calculado": 695.32,
+            "valor_devido": 695.32,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 3.12,
+            "base_calculo": 6147.85,
+            "valor_calculado": 191.81,
+            "valor_devido": 191.81
+          },
+          "cofins": {
+            "aliquota": 14.37,
+            "base_calculo": 6147.85,
+            "valor_calculado": 883.44,
+            "valor_devido": 883.44
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 8921.098385554162,
+            "base_calculo_final": 11013.701710560692,
+            "fator_divisao": 0.81,
+            "valor_devido": 2092.60332500653,
+            "despesas_inclusas": 19.02838555416209
+          }
+        },
+        "totais": {
+          "total_impostos": 4846.8233250065305,
+          "custo_total": 11013.701710560692,
+          "custo_por_kg": 860.445446137554
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
+    },
+    {
+      "id": "calc_1759062778484_gytsv83uk",
+      "timestamp": "2025-09-28T12:32:58.484Z",
+      "tipo": "IMPOSTOS_IMPORTACAO",
+      "adicao": "016",
+      "resumo": {
+        "total_impostos": 1253.0123716027474,
+        "custo_total": 3029.2230084355137,
+        "custo_por_kg": 108.18653601555407
+      },
+      "detalhes": {
+        "adicao_numero": "016",
+        "ncm": "84099120",
+        "timestamp": "2025-09-28T12:32:58.484Z",
+        "valores_base": {
+          "cif_usd": 339.37,
+          "cif_brl": 1770.73,
+          "taxa_cambio": 5.217697498305684,
+          "peso_liquido": 28
+        },
+        "despesas": {
+          "automaticas": 5.4806368327661605,
+          "extras_tributaveis": 0,
+          "extras_custos": 0,
+          "total_base_icms": 5.4806368327661605,
+          "total_custos": 5.4806368327661605
+        },
+        "impostos": {
+          "ii": {
+            "aliquota": 16,
+            "base_calculo": 1770.73,
+            "valor_calculado": 283.31,
+            "valor_devido": 283.31,
+            "regime": "RECOLHIMENTO INTEGRAL"
+          },
+          "ipi": {
+            "aliquota": 3.25,
+            "base_calculo": 2054.04,
+            "valor_calculado": 66.75,
+            "valor_devido": 66.75,
+            "regime": "SEM BENEFICIO"
+          },
+          "pis": {
+            "aliquota": 3.12,
+            "base_calculo": 1770.73,
+            "valor_calculado": 55.24,
+            "valor_devido": 55.24
+          },
+          "cofins": {
+            "aliquota": 15.37,
+            "base_calculo": 1770.73,
+            "valor_calculado": 272.16,
+            "valor_devido": 272.16
+          },
+          "icms": {
+            "aliquota": 19,
+            "base_calculo_antes": 2453.670636832766,
+            "base_calculo_final": 3029.2230084355133,
+            "fator_divisao": 0.81,
+            "valor_devido": 575.5523716027474,
+            "despesas_inclusas": 5.4806368327661605
+          }
+        },
+        "totais": {
+          "total_impostos": 1253.0123716027474,
+          "custo_total": 3029.2230084355137,
+          "custo_por_kg": 108.18653601555407
+        },
+        "estado": "GO",
+        "beneficios": {
+          "aplicado": false,
+          "motivo": "Sem benefícios para o estado"
+        }
+      }
     }
   ],
   "summary": {
-    "total_calculations": 1,
+    "total_calculations": 16,
     "last_calculation": {
-      "adicao_numero": "001",
-      "ncm": "73181500",
-      "timestamp": "2025-09-28T11:59:38.344Z",
+      "adicao_numero": "016",
+      "ncm": "84099120",
+      "timestamp": "2025-09-28T12:32:58.484Z",
       "valores_base": {
-        "cif_usd": 6346.13,
-        "cif_brl": 33112.2,
-        "taxa_cambio": 5.217699605901549,
-        "peso_liquido": 2134.8
+        "cif_usd": 339.37,
+        "cif_brl": 1770.73,
+        "taxa_cambio": 5.217697498305684,
+        "peso_liquido": 28
       },
       "despesas": {
-        "automaticas": 102.48651286978796,
+        "automaticas": 5.4806368327661605,
         "extras_tributaveis": 0,
         "extras_custos": 0,
-        "total_base_icms": 102.48651286978796,
-        "total_custos": 102.48651286978796
+        "total_base_icms": 5.4806368327661605,
+        "total_custos": 5.4806368327661605
       },
       "impostos": {
         "ii": {
           "aliquota": 16,
-          "base_calculo": 33112.2,
-          "valor_calculado": 5297.95,
-          "valor_devido": 5297.95,
+          "base_calculo": 1770.73,
+          "valor_calculado": 283.31,
+          "valor_devido": 283.31,
           "regime": "RECOLHIMENTO INTEGRAL"
         },
         "ipi": {
-          "aliquota": 6.5,
-          "base_calculo": 38410.149999999994,
-          "valor_calculado": 2496.74,
-          "valor_devido": 2496.74,
+          "aliquota": 3.25,
+          "base_calculo": 2054.04,
+          "valor_calculado": 66.75,
+          "valor_devido": 66.75,
           "regime": "SEM BENEFICIO"
         },
         "pis": {
-          "aliquota": 2.1,
-          "base_calculo": 33112.2,
-          "valor_calculado": 695.35,
-          "valor_devido": 695.35
+          "aliquota": 3.12,
+          "base_calculo": 1770.73,
+          "valor_calculado": 55.24,
+          "valor_devido": 55.24
         },
         "cofins": {
-          "aliquota": 9.65,
-          "base_calculo": 33112.2,
-          "valor_calculado": 3195.32,
-          "valor_devido": 3195.32
+          "aliquota": 15.37,
+          "base_calculo": 1770.73,
+          "valor_calculado": 272.16,
+          "valor_devido": 272.16
         },
         "icms": {
           "aliquota": 19,
-          "base_calculo_antes": 44900.046512869776,
-          "base_calculo_final": 55432.15618872811,
+          "base_calculo_antes": 2453.670636832766,
+          "base_calculo_final": 3029.2230084355133,
           "fator_divisao": 0.81,
-          "valor_devido": 10532.109675858337,
-          "despesas_inclusas": 102.48651286978796
+          "valor_devido": 575.5523716027474,
+          "despesas_inclusas": 5.4806368327661605
         }
       },
       "totais": {
-        "total_impostos": 22217.469675858338,
-        "custo_total": 55432.15618872812,
-        "custo_por_kg": 25.965971607985814
+        "total_impostos": 1253.0123716027474,
+        "custo_total": 3029.2230084355137,
+        "custo_por_kg": 108.18653601555407
       },
       "estado": "GO",
       "beneficios": {

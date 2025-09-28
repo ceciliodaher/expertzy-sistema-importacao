@@ -173,8 +173,8 @@ export class ComplianceCalculator {
                 };
             }
             
-            // Calcular impostos para esta adição
-            const calculoAdicao = await this.calcularImpostosImportacao(adicao, despesasAdicao);
+            // Calcular impostos para esta adição (SOLID: passar numero_di da DI principal)
+            const calculoAdicao = await this.calcularImpostosImportacao(adicao, despesasAdicao, di.numero_di);
             calculosIndividuais.push(calculoAdicao);
             
             // NOVO: Calcular impostos para cada produto individual usando ItemCalculator
@@ -578,7 +578,7 @@ export class ComplianceCalculator {
      * ENTRADA: Dados da DI + despesas consolidadas
      * SAÍDA: Estrutura completa de impostos calculados
      */
-    async calcularImpostosImportacao(adicao, despesasConsolidadas = null) {
+    async calcularImpostosImportacao(adicao, despesasConsolidadas = null, numeroDI) {
         console.log('🧮 ComplianceCalculator: Iniciando cálculo de impostos...');
         
         try {
@@ -669,10 +669,9 @@ export class ComplianceCalculator {
             this.salvarCalculoMemoria(calculo);
             this.lastCalculation = calculo;
             
-            // NOVO: Salvar no IndexedDB para exportadores lerem
-            const numeroDI = adicao.numero_di || adicao.numeroDI || adicao.numero_adicao;
+            // SOLID: Usar numero da DI fornecido como parâmetro (NO FALLBACKS)
             if (!numeroDI) {
-                throw new Error(`Número da DI não encontrado nos dados da adição. Propriedades disponíveis: ${Object.keys(adicao).join(', ')}`);
+                throw new Error('Número da DI é obrigatório (parâmetro)');
             }
             await this.salvarCalculoIndexedDB(numeroDI, calculo);
             
