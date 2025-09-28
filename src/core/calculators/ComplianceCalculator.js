@@ -1182,18 +1182,25 @@ export class ComplianceCalculator {
                 totais_por_coluna: calculo.totais_por_coluna
             };
 
-            // Salvar no IndexedDB usando saveConfig para evitar validações de DI completa
-            const chave = `calculo_${numeroDI}`;
-            console.log(`💾 ComplianceCalculator: Tentando salvar cálculo com chave "${chave}"`);
-            console.log(`💾 ComplianceCalculator: Dados a serem salvos:`, calculoCompleto);
+            // SOLID - Single Source of Truth: Atualizar DI com dados calculados
+            console.log(`💾 ComplianceCalculator: Salvando cálculos para DI ${numeroDI}`);
             
-            await this.dbManager.saveConfig(chave, calculoCompleto);
+            // Buscar DI existente primeiro
+            const diExistente = await this.dbManager.getDI(numeroDI);
+            if (!diExistente) {
+                throw new Error(`DI ${numeroDI} não encontrada no IndexedDB - execute DIProcessor primeiro`);
+            }
             
-            console.log(`✅ ComplianceCalculator: Cálculo salvo no IndexedDB com chave ${chave}`);
+            // Atualizar DI com seção de cálculos de compliance
+            const diAtualizada = {
+                numero_di: numeroDI,
+                calculos_compliance: calculoCompleto,
+                calculos_timestamp: new Date().toISOString()
+            };
             
-            // Verificar imediatamente se foi salvo
-            const verificacao = await this.dbManager.getConfig(chave);
-            console.log(`🔍 ComplianceCalculator: Verificação - dados recuperados:`, verificacao ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
+            await this.dbManager.updateDI(diAtualizada);
+            
+            console.log(`✅ ComplianceCalculator: Cálculos salvos na DI ${numeroDI} (Single Source of Truth)`);
         } catch (error) {
             console.error('Erro ao salvar cálculo no IndexedDB:', error);
             throw new Error(`Falha ao persistir cálculo: ${error.message}`);
@@ -1430,7 +1437,7 @@ export class ComplianceCalculator {
         }
         
         try {
-            console.log('🔄 Atualizando DI salva com cálculos completos no IndexedDB...');
+            console.log('🔄 Atualizando DI com cálculos completos no IndexedDB (Single Source of Truth)...');
             
             // Recuperar DI salva anteriormente do IndexedDB
             const diSalva = await window.dbManager.getDI(di.numero_di);
@@ -1443,32 +1450,33 @@ export class ComplianceCalculator {
                 throw new Error(`DI no IndexedDB (${diSalva.numero_di}) não corresponde à DI calculada (${di.numero_di})`);
             }
             
-            // Preparar dados de atualização com cálculos completos
+            // SOLID - Single Source of Truth: Atualizar DI com dados consolidados
             const dadosAtualizacao = {
-                ...diSalva,
+                numero_di: di.numero_di,
+                // Seção de cálculos de compliance consolidados
+                calculos_compliance: {
+                    totais: totaisConsolidados,
+                    despesas: despesasConsolidadas,
+                    timestamp: new Date().toISOString(),
+                    valores_base_finais: totaisConsolidados.valores_base ? {
+                        cif_brl: totaisConsolidados.valores_base.cif_brl,
+                        peso_liquido: totaisConsolidados.valores_base.peso_liquido,
+                        taxa_cambio: di.taxa_cambio
+                    } : null
+                },
+                // Metadata de integração
                 integration: {
                     phase1_completed: true,
                     calculations_pending: false,
                     calculations_completed_at: new Date().toISOString()
-                },
-                calculoImpostos: totaisConsolidados,
-                despesas: despesasConsolidadas
+                }
             };
             
-            // Atualizar valores base com dados finais
-            if (totaisConsolidados.valores_base) {
-                dadosAtualizacao.valores_base_finais = {
-                    cif_brl: totaisConsolidados.valores_base.cif_brl,
-                    peso_liquido: totaisConsolidados.valores_base.peso_liquido,
-                    taxa_cambio: di.taxa_cambio
-                };
-            }
-            
-            // Salvar configuração de DI processada
-            await window.dbManager.saveConfig(`di_processed_${di.numero_di}`, dadosAtualizacao);
+            // Usar updateDI para Single Source of Truth
+            await window.dbManager.updateDI(dadosAtualizacao);
             
             // Validar que atualização funcionou - NO FALLBACKS
-            const verificacao = await window.dbManager.getConfig(`di_processed_${di.numero_di}`);
+            const verificacao = await window.dbManager.getDI(di.numero_di);
             if (!verificacao) {
                 throw new Error('Falha crítica ao atualizar DI no IndexedDB - dados não persistidos');
             }
@@ -1477,7 +1485,7 @@ export class ComplianceCalculator {
                 throw new Error('Atualização de DI no IndexedDB não foi aplicada corretamente - estado inconsistente');
             }
             
-            console.log(`✅ DI ${di.numero_di} atualizada no IndexedDB com cálculos completos - pronta para precificação`);
+            console.log(`✅ DI ${di.numero_di} atualizada com cálculos completos (Single Source of Truth)`);
             
         } catch (error) {
             console.error('❌ Erro crítico ao atualizar DI salva com cálculos:', error);

@@ -32,17 +32,22 @@ export class ExcelExporter {
                 throw new Error('Número da DI é obrigatório para carregar dados calculados');
             }
             
-            // Buscar dados calculados no IndexedDB usando getConfig
-            const chave = `calculo_${numeroDI}`;
-            console.log(`🔍 ExcelExporter: Tentando carregar cálculo com chave "${chave}"`);
-            console.log(`🔍 ExcelExporter: DI number:`, numeroDI);
+            // SOLID - Single Source of Truth: Buscar DI completa via getDI
+            console.log(`🔍 ExcelExporter: Buscando DI ${numeroDI} (Single Source of Truth)`);
             
-            const calculosDB = await this.dbManager.getConfig(chave);
-            console.log(`🔍 ExcelExporter: Resultado getConfig:`, calculosDB ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
+            const di = await this.dbManager.getDI(numeroDI);
             
-            if (!calculosDB) {
+            if (!di) {
+                throw new Error(`DI ${numeroDI} não encontrada no IndexedDB - execute DIProcessor primeiro`);
+            }
+            
+            // Verificar se cálculos de compliance existem
+            if (!di.calculos_compliance) {
                 throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);
             }
+            
+            const calculosDB = di.calculos_compliance;
+            console.log(`🔍 ExcelExporter: Cálculos de compliance encontrados`);
             
             // Validar campos obrigatórios para Excel
             if (!calculosDB.totais_por_coluna) {
@@ -52,7 +57,7 @@ export class ExcelExporter {
             // Atualizar cálculos com dados do IndexedDB
             this.calculos = calculosDB;
             
-            console.log(`✅ ExcelExporter: Dados calculados carregados do IndexedDB para DI ${numeroDI}`);
+            console.log(`✅ ExcelExporter: Dados calculados carregados para DI ${numeroDI} (Single Source of Truth)`);
         } catch (error) {
             console.error('Erro ao carregar dados calculados:', error);
             throw error;

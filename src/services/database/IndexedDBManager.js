@@ -730,6 +730,51 @@ class IndexedDBManager {
 
 
     /**
+     * Atualiza uma DI existente com dados incrementais (SOLID - Single Source of Truth)
+     * @param {Object} diData - Dados parciais ou completos da DI para atualização
+     * @returns {Promise<number>} ID da DI atualizada
+     */
+    async updateDI(diData) {
+        if (!diData || !diData.numero_di) {
+            throw new Error('Número da DI é obrigatório para atualização');
+        }
+
+        try {
+            return await this.db.transaction('rw', this.db.declaracoes, async () => {
+                // Buscar DI existente
+                const existingDI = await this.db.declaracoes
+                    .where('numero_di')
+                    .equals(diData.numero_di)
+                    .first();
+
+                if (!existingDI) {
+                    throw new Error(`DI ${diData.numero_di} não encontrada para atualização`);
+                }
+
+                // Merge de dados - preserva dados existentes, adiciona/atualiza novos
+                const updatedDI = {
+                    ...existingDI,
+                    ...diData,
+                    // Preservar campos críticos
+                    id: existingDI.id,
+                    numero_di: existingDI.numero_di,
+                    // Adicionar metadata de atualização
+                    ultima_atualizacao: new Date().toISOString()
+                };
+
+                // Atualizar no banco
+                await this.db.declaracoes.put(updatedDI);
+                
+                console.log(`✅ DI ${diData.numero_di} atualizada com sucesso no IndexedDB`);
+                return existingDI.id;
+            });
+        } catch (error) {
+            console.error('❌ Erro ao atualizar DI:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Busca uma DI pelo número
      * @param {string} numeroDI - Número da DI
      * @returns {Promise<Object>} Dados completos da DI
@@ -816,7 +861,7 @@ class IndexedDBManager {
         const despesasCalculadas = {};
         despesasAduaneiras.forEach(despesa => {
             if (despesa.tipo === 'SISCOMEX') despesasCalculadas.siscomex = despesa.valor;
-            if (despesa.tipo === 'AFRMM') despesasCalculadas.afrmm = despesa.valor;  
+            if (despesa.tipo === 'AFRMM') despesasCalculadas.afrmm = despesa.valor;
             if (despesa.tipo === 'CAPATAZIA') despesasCalculadas.capatazia = despesa.valor;
             if (despesa.tipo === 'TAXA_CE') despesasCalculadas.taxa_ce = despesa.valor;
         });
@@ -826,7 +871,12 @@ class IndexedDBManager {
             calculadas: despesasCalculadas,
             pagamentos: despesasAduaneiras.filter(d => ['SISCOMEX', 'ANTI_DUMPING', 'MEDIDA_COMPENSATORIA'].includes(d.tipo)),
             acrescimos: despesasAduaneiras.filter(d => ['CAPATAZIA', 'TAXA_CE'].includes(d.tipo)),
-            total_despesas_aduaneiras: Object.values(despesasCalculadas).reduce((sum, val) => sum + (val || 0), 0)
+            total_despesas_aduaneiras: Object.values(despesasCalculadas).reduce((sum, val) => {
+                if (val === null || val === undefined) {
+                    throw new Error(`Despesa aduaneira com valor inválido encontrada no IndexedDB`);
+                }
+                return sum + val;
+            }, 0)
         };
 
         console.log('🔧 Estrutura despesas_aduaneiras reconstituída do IndexedDB:', {

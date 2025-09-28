@@ -1351,23 +1351,84 @@ export class DIProcessor {
     }
 
     /**
-     * Extrai despesas automáticas das informações complementares (AFRMM, etc.)
-     * PRINCÍPIO: APENAS EXTRAIR dados da DI, NÃO calcular
+     * Extrai despesas aduaneiras baseado na estrutura real dos XMLs de DI
+     * PRINCÍPIO: Inicializar sempre todas as despesas, extrair valores quando presentes
      */
     async calcularDespesasAutomaticas(xmlDoc, despesas) {
-        // ===== AFRMM - EXTRAIR das informações complementares =====
-        const afrmmExtraido = this.diData.informacoes_complementares?.dados_extraidos?.afrmm_valor;
-        
-        if (afrmmExtraido && afrmmExtraido > 0) {
-            despesas.calculadas.afrmm = afrmmExtraido;
-            console.log(`✅ AFRMM extraído das informações complementares: R$ ${afrmmExtraido.toFixed(2)}`);
-        } else {
-            console.log(`⚠️ AFRMM não encontrado nas informações complementares`);
+        // Garantir que configurações estão carregadas
+        await this.ensureConfigsLoaded();
+
+        // Inicializar todas as despesas aduaneiras definidas na configuração
+        const tiposAduaneiros = this.codigosReceita.tiposDespesas.ADUANEIRAS;
+        despesas.calculadas = {};
+
+        tiposAduaneiros.forEach(tipo => {
+            const key = tipo.toLowerCase();
+            despesas.calculadas[key] = 0;
+        });
+
+        // Extrair valores dos pagamentos usando códigos de receita da configuração
+        const pagamentos = xmlDoc.querySelectorAll('pagamento');
+        pagamentos.forEach(pagamento => {
+            const codigo = this.getTextContent(pagamento, 'codigoReceita');
+            const valor = this.convertValue(this.getTextContent(pagamento, 'valorReceita'), 'monetary');
+
+            if (codigo && valor > 0) {
+                const tipoDespesa = this.mapCodigoToTipo(codigo);
+                if (tipoDespesa && despesas.calculadas.hasOwnProperty(tipoDespesa)) {
+                    despesas.calculadas[tipoDespesa] = valor;
+                    console.log(`✅ ${tipoDespesa.toUpperCase()} extraído: R$ ${valor.toFixed(2)} (código ${codigo})`);
+                }
+            }
+        });
+
+        // AFRMM - backup das informações complementares
+        const afrmmExtra = this.diData.informacoes_complementares?.dados_extraidos?.afrmm_valor;
+        if (afrmmExtra > 0) {
+            despesas.calculadas.afrmm = afrmmExtra;
+            console.log(`✅ AFRMM das informações complementares: R$ ${afrmmExtra.toFixed(2)}`);
         }
-        
-        // ===== OUTRAS DESPESAS - podem ser adicionadas aqui no futuro =====
-        // Exemplo: Taxas portuárias, despesas de armazenagem, etc.
-        // Sempre EXTRAIR das informações da DI, nunca calcular
+
+        // Extrair despesas portuárias de tags específicas quando existirem
+        this.extractDespesasPortuarias(xmlDoc, despesas);
+
+        console.log('📊 Despesas aduaneiras finais:', despesas.calculadas);
+    }
+
+    /**
+     * Mapeia código de receita para tipo de despesa usando configuração
+     */
+    mapCodigoToTipo(codigo) {
+        for (const [tipo, config] of Object.entries(this.codigosReceita.codigosReceita)) {
+            if (config.codigo === codigo) {
+                return tipo.toLowerCase();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extrai despesas portuárias (capatazia, armazenagem) de tags específicas
+     */
+    extractDespesasPortuarias(xmlDoc, despesas) {
+        const tiposPortuarios = this.codigosReceita.tiposDespesas.PORTUARIAS;
+
+        tiposPortuarios.forEach(tipo => {
+            const key = tipo.toLowerCase();
+            const possibleTags = [`v${tipo}`, `valor${tipo}`, `${key}Valor`, `${key}Despesa`];
+
+            for (const tag of possibleTags) {
+                const element = xmlDoc.querySelector(tag);
+                if (element) {
+                    const valor = this.convertValue(element.textContent, 'monetary');
+                    if (valor > 0) {
+                        despesas.calculadas[key] = valor;
+                        console.log(`✅ ${tipo} extraída da tag ${tag}: R$ ${valor.toFixed(2)}`);
+                        return;
+                    }
+                }
+            }
+        });
     }
 
 
