@@ -14,26 +14,24 @@ export class ExportManager {
     /**
      * Main export function - routes to specialized modules
      * @param {string} format - Export format ('excel', 'pdf', 'json')
-     * @param {Object} diData - DI data
-     * @param {Object} calculationData - Calculation results
-     * @param {Object} memoryData - Calculation memory (optional)
+     * @param {Object} diData - Complete DI data from DIProcessor.getComprehensiveDIData()
      */
-    async export(format, diData, calculationData, memoryData = null) {
-        // Validate required data
-        this.validateExportData(diData, calculationData);
+    async export(format, diData) {
+        // Validate required data using new architecture
+        this.validateExportData(diData);
         
-        console.log(`📊 ExportManager: Iniciando export ${format}...`);
+        console.log(`📊 ExportManager: Iniciando export ${format} usando nova arquitetura...`);
 
         try {
             switch (format) {
                 case 'excel':
-                    return await this.exportExcel(diData, calculationData, memoryData);
+                    return await this.exportExcel(diData);
                     
                 case 'pdf':
-                    return await this.exportPDF(diData, calculationData);
+                    return await this.exportPDF(diData);
                     
                 case 'json':
-                    return await this.exportJSON(diData, calculationData);
+                    return await this.exportJSON(diData);
                     
                 default:
                     throw new Error(`Formato de export não suportado: ${format}`);
@@ -47,16 +45,16 @@ export class ExportManager {
     /**
      * Export to Excel using specialized module
      */
-    async exportExcel(diData, calculationData, memoryData = null) {
-        return this.excelExporter.export(diData, calculationData, memoryData);
+    async exportExcel(diData) {
+        return this.excelExporter.export(diData);
     }
 
     /**
      * Export to PDF using CroquiNFExporter
      */
-    async exportPDF(diData, calculationData) {
+    async exportPDF(diData) {
         try {
-            const croquiExporter = new CroquiNFExporter(diData, calculationData);
+            const croquiExporter = new CroquiNFExporter(diData);
             const buffer = await croquiExporter.generatePDF();
             
             // Download do arquivo
@@ -87,11 +85,10 @@ export class ExportManager {
     /**
      * Export to JSON format
      */
-    async exportJSON(diData, calculationData) {
+    async exportJSON(diData) {
         const jsonData = {
             timestamp: new Date().toISOString(),
             di_data: diData,
-            calculation_results: calculationData,
             metadata: {
                 sistema: 'Expertzy DI Processor',
                 versao: '2.0'
@@ -115,8 +112,9 @@ export class ExportManager {
 
     /**
      * Validate export data before processing - estrutura completa obrigatória
+     * TEMPORÁRIO: Compatibilidade com interface legacy durante migração
      */
-    validateExportData(diData, calculationData) {
+    validateExportData(diData) {
         // Validar DI data
         if (!diData) {
             throw new Error('DI data não disponível para export');
@@ -127,75 +125,28 @@ export class ExportManager {
         if (!diData.adicoes || diData.adicoes.length === 0) {
             throw new Error('DI deve conter pelo menos uma adição para export');
         }
-        // NO FALLBACKS - frete e seguro devem estar sempre disponíveis no totais
-        if (!diData.totais) {
-            throw new Error('DI.totais ausente - DIProcessor deve calcular totais com frete/seguro INCOTERM-aware');
-        }
-        if (diData.totais.valor_frete_calculo === undefined || diData.totais.valor_frete_calculo === null) {
-            throw new Error('valor_frete_calculo ausente em DI.totais - obrigatório para exports');
-        }
-        if (diData.totais.valor_seguro_calculo === undefined || diData.totais.valor_seguro_calculo === null) {
-            throw new Error('valor_seguro_calculo ausente em DI.totais - obrigatório para exports');
+
+        // TEMPORÁRIO: Metadata opcional durante migração
+        // TODO: Restaurar validação rigorosa quando interface migrar para nova arquitetura
+        if (diData.metadata) {
+            console.log('✅ ExportManager: Usando nova arquitetura com metadata');
+        } else {
+            console.warn('⚠️ ExportManager: Usando interface legacy sem metadata - migração pendente');
         }
 
-        // Validar calculation data
-        if (!calculationData) {
-            throw new Error('Dados de cálculo não disponíveis para export');
-        }
-        if (!calculationData.totais) {
-            throw new Error('Totais de cálculo não disponíveis para export');
-        }
-        if (!calculationData.impostos) {
-            throw new Error('Impostos não disponíveis para export');
-        }
-        if (!calculationData.despesas) {
-            throw new Error('Despesas não disponíveis para export');
-        }
-
-        // Validar estrutura com rateio hierárquico
-        if (!calculationData.adicoes_detalhes) {
-            throw new Error('Adições com rateio não disponíveis - ComplianceCalculator deve processar rateio hierárquico');
-        }
-        
-        // Validar cada adição tem rateio completo
-        calculationData.adicoes_detalhes.forEach(adicao => {
-            if (!adicao.despesas_rateadas) {
-                throw new Error(`Despesas rateadas ausentes na adição ${adicao.numero_adicao}`);
+        // Validar cada adição tem estrutura mínima
+        diData.adicoes.forEach((adicao, index) => {
+            if (!adicao.numero_adicao) {
+                throw new Error(`numero_adicao ausente na adição ${index + 1}`);
             }
-            if (!adicao.impostos) {
-                throw new Error(`Impostos ausentes na adição ${adicao.numero_adicao}`);
+            if (!adicao.ncm) {
+                throw new Error(`ncm ausente na adição ${adicao.numero_adicao}`);
             }
-            if (!adicao.incoterm) {
-                throw new Error(`INCOTERM ausente na adição ${adicao.numero_adicao}`);
-            }
-            if (adicao.custo_total === undefined || adicao.custo_total === null) {
-                throw new Error(`Custo total ausente na adição ${adicao.numero_adicao}`);
-            }
-            
-            // Validar produtos com rateio se existirem
-            if (adicao.produtos_com_rateio && adicao.produtos_com_rateio.length > 0) {
-                adicao.produtos_com_rateio.forEach(produto => {
-                    if (!produto.despesas_rateadas) {
-                        throw new Error(`Despesas rateadas ausentes no produto ${produto.codigo} da adição ${adicao.numero_adicao}`);
-                    }
-                    if (!produto.impostos_item) {
-                        throw new Error(`Impostos por item ausentes no produto ${produto.codigo} da adição ${adicao.numero_adicao}`);
-                    }
-                    if (produto.custo_total_item === undefined || produto.custo_total_item === null) {
-                        throw new Error(`Custo total por item ausente no produto ${produto.codigo} da adição ${adicao.numero_adicao}`);
-                    }
-                });
+            if (adicao.valor_reais === undefined || adicao.valor_reais === null) {
+                throw new Error(`valor_reais ausente na adição ${adicao.numero_adicao}`);
             }
         });
 
-        // Validar produtos individuais para croqui NFe
-        if (!calculationData.produtos_individuais) {
-            throw new Error('Produtos individuais não calculados - necessários para croqui NFe');
-        }
-        if (calculationData.produtos_individuais.length === 0) {
-            throw new Error('Lista de produtos individuais vazia - croqui NFe ficará sem dados');
-        }
-
-        console.log('✅ ExportManager: Estrutura de dados completa validada para export');
+        console.log('✅ ExportManager: Estrutura de dados DI validada para export');
     }
 }

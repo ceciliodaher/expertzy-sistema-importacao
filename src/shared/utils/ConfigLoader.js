@@ -288,6 +288,50 @@ class ConfigLoader {
         if (!this.loaded) await this.loadAll();
         return this.cache.estados;
     }
+
+    /**
+     * Load specific configuration file by name
+     * @param {string} filename - Configuration filename to load
+     * @returns {Promise<Object>} Configuration data
+     */
+    async loadConfig(filename) {
+        if (!this.loaded) {
+            await this.loadAll();
+        }
+        
+        switch (filename) {
+            case 'config.json':
+                return this.cache.config;
+            case 'aliquotas.json':
+                return this.cache.aliquotas;
+            case 'beneficios.json':
+                return this.cache.beneficios;
+            case 'import-fees.json':
+                return this.cache.importFees;
+            case 'estados-brasil.json':
+                return this.cache.estados;
+            case 'moedas-siscomex.json':
+                return this.cache.moedas;
+            case 'tributacao-monofasica.json':
+                return this.cache.tributacaoMonofasica;
+            case 'ncms-vedados.json':
+                return this.cache.ncmsVedados;
+            case 'unidades-medida.json':
+                return this.cache.unidadesMedida;
+            case 'codigos-receita.json':
+                return this.cache.codigosReceita;
+            case 'validacao-campos.json':
+                return this.cache.validacaoCampos;
+            case 'patterns-codigo-produto.json':
+                return this.cache.patternsCodigo;
+            case 'regime-aliquotas.json':
+                return this.cache.regimeAliquotas;
+            case 'reforma-tributaria.json':
+                return this.cache.reformaTributaria;
+            default:
+                throw new Error(`ConfigLoader: Configuration file ${filename} not supported. Available files: config.json, aliquotas.json, beneficios.json, import-fees.json, estados-brasil.json, moedas-siscomex.json, tributacao-monofasica.json, ncms-vedados.json, unidades-medida.json, codigos-receita.json, validacao-campos.json, patterns-codigo-produto.json, regime-aliquotas.json, reforma-tributaria.json`);
+        }
+    }
 }
 
 export { ConfigLoader };

@@ -173,20 +173,18 @@ export class ComplianceCalculator {
                 };
             }
             
-            // Calcular impostos para esta adição (SOLID: passar numero_di da DI principal)
-            const calculoAdicao = await this.calcularImpostosImportacao(adicao, despesasAdicao, di.numero_di);
+            // Calcular impostos para esta adição
+            const calculoAdicao = await this.calcularImpostosImportacao(adicao, despesasAdicao);
             calculosIndividuais.push(calculoAdicao);
             
             // NOVO: Calcular impostos para cada produto individual usando ItemCalculator
-            let resultadoItens = null; // Declarar fora do escopo para uso posterior
-            
             if (adicao.produtos && adicao.produtos.length > 0) {
                 // Passar despesas totais da DI - ItemCalculator fará o rateio correto
                 const despesasTotaisDI = despesasConsolidadas ? {
                     total_despesas_aduaneiras: despesasConsolidadas.totais?.tributavel_icms || despesasConsolidadas.automaticas?.total
                 } : null;
                 
-                resultadoItens = this.itemCalculator.processarItensAdicao(
+                const resultadoItens = this.itemCalculator.processarItensAdicao(
                     adicao, 
                     despesasTotaisDI,
                     null
@@ -202,14 +200,14 @@ export class ComplianceCalculator {
                         codigo: item.produto.codigo,                    // Real code from DI
                         unidade_medida: item.produto.unidade_medida,   // Real unit from DI
                         valor_unitario_brl: item.produto.valor_unitario,
-                        valor_total: item.valorItem,
+                        valor_total_brl: item.valorItem,
                         quantidade: item.produto.quantidade,
-                        valor_ii: item.tributos.ii.valor,
-                        valor_ipi: item.tributos.ipi.valor, 
-                        valor_pis: item.tributos.pis.valor,
-                        valor_cofins: item.tributos.cofins.valor,
-                        valor_icms: item.valorICMS,
-                        bc_icms: item.baseICMS
+                        ii_item: item.tributos.ii.valor,
+                        ipi_item: item.tributos.ipi.valor, 
+                        pis_item: item.tributos.pis.valor,
+                        cofins_item: item.tributos.cofins.valor,
+                        icms_item: item.valorICMS,
+                        base_icms_item: item.baseICMS
                     });
                 });
                 
@@ -221,26 +219,14 @@ export class ComplianceCalculator {
                 numero: adicao.numero_adicao,
                 ncm: adicao.ncm,
                 valor: adicao.valor_reais,
-                peso_liquido: adicao.peso_liquido,
+                peso: adicao.peso_liquido,
                 impostos: {
                     ii: calculoAdicao.impostos.ii.valor_devido,
                     ipi: calculoAdicao.impostos.ipi.valor_devido,
                     pis: calculoAdicao.impostos.pis.valor_devido,
                     cofins: calculoAdicao.impostos.cofins.valor_devido,
                     icms: calculoAdicao.impostos.icms?.valor_devido
-                },
-                totais: {
-                    custo_total: calculoAdicao.totais.custo_total
-                },
-                produtos: (() => {
-                    if (!resultadoItens) {
-                        throw new Error(`resultadoItens ausente para adição ${adicao.numero_adicao} - cálculo de produtos obrigatório`);
-                    }
-                    if (!resultadoItens.itens) {
-                        throw new Error(`resultadoItens.itens ausente para adição ${adicao.numero_adicao} - estrutura inválida`);
-                    }
-                    return resultadoItens.itens;
-                })()
+                }
             });
         }
         
@@ -375,25 +361,6 @@ export class ComplianceCalculator {
             adicoes_detalhes: adicoesComRateioCompleto,
             calculos_individuais: calculosIndividuais,
             produtos_individuais: produtosIndividuais, // NOVO: Produtos com tributos por item
-            
-            // CAMPOS ESSENCIAIS PARA EXPORTERS (ComplianceCalculator - SECONDARY CREATOR)
-            // NO FALLBACKS - Geração direta dos totais usando dados consolidados
-            totais_relatorio: this.gerarTotaisRelatorio({
-                despesas: despesasConsolidadas ? despesasConsolidadas : {
-                    automaticas: totais.despesas,
-                    extras_tributaveis: 0,
-                    extras_custos: 0,
-                    total_base_icms: totais.despesas,
-                    total_custos: totais.despesas
-                },
-                impostos: {
-                    ii: { valor_devido: totais.ii },
-                    ipi: { valor_devido: totais.ipi },
-                    pis: { valor_devido: totais.pis },
-                    cofins: { valor_devido: totais.cofins }
-                }
-            }, produtosIndividuais, di),
-            totais_por_coluna: this.gerarTotaisPorColuna(resumos),
             
             // Metadados para rastreabilidade
             estado: this.estadoDestino,
@@ -611,7 +578,7 @@ export class ComplianceCalculator {
      * ENTRADA: Dados da DI + despesas consolidadas
      * SAÍDA: Estrutura completa de impostos calculados
      */
-    async calcularImpostosImportacao(adicao, despesasConsolidadas = null, numeroDI) {
+    async calcularImpostosImportacao(adicao, despesasConsolidadas = null) {
         console.log('🧮 ComplianceCalculator: Iniciando cálculo de impostos...');
         
         try {
@@ -702,9 +669,10 @@ export class ComplianceCalculator {
             this.salvarCalculoMemoria(calculo);
             this.lastCalculation = calculo;
             
-            // SOLID: Usar numero da DI fornecido como parâmetro (NO FALLBACKS)
+            // NOVO: Salvar no IndexedDB para exportadores lerem
+            const numeroDI = adicao.numero_di || adicao.numeroDI || adicao.numero_adicao;
             if (!numeroDI) {
-                throw new Error('Número da DI é obrigatório (parâmetro)');
+                throw new Error(`Número da DI não encontrado nos dados da adição. Propriedades disponíveis: ${Object.keys(adicao).join(', ')}`);
             }
             await this.salvarCalculoIndexedDB(numeroDI, calculo);
             
@@ -923,147 +891,6 @@ export class ComplianceCalculator {
     }
 
     /**
-     * Gera totais para relatórios usando dados consolidados em consolidarTotaisDI()
-     * NOVO: Método específico para gerar totais_relatorio durante consolidação
-     * NO FALLBACKS - Falha explícita se dados obrigatórios ausentes
-     * @param {Object} calculosIndividuais - Cálculos consolidados da DI
-     * @param {Array} produtosIndividuais - Produtos individuais calculados  
-     * @param {Object} di - Dados da DI originais
-     * @returns {Object} Totais formatados para relatórios
-     */
-    gerarTotaisRelatorio(calculosIndividuais, produtosIndividuais, di) {
-        if (!produtosIndividuais || produtosIndividuais.length === 0) {
-            throw new Error('Produtos individuais são obrigatórios para gerar totais do relatório');
-        }
-
-        if (!di) {
-            throw new Error('Dados da DI são obrigatórios para gerar totais do relatório');
-        }
-
-        if (!calculosIndividuais) {
-            throw new Error('Cálculos individuais são obrigatórios para gerar totais do relatório');
-        }
-
-        if (!di.totais) {
-            throw new Error('di.totais ausente - obrigatório para valor_frete_calculo/valor_seguro_calculo');
-        }
-
-        if (!calculosIndividuais.despesas) {
-            throw new Error('calculosIndividuais.despesas ausente - obrigatório para outras_despesas');
-        }
-
-        if (!calculosIndividuais.impostos) {
-            throw new Error('calculosIndividuais.impostos ausente - obrigatório para impostos do relatório');
-        }
-
-        const totais = {
-            base_calculo_icms: 0,
-            valor_icms: 0,
-            base_calculo_icms_st: 0,
-            valor_icms_st: 0,
-            valor_total_produtos: 0,
-            valor_frete: di.totais.valor_frete_calculo,
-            valor_seguro: di.totais.valor_seguro_calculo,
-            valor_desconto: 0,
-            outras_despesas: calculosIndividuais.despesas.total_custos,
-            valor_ii: 0,
-            valor_ipi: 0,
-            valor_pis: 0,
-            valor_cofins: 0,
-            valor_total_nota: 0
-        };
-
-        // Somar valores dos produtos individuais
-        produtosIndividuais.forEach(produto => {
-            if (!produto.bc_icms) {
-                throw new Error(`Base de cálculo ICMS ausente para produto ${produto.item}`);
-            }
-            totais.base_calculo_icms += produto.bc_icms;
-            totais.valor_icms += produto.valor_icms;
-            totais.valor_total_produtos += produto.valor_total;
-            totais.valor_ii += produto.valor_ii;
-            totais.valor_ipi += produto.valor_ipi;
-            totais.valor_pis += produto.valor_pis;
-            totais.valor_cofins += produto.valor_cofins;
-        });
-
-        // ===== CALCULAR TOTAL DA NOTA CONFORME LEGISLAÇÃO =====
-        // Para importação, total da nota = Base ICMS (que já inclui mercadoria + tributos + despesas)
-        // O ICMS não é cobrado na importação (fica exonerado), mas a base é usada para o total
-        totais.valor_total_nota = totais.base_calculo_icms;
-
-        return totais;
-    }
-
-    /**
-     * Gera totais por coluna usando dados consolidados em consolidarTotaisDI()
-     * NOVO: Método específico para gerar totais_por_coluna durante consolidação
-     * NO FALLBACKS - Falha explícita se estrutura inválida
-     * @param {Array} resumos - Resumos por adição
-     * @returns {Object} Totais agregados por tipo de despesa/imposto
-     */
-    gerarTotaisPorColuna(resumos) {
-        if (!resumos || resumos.length === 0) {
-            throw new Error('Resumos por adição são obrigatórios para gerar totais por coluna');
-        }
-
-        const colunas = {
-            ii: [],
-            ipi: [],
-            pis: [],
-            cofins: [],
-            icms: [],
-            custos: [],
-            pesos: []
-        };
-
-        let totalProdutos = 0;
-
-        resumos.forEach((resumo, index) => {
-            if (!resumo.impostos) {
-                throw new Error(`resumos[${index}].impostos ausente - obrigatório para totais por coluna`);
-            }
-            
-            if (!resumo.totais) {
-                throw new Error(`resumos[${index}].totais ausente - obrigatório para custos por coluna`);
-            }
-
-            colunas.ii.push(resumo.impostos.ii);
-            colunas.ipi.push(resumo.impostos.ipi);
-            colunas.pis.push(resumo.impostos.pis);
-            colunas.cofins.push(resumo.impostos.cofins);
-            colunas.icms.push(resumo.impostos.icms);
-            colunas.custos.push(resumo.totais.custo_total);
-            
-            if (resumo.peso_liquido !== undefined) {
-                colunas.pesos.push(resumo.peso_liquido);
-            }
-
-            if (resumo.produtos) {
-                totalProdutos += resumo.produtos.length;
-            }
-        });
-
-        return {
-            colunas_impostos: {
-                ii: colunas.ii,
-                ipi: colunas.ipi, 
-                pis: colunas.pis,
-                cofins: colunas.cofins,
-                icms: colunas.icms
-            },
-            colunas_totais: {
-                custos: colunas.custos,
-                pesos: colunas.pesos
-            },
-            metadados: {
-                total_adicoes: resumos.length,
-                total_produtos: totalProdutos
-            }
-        };
-    }
-
-    /**
      * Calcula totais específicos para relatórios (ex: croqui NF)
      * MOVIDO do CroquiNFExporter - seguindo princípio Single Responsibility
      * @param {Object} dadosDI - Dados da DI processados
@@ -1094,10 +921,10 @@ export class ComplianceCalculator {
             valor_seguro: dadosDI.totais.valor_seguro_calculo,
             valor_desconto: 0,
             outras_despesas: calculosCompletos.despesas.totais.geral,
-            valor_ii: 0,
-            valor_ipi: 0,
-            valor_pis: 0,
-            valor_cofins: 0,
+            valor_ii: calculosCompletos.impostos.ii.valor_devido,
+            valor_ipi: calculosCompletos.impostos.ipi.valor_devido,
+            valor_pis: calculosCompletos.impostos.pis.valor_devido,
+            valor_cofins: calculosCompletos.impostos.cofins.valor_devido,
             valor_total_nota: 0
         };
 
@@ -1109,7 +936,6 @@ export class ComplianceCalculator {
             totais.base_calculo_icms += produto.bc_icms;
             totais.valor_icms += produto.valor_icms;
             totais.valor_total_produtos += produto.valor_total;
-            totais.valor_ii += produto.valor_ii;
             totais.valor_ipi += produto.valor_ipi;
             totais.valor_pis += produto.valor_pis;
             totais.valor_cofins += produto.valor_cofins;
@@ -1356,25 +1182,18 @@ export class ComplianceCalculator {
                 totais_por_coluna: calculo.totais_por_coluna
             };
 
-            // SOLID - Single Source of Truth: Atualizar DI com dados calculados
-            console.log(`💾 ComplianceCalculator: Salvando cálculos para DI ${numeroDI}`);
+            // Salvar no IndexedDB usando saveConfig para evitar validações de DI completa
+            const chave = `calculo_${numeroDI}`;
+            console.log(`💾 ComplianceCalculator: Tentando salvar cálculo com chave "${chave}"`);
+            console.log(`💾 ComplianceCalculator: Dados a serem salvos:`, calculoCompleto);
             
-            // Buscar DI existente primeiro
-            const diExistente = await this.dbManager.getDI(numeroDI);
-            if (!diExistente) {
-                throw new Error(`DI ${numeroDI} não encontrada no IndexedDB - execute DIProcessor primeiro`);
-            }
+            await this.dbManager.saveConfig(chave, calculoCompleto);
             
-            // Atualizar DI com seção de cálculos de compliance
-            const diAtualizada = {
-                numero_di: numeroDI,
-                calculos_compliance: calculoCompleto,
-                calculos_timestamp: new Date().toISOString()
-            };
+            console.log(`✅ ComplianceCalculator: Cálculo salvo no IndexedDB com chave ${chave}`);
             
-            await this.dbManager.updateDI(diAtualizada);
-            
-            console.log(`✅ ComplianceCalculator: Cálculos salvos na DI ${numeroDI} (Single Source of Truth)`);
+            // Verificar imediatamente se foi salvo
+            const verificacao = await this.dbManager.getConfig(chave);
+            console.log(`🔍 ComplianceCalculator: Verificação - dados recuperados:`, verificacao ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
         } catch (error) {
             console.error('Erro ao salvar cálculo no IndexedDB:', error);
             throw new Error(`Falha ao persistir cálculo: ${error.message}`);
@@ -1611,7 +1430,7 @@ export class ComplianceCalculator {
         }
         
         try {
-            console.log('🔄 Atualizando DI com cálculos completos no IndexedDB (Single Source of Truth)...');
+            console.log('🔄 Atualizando DI salva com cálculos completos no IndexedDB...');
             
             // Recuperar DI salva anteriormente do IndexedDB
             const diSalva = await window.dbManager.getDI(di.numero_di);
@@ -1624,38 +1443,32 @@ export class ComplianceCalculator {
                 throw new Error(`DI no IndexedDB (${diSalva.numero_di}) não corresponde à DI calculada (${di.numero_di})`);
             }
             
-            // SOLID - Single Source of Truth: Atualizar DI com dados consolidados
+            // Preparar dados de atualização com cálculos completos
             const dadosAtualizacao = {
-                numero_di: di.numero_di,
-                // Seção de cálculos de compliance consolidados
-                calculos_compliance: {
-                    totais: totaisConsolidados,
-                    despesas: despesasConsolidadas,
-                    // CAMPOS ESSENCIAIS PARA EXPORTERS (incluir todos os campos necessários)
-                    totais_relatorio: totaisConsolidados.totais_relatorio,
-                    totais_por_coluna: totaisConsolidados.totais_por_coluna,
-                    produtos_individuais: totaisConsolidados.produtos_individuais,
-                    timestamp: new Date().toISOString(),
-                    valores_base_finais: totaisConsolidados.valores_base ? {
-                        cif_brl: totaisConsolidados.valores_base.cif_brl,
-                        peso_liquido: totaisConsolidados.valores_base.peso_liquido,
-                        taxa_cambio: di.taxa_cambio
-                    } : null
-                },
-                // Metadata de integração
+                ...diSalva,
                 integration: {
                     phase1_completed: true,
                     calculations_pending: false,
                     calculations_completed_at: new Date().toISOString()
-                }
+                },
+                calculoImpostos: totaisConsolidados,
+                despesas: despesasConsolidadas
             };
             
+            // Atualizar valores base com dados finais
+            if (totaisConsolidados.valores_base) {
+                dadosAtualizacao.valores_base_finais = {
+                    cif_brl: totaisConsolidados.valores_base.cif_brl,
+                    peso_liquido: totaisConsolidados.valores_base.peso_liquido,
+                    taxa_cambio: di.taxa_cambio
+                };
+            }
             
-            // Usar updateDI para Single Source of Truth
-            await window.dbManager.updateDI(dadosAtualizacao);
+            // Salvar configuração de DI processada
+            await window.dbManager.saveConfig(`di_processed_${di.numero_di}`, dadosAtualizacao);
             
             // Validar que atualização funcionou - NO FALLBACKS
-            const verificacao = await window.dbManager.getDI(di.numero_di);
+            const verificacao = await window.dbManager.getConfig(`di_processed_${di.numero_di}`);
             if (!verificacao) {
                 throw new Error('Falha crítica ao atualizar DI no IndexedDB - dados não persistidos');
             }
@@ -1664,27 +1477,7 @@ export class ComplianceCalculator {
                 throw new Error('Atualização de DI no IndexedDB não foi aplicada corretamente - estado inconsistente');
             }
             
-            console.log(`✅ DI ${di.numero_di} atualizada com cálculos completos (Single Source of Truth)`);
-            
-            // VALIDAÇÃO NO FALLBACKS - Estrutura obrigatória para exporters (após salvamento)
-            const diVerificacao = await window.dbManager.getDI(di.numero_di);
-            if (!diVerificacao.calculos_compliance) {
-                throw new Error('calculos_compliance ausente após salvamento - estrutura de cálculo incompleta');
-            }
-            
-            if (!diVerificacao.calculos_compliance.totais_relatorio) {
-                throw new Error('totais_relatorio ausente após salvamento - cálculo incompleto para exporters');
-            }
-            
-            if (!diVerificacao.calculos_compliance.totais_por_coluna) {
-                throw new Error('totais_por_coluna ausente após salvamento - cálculo incompleto para exporters');
-            }
-            
-            if (!diVerificacao.calculos_compliance.produtos_individuais) {
-                throw new Error('produtos_individuais ausente após salvamento - cálculo incompleto para exporters');
-            }
-            
-            console.log('✅ Validação pós-salvamento: Todos os campos necessários para exporters estão presentes');
+            console.log(`✅ DI ${di.numero_di} atualizada no IndexedDB com cálculos completos - pronta para precificação`);
             
         } catch (error) {
             console.error('❌ Erro crítico ao atualizar DI salva com cálculos:', error);

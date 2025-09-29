@@ -15,7 +15,7 @@
 import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class CroquiNFExporter {
-    constructor(diData, calculosData = null, incentiveManager = null) {
+    constructor(diData) {
         // NO FALLBACKS - validar dados obrigatórios
         if (!diData) {
             throw new Error('Dados da DI não disponíveis - obrigatórios para CroquiNFExporter');
@@ -25,10 +25,17 @@ export class CroquiNFExporter {
             throw new Error('Número da DI ausente - obrigatório para gerar croqui');
         }
         
-        this.di = diData;  // Dados já processados pelo DIProcessor
-        this.calculos = calculosData;  // Cálculos já feitos pelo ComplianceCalculator
-        this.incentiveManager = incentiveManager;  // Para gerar campos CST 51
-        this.dbManager = IndexedDBManager.getInstance();  // Para ler dados calculados
+        // Validar que diData inclui dados completos do DIProcessor.getComprehensiveDIData()
+        if (!diData.metadata) {
+            throw new Error('metadata ausente - use DIProcessor.getComprehensiveDIData()');
+        }
+        
+        if (!diData.metadata.data_source || diData.metadata.data_source !== 'DIProcessor') {
+            throw new Error('diData deve vir de DIProcessor.getComprehensiveDIData()');
+        }
+        
+        this.di = diData;  // Dados completos já processados pelo DIProcessor
+        this.dbManager = IndexedDBManager.getInstance();  // Para ler dados calculados adicionais se necessário
         this.empresa = 'EXPERTZY';
         this.subtitulo = 'SISTEMA DE IMPORTAÇÃO E PRECIFICAÇÃO';
         this.versao = '2.1.0';
@@ -748,22 +755,13 @@ export class CroquiNFExporter {
                 return;
             }
             
-            // SOLID - Single Source of Truth: Buscar DI completa via getDI
-            console.log(`🔍 CroquiNFExporter: Buscando DI ${numeroDI} (Single Source of Truth)`);
+            // Buscar dados calculados no IndexedDB usando getConfig
+            const chave = `calculo_${numeroDI}`;
+            const calculosDB = await this.dbManager.getConfig(chave);
             
-            const di = await this.dbManager.getDI(numeroDI);
-            
-            if (!di) {
-                throw new Error(`DI ${numeroDI} não encontrada no IndexedDB - execute DIProcessor primeiro`);
-            }
-            
-            // Verificar se cálculos de compliance existem
-            if (!di.calculos_compliance) {
+            if (!calculosDB) {
                 throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);
             }
-            
-            const calculosDB = di.calculos_compliance;
-            console.log(`🔍 CroquiNFExporter: Cálculos de compliance encontrados`);
             
             // Validar campos obrigatórios
             if (!calculosDB.totais_relatorio) {
@@ -777,7 +775,7 @@ export class CroquiNFExporter {
             // Atualizar cálculos com dados do IndexedDB
             this.calculos = calculosDB;
             
-            console.log(`✅ CroquiNFExporter: Dados calculados carregados para DI ${numeroDI} (Single Source of Truth)`);
+            console.log(`✅ CroquiNFExporter: Dados calculados carregados do IndexedDB para DI ${numeroDI}`);
         } catch (error) {
             console.error('Erro ao carregar dados calculados:', error);
             throw error;

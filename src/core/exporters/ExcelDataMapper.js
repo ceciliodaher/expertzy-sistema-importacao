@@ -70,7 +70,7 @@ export class ExcelDataMapper {
         this._validateConfig();
         
         // Inicializar mapeamentos após carregar config
-        this._initializeMappings();
+        await this._initializeMappings();
     }
     
     /**
@@ -111,19 +111,44 @@ export class ExcelDataMapper {
      * Inicializa os mapeamentos de todas as abas
      * @private
      */
-    _initializeMappings() {
-        // Mapear cada aba fixa conforme configuração
-        this.sheetMappings = this.config.ordem_abas.map(sheetType => {
+    async _initializeMappings() {
+        // Mapear apenas abas básicas obrigatórias inicialmente
+        const basicSheets = ['Capa', 'Importador', 'Carga', 'Valores', 'Despesas', 'Tributos'];
+        
+        this.sheetMappings = [];
+        
+        // Mapear abas básicas sempre presentes
+        for (const sheetType of this.config.ordem_abas) {
             const mapMethod = this[`map${sheetType}Sheet`];
+            
             if (!mapMethod) {
-                throw new Error(`ExcelDataMapper: método map${sheetType}Sheet não implementado`);
+                console.warn(`⚠️ ExcelDataMapper: Método map${sheetType}Sheet não implementado`);
+                continue;
             }
-            return mapMethod.call(this);
-        });
+            
+            try {
+                const mapping = await mapMethod.call(this);
+                this.sheetMappings.push(mapping);
+                console.log(`✅ ExcelDataMapper: Aba ${sheetType} mapeada com sucesso`);
+            } catch (error) {
+                if (basicSheets.includes(sheetType)) {
+                    // Aba básica obrigatória - falhar
+                    throw new Error(`ExcelDataMapper: Erro em aba obrigatória ${sheetType}: ${error.message}`);
+                } else {
+                    // Aba opcional - apenas avisar
+                    console.warn(`⚠️ ExcelDataMapper: Pulando aba opcional ${sheetType}: ${error.message}`);
+                }
+            }
+        }
         
         // Adicionar abas dinâmicas das adições
-        const dynamicAdditions = this.mapDynamicAdditions();
-        this.sheetMappings = this.sheetMappings.concat(dynamicAdditions);
+        try {
+            const dynamicAdditions = await this.mapDynamicAdditions();
+            this.sheetMappings = this.sheetMappings.concat(dynamicAdditions);
+            console.log(`✅ ExcelDataMapper: ${dynamicAdditions.length} adições dinâmicas mapeadas`);
+        } catch (error) {
+            console.warn(`⚠️ ExcelDataMapper: Erro ao mapear adições dinâmicas: ${error.message}`);
+        }
     }
     
     /**
@@ -530,7 +555,7 @@ export class ExcelDataMapper {
      * Mapeia dados para as abas dinâmicas das adições
      * @returns {Array} Array de configurações das abas de adições
      */
-    mapDynamicAdditions() {
+    async mapDynamicAdditions() {
         const adicoes = this.diData.adicoes;
         
         return adicoes.map((adicao, index) => {

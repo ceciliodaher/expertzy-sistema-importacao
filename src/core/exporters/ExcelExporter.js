@@ -8,56 +8,13 @@
 
 import { ExcelProfessionalStyles } from '@shared/utils/excel-professional-styles.js';
 import { ExcelDataMapper } from './ExcelDataMapper.js';
-import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class ExcelExporter {
     constructor() {
         this.name = 'ExcelExporter';
         this.workbook = null;
-        this.diData = null;
-        this.calculationData = null;
-        this.memoryData = null;
         this.styles = new ExcelProfessionalStyles();
-        this.dbManager = IndexedDBManager.getInstance();  // Para ler dados calculados
-        this.calculos = null;  // Dados calculados do IndexedDB
         this.mapper = null;  // ExcelDataMapper instance
-    }
-
-    /**
-     * Carrega dados calculados do IndexedDB
-     * SOLID: Não calcula, apenas lê dados já calculados
-     */
-    async loadCalculatedData(numeroDI) {
-        try {
-            if (!numeroDI) {
-                throw new Error('Número da DI é obrigatório para carregar dados calculados');
-            }
-            
-            // Buscar dados calculados no IndexedDB usando getConfig
-            const chave = `calculo_${numeroDI}`;
-            console.log(`🔍 ExcelExporter: Tentando carregar cálculo com chave "${chave}"`);
-            console.log(`🔍 ExcelExporter: DI number:`, numeroDI);
-            
-            const calculosDB = await this.dbManager.getConfig(chave);
-            console.log(`🔍 ExcelExporter: Resultado getConfig:`, calculosDB ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
-            
-            if (!calculosDB) {
-                throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);
-            }
-            
-            // Validar campos obrigatórios para Excel
-            if (!calculosDB.totais_por_coluna) {
-                throw new Error('Totais por coluna não encontrados - execute ComplianceCalculator.calcularTotaisPorColuna() primeiro');
-            }
-            
-            // Atualizar cálculos com dados do IndexedDB
-            this.calculos = calculosDB;
-            
-            console.log(`✅ ExcelExporter: Dados calculados carregados do IndexedDB para DI ${numeroDI}`);
-        } catch (error) {
-            console.error('Erro ao carregar dados calculados:', error);
-            throw error;
-        }
     }
 
     /**
@@ -256,6 +213,521 @@ export class ExcelExporter {
         // Ajustar larguras das colunas
         worksheet.getColumn('A').width = 20;
         worksheet.getColumn('B').width = 30;
+    }
+
+    /**
+     * Cria aba Importador usando dados do mapping
+     * @param {Object} worksheet - ExcelJS worksheet
+     * @param {Object} data - Dados do importador
+     */
+    createImportadorSheetFromMapping(worksheet, data) {
+        if (!data.identificacao) {
+            throw new Error('ExcelExporter: data.identificacao é obrigatório para Importador');
+        }
+        
+        if (!data.identificacao.cnpj) {
+            throw new Error('ExcelExporter: data.identificacao.cnpj é obrigatório');
+        }
+
+        // Header
+        worksheet.mergeCells('A1:B1');
+        worksheet.getCell('A1').value = 'DADOS DO IMPORTADOR';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // Identificação
+        worksheet.getCell(`A${row}`).value = 'IDENTIFICAÇÃO';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.mergeCells(`A${row}:B${row}`);
+        row++;
+
+        const identificacao = [
+            ['CNPJ', data.identificacao.cnpj],
+            ['Razão Social', data.identificacao.nome],
+            ['Telefone', data.identificacao.telefone]
+        ];
+
+        identificacao.forEach(([campo, valor]) => {
+            worksheet.getCell(`A${row}`).value = campo;
+            worksheet.getCell(`B${row}`).value = valor;
+            worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            row++;
+        });
+
+        // Endereço
+        if (data.endereco) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'ENDEREÇO';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:B${row}`);
+            row++;
+
+            const endereco = [
+                ['Logradouro', data.endereco.logradouro],
+                ['Número', data.endereco.numero],
+                ['Complemento', data.endereco.complemento],
+                ['Bairro', data.endereco.bairro],
+                ['Cidade', data.endereco.cidade],
+                ['UF', data.endereco.uf],
+                ['CEP', data.endereco.cep]
+            ];
+
+            endereco.forEach(([campo, valor]) => {
+                if (valor) { // Só mostrar campos preenchidos
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Representante
+        if (data.representante) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'REPRESENTANTE LEGAL';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:B${row}`);
+            row++;
+
+            const representante = [
+                ['Nome', data.representante.nome],
+                ['CPF', data.representante.cpf]
+            ];
+
+            representante.forEach(([campo, valor]) => {
+                if (valor) {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 20;
+        worksheet.getColumn('B').width = 40;
+    }
+
+    /**
+     * Cria aba Valores usando dados do mapping
+     * @param {Object} worksheet - ExcelJS worksheet
+     * @param {Object} data - Dados dos valores
+     */
+    createValoresSheetFromMapping(worksheet, data) {
+        if (!data.valor_aduaneiro) {
+            throw new Error('ExcelExporter: data.valor_aduaneiro é obrigatório para Valores');
+        }
+
+        // Header
+        worksheet.mergeCells('A1:C1');
+        worksheet.getCell('A1').value = 'VALORES DA IMPORTAÇÃO';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // Valores FOB
+        if (data.valores_fob) {
+            worksheet.getCell(`A${row}`).value = 'VALORES FOB';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:C${row}`);
+            row++;
+
+            const fob = [
+                ['Valor FOB USD', data.valores_fob.usd, 'USD'],
+                ['Valor FOB BRL', data.valores_fob.brl, 'BRL']
+            ];
+
+            fob.forEach(([campo, valor, moeda]) => {
+                if (typeof valor === 'number') {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`C${row}`).value = moeda;
+                    
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                    worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Frete
+        if (data.frete) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'FRETE';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:C${row}`);
+            row++;
+
+            const frete = [
+                ['Frete USD', data.frete.usd, 'USD'],
+                ['Frete BRL', data.frete.brl, 'BRL'],
+                ['Frete Cálculo', data.frete.calculo, 'BRL']
+            ];
+
+            frete.forEach(([campo, valor, moeda]) => {
+                if (typeof valor === 'number') {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`C${row}`).value = moeda;
+                    
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                    worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Seguro
+        if (data.seguro) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'SEGURO';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:C${row}`);
+            row++;
+
+            const seguro = [
+                ['Seguro USD', data.seguro.usd, 'USD'],
+                ['Seguro BRL', data.seguro.brl, 'BRL'],
+                ['Seguro Cálculo', data.seguro.calculo, 'BRL']
+            ];
+
+            seguro.forEach(([campo, valor, moeda]) => {
+                if (typeof valor === 'number') {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`C${row}`).value = moeda;
+                    
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                    worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Valor Aduaneiro
+        row++;
+        worksheet.getCell(`A${row}`).value = 'VALOR ADUANEIRO';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.mergeCells(`A${row}:C${row}`);
+        row++;
+
+        worksheet.getCell(`A${row}`).value = 'Valor Aduaneiro Total';
+        worksheet.getCell(`B${row}`).value = data.valor_aduaneiro.brl;
+        worksheet.getCell(`C${row}`).value = 'BRL';
+        
+        worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+        worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+        worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+        row++;
+
+        // INCOTERM
+        if (data.incoterm) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'INCOTERM';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:C${row}`);
+            row++;
+
+            worksheet.getCell(`A${row}`).value = 'Código';
+            worksheet.getCell(`B${row}`).value = data.incoterm.codigo;
+            worksheet.mergeCells(`B${row}:C${row}`);
+            worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            row++;
+
+            worksheet.getCell(`A${row}`).value = 'Descrição';
+            worksheet.getCell(`B${row}`).value = data.incoterm.descricao;
+            worksheet.mergeCells(`B${row}:C${row}`);
+            worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+        }
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 25;
+        worksheet.getColumn('B').width = 20;
+        worksheet.getColumn('C').width = 10;
+    }
+
+    /**
+     * Cria placeholder para abas não implementadas
+     * @param {Object} worksheet - ExcelJS worksheet
+     * @param {Object} data - Dados da aba
+     * @param {string} sheetType - Tipo da aba
+     */
+    createPlaceholderSheet(worksheet, data, sheetType) {
+        // Header
+        worksheet.getCell('A1').value = `ABA ${sheetType.toUpperCase()}`;
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        worksheet.getCell('A3').value = 'Esta aba será implementada nas próximas fases.';
+        worksheet.getCell('A4').value = `Dados disponíveis: ${Object.keys(data).length} campos`;
+        
+        // Listar campos disponíveis
+        let row = 6;
+        worksheet.getCell(`A${row}`).value = 'Campos Disponíveis:';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        row++;
+
+        Object.keys(data).forEach(key => {
+            worksheet.getCell(`A${row}`).value = key;
+            worksheet.getCell(`B${row}`).value = typeof data[key];
+            row++;
+        });
+
+        worksheet.getColumn('A').width = 30;
+        worksheet.getColumn('B').width = 15;
+    }
+
+    // Métodos placeholder para as demais abas
+    createCargaSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'carga');
+    }
+
+    createDespesasSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'despesas');
+    }
+
+    createTributosSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'tributos');
+    }
+
+    createResumoCustosSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'resumo_custos');
+    }
+
+    createNCMsSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'ncms');
+    }
+
+    createProdutosSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'produtos');
+    }
+
+    createMemoriaSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'memoria');
+    }
+
+    createIncentivosSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'incentivos');
+    }
+
+    createComparativoSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'comparativo');
+    }
+
+    createPrecificacaoSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'precificacao');
+    }
+
+    createValidacaoSheetFromMapping(worksheet, data) {
+        this.createPlaceholderSheet(worksheet, data, 'validacao');
+    }
+
+    createAdicaoSheetFromMapping(worksheet, data) {
+        // Validações sem fallbacks - nomenclatura oficial obrigatória
+        if (!data.numero_adicao) {
+            throw new Error('ExcelExporter: numero_adicao é obrigatório para Adição');
+        }
+        
+        if (!data.ncm) {
+            throw new Error('ExcelExporter: ncm é obrigatório para Adição');
+        }
+
+        // Header
+        worksheet.mergeCells('A1:D1');
+        worksheet.getCell('A1').value = `ADIÇÃO ${data.numero_adicao}`;
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // Informações básicas - nomenclatura oficial DIProcessor
+        worksheet.getCell(`A${row}`).value = 'INFORMAÇÕES BÁSICAS';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.mergeCells(`A${row}:D${row}`);
+        row++;
+
+        const infos = [
+            ['Número da Adição', data.numero_adicao],
+            ['NCM', data.ncm],
+            ['Descrição NCM', data.descricao_ncm]
+        ];
+
+        infos.forEach(([campo, valor]) => {
+            if (valor !== undefined && valor !== null) {
+                worksheet.getCell(`A${row}`).value = campo;
+                worksheet.getCell(`B${row}`).value = valor;
+                worksheet.mergeCells(`B${row}:D${row}`);
+                
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                row++;
+            }
+        });
+
+        // Valores - nomenclatura oficial DIProcessor
+        row++;
+        worksheet.getCell(`A${row}`).value = 'VALORES';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.mergeCells(`A${row}:D${row}`);
+        row++;
+
+        const valores = [
+            ['Moeda Negociação', data.moeda_negociacao_nome],
+            ['Valor Moeda Estrangeira', data.valor_moeda_negociacao],
+            ['Valor em Reais', data.valor_reais],
+            ['Frete (R$)', data.frete_valor_reais],
+            ['Seguro (R$)', data.seguro_valor_reais]
+        ];
+
+        valores.forEach(([campo, valor]) => {
+            if (valor !== undefined && valor !== null) {
+                worksheet.getCell(`A${row}`).value = campo;
+                worksheet.getCell(`B${row}`).value = valor;
+                
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                
+                if (typeof valor === 'number') {
+                    worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                } else {
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                }
+                row++;
+            }
+        });
+
+        // Impostos - nomenclatura oficial DIProcessor
+        row++;
+        worksheet.getCell(`A${row}`).value = 'IMPOSTOS';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.mergeCells(`A${row}:D${row}`);
+        row++;
+
+        // Headers da tabela de impostos
+        const headers = ['Imposto', 'Alíquota (%)', 'Valor Devido', 'Valor a Recolher'];
+        headers.forEach((header, index) => {
+            const col = String.fromCharCode(65 + index); // A, B, C, D
+            worksheet.getCell(`${col}${row}`).value = header;
+            worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        });
+        row++;
+
+        // Dados dos impostos - nomenclatura oficial DIProcessor
+        const impostos = [
+            ['II', data.ii_aliquota_ad_valorem, data.ii_valor_devido, data.ii_valor_recolher],
+            ['IPI', data.ipi_aliquota_ad_valorem, data.ipi_valor_devido, data.ipi_valor_recolher],
+            ['PIS', data.pis_aliquota_ad_valorem, data.pis_valor_devido, data.pis_valor_recolher],
+            ['COFINS', data.cofins_aliquota_ad_valorem, data.cofins_valor_devido, data.cofins_valor_recolher]
+        ];
+
+        impostos.forEach(([imposto, aliquota, devido, recolher]) => {
+            if (devido !== undefined || recolher !== undefined) {
+                worksheet.getCell(`A${row}`).value = imposto;
+                worksheet.getCell(`B${row}`).value = aliquota;
+                worksheet.getCell(`C${row}`).value = devido;
+                worksheet.getCell(`D${row}`).value = recolher;
+                
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorPercentual;
+                worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                worksheet.getCell(`D${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                row++;
+            }
+        });
+
+        // Fornecedor - nomenclatura oficial DIProcessor
+        if (data.fornecedor_nome) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'FORNECEDOR';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:D${row}`);
+            row++;
+
+            const fornecedor = [
+                ['Nome', data.fornecedor_nome],
+                ['Logradouro', data.fornecedor_logradouro],
+                ['Número', data.fornecedor_numero],
+                ['Cidade', data.fornecedor_cidade],
+                ['Estado', data.fornecedor_estado]
+            ];
+
+            fornecedor.forEach(([campo, valor]) => {
+                if (valor !== undefined && valor !== null) {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.mergeCells(`B${row}:D${row}`);
+                    
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Fabricante - nomenclatura oficial DIProcessor (se disponível)
+        if (data.fabricante_nome) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'FABRICANTE';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:D${row}`);
+            row++;
+
+            const fabricante = [
+                ['Nome', data.fabricante_nome],
+                ['Cidade', data.fabricante_cidade],
+                ['Estado', data.fabricante_estado]
+            ];
+
+            fabricante.forEach(([campo, valor]) => {
+                if (valor !== undefined && valor !== null) {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.mergeCells(`B${row}:D${row}`);
+                    
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Estatísticas - nomenclatura oficial DIProcessor
+        row++;
+        worksheet.getCell(`A${row}`).value = 'ESTATÍSTICAS';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.mergeCells(`A${row}:D${row}`);
+        row++;
+
+        const stats = [
+            ['Peso Líquido (kg)', data.peso_liquido],
+            ['Quantidade Estatística', data.quantidade_estatistica],
+            ['Unidade Estatística', data.unidade_estatistica]
+        ];
+
+        stats.forEach(([campo, valor]) => {
+            if (valor !== undefined && valor !== null) {
+                worksheet.getCell(`A${row}`).value = campo;
+                worksheet.getCell(`B${row}`).value = valor;
+                
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                row++;
+            }
+        });
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 25;
+        worksheet.getColumn('B').width = 20;
+        worksheet.getColumn('C').width = 15;
+        worksheet.getColumn('D').width = 15;
     }
 
     /**

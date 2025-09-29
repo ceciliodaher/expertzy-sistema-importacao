@@ -730,51 +730,6 @@ class IndexedDBManager {
 
 
     /**
-     * Atualiza uma DI existente com dados incrementais (SOLID - Single Source of Truth)
-     * @param {Object} diData - Dados parciais ou completos da DI para atualização
-     * @returns {Promise<number>} ID da DI atualizada
-     */
-    async updateDI(diData) {
-        if (!diData || !diData.numero_di) {
-            throw new Error('Número da DI é obrigatório para atualização');
-        }
-
-        try {
-            return await this.db.transaction('rw', this.db.declaracoes, async () => {
-                // Buscar DI existente
-                const existingDI = await this.db.declaracoes
-                    .where('numero_di')
-                    .equals(diData.numero_di)
-                    .first();
-
-                if (!existingDI) {
-                    throw new Error(`DI ${diData.numero_di} não encontrada para atualização`);
-                }
-
-                // Merge de dados - preserva dados existentes, adiciona/atualiza novos
-                const updatedDI = {
-                    ...existingDI,
-                    ...diData,
-                    // Preservar campos críticos
-                    id: existingDI.id,
-                    numero_di: existingDI.numero_di,
-                    // Adicionar metadata de atualização
-                    ultima_atualizacao: new Date().toISOString()
-                };
-
-                // Atualizar no banco
-                await this.db.declaracoes.put(updatedDI);
-                
-                console.log(`✅ DI ${diData.numero_di} atualizada com sucesso no IndexedDB`);
-                return existingDI.id;
-            });
-        } catch (error) {
-            console.error('❌ Erro ao atualizar DI:', error);
-            throw error;
-        }
-    }
-
-    /**
      * Busca uma DI pelo número
      * @param {string} numeroDI - Número da DI
      * @returns {Promise<Object>} Dados completos da DI
