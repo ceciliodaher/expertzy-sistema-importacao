@@ -203,6 +203,94 @@
       "croqui_nf": "Croqui da Nota Fiscal",
       "relatorio_precificacao": "Relatório de Precificação",
       "comparativo_estados": "Comparativo de Estados"
+    },
+    "excel_mapper": {
+      "nomes_abas": {
+        "capa": "01_Capa",
+        "importador": "02_Importador",
+        "carga": "03_Carga",
+        "valores": "04_Valores",
+        "despesas": "05_Despesas",
+        "tributos": "06_Tributos",
+        "resumo_custos": "06A_Resumo_Custos",
+        "ncms": "07_NCMs",
+        "produtos": "08_Produtos",
+        "memoria": "09_Memoria_Calculo",
+        "incentivos": "10_Incentivos",
+        "comparativo": "11_Comparativo",
+        "precificacao": "12_Precificacao",
+        "validacao": "13_Validacao"
+      },
+      "ordem_abas": [
+        "Capa",
+        "Importador",
+        "Carga",
+        "Valores",
+        "Despesas",
+        "Tributos",
+        "ResumoCustos",
+        "NCMs",
+        "Produtos",
+        "Memoria",
+        "Incentivos",
+        "Comparativo",
+        "Precificacao",
+        "Validacao"
+      ],
+      "prefixo_adicao": "Add_",
+      "padding_numero_adicao": 3,
+      "labels": {
+        "capa": {
+          "titulo": "EXTRATO DE DECLARAÇÃO DE IMPORTAÇÃO",
+          "subtitulo": "Sistema Expertzy - Análise Completa"
+        },
+        "comum": {
+          "numero_di": "Número da DI",
+          "data_registro": "Data de Registro",
+          "importador": "Importador",
+          "cnpj": "CNPJ",
+          "nome": "Razão Social",
+          "telefone": "Telefone",
+          "endereco": "Endereço",
+          "representante": "Representante Legal",
+          "urf_despacho": "URF Despacho",
+          "resumo": "Resumo Geral"
+        },
+        "valores": {
+          "titulo": "Valores da Importação",
+          "valores_fob": "Valores FOB",
+          "frete": "Frete",
+          "seguro": "Seguro",
+          "valor_aduaneiro": "Valor Aduaneiro",
+          "cambio": "Câmbio",
+          "incoterm": "INCOTERM"
+        },
+        "tributos": {
+          "titulo": "Tributos",
+          "impostos_federais": "Impostos Federais",
+          "impostos_estaduais": "Impostos Estaduais",
+          "ii": "Imposto de Importação",
+          "ipi": "IPI",
+          "pis": "PIS",
+          "cofins": "COFINS",
+          "icms": "ICMS",
+          "base_calculo": "Base de Cálculo",
+          "aliquota": "Alíquota (%)",
+          "valor_devido": "Valor Devido",
+          "valor_recolher": "Valor a Recolher"
+        },
+        "adicao": {
+          "titulo": "Adição",
+          "numero": "Número",
+          "ncm": "NCM",
+          "descricao": "Descrição",
+          "valores": "Valores",
+          "impostos": "Impostos",
+          "fornecedor": "Fornecedor",
+          "fabricante": "Fabricante",
+          "estatisticas": "Estatísticas"
+        }
+      }
     }
   },
 

@@ -7,7 +7,7 @@
  */
 
 import { ExcelProfessionalStyles } from '@shared/utils/excel-professional-styles.js';
-
+import { ExcelDataMapper } from './ExcelDataMapper.js';
 import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class ExcelExporter {
@@ -20,6 +20,7 @@ export class ExcelExporter {
         this.styles = new ExcelProfessionalStyles();
         this.dbManager = IndexedDBManager.getInstance();  // Para ler dados calculados
         this.calculos = null;  // Dados calculados do IndexedDB
+        this.mapper = null;  // ExcelDataMapper instance
     }
 
     /**
@@ -32,22 +33,17 @@ export class ExcelExporter {
                 throw new Error('Número da DI é obrigatório para carregar dados calculados');
             }
             
-            // SOLID - Single Source of Truth: Buscar DI completa via getDI
-            console.log(`🔍 ExcelExporter: Buscando DI ${numeroDI} (Single Source of Truth)`);
+            // Buscar dados calculados no IndexedDB usando getConfig
+            const chave = `calculo_${numeroDI}`;
+            console.log(`🔍 ExcelExporter: Tentando carregar cálculo com chave "${chave}"`);
+            console.log(`🔍 ExcelExporter: DI number:`, numeroDI);
             
-            const di = await this.dbManager.getDI(numeroDI);
+            const calculosDB = await this.dbManager.getConfig(chave);
+            console.log(`🔍 ExcelExporter: Resultado getConfig:`, calculosDB ? 'ENCONTRADO' : 'NÃO ENCONTRADO');
             
-            if (!di) {
-                throw new Error(`DI ${numeroDI} não encontrada no IndexedDB - execute DIProcessor primeiro`);
-            }
-            
-            // Verificar se cálculos de compliance existem
-            if (!di.calculos_compliance) {
+            if (!calculosDB) {
                 throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);
             }
-            
-            const calculosDB = di.calculos_compliance;
-            console.log(`🔍 ExcelExporter: Cálculos de compliance encontrados`);
             
             // Validar campos obrigatórios para Excel
             if (!calculosDB.totais_por_coluna) {
@@ -57,7 +53,7 @@ export class ExcelExporter {
             // Atualizar cálculos com dados do IndexedDB
             this.calculos = calculosDB;
             
-            console.log(`✅ ExcelExporter: Dados calculados carregados para DI ${numeroDI} (Single Source of Truth)`);
+            console.log(`✅ ExcelExporter: Dados calculados carregados do IndexedDB para DI ${numeroDI}`);
         } catch (error) {
             console.error('Erro ao carregar dados calculados:', error);
             throw error;
@@ -65,37 +61,38 @@ export class ExcelExporter {
     }
 
     /**
-     * Main export method - generates complete multi-sheet workbook
-     * @param {Object} diData - Complete DI data from currentDI
-     * @param {Object} calculationData - All calculations from currentCalculation
-     * @param {Object} memoryData - Calculation memory trace (optional)
+     * Main export method - generates complete multi-sheet workbook using ExcelDataMapper
+     * @param {Object} diData - Complete DI data from DIProcessor.getComprehensiveDIData()
      */
-    async export(diData, calculationData, memoryData = null) {
-        // Carregar dados calculados do IndexedDB se necessário
-        if (diData && diData.numero_di) {
-            await this.loadCalculatedData(diData.numero_di);
-        }
+    async export(diData) {
+        // Validações sem fallbacks
         if (!diData) {
-            throw new Error('DI data é obrigatório para export Excel');
+            throw new Error('ExcelExporter: diData é obrigatório');
         }
-        if (!calculationData) {
-            throw new Error('Calculation data é obrigatório para export Excel');
-        }
+        
         if (!diData.numero_di) {
-            throw new Error('Número da DI é obrigatório para export Excel');
+            throw new Error('ExcelExporter: numero_di é obrigatório');
         }
-        if (!diData.adicoes || diData.adicoes.length === 0) {
-            throw new Error('DI deve conter pelo menos uma adição para export Excel');
+        
+        if (!diData.adicoes) {
+            throw new Error('ExcelExporter: adicoes é obrigatório');
+        }
+        
+        if (diData.adicoes.length === 0) {
+            throw new Error('ExcelExporter: DI deve conter pelo menos uma adição');
         }
 
-        console.log('📊 ExcelExporter: Iniciando export completo estilo ExtratoDI_COMPLETO...');
-        console.log(`📋 DI possui ${diData.adicoes?.length || 0} adições - criando abas dinamicamente`);
+        console.log('📊 ExcelExporter: Iniciando export usando ExcelDataMapper...');
+        console.log(`📋 DI ${diData.numero_di} possui ${diData.adicoes.length} adições`);
 
         try {
-            // Store data for use in helper methods
-            this.diData = diData;
-            this.calculationData = calculationData;
-            this.memoryData = memoryData;
+            // Inicializar ExcelDataMapper com dados consolidados
+            this.mapper = new ExcelDataMapper(diData);
+            await this.mapper.initialize();
+
+            // Obter mapeamentos de todas as abas
+            const sheetMappings = this.mapper.getAllSheetMappings();
+            console.log(`📊 ExcelDataMapper: ${sheetMappings.length} abas mapeadas`);
 
             // Create new ExcelJS workbook
             this.workbook = new ExcelJS.Workbook();
@@ -104,20 +101,10 @@ export class ExcelExporter {
             this.workbook.created = new Date();
             this.workbook.modified = new Date();
             
-            // Generate all sheets in order
-            this.createCoverSheet();                    // 01_Capa
-            this.createImporterSheet();                 // 02_Importador
-            this.createCargoSheet();                    // 03_Carga
-            this.createValuesSheet();                   // 04_Valores
-            this.createComplementaryExpensesSheet();    // 04B_Despesas_Complementares
-            this.createCostConfigSheet();               // 04A_Config_Custos
-            this.createTotalTaxesSheet();               // 05_Tributos_Totais
-            this.createCostValidationSheet();           // 05A_Validacao_Custos
-            this.createAdditionsSummarySheet();         // 06_Resumo_Adicoes
-            this.createCostSummarySheet();              // 06A_Resumo_Custos
-            this.createIndividualAdditionSheets();      // Add_001 to Add_XXX (dinâmico)
-            this.createComplementarySheet();            // 99_Complementar
-            this.createCroquiNFeSheet();                // Croqui_NFe_Entrada
+            // Gerar todas as abas usando mapeamentos
+            for (const sheetMapping of sheetMappings) {
+                this.createSheetFromMapping(sheetMapping);
+            }
             
             // Generate filename with DI number and date
             const filename = this.generateFilename(diData.numero_di);
@@ -126,14 +113,149 @@ export class ExcelExporter {
             const arquivoBuffer = await this.workbook.xlsx.writeBuffer();
             this.downloadArquivo(arquivoBuffer, filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             
-            console.log(`✅ ExcelExporter: Export completo realizado com formatação profissional - ${filename}`);
+            console.log(`✅ ExcelExporter: Export completo realizado via ExcelDataMapper - ${filename}`);
             console.log(`📊 Total de ${this.workbook.worksheets.length} abas criadas`);
-            return { success: true, filename };
+            return { success: true, filename, sheets: sheetMappings.length };
             
         } catch (error) {
             console.error('❌ ExcelExporter: Erro no export:', error);
             throw new Error(`Falha no export Excel: ${error.message}`);
         }
+    }
+
+    /**
+     * Creates a worksheet from ExcelDataMapper mapping
+     * @param {Object} sheetMapping - Sheet configuration from mapper
+     */
+    createSheetFromMapping(sheetMapping) {
+        if (!sheetMapping) {
+            throw new Error('ExcelExporter: sheetMapping é obrigatório');
+        }
+        
+        if (!sheetMapping.name) {
+            throw new Error('ExcelExporter: sheetMapping.name é obrigatório');
+        }
+        
+        if (!sheetMapping.type) {
+            throw new Error('ExcelExporter: sheetMapping.type é obrigatório');
+        }
+        
+        if (!sheetMapping.data) {
+            throw new Error('ExcelExporter: sheetMapping.data é obrigatório');
+        }
+
+        console.log(`📋 ExcelExporter: Criando aba ${sheetMapping.name} (${sheetMapping.type})`);
+
+        // Criar worksheet com nome do mapeamento
+        const worksheet = this.workbook.addWorksheet(sheetMapping.name);
+        
+        // Delegar criação específica baseada no tipo
+        switch (sheetMapping.type) {
+            case 'capa':
+                this.createCapaSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'importador':
+                this.createImportadorSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'carga':
+                this.createCargaSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'valores':
+                this.createValoresSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'despesas':
+                this.createDespesasSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'tributos':
+                this.createTributosSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'resumo_custos':
+                this.createResumoCustosSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'ncms':
+                this.createNCMsSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'produtos':
+                this.createProdutosSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'memoria':
+                this.createMemoriaSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'incentivos':
+                this.createIncentivosSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'comparativo':
+                this.createComparativoSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'precificacao':
+                this.createPrecificacaoSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'validacao':
+                this.createValidacaoSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            case 'adicao':
+                this.createAdicaoSheetFromMapping(worksheet, sheetMapping.data);
+                break;
+            default:
+                throw new Error(`ExcelExporter: Tipo de aba não suportado: ${sheetMapping.type}`);
+        }
+    }
+
+    /**
+     * Cria aba Capa usando dados do mapping
+     * @param {Object} worksheet - ExcelJS worksheet
+     * @param {Object} data - Dados da capa
+     */
+    createCapaSheetFromMapping(worksheet, data) {
+        if (!data.titulo) {
+            throw new Error('ExcelExporter: data.titulo é obrigatório para Capa');
+        }
+        
+        if (!data.numero_di) {
+            throw new Error('ExcelExporter: data.numero_di é obrigatório para Capa');
+        }
+
+        // Header principal
+        worksheet.mergeCells('A1:B1');
+        worksheet.getCell('A1').value = data.titulo;
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        // Subtítulo
+        worksheet.mergeCells('A2:B2');
+        worksheet.getCell('A2').value = data.subtitulo;
+        worksheet.getCell('A2').style = this.styles.estilosExpertzy.headerSecundario;
+
+        // Dados básicos
+        const dadosBasicos = [
+            ['Campo', 'Valor'],
+            ['DI', data.numero_di],
+            ['Data registro', data.data_registro],
+            ['URF despacho', `${data.urf_despacho.codigo} - ${data.urf_despacho.nome}`],
+            ['Modalidade', data.resumo.modalidade],
+            ['Qtd. adições', data.resumo.total_adicoes],
+            ['INCOTERM', data.resumo.incoterm]
+        ];
+
+        // Adicionar dados à planilha
+        dadosBasicos.forEach((row, index) => {
+            const rowIndex = index + 4; // Começar após header e subtítulo
+            worksheet.getCell(`A${rowIndex}`).value = row[0];
+            worksheet.getCell(`B${rowIndex}`).value = row[1];
+            
+            if (index === 0) {
+                // Header da tabela
+                worksheet.getCell(`A${rowIndex}`).style = this.styles.estilosExpertzy.headerSecundario;
+                worksheet.getCell(`B${rowIndex}`).style = this.styles.estilosExpertzy.headerSecundario;
+            } else {
+                // Dados
+                worksheet.getCell(`A${rowIndex}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${rowIndex}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            }
+        });
+
+        // Ajustar larguras das colunas
+        worksheet.getColumn('A').width = 20;
+        worksheet.getColumn('B').width = 30;
     }
 
     /**

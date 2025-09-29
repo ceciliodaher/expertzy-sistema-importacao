@@ -1,0 +1,734 @@
+/**
+ * ExcelDataMapper.js - Data Mapping Module for Excel Export
+ * 
+ * Responsabilidade única: Mapear dados consolidados da DI para estrutura de Excel
+ * Segue princípios SOLID e NO FALLBACKS
+ * Usa nomenclatura oficial do DIProcessor
+ * 
+ * REGRAS APLICADAS:
+ * - NO HARDCODED DATA: Todos os textos e configurações vêm do config.json
+ * - NO FALLBACKS: Sempre lançar exceções quando dados obrigatórios ausentes
+ * - NOMENCLATURA OFICIAL: Segue 100% a nomenclatura do DIProcessor
+ */
+
+import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
+
+export class ExcelDataMapper {
+    constructor(diData) {
+        // Validações sem fallbacks - campos obrigatórios
+        if (!diData) {
+            throw new Error('ExcelDataMapper: diData é obrigatório');
+        }
+        
+        if (!diData.numero_di) {
+            throw new Error('ExcelDataMapper: numero_di é obrigatório');
+        }
+        
+        if (!diData.adicoes) {
+            throw new Error('ExcelDataMapper: adicoes é obrigatório');
+        }
+        
+        if (!Array.isArray(diData.adicoes)) {
+            throw new Error('ExcelDataMapper: adicoes deve ser um array');
+        }
+        
+        if (diData.adicoes.length === 0) {
+            throw new Error('ExcelDataMapper: DI deve conter pelo menos uma adição');
+        }
+        
+        this.diData = diData;
+        this.config = null;
+        this.sheetMappings = [];
+    }
+    
+    /**
+     * Inicializa o mapper carregando configurações
+     * Deve ser chamado antes de usar os métodos de mapeamento
+     */
+    async initialize() {
+        // Carregar configuração do sistema
+        const configLoader = new ConfigLoader();
+        const fullConfig = await configLoader.loadConfig('config.json');
+        
+        if (!fullConfig) {
+            throw new Error('ExcelDataMapper: Não foi possível carregar config.json');
+        }
+        
+        if (!fullConfig.exportacao) {
+            throw new Error('ExcelDataMapper: config.json não contém seção exportacao');
+        }
+        
+        if (!fullConfig.exportacao.excel_mapper) {
+            throw new Error('ExcelDataMapper: config.json não contém seção excel_mapper');
+        }
+        
+        this.config = fullConfig.exportacao.excel_mapper;
+        this.incoterms = fullConfig.incoterms_suportados;
+        this.systemInfo = fullConfig.configuracoes_gerais;
+        
+        // Validar configurações obrigatórias
+        this._validateConfig();
+        
+        // Inicializar mapeamentos após carregar config
+        this._initializeMappings();
+    }
+    
+    /**
+     * Valida configurações obrigatórias
+     * @private
+     */
+    _validateConfig() {
+        if (!this.config.nomes_abas) {
+            throw new Error('ExcelDataMapper: config.nomes_abas é obrigatório');
+        }
+        
+        if (!this.config.ordem_abas) {
+            throw new Error('ExcelDataMapper: config.ordem_abas é obrigatório');
+        }
+        
+        if (!this.config.prefixo_adicao) {
+            throw new Error('ExcelDataMapper: config.prefixo_adicao é obrigatório');
+        }
+        
+        if (!this.config.padding_numero_adicao) {
+            throw new Error('ExcelDataMapper: config.padding_numero_adicao é obrigatório');
+        }
+        
+        if (!this.config.labels) {
+            throw new Error('ExcelDataMapper: config.labels é obrigatório');
+        }
+        
+        if (!this.incoterms) {
+            throw new Error('ExcelDataMapper: incoterms_suportados é obrigatório');
+        }
+        
+        if (!this.systemInfo) {
+            throw new Error('ExcelDataMapper: configuracoes_gerais é obrigatório');
+        }
+    }
+    
+    /**
+     * Inicializa os mapeamentos de todas as abas
+     * @private
+     */
+    _initializeMappings() {
+        // Mapear cada aba fixa conforme configuração
+        this.sheetMappings = this.config.ordem_abas.map(sheetType => {
+            const mapMethod = this[`map${sheetType}Sheet`];
+            if (!mapMethod) {
+                throw new Error(`ExcelDataMapper: método map${sheetType}Sheet não implementado`);
+            }
+            return mapMethod.call(this);
+        });
+        
+        // Adicionar abas dinâmicas das adições
+        const dynamicAdditions = this.mapDynamicAdditions();
+        this.sheetMappings = this.sheetMappings.concat(dynamicAdditions);
+    }
+    
+    /**
+     * Retorna todos os mapeamentos de sheets
+     * @returns {Array} Array de configurações das abas
+     */
+    getAllSheetMappings() {
+        if (this.sheetMappings.length === 0) {
+            throw new Error('ExcelDataMapper: Mapeamentos não inicializados - chame initialize() primeiro');
+        }
+        return this.sheetMappings;
+    }
+    
+    /**
+     * Mapeia dados para a aba Capa
+     * @returns {Object} Configuração da aba Capa
+     */
+    mapCapaSheet() {
+        const diData = this.diData;
+        
+        // Validar campos obrigatórios - NO FALLBACKS
+        if (!diData.data_registro) {
+            throw new Error('ExcelDataMapper: data_registro obrigatório para Capa');
+        }
+        
+        if (!diData.importador_cnpj) {
+            throw new Error('ExcelDataMapper: importador_cnpj obrigatório para Capa');
+        }
+        
+        if (!diData.importador_nome) {
+            throw new Error('ExcelDataMapper: importador_nome obrigatório para Capa');
+        }
+        
+        if (!this.systemInfo.versao) {
+            throw new Error('ExcelDataMapper: configuracoes_gerais.versao é obrigatório');
+        }
+        
+        return {
+            name: this.config.nomes_abas.capa,
+            type: 'capa',
+            data: {
+                titulo: this.config.labels.capa.titulo,
+                subtitulo: this.config.labels.capa.subtitulo,
+                numero_di: diData.numero_di,
+                data_registro: diData.data_registro,
+                importador: {
+                    cnpj: diData.importador_cnpj,
+                    nome: diData.importador_nome,
+                    uf: diData.importador_endereco_uf
+                },
+                urf_despacho: {
+                    codigo: diData.urf_despacho_codigo,
+                    nome: diData.urf_despacho_nome
+                },
+                resumo: {
+                    total_adicoes: diData.total_adicoes,
+                    valor_aduaneiro: diData.valor_aduaneiro_total_brl,
+                    incoterm: diData.incoterm_identificado,
+                    modalidade: diData.modalidade_nome
+                },
+                metadata: {
+                    data_processamento: diData.data_processamento,
+                    versao_sistema: this.systemInfo.versao
+                }
+            }
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Importador
+     * @returns {Object} Configuração da aba Importador
+     */
+    mapImportadorSheet() {
+        const diData = this.diData;
+        
+        // Validar campos obrigatórios
+        if (!diData.importador_cnpj) {
+            throw new Error('ExcelDataMapper: importador_cnpj obrigatório');
+        }
+        
+        if (!diData.importador_nome) {
+            throw new Error('ExcelDataMapper: importador_nome obrigatório');
+        }
+        
+        // Representante é opcional - verificar explicitamente
+        let representante = null;
+        if (diData.importador_representante_nome) {
+            representante = {
+                nome: diData.importador_representante_nome,
+                cpf: diData.importador_representante_cpf
+            };
+        }
+        
+        return {
+            name: this.config.nomes_abas.importador,
+            type: 'importador',
+            data: {
+                identificacao: {
+                    cnpj: diData.importador_cnpj,
+                    nome: diData.importador_nome,
+                    telefone: diData.importador_telefone
+                },
+                endereco: {
+                    logradouro: diData.importador_endereco_logradouro,
+                    numero: diData.importador_endereco_numero,
+                    complemento: diData.importador_endereco_complemento,
+                    bairro: diData.importador_endereco_bairro,
+                    cidade: diData.importador_endereco_cidade,
+                    municipio: diData.importador_endereco_municipio,
+                    uf: diData.importador_endereco_uf,
+                    cep: diData.importador_endereco_cep,
+                    completo: diData.importador_endereco_completo
+                },
+                representante: representante
+            }
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Carga
+     * @returns {Object} Configuração da aba Carga
+     */
+    mapCargaSheet() {
+        const diData = this.diData;
+        
+        // Carga pode ter campos opcionais - mapear o que existe
+        return {
+            name: this.config.nomes_abas.carga,
+            type: 'carga',
+            data: {
+                pesos: {
+                    peso_bruto: diData.peso_bruto,
+                    peso_liquido: diData.peso_liquido
+                },
+                transporte: {
+                    via_transporte: diData.via_transporte,
+                    modalidade: diData.modalidade_nome,
+                    urf_entrada: diData.urf_entrada_codigo,
+                    data_chegada: diData.data_chegada
+                },
+                conhecimento: {
+                    numero: diData.conhecimento_numero,
+                    tipo: diData.conhecimento_tipo,
+                    emissao: diData.conhecimento_emissao
+                },
+                volumes: {
+                    quantidade: diData.volumes_quantidade,
+                    tipo: diData.volumes_tipo,
+                    marcacao: diData.volumes_marcacao
+                }
+            }
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Valores
+     * @returns {Object} Configuração da aba Valores
+     */
+    mapValoresSheet() {
+        const diData = this.diData;
+        
+        // Validar campo obrigatório
+        if (!diData.valor_aduaneiro_total_brl) {
+            throw new Error('ExcelDataMapper: valor_aduaneiro_total_brl é obrigatório');
+        }
+        
+        if (typeof diData.valor_aduaneiro_total_brl !== 'number') {
+            throw new Error('ExcelDataMapper: valor_aduaneiro_total_brl deve ser numérico');
+        }
+        
+        if (!diData.incoterm_identificado) {
+            throw new Error('ExcelDataMapper: incoterm_identificado é obrigatório');
+        }
+        
+        // Verificar se INCOTERM é suportado
+        if (!this.incoterms[diData.incoterm_identificado]) {
+            throw new Error(`ExcelDataMapper: INCOTERM ${diData.incoterm_identificado} não é suportado`);
+        }
+        
+        return {
+            name: this.config.nomes_abas.valores,
+            type: 'valores',
+            data: {
+                valores_fob: {
+                    usd: diData.valor_total_fob_usd,
+                    brl: diData.valor_total_fob_brl
+                },
+                frete: {
+                    usd: diData.valor_total_frete_usd,
+                    brl: diData.valor_total_frete_brl,
+                    calculo: diData.valor_frete_calculo,
+                    xml: diData.valor_frete_xml
+                },
+                seguro: {
+                    usd: diData.valor_total_seguro_usd,
+                    brl: diData.valor_total_seguro_brl,
+                    calculo: diData.valor_seguro_calculo,
+                    xml: diData.valor_seguro_xml
+                },
+                valor_aduaneiro: {
+                    brl: diData.valor_aduaneiro_total_brl
+                },
+                cambio: {
+                    taxa: diData.taxa_cambio,
+                    data_conversao: diData.data_registro
+                },
+                incoterm: {
+                    codigo: diData.incoterm_identificado,
+                    descricao: this.incoterms[diData.incoterm_identificado]
+                }
+            }
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Despesas
+     * @returns {Object} Configuração da aba Despesas  
+     */
+    mapDespesasSheet() {
+        const despesas = this.diData.despesas_aduaneiras;
+        
+        if (!despesas) {
+            throw new Error('ExcelDataMapper: despesas_aduaneiras é obrigatório');
+        }
+        
+        if (typeof despesas !== 'object') {
+            throw new Error('ExcelDataMapper: despesas_aduaneiras deve ser um objeto');
+        }
+        
+        return {
+            name: this.config.nomes_abas.despesas,
+            type: 'despesas',
+            data: despesas
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Tributos
+     * @returns {Object} Configuração da aba Tributos
+     */
+    mapTributosSheet() {
+        // Validar que adicoes existe e tem dados válidos
+        if (!this.diData.adicoes) {
+            throw new Error('ExcelDataMapper: adicoes é obrigatório para calcular tributos');
+        }
+        
+        // Agregar tributos de todas as adições
+        const tributos = this._agregaTributos();
+        
+        return {
+            name: this.config.nomes_abas.tributos,
+            type: 'tributos',
+            data: tributos
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Resumo de Custos
+     * @returns {Object} Configuração da aba Resumo de Custos
+     */
+    mapResumoCustosSheet() {
+        const diData = this.diData;
+        
+        // Verificar se existem totais calculados
+        if (!diData.totais_relatorio && !diData.totais_por_coluna) {
+            throw new Error('ExcelDataMapper: totais_relatorio ou totais_por_coluna é obrigatório para Resumo de Custos');
+        }
+        
+        // Usar dados calculados disponíveis
+        const totais = diData.totais_relatorio ? diData.totais_relatorio : diData.totais_por_coluna;
+        
+        return {
+            name: this.config.nomes_abas.resumo_custos,
+            type: 'resumo_custos',
+            data: {
+                custos_basicos: {
+                    valor_aduaneiro: diData.valor_aduaneiro_total_brl,
+                    impostos_federais: totais.total_impostos_federais,
+                    impostos_estaduais: totais.total_impostos_estaduais,
+                    despesas_aduaneiras: totais.total_despesas_aduaneiras
+                },
+                custo_total: {
+                    sem_incentivos: totais.custo_total_sem_incentivos,
+                    com_incentivos: totais.custo_total_com_incentivos,
+                    economia_total: totais.economia_total_incentivos
+                },
+                analise_percentual: totais.analise_percentual
+            }
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba NCMs
+     * @returns {Object} Configuração da aba NCMs
+     */
+    mapNCMsSheet() {
+        const ncmAnalysis = this._analisaNCMs();
+        
+        return {
+            name: this.config.nomes_abas.ncms,
+            type: 'ncms',
+            data: ncmAnalysis
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Produtos
+     * @returns {Object} Configuração da aba Produtos
+     */
+    mapProdutosSheet() {
+        const produtos = this._extraiProdutos();
+        
+        return {
+            name: this.config.nomes_abas.produtos,
+            type: 'produtos',
+            data: produtos
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Memória de Cálculo
+     * @returns {Object} Configuração da aba Memória de Cálculo
+     */
+    mapMemoriaSheet() {
+        if (!this.diData.memoria_calculo) {
+            throw new Error('ExcelDataMapper: memoria_calculo é obrigatório para aba Memória');
+        }
+        
+        return {
+            name: this.config.nomes_abas.memoria,
+            type: 'memoria',
+            data: this.diData.memoria_calculo
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Incentivos
+     * @returns {Object} Configuração da aba Incentivos
+     */
+    mapIncentivosSheet() {
+        if (!this.diData.incentivos) {
+            throw new Error('ExcelDataMapper: incentivos é obrigatório para aba Incentivos');
+        }
+        
+        return {
+            name: this.config.nomes_abas.incentivos,
+            type: 'incentivos',
+            data: this.diData.incentivos
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Comparativo
+     * @returns {Object} Configuração da aba Comparativo
+     */
+    mapComparativoSheet() {
+        if (!this.diData.comparativo) {
+            throw new Error('ExcelDataMapper: comparativo é obrigatório para aba Comparativo');
+        }
+        
+        return {
+            name: this.config.nomes_abas.comparativo,
+            type: 'comparativo',
+            data: this.diData.comparativo
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Precificação
+     * @returns {Object} Configuração da aba Precificação
+     */
+    mapPrecificacaoSheet() {
+        if (!this.diData.precificacao) {
+            throw new Error('ExcelDataMapper: precificacao é obrigatório para aba Precificação');
+        }
+        
+        return {
+            name: this.config.nomes_abas.precificacao,
+            type: 'precificacao',
+            data: this.diData.precificacao
+        };
+    }
+    
+    /**
+     * Mapeia dados para a aba Validação
+     * @returns {Object} Configuração da aba Validação
+     */
+    mapValidacaoSheet() {
+        if (!this.diData.validacao) {
+            throw new Error('ExcelDataMapper: validacao é obrigatório para aba Validação');
+        }
+        
+        return {
+            name: this.config.nomes_abas.validacao,
+            type: 'validacao',
+            data: {
+                ...this.diData.validacao,
+                timestamp: new Date().toISOString()
+            }
+        };
+    }
+    
+    /**
+     * Mapeia dados para as abas dinâmicas das adições
+     * @returns {Array} Array de configurações das abas de adições
+     */
+    mapDynamicAdditions() {
+        const adicoes = this.diData.adicoes;
+        
+        return adicoes.map((adicao, index) => {
+            // Validar campos obrigatórios da adição
+            if (!adicao.numero_adicao) {
+                throw new Error(`ExcelDataMapper: numero_adicao obrigatório para adição ${index + 1}`);
+            }
+            
+            if (!adicao.ncm) {
+                throw new Error(`ExcelDataMapper: ncm obrigatório para adição ${adicao.numero_adicao}`);
+            }
+            
+            // Formatar número da adição com padding configurável
+            const paddingSize = this.config.padding_numero_adicao;
+            const additionNumber = String(adicao.numero_adicao).padStart(paddingSize, '0');
+            
+            return {
+                name: `${this.config.prefixo_adicao}${additionNumber}`,
+                type: 'adicao',
+                data: adicao
+            };
+        });
+    }
+    
+    /**
+     * Métodos auxiliares privados
+     */
+    
+    /**
+     * Agrega tributos de todas as adições
+     * @private
+     */
+    _agregaTributos() {
+        const adicoes = this.diData.adicoes;
+        const tributos = {
+            impostos_federais: {
+                ii: { valor_devido: 0, valor_recolher: 0 },
+                ipi: { valor_devido: 0, valor_recolher: 0 },
+                pis: { valor_devido: 0, valor_recolher: 0 },
+                cofins: { valor_devido: 0, valor_recolher: 0 }
+            },
+            impostos_estaduais: {
+                icms: { valor_devido: 0 }
+            },
+            totais: {}
+        };
+        
+        // Agregar valores de cada adição - com validação rigorosa
+        adicoes.forEach((adicao, index) => {
+            // Validar estrutura da adição
+            if (!adicao.numero_adicao) {
+                throw new Error(`ExcelDataMapper: numero_adicao obrigatório na adição ${index + 1}`);
+            }
+            
+            // Somar valores se forem numéricos válidos
+            if (typeof adicao.ii_valor_devido === 'number') {
+                tributos.impostos_federais.ii.valor_devido += adicao.ii_valor_devido;
+            }
+            if (typeof adicao.ii_valor_recolher === 'number') {
+                tributos.impostos_federais.ii.valor_recolher += adicao.ii_valor_recolher;
+            }
+            if (typeof adicao.ipi_valor_devido === 'number') {
+                tributos.impostos_federais.ipi.valor_devido += adicao.ipi_valor_devido;
+            }
+            if (typeof adicao.ipi_valor_recolher === 'number') {
+                tributos.impostos_federais.ipi.valor_recolher += adicao.ipi_valor_recolher;
+            }
+            if (typeof adicao.pis_valor_devido === 'number') {
+                tributos.impostos_federais.pis.valor_devido += adicao.pis_valor_devido;
+            }
+            if (typeof adicao.pis_valor_recolher === 'number') {
+                tributos.impostos_federais.pis.valor_recolher += adicao.pis_valor_recolher;
+            }
+            if (typeof adicao.cofins_valor_devido === 'number') {
+                tributos.impostos_federais.cofins.valor_devido += adicao.cofins_valor_devido;
+            }
+            if (typeof adicao.cofins_valor_recolher === 'number') {
+                tributos.impostos_federais.cofins.valor_recolher += adicao.cofins_valor_recolher;
+            }
+        });
+        
+        // Calcular totais
+        tributos.totais.total_federal = 
+            tributos.impostos_federais.ii.valor_recolher +
+            tributos.impostos_federais.ipi.valor_recolher +
+            tributos.impostos_federais.pis.valor_recolher +
+            tributos.impostos_federais.cofins.valor_recolher;
+        
+        return tributos;
+    }
+    
+    /**
+     * Analisa NCMs únicos e estatísticas
+     * @private
+     */
+    _analisaNCMs() {
+        const adicoes = this.diData.adicoes;
+        const ncmMap = new Map();
+        
+        // Agrupar por NCM
+        adicoes.forEach((adicao, index) => {
+            if (!adicao.ncm) {
+                throw new Error(`ExcelDataMapper: ncm obrigatório na adição ${index + 1}`);
+            }
+            
+            const ncm = adicao.ncm;
+            if (!ncmMap.has(ncm)) {
+                ncmMap.set(ncm, {
+                    ncm: ncm,
+                    descricao: adicao.descricao_ncm,
+                    quantidade_adicoes: 0,
+                    valor_total: 0,
+                    peso_total: 0
+                });
+            }
+            
+            const ncmData = ncmMap.get(ncm);
+            ncmData.quantidade_adicoes++;
+            
+            if (typeof adicao.valor_reais === 'number') {
+                ncmData.valor_total += adicao.valor_reais;
+            }
+            if (typeof adicao.peso_liquido === 'number') {
+                ncmData.peso_total += adicao.peso_liquido;
+            }
+        });
+        
+        const ncmsArray = Array.from(ncmMap.values());
+        
+        return {
+            ncms_unicos: ncmsArray,
+            total_ncms: ncmMap.size,
+            estatisticas: {
+                ncm_maior_valor: this._getNCMMaxByField(ncmsArray, 'valor_total'),
+                ncm_maior_quantidade: this._getNCMMaxByField(ncmsArray, 'quantidade_adicoes')
+            }
+        };
+    }
+    
+    /**
+     * Obtém NCM com maior valor em determinado campo
+     * @private
+     */
+    _getNCMMaxByField(ncmsArray, field) {
+        if (ncmsArray.length === 0) {
+            return null;
+        }
+        
+        return ncmsArray.reduce((max, ncm) => {
+            return ncm[field] > max[field] ? ncm : max;
+        });
+    }
+    
+    /**
+     * Extrai todos os produtos de todas as adições
+     * @private
+     */
+    _extraiProdutos() {
+        const adicoes = this.diData.adicoes;
+        const produtos = [];
+        let valorTotal = 0;
+        
+        adicoes.forEach(adicao => {
+            if (adicao.produtos && Array.isArray(adicao.produtos)) {
+                // Se houver produtos específicos em cada adição
+                adicao.produtos.forEach(produto => {
+                    produtos.push({
+                        ...produto,
+                        adicao_numero: adicao.numero_adicao
+                    });
+                    if (typeof produto.valor_total === 'number') {
+                        valorTotal += produto.valor_total;
+                    }
+                });
+            } else {
+                // Se não houver produtos detalhados, criar um produto pela adição
+                produtos.push({
+                    adicao_numero: adicao.numero_adicao,
+                    codigo: adicao.numero_adicao,
+                    descricao: adicao.descricao_ncm,
+                    ncm: adicao.ncm,
+                    quantidade: adicao.quantidade_estatistica,
+                    unidade: adicao.unidade_estatistica,
+                    valor_total: adicao.valor_reais,
+                    peso_liquido: adicao.peso_liquido
+                });
+                if (typeof adicao.valor_reais === 'number') {
+                    valorTotal += adicao.valor_reais;
+                }
+            }
+        });
+        
+        return {
+            lista: produtos,
+            totais: {
+                quantidade_produtos: produtos.length,
+                valor_total: valorTotal
+            }
+        };
+    }
+}

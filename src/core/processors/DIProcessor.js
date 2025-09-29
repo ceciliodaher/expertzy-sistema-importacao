@@ -1500,6 +1500,44 @@ export class DIProcessor {
     getData() {
         return this.diData;
     }
+    
+    /**
+     * Retorna dados consolidados da DI para ExcelDataMapper
+     * Método específico para integração com sistema de exportação
+     * Segue nomenclatura oficial do DIProcessor - NO FALLBACKS
+     * 
+     * @returns {Object} Dados consolidados da DI com estrutura completa
+     */
+    getComprehensiveDIData() {
+        // Validar se dados foram processados
+        if (!this.diData) {
+            throw new Error('DIProcessor: Dados não processados - execute parseXML() primeiro');
+        }
+        
+        if (!this.diData.numero_di) {
+            throw new Error('DIProcessor: numero_di não encontrado - dados incompletos');
+        }
+        
+        if (!this.diData.adicoes) {
+            throw new Error('DIProcessor: adicoes não encontradas - dados incompletos');
+        }
+        
+        if (this.diData.adicoes.length === 0) {
+            throw new Error('DIProcessor: DI deve conter pelo menos uma adição');
+        }
+        
+        // Retornar estrutura completa existente sem criar nova estrutura
+        // Single Source of Truth: diData já contém toda a nomenclatura oficial
+        return {
+            ...this.diData,
+            // Adicionar metadados de processamento se necessário
+            metadata: {
+                processing_timestamp: new Date().toISOString(),
+                processor_version: '2025.1',
+                data_source: 'DIProcessor'
+            }
+        };
+    }
 
     /**
      * Retorna XML original
