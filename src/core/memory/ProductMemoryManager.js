@@ -136,8 +136,9 @@ class ProductMemoryManager {
      * @param {String} diNumber - Número da DI
      * @param {Array} additions - Adições da DI com produtos
      * @param {Object} calculations - Cálculos realizados
+     * @param {Number} taxa_cambio - Taxa de câmbio da DI (obrigatória)
      */
-    async saveProductsFromDI(diNumber, additions, calculations) {
+    async saveProductsFromDI(diNumber, additions, calculations, taxa_cambio) {
         if (!this.initialized) {
             throw new Error('ProductMemoryManager não inicializado - chame initializeStorage() primeiro');
         }
@@ -183,7 +184,7 @@ class ProductMemoryManager {
                         industrial_use: false, // Definido pelo usuário depois
                         
                         // Metadados
-                        exchange_rate: this.validateExchangeRate(addition.taxa_cambio),
+                        exchange_rate: this.validateExchangeRate(taxa_cambio),
                         import_date: addition.data_registro || new Date().toISOString(),
                         state: this.validateState(calculations?.estado)
                     };

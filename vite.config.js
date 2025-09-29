@@ -31,7 +31,8 @@ export default defineConfig({
         dashboard: resolve(__dirname, 'dashboard.html'),
         di: resolve(__dirname, 'di-interface.html'),
         pricing: resolve(__dirname, 'src/modules/pricing/pricing-interface.html'),
-        itemPricing: resolve(__dirname, 'src/modules/item-pricing/item-pricing-interface.html')
+        itemPricing: resolve(__dirname, 'src/modules/item-pricing/item-pricing-interface.html'),
+        etlValidator: resolve(__dirname, 'src/modules/etl-validator/ui/etl-validator-interface.html')
       }
     },
     // Otimização de chunks

@@ -62,7 +62,7 @@ class QualityMeter {
             finalGrade = this.determineGrade(quality);
         } else {
             // Validar grade fornecido
-            const validGrades = ['EXCELLENT', 'GOOD', 'ACCEPTABLE', 'POOR', 'UNKNOWN'];
+            const validGrades = ['EXCELLENT', 'GOOD', 'ACCEPTABLE', 'POOR', 'UNKNOWN', 'AGUARDANDO_DADOS'];
             if (!validGrades.includes(grade)) {
                 throw new Error(`QualityMeter: grade inválido: ${grade}. Esperado: ${validGrades.join(', ')}`);
             }
@@ -159,7 +159,8 @@ class QualityMeter {
             'GOOD': this.config.colors.good,
             'ACCEPTABLE': this.config.colors.acceptable,
             'POOR': this.config.colors.poor,
-            'UNKNOWN': this.config.colors.unknown
+            'UNKNOWN': this.config.colors.unknown,
+            'AGUARDANDO_DADOS': this.config.colors.unknown
         };
         
         const color = colorMap[grade];
@@ -185,7 +186,8 @@ class QualityMeter {
             'GOOD': 'BOM',
             'ACCEPTABLE': 'ACEITÁVEL', 
             'POOR': 'RUIM',
-            'UNKNOWN': 'DESCONHECIDO'
+            'UNKNOWN': 'DESCONHECIDO',
+            'AGUARDANDO_DADOS': 'AGUARDANDO DADOS'
         };
         
         const translation = translations[grade];

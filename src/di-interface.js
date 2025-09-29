@@ -2278,7 +2278,7 @@ function viewCalculationMemory(numeroAdicao) {
     }
 
     const modalContent = document.getElementById('calculationMemoryContent');
-    const taxaCambio = adicao.taxa_cambio || (adicao.valor_reais / adicao.valor_moeda_negociacao);
+    const taxaCambio = currentDI.taxa_cambio;  // CORREÇÃO CRÍTICA: usar taxa única da DI (NO FALLBACKS)
     
     // Perform validation
     const validation = validator.validateCalculation(currentDI, currentCalculation, numeroAdicao);
@@ -2779,7 +2779,7 @@ function viewMultiAdditionSummary() {
     let totalFederalTaxes = 0;
     
     const additionsSummary = currentDI.adicoes.map(adicao => {
-        const taxaCambio = adicao.taxa_cambio || (adicao.valor_reais / adicao.valor_moeda_negociacao);
+        const taxaCambio = currentDI.taxa_cambio;  // CORREÇÃO CRÍTICA: usar taxa única da DI (NO FALLBACKS)
         const federalTaxes = (adicao.tributos.ii_valor_devido || 0) +
                            (adicao.tributos.ipi_valor_devido || 0) +
                            (adicao.tributos.pis_valor_devido || 0) +

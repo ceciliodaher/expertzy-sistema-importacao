@@ -130,8 +130,7 @@ export class MultiAdditionExporter {
         const data = [headers];
         
         this.di.adicoes.forEach(adicao => {
-            const taxa_cambio = adicao.taxa_cambio || 
-                               (adicao.valor_reais / adicao.valor_moeda_negociacao);
+            const taxa_cambio = this.di.taxa_cambio;  // CORREÇÃO CRÍTICA: usar taxa única da DI (NO FALLBACKS)
             
             const totalFederal = (adicao.tributos?.ii_valor_devido || 0) +
                                (adicao.tributos?.ipi_valor_devido || 0) +

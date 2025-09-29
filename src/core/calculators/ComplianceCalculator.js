@@ -174,7 +174,7 @@ export class ComplianceCalculator {
             }
             
             // Calcular impostos para esta adição
-            const calculoAdicao = await this.calcularImpostosImportacao(adicao, despesasAdicao);
+            const calculoAdicao = await this.calcularImpostosImportacao(adicao, despesasAdicao, di);
             calculosIndividuais.push(calculoAdicao);
             
             // NOVO: Calcular impostos para cada produto individual usando ItemCalculator
@@ -578,13 +578,18 @@ export class ComplianceCalculator {
      * ENTRADA: Dados da DI + despesas consolidadas
      * SAÍDA: Estrutura completa de impostos calculados
      */
-    async calcularImpostosImportacao(adicao, despesasConsolidadas = null) {
+    async calcularImpostosImportacao(adicao, despesasConsolidadas = null, di = null) {
         console.log('🧮 ComplianceCalculator: Iniciando cálculo de impostos...');
         
         try {
             // Validar entrada
             if (!adicao || !adicao.valor_reais) {
                 throw new Error('Dados da adição inválidos para cálculo');
+            }
+            
+            // Validar DI obrigatória para taxa de câmbio (NO FALLBACKS)
+            if (!di || !di.taxa_cambio) {
+                throw new Error('DI com taxa_cambio é obrigatória para cálculo de impostos');
             }
 
             const calculo = {
@@ -596,7 +601,7 @@ export class ComplianceCalculator {
                 valores_base: {
                     cif_usd: adicao.valor_moeda_negociacao,
                     cif_brl: adicao.valor_reais,
-                    taxa_cambio: adicao.taxa_cambio,
+                    taxa_cambio: di.taxa_cambio,  // CORREÇÃO CRÍTICA: usar taxa única da DI
                     peso_liquido: adicao.peso_liquido
                 },
 
@@ -1264,7 +1269,8 @@ export class ComplianceCalculator {
             const savedProducts = await this.productMemory.saveProductsFromDI(
                 diNumber, 
                 additions, 
-                totaisConsolidados
+                totaisConsolidados,
+                di.taxa_cambio  // CORREÇÃO CRÍTICA: Passar taxa_cambio da DI (NO FALLBACKS)
             );
             
             console.log(`✅ ${savedProducts.length} produtos salvos na memória para precificação`);

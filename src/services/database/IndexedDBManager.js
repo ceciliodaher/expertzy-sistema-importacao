@@ -284,6 +284,14 @@ class IndexedDBManager {
             // NOVA TABELA v6 - FASE 2.5: Precificação Individual por Item
             item_pricing_results: '++id, di_id, item_id, numero_adicao, ncm, descricao_item, custo_contabil_item, preco_margem_zero, margem_aplicada_tipo, margem_aplicada_valor, preco_com_margem, cenario_tributario, estado_origem, estado_destino, tipo_cliente, regime_vendedor, impostos_venda_breakdown, preco_final, regimes_especiais_detectados, beneficios_aplicaveis, calculo_detalhado, timestamp_calculo, usuario_calculo, [di_id+numero_adicao]'
         });
+        
+        // Schema v5: CORREÇÃO CRÍTICA - Campos INCOTERM perdidos na persistência
+        // Adicionar campos para preservar business logic completa
+        this.db.version(5).stores({
+            declaracoes: '++id, numero_di, importador_cnpj, importador_nome, importador_endereco_uf, importador_endereco_logradouro, importador_endereco_numero, importador_endereco_complemento, importador_endereco_bairro, importador_endereco_cidade, importador_endereco_municipio, importador_endereco_cep, importador_representante_nome, importador_representante_cpf, importador_telefone, importador_endereco_completo, data_processamento, data_registro, urf_despacho_codigo, urf_despacho_nome, modalidade_codigo, modalidade_nome, situacao_entrega, total_adicoes, incoterm_identificado, taxa_cambio, informacao_complementar, valor_total_fob_usd, valor_total_fob_brl, valor_total_frete_usd, valor_total_frete_brl, valor_aduaneiro_total_brl, valor_frete_xml, valor_seguro_xml, valor_frete_calculo, valor_seguro_calculo, frete_incluso_incoterm, seguro_incluso_incoterm, valor_total_mercadorias, incoterm_aplicado, *ncms, xml_hash, xml_content, processing_state, icms_configured, extra_expenses_configured, pricing_configured, pricing_timestamp, [importador_cnpj+data_processamento]'
+        });
+
+        console.log('✅ Schema v5 com campos INCOTERM business logic inicializado');
 
         console.log('✅ Schema v6 com precificação individual por item inicializado (FASE 2.5)');
     }
@@ -457,6 +465,21 @@ class IndexedDBManager {
                         
                         // Taxa de câmbio calculada
                         taxa_cambio: diData.taxa_cambio,
+                        
+                        // CAMPOS INCOTERM BUSINESS LOGIC - CORREÇÃO CRÍTICA
+                        // Valores separados para auditoria vs cálculo
+                        valor_frete_xml: diData.valor_frete_xml,
+                        valor_seguro_xml: diData.valor_seguro_xml,
+                        valor_frete_calculo: diData.valor_frete_calculo,
+                        valor_seguro_calculo: diData.valor_seguro_calculo,
+                        
+                        // Flags de transparência INCOTERM
+                        frete_incluso_incoterm: diData.frete_incluso_incoterm,
+                        seguro_incluso_incoterm: diData.seguro_incluso_incoterm,
+                        
+                        // Totais consolidados
+                        valor_total_mercadorias: diData.valor_total_mercadorias,
+                        incoterm_aplicado: diData.incoterm_aplicado,
                         
                         // Informações complementares
                         informacao_complementar: diData.informacao_complementar,
@@ -879,6 +902,37 @@ class IndexedDBManager {
                 urf_entrada_nome: di.carga.urf_entrada_nome,
                 via_transporte_codigo: di.carga.via_transporte_codigo,
                 via_transporte_nome: di.carga.via_transporte_nome
+            };
+        }
+
+        // CORREÇÃO CRÍTICA: Restaurar campos que são salvos mas não mapeados
+        // KISS/DRY: Se está no banco, apenas use - seguindo Single Source of Truth
+        di.taxa_cambio = di.taxa_cambio; // Campo já salvo, essencial para cálculos
+        
+        // Outros campos consolidados que podem estar perdidos
+        if (di.incoterm_aplicado !== undefined) {
+            di.incoterm_aplicado = di.incoterm_aplicado;
+        }
+        
+        if (di.valor_total_mercadorias !== undefined) {
+            di.valor_total_mercadorias = di.valor_total_mercadorias;
+        }
+        
+        // ESTRUTURA INCOTERM BUSINESS LOGIC - Nomenclatura oficial DIProcessor
+        // Restaurar diferenciação entre valores informativos vs cálculo
+        if (di.valor_frete_xml !== undefined || di.valor_frete_calculo !== undefined) {
+            di.incoterm_business_logic = {
+                // Valores informativos do XML (auditoria) - Nomenclatura oficial
+                valor_frete_xml: di.valor_frete_xml,
+                valor_seguro_xml: di.valor_seguro_xml,
+                
+                // Valores para cálculo (INCOTERM-aware) - Nomenclatura oficial
+                valor_frete_calculo: di.valor_frete_calculo,
+                valor_seguro_calculo: di.valor_seguro_calculo,
+                
+                // Flags de transparência
+                frete_incluso: di.frete_incluso_incoterm,
+                seguro_incluso: di.seguro_incluso_incoterm
             };
         }
 
@@ -2783,6 +2837,40 @@ class IndexedDBManager {
         }
     }
     
+    /**
+     * Obter todas as declarações para validação ETL
+     * PRINCÍPIO: Método público para acesso encapsulado ao Dexie
+     */
+    async getAllDeclaracoes() {
+        if (!this.initialized) {
+            throw new Error('IndexedDBManager não inicializado - chame initialize() primeiro');
+        }
+        
+        try {
+            return await this.db.declaracoes.toArray();
+        } catch (error) {
+            console.error('❌ Erro ao obter todas as declarações:', error);
+            throw new Error(`Falha ao carregar declarações: ${error.message}`);
+        }
+    }
+    
+    /**
+     * Contar total de declarações no banco
+     * PRINCÍPIO: Método público para acesso encapsulado ao Dexie
+     */
+    async getDeclaracoesCount() {
+        if (!this.initialized) {
+            throw new Error('IndexedDBManager não inicializado - chame initialize() primeiro');
+        }
+        
+        try {
+            return await this.db.declaracoes.count();
+        } catch (error) {
+            console.error('❌ Erro ao contar declarações:', error);
+            throw new Error(`Falha ao contar declarações: ${error.message}`);
+        }
+    }
+
     /**
      * Fecha conexão com o banco
      */

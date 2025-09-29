@@ -52,7 +52,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="src/modules/etl-validator/ui/etl-validator-interface.html">
+                        <a class="nav-link text-white" href="javascript:void(0)" onclick="navigateToETLValidator()">
                             <i class="bi bi-shield-check"></i> Validador ETL
                         </a>
                     </li>
@@ -1123,6 +1123,27 @@
     
     <!-- IncentiveManager now loaded as ES6 module in di-interface.js -->
     
+    <!-- Navigation context helper -->
+    <script>
+        /**
+         * Navega para ETL Validator com contexto da DI atual
+         * Context-aware navigation seguindo princípio SOLID
+         */
+        function navigateToETLValidator() {
+            const currentDINumber = window.currentDI?.numero_di;
+            let url = '/src/modules/etl-validator/ui/etl-validator-interface.html';
+            
+            if (currentDINumber) {
+                url += `?di_id=${encodeURIComponent(currentDINumber)}`;
+                console.log(`🎯 Navegando para ETL Validator com contexto DI: ${currentDINumber}`);
+            } else {
+                console.log('📊 Navegando para ETL Validator em modo geral');
+            }
+            
+            window.location.href = url;
+        }
+    </script>
+
     <!-- Main ES6 Module -->
     <script type="module" src="/src/di-interface.js"></script>
 </body>

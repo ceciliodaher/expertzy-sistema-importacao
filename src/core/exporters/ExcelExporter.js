@@ -1187,7 +1187,7 @@ this.calculationData.produtos_individuais ? this.calculationData.produtos_indivi
             ['Peso líq. (kg)', this.formatNumber(adicao.peso_liquido)],
             ['Quantidade', this.formatNumber(adicao.quantidade_estatistica)],
             ['Unidade', adicao.unidade_estatistica],
-            ['Taxa Câmbio', this.formatNumber(adicao.taxa_cambio, 6)],
+            ['Taxa Câmbio', this.formatNumber(this.di.taxa_cambio, 6)],  // CORREÇÃO CRÍTICA: usar taxa única da DI
             [],
             ['TRIBUTOS'],
             ['Tributo', 'Alíquota %', 'Base Cálculo R$', 'Valor Devido R$'],
