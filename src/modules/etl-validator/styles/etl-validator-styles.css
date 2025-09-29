@@ -1,0 +1,404 @@
+/**
+ * etl-validator-styles.css - Estilos Específicos ETL Validator
+ * 
+ * Estilos customizados para componentes únicos do ETL Validator
+ * Complementa etl-theme.css e expertzy-brand.css
+ */
+
+/* ========================================
+   ETL VALIDATOR SPECIFIC COMPONENTS
+   ======================================== */
+
+/* Quality Progress Bars */
+.progress {
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(13, 71, 161, 0.1);
+}
+
+.progress-bar {
+    border-radius: 3px;
+    transition: width 0.6s ease;
+}
+
+/* Metric Cards Hover Effects */
+.etl-card .card-body {
+    position: relative;
+    overflow: hidden;
+}
+
+.etl-card .card-body::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(13, 71, 161, 0.05) 0%, transparent 70%);
+    transform: scale(0);
+    transition: transform 0.5s ease;
+}
+
+.etl-card:hover .card-body::before {
+    transform: scale(1);
+}
+
+/* ========================================
+   PIPELINE VISUALIZATION
+   ======================================== */
+
+@media (min-width: 768px) {
+    .pipeline-step .step-connector::after {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: -6px;
+        width: 14px;
+        height: 14px;
+        background: var(--etl-light);
+        border: 2px solid white;
+        border-radius: 50%;
+        transform: translateY(50%);
+    }
+    
+    .pipeline-step[data-status="success"] .step-connector::after {
+        background: var(--etl-success);
+        border-color: var(--etl-success);
+    }
+}
+
+/* Pipeline Step Animation */
+.pipeline-step {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slideUp 0.5s ease forwards;
+}
+
+.pipeline-step:nth-child(1) { animation-delay: 0.1s; }
+.pipeline-step:nth-child(2) { animation-delay: 0.2s; }
+.pipeline-step:nth-child(3) { animation-delay: 0.3s; }
+.pipeline-step:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   ALERTS AND NOTIFICATIONS
+   ======================================== */
+
+.alert-item {
+    border: none;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+    animation: alertSlideIn 0.3s ease;
+}
+
+@keyframes alertSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.alert-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: currentColor;
+}
+
+.alert-item.alert-danger::before {
+    background: var(--etl-danger);
+}
+
+.alert-item.alert-warning::before {
+    background: var(--etl-warning);
+}
+
+.alert-item.alert-info::before {
+    background: var(--etl-info);
+}
+
+.alert-item .d-flex {
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.alert-item .alert-content h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.alert-item .alert-content p {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+/* Alert Actions */
+.alert-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.alert-actions .btn {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 4px;
+}
+
+/* ========================================
+   STICKY SIDEBAR ENHANCEMENTS
+   ======================================== */
+
+.sticky-top {
+    transition: top 0.3s ease;
+}
+
+.control-panel .card-body {
+    padding: 20px;
+}
+
+.control-panel h6 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    color: var(--expertzy-gray);
+    border-bottom: 1px solid var(--etl-light);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+/* Form Controls */
+.form-check-input:checked {
+    background-color: var(--etl-primary);
+    border-color: var(--etl-primary);
+}
+
+.form-range::-webkit-slider-thumb {
+    background: var(--etl-primary);
+}
+
+.form-range::-moz-range-thumb {
+    background: var(--etl-primary);
+    border: none;
+}
+
+/* ========================================
+   MODAL ENHANCEMENTS
+   ======================================== */
+
+.modal-header {
+    background: linear-gradient(135deg, var(--etl-primary) 0%, var(--etl-secondary) 100%);
+    color: white;
+    border-bottom: none;
+}
+
+.modal-header .btn-close {
+    filter: invert(1);
+}
+
+.nav-tabs .nav-link {
+    color: var(--expertzy-gray);
+    border: none;
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--etl-primary);
+    background: none;
+    border-bottom-color: var(--etl-primary);
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--etl-secondary);
+    border-bottom-color: var(--etl-light);
+}
+
+/* ========================================
+   QUALITY CIRCLE VARIATIONS
+   ======================================== */
+
+.circle-progress[data-quality="excellent"] {
+    background: conic-gradient(
+        var(--quality-excellent) 0deg,
+        var(--quality-excellent) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) 360deg
+    );
+}
+
+.circle-progress[data-quality="good"] {
+    background: conic-gradient(
+        var(--quality-good) 0deg,
+        var(--quality-good) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) 360deg
+    );
+}
+
+.circle-progress[data-quality="acceptable"] {
+    background: conic-gradient(
+        var(--quality-acceptable) 0deg,
+        var(--quality-acceptable) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) 360deg
+    );
+}
+
+.circle-progress[data-quality="poor"] {
+    background: conic-gradient(
+        var(--quality-poor) 0deg,
+        var(--quality-poor) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) calc(var(--percentage) * 3.6deg),
+        var(--etl-light) 360deg
+    );
+}
+
+/* ========================================
+   STATUS BADGES
+   ======================================== */
+
+.badge.bg-secondary {
+    background-color: var(--expertzy-gray) !important;
+}
+
+.badge.bg-success {
+    background-color: var(--etl-success) !important;
+}
+
+.badge.bg-warning {
+    background-color: var(--etl-warning) !important;
+    color: var(--expertzy-navy) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--etl-danger) !important;
+}
+
+.badge.bg-primary {
+    background-color: var(--etl-primary) !important;
+}
+
+/* ========================================
+   UTILITY ANIMATIONS
+   ======================================== */
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.slide-in-right {
+    animation: slideInRight 0.4s ease forwards;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.bounce-in {
+    animation: bounceIn 0.6s ease forwards;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ========================================
+   LOADING STATES
+   ======================================== */
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.skeleton-card {
+    height: 100px;
+    border-radius: 8px;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+    .navbar,
+    .loading-overlay,
+    .control-panel,
+    .btn,
+    .sticky-top {
+        display: none !important;
+    }
+    
+    .container-fluid {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    
+    .etl-card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+        page-break-inside: avoid;
+    }
+    
+    .col-xl-9 {
+        width: 100% !important;
+    }
+}

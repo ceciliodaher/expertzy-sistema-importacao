@@ -1,0 +1,422 @@
+/**
+ * etl-theme.css - Tema ETL Validator para Sistema Expertzy
+ * 
+ * Tema específico para ETL Validator Dashboard
+ * Cores: Azul/Verde para validações integrado com brand Expertzy
+ * Padrão: Segue business-theme.css para pricing
+ */
+
+/* ========================================
+   ETL THEME - VALIDAÇÃO E QUALIDADE
+   ======================================== */
+
+:root {
+    /* ETL Theme Colors - Conformidade Brand Expertzy Oficial */
+    --etl-primary: #FF002D;        /* Vermelho Expertzy (Energia/Velocidade/Força) */
+    --etl-secondary: #091A30;      /* Navy Expertzy (Segurança/Intelecto/Precisão) */
+    --etl-accent: #ff3d5c;         /* Vermelho claro (variação primária) */
+    --etl-light: #fff0f3;          /* Background vermelho claro */
+    --etl-lighter: #FFFFFF;        /* Branco puro (Respeito/Proteção/Transparência) */
+    --etl-dark: #cc0024;           /* Vermelho escuro */
+    
+    /* Quality Status Colors */
+    --etl-success: #28a745;        /* Verde - Qualidade boa */
+    --etl-info: #17a2b8;           /* Azul info - Consistência */
+    --etl-warning: #ffc107;        /* Amarelo - Atenção */
+    --etl-danger: #dc3545;         /* Vermelho - Erro */
+    
+    /* Quality Grades */
+    --quality-excellent: #198754;   /* Verde escuro */
+    --quality-good: #28a745;        /* Verde padrão */
+    --quality-acceptable: #fd7e14;  /* Laranja */
+    --quality-poor: #FF002D;        /* Vermelho Expertzy para erros críticos */
+    
+    /* ETL Specific Colors */
+    --etl-extraction: #091A30;     /* Navy para extração (Segurança) */
+    --etl-transformation: #fd7e14; /* Laranja para transformação */
+    --etl-loading: #28a745;        /* Verde para carregamento (sucesso) */
+    --etl-quality: #FF002D;        /* Vermelho Expertzy para qualidade */
+}
+
+/* ========================================
+   ETL NAVBAR STYLING
+   ======================================== */
+
+.expertzy-navbar .etl-status-indicator {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.expertzy-navbar .etl-status-indicator i {
+    font-size: 0.7rem;
+}
+
+/* ========================================
+   ETL BUTTONS
+   ======================================== */
+
+.btn-etl-primary {
+    background-color: var(--etl-primary);
+    border-color: var(--etl-primary);
+    color: white;
+    font-weight: 500;
+}
+
+.btn-etl-primary:hover,
+.btn-etl-primary:focus {
+    background-color: var(--etl-dark);
+    border-color: var(--etl-dark);
+    color: white;
+}
+
+.btn-etl-secondary {
+    background-color: var(--etl-secondary);
+    border-color: var(--etl-secondary);
+    color: white;
+}
+
+.btn-etl-secondary:hover,
+.btn-etl-secondary:focus {
+    background-color: var(--etl-primary);
+    border-color: var(--etl-primary);
+    color: white;
+}
+
+/* ========================================
+   ETL CARDS
+   ======================================== */
+
+.etl-card {
+    border: none;
+    box-shadow: 0 0.125rem 0.375rem rgba(13, 71, 161, 0.1);
+    border-left: 4px solid var(--etl-primary);
+    transition: all 0.3s ease;
+}
+
+.etl-card:hover {
+    box-shadow: 0 0.25rem 0.75rem rgba(13, 71, 161, 0.15);
+    transform: translateY(-2px);
+}
+
+.etl-card .card-header {
+    background: linear-gradient(135deg, var(--etl-lighter) 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--etl-light);
+    font-weight: 600;
+    color: var(--etl-primary);
+}
+
+/* ========================================
+   QUALITY CIRCLES
+   ======================================== */
+
+.etl-quality-circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto;
+}
+
+.circle-progress {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(
+        var(--quality-excellent) 0deg,
+        var(--quality-excellent) calc(var(--percentage, 0) * 3.6deg),
+        var(--etl-light) calc(var(--percentage, 0) * 3.6deg),
+        var(--etl-light) 360deg
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.circle-inner {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.circle-inner .percentage {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--etl-primary);
+}
+
+.circle-inner .grade {
+    font-size: 0.7rem;
+    color: var(--expertzy-gray);
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+/* ========================================
+   QUALITY COLOR VARIATIONS
+   ======================================== */
+
+.etl-success {
+    color: var(--etl-success) !important;
+}
+
+.etl-info {
+    color: var(--etl-info) !important;
+}
+
+.etl-warning {
+    color: var(--etl-warning) !important;
+}
+
+.etl-danger {
+    color: var(--etl-danger) !important;
+}
+
+.etl-primary {
+    color: var(--etl-primary) !important;
+}
+
+/* Backgrounds */
+.bg-etl-primary {
+    background-color: var(--etl-primary) !important;
+}
+
+.bg-etl-light {
+    background-color: var(--etl-light) !important;
+}
+
+/* ========================================
+   ETL PIPELINE STYLING
+   ======================================== */
+
+.etl-pipeline {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    padding: 20px 0;
+}
+
+.pipeline-step {
+    flex: 1;
+    position: relative;
+    text-align: center;
+    padding: 0 15px;
+}
+
+.step-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--etl-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    color: var(--etl-primary);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.step-content h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--etl-primary);
+    margin-bottom: 8px;
+}
+
+.step-status .badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+.step-connector {
+    position: absolute;
+    top: 25px;
+    right: -50%;
+    width: 100%;
+    height: 2px;
+    background: var(--etl-light);
+    z-index: 1;
+}
+
+.pipeline-step:last-child .step-connector {
+    display: none;
+}
+
+/* Pipeline Step Status States */
+.pipeline-step[data-status="success"] .step-icon {
+    background: var(--etl-success);
+    color: white;
+}
+
+.pipeline-step[data-status="success"] .step-connector {
+    background: var(--etl-success);
+}
+
+.pipeline-step[data-status="warning"] .step-icon {
+    background: var(--etl-warning);
+    color: white;
+}
+
+.pipeline-step[data-status="error"] .step-icon {
+    background: var(--etl-danger);
+    color: white;
+}
+
+.pipeline-step[data-status="running"] .step-icon {
+    background: var(--etl-primary);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+/* ========================================
+   ALERTS STYLING
+   ======================================== */
+
+.alerts-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.alert-item {
+    border-left-width: 4px;
+    margin-bottom: 10px;
+}
+
+.alert-item.alert-danger {
+    border-left-color: var(--etl-danger);
+}
+
+.alert-item.alert-warning {
+    border-left-color: var(--etl-warning);
+}
+
+.alert-item.alert-info {
+    border-left-color: var(--etl-info);
+}
+
+.alert-item .alert-icon {
+    font-size: 1.1rem;
+    margin-right: 8px;
+}
+
+.alert-item .alert-content {
+    flex: 1;
+}
+
+.alert-item .alert-timestamp {
+    font-size: 0.8rem;
+    color: var(--expertzy-gray);
+}
+
+/* ========================================
+   LOADING OVERLAY
+   ======================================== */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(13, 71, 161, 0.9);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.loading-overlay.show {
+    display: flex;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(1.05);
+    }
+}
+
+/* ========================================
+   EXPERTZY TITLE OVERRIDE
+   ======================================== */
+
+.expertzy-title {
+    font-family: 'BRFirma-Medium', 'Inter', sans-serif;
+    font-weight: 500;
+    color: #091A30; /* Navy Expertzy oficial */
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+    .etl-pipeline {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .pipeline-step {
+        margin-bottom: 30px;
+        padding: 0;
+    }
+    
+    .step-connector {
+        display: none;
+    }
+    
+    .etl-quality-circle {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .circle-inner {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .circle-inner .percentage {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .etl-card {
+        margin-bottom: 15px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .expertzy-title {
+        font-size: 1.5rem;
+    }
+}

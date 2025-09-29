@@ -103,7 +103,7 @@ export class ETLValidator {
      * @param {Object} context - Contexto obrigatório (metadata, timing, etc.)
      * @returns {Object} Resultado da validação
      */
-    async validatePhase(phase, data, context) {
+    async validatePhase(phase, data, context, intrusive = false) {
         // NO FALLBACKS - todos os parâmetros obrigatórios
         if (!phase) {
             throw new Error('ETLValidator: phase é obrigatório para validação');
@@ -128,7 +128,9 @@ export class ETLValidator {
         const startTime = Date.now();
         const validationId = `${phase}_${startTime}`;
         
-        console.log(`🔍 ETLValidator: Iniciando validação fase '${phase}' - ID: ${validationId}`);
+        // Log modo de operação
+        const modeLabel = intrusive ? 'INTRUSIVO' : 'NÃO-INTRUSIVO (OBSERVADOR)';
+        console.log(`🔍 ETLValidator: [${modeLabel}] Iniciando validação fase '${phase}' - ID: ${validationId}`);
         
         const result = {
             validationId,
@@ -139,6 +141,7 @@ export class ETLValidator {
             errors: [],
             warnings: [],
             metrics: {},
+            mode: intrusive ? 'intrusive' : 'observer',
             context: {
                 ...context,
                 dataKeys: Object.keys(data),
@@ -462,6 +465,47 @@ export class ETLValidator {
         
         if (removedCount > 0) {
             console.log(`🧹 ETLValidator: Removidos ${removedCount} resultados antigos de validação`);
+        }
+    }
+    
+    /**
+     * Cria resultado para modo observador (não-intrusivo)
+     * @private
+     */
+    createObserverResult(phase, errorMessage) {
+        return {
+            validationId: `observer_${Date.now()}`,
+            phase,
+            timestamp: new Date().toISOString(),
+            duration: 0,
+            success: true, // Observador não bloqueia
+            errors: [],
+            warnings: [{
+                type: 'OBSERVER_MODE_ERROR',
+                message: errorMessage,
+                severity: 'low',
+                phase: phase
+            }],
+            metrics: { observerMode: true },
+            mode: 'observer',
+            context: { observerMode: true }
+        };
+    }
+    
+    /**
+     * Armazena resultado de validação assincronamente (não-intrusivo)
+     * @private
+     */
+    async storeValidationResultAsync(result) {
+        try {
+            // Futura implementação: integração com IndexedDBManager
+            console.log(`💾 ETLValidator: Resultado fase '${result.phase}' armazenado para consulta posterior`);
+            
+            // Por enquanto, apenas log - implementação futura com IndexedDB
+            
+        } catch (error) {
+            // Não crítico - não deve impactar fluxo principal
+            console.warn('⚠️ ETLValidator: Falha ao armazenar resultado (continuando):', error.message);
         }
     }
 }

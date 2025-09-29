@@ -139,8 +139,8 @@ class IndexedDBManager {
         });
 
         // SCHEMA OFICIAL - NOMENCLATURA DIProcessor.js (PRIMARY CREATOR)
-        // Versão 3 - Schema único com nomenclatura oficial
-        this.db.version(3).stores({
+        // Versão 4 - Schema único com nomenclatura oficial + ETL Validations
+        this.db.version(4).stores({
             // DECLARAÇÕES - Nomenclatura oficial DIProcessor
             declaracoes: '++id, numero_di, importador_cnpj, importador_nome, importador_endereco_uf, importador_endereco_logradouro, importador_endereco_numero, importador_endereco_complemento, importador_endereco_bairro, importador_endereco_cidade, importador_endereco_municipio, importador_endereco_cep, importador_representante_nome, importador_representante_cpf, importador_telefone, importador_endereco_completo, data_processamento, data_registro, urf_despacho_codigo, urf_despacho_nome, modalidade_codigo, modalidade_nome, situacao_entrega, total_adicoes, incoterm_identificado, taxa_cambio, informacao_complementar, valor_total_fob_usd, valor_total_fob_brl, valor_total_frete_usd, valor_total_frete_brl, valor_aduaneiro_total_brl, *ncms, xml_hash, xml_content, processing_state, icms_configured, extra_expenses_configured, [importador_cnpj+data_processamento]',
             
@@ -164,11 +164,14 @@ class IndexedDBManager {
             cenarios_precificacao: '++id, di_id, nome_cenario, configuracao, resultados_comparativos, [di_id+nome_cenario]',
             historico_operacoes: '++id, timestamp, operacao, modulo, detalhes, resultado',
             snapshots: '++id, di_id, nome_customizado, timestamp, dados_completos',
-            configuracoes_usuario: 'chave, valor, timestamp, validado'
+            configuracoes_usuario: 'chave, valor, timestamp, validado',
+            
+            // NOVA TABELA: ETL Validations - Sistema de validação não-intrusivo
+            etl_validations: '++id, validation_id, phase, di_id, timestamp, success, mode, duration, errors, warnings, metrics, context, original_success, [validation_id], [phase+timestamp], [di_id+phase], [success+mode]'
         });
 
-        // Versão 4 - Adiciona tabelas de precificação
-        this.db.version(4).stores({
+        // Versão 5 - Adiciona tabelas de precificação (era v4, agora v5)
+        this.db.version(5).stores({
             // Manter todas as tabelas existentes da v3
             declaracoes: '++id, numero_di, importador_cnpj, importador_nome, importador_endereco_uf, importador_endereco_logradouro, importador_endereco_numero, importador_endereco_complemento, importador_endereco_bairro, importador_endereco_cidade, importador_endereco_municipio, importador_endereco_cep, importador_representante_nome, importador_representante_cpf, importador_telefone, importador_endereco_completo, data_processamento, data_registro, urf_despacho_codigo, urf_despacho_nome, modalidade_codigo, modalidade_nome, situacao_entrega, total_adicoes, incoterm_identificado, taxa_cambio, informacao_complementar, valor_total_fob_usd, valor_total_fob_brl, valor_total_frete_usd, valor_total_frete_brl, valor_aduaneiro_total_brl, *ncms, xml_hash, xml_content, processing_state, icms_configured, extra_expenses_configured, pricing_configured, pricing_timestamp, [importador_cnpj+data_processamento]',
             
@@ -2382,6 +2385,404 @@ class IndexedDBManager {
         }
     }
 
+    /**
+     * Armazena resultado de validação ETL (modo não-intrusivo com defaults explícitos)
+     * NUNCA FALHA O SISTEMA - usa defaults explícitos para campos não-críticos
+     * @param {Object} validationResult - Resultado da validação ETL
+     * @returns {Promise<number|null>} ID do registro inserido ou null se falhar
+     */
+    async storeETLValidation(validationResult) {
+        try {
+            if (!this.initialized) {
+                await this.initialize();
+            }
+            
+            // Validação básica - apenas para dados CRÍTICOS
+            if (!validationResult) {
+                console.error('❌ ETL Storage: validationResult é obrigatório - abortando armazenamento');
+                return null; // Não falha sistema
+            }
+            
+            // === CAMPOS CRÍTICOS (falha se ausentes) ===
+            let validationId, phase, timestamp;
+            
+            if (!validationResult.validationId || typeof validationResult.validationId !== 'string') {
+                console.error('❌ ETL Storage: validationId crítico ausente/inválido - abortando');
+                return null;
+            }
+            validationId = validationResult.validationId;
+            
+            if (!validationResult.phase || typeof validationResult.phase !== 'string') {
+                console.error('❌ ETL Storage: phase crítico ausente/inválido - abortando');
+                return null;
+            }
+            phase = validationResult.phase;
+            
+            if (!validationResult.timestamp || typeof validationResult.timestamp !== 'string') {
+                console.warn('⚠️ ETL Storage: timestamp inválido, gerando novo');
+                timestamp = new Date().toISOString();
+            } else {
+                timestamp = validationResult.timestamp;
+            }
+            
+            // === CAMPOS IMPORTANTES (defaults explícitos) ===
+            let success = true; // Default não-intrusivo
+            if (typeof validationResult.success === 'boolean') {
+                success = validationResult.success;
+            } else {
+                console.warn('⚠️ ETL Storage: success ausente, usando default true (não-intrusivo)');
+            }
+            
+            let mode = 'observer'; // Default modo observador
+            if (validationResult.mode && typeof validationResult.mode === 'string') {
+                const validModes = ['observer', 'intrusive'];
+                if (validModes.includes(validationResult.mode)) {
+                    mode = validationResult.mode;
+                } else {
+                    console.warn(`⚠️ ETL Storage: mode '${validationResult.mode}' inválido, usando 'observer'`);
+                }
+            } else {
+                console.warn('⚠️ ETL Storage: mode ausente, usando "observer"');
+            }
+            
+            let duration = 0; // Default zero
+            if (typeof validationResult.duration === 'number' && validationResult.duration >= 0) {
+                duration = validationResult.duration;
+            } else if (validationResult.duration !== undefined) {
+                console.warn('⚠️ ETL Storage: duration inválido, usando 0');
+            }
+            
+            // === CAMPOS OPCIONAIS (null/empty defaults) ===
+            let di_id = null;
+            if (validationResult.context && 
+                validationResult.context.di_id && 
+                (typeof validationResult.context.di_id === 'string' || typeof validationResult.context.di_id === 'number')) {
+                di_id = validationResult.context.di_id;
+            } else if (validationResult.di_id) {
+                di_id = validationResult.di_id;
+                console.info('ℹ️ ETL Storage: usando di_id direto (não em context)');
+            }
+            
+            // Arrays com defaults explícitos
+            let errors = [];
+            if (Array.isArray(validationResult.errors)) {
+                errors = validationResult.errors;
+            } else if (validationResult.errors !== undefined) {
+                console.warn('⚠️ ETL Storage: errors não é array, usando array vazio');
+            }
+            
+            let warnings = [];
+            if (Array.isArray(validationResult.warnings)) {
+                warnings = validationResult.warnings;
+            } else if (validationResult.warnings !== undefined) {
+                console.warn('⚠️ ETL Storage: warnings não é array, usando array vazio');
+            }
+            
+            // Objetos com defaults explícitos
+            let metrics = {};
+            if (validationResult.metrics && typeof validationResult.metrics === 'object') {
+                metrics = validationResult.metrics;
+            } else if (validationResult.metrics !== undefined) {
+                console.warn('⚠️ ETL Storage: metrics não é objeto, usando objeto vazio');
+            }
+            
+            let context = {};
+            if (validationResult.context && typeof validationResult.context === 'object') {
+                context = validationResult.context;
+            } else if (validationResult.context !== undefined) {
+                console.warn('⚠️ ETL Storage: context não é objeto, usando objeto vazio');
+            }
+            
+            // originalSuccess com default baseado em success
+            let originalSuccess = success;
+            if (typeof validationResult.originalSuccess === 'boolean') {
+                originalSuccess = validationResult.originalSuccess;
+            }
+            
+            // Preparar registro final
+            const etlValidationRecord = {
+                validation_id: validationId,
+                phase: phase,
+                di_id: di_id,
+                timestamp: timestamp,
+                success: success,
+                mode: mode,
+                duration: duration,
+                errors: JSON.stringify(errors),
+                warnings: JSON.stringify(warnings),
+                metrics: JSON.stringify(metrics),
+                context: JSON.stringify(context),
+                original_success: originalSuccess
+            };
+            
+            // Inserir no banco
+            const id = await this.db.etl_validations.add(etlValidationRecord);
+            console.log(`💾 ETL Storage: Validação ${validationId} armazenada com ID ${id}`);
+            return id;
+            
+        } catch (error) {
+            // NUNCA FALHA O SISTEMA - apenas log
+            console.error('❌ ETL Storage: Erro ao armazenar (sistema continua):', error.message);
+            return null;
+        }
+    }
+    
+    /**
+     * Recupera validações ETL com handling robusto para dados incompletos
+     * @param {Object} filters - Filtros de busca
+     * @returns {Promise<Array>} Lista de validações (nunca falha)
+     */
+    async getETLValidations(filters = {}) {
+        try {
+            if (!this.initialized) {
+                await this.initialize();
+            }
+            
+            // Validação de filtros com defaults explícitos
+            let limit = 100;
+            if (typeof filters.limit === 'number' && filters.limit > 0 && filters.limit <= 1000) {
+                limit = filters.limit;
+            } else if (filters.limit !== undefined) {
+                console.warn('⚠️ ETL Retrieval: limit inválido, usando 100');
+            }
+            
+            let query = this.db.etl_validations;
+            
+            // Aplicar filtros com validação explícita
+            if (filters.di_id && (typeof filters.di_id === 'string' || typeof filters.di_id === 'number')) {
+                query = query.where('di_id').equals(filters.di_id);
+            } else if (filters.phase && typeof filters.phase === 'string') {
+                query = query.where('phase').equals(filters.phase);
+            } else if (typeof filters.success === 'boolean') {
+                query = query.where('success').equals(filters.success);
+            }
+            
+            const results = await query.reverse().limit(limit).toArray();
+            
+            // Processar resultados com handling de dados corrompidos
+            const processedResults = [];
+            
+            for (const record of results) {
+                try {
+                    const processedRecord = { ...record };
+                    
+                    // Deserializar JSON com fallback seguro
+                    try {
+                        processedRecord.errors = JSON.parse(record.errors || '[]');
+                        if (!Array.isArray(processedRecord.errors)) {
+                            console.warn('⚠️ ETL Retrieval: errors corrompido, usando array vazio');
+                            processedRecord.errors = [];
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ ETL Retrieval: erro ao parse errors JSON');
+                        processedRecord.errors = [];
+                    }
+                    
+                    try {
+                        processedRecord.warnings = JSON.parse(record.warnings || '[]');
+                        if (!Array.isArray(processedRecord.warnings)) {
+                            console.warn('⚠️ ETL Retrieval: warnings corrompido, usando array vazio');
+                            processedRecord.warnings = [];
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ ETL Retrieval: erro ao parse warnings JSON');
+                        processedRecord.warnings = [];
+                    }
+                    
+                    try {
+                        processedRecord.metrics = JSON.parse(record.metrics || '{}');
+                        if (typeof processedRecord.metrics !== 'object') {
+                            console.warn('⚠️ ETL Retrieval: metrics corrompido, usando objeto vazio');
+                            processedRecord.metrics = {};
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ ETL Retrieval: erro ao parse metrics JSON');
+                        processedRecord.metrics = {};
+                    }
+                    
+                    try {
+                        processedRecord.context = JSON.parse(record.context || '{}');
+                        if (typeof processedRecord.context !== 'object') {
+                            console.warn('⚠️ ETL Retrieval: context corrompido, usando objeto vazio');
+                            processedRecord.context = {};
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ ETL Retrieval: erro ao parse context JSON');
+                        processedRecord.context = {};
+                    }
+                    
+                    processedResults.push(processedRecord);
+                    
+                } catch (recordError) {
+                    console.warn('⚠️ ETL Retrieval: erro ao processar registro, pulando:', recordError.message);
+                    // Continua com próximo registro
+                }
+            }
+            
+            console.log(`📊 ETL Retrieval: ${processedResults.length} validações recuperadas`);
+            return processedResults;
+            
+        } catch (error) {
+            console.error('❌ ETL Retrieval: Erro ao recuperar (retornando array vazio):', error.message);
+            return []; // Nunca falha - retorna array vazio
+        }
+    }
+    
+    /**
+     * Recupera estatísticas de qualidade ETL (tolerante a falhas)
+     * @param {Object} filters - Filtros para cálculo das estatísticas
+     * @returns {Promise<Object>} Estatísticas de qualidade (nunca falha)
+     */
+    async getETLQualityStats(filters = {}) {
+        try {
+            const validations = await this.getETLValidations(filters);
+            
+            // Estatísticas com defaults explícitos
+            const stats = {
+                total: 0,
+                successful: 0,
+                failed: 0,
+                phases: {},
+                avgDuration: 0,
+                totalErrors: 0,
+                totalWarnings: 0,
+                qualityScore: 0,
+                dataIncomplete: false
+            };
+            
+            if (validations.length === 0) {
+                console.info('ℹ️ ETL Stats: Nenhuma validação encontrada');
+                return stats;
+            }
+            
+            stats.total = validations.length;
+            let totalDuration = 0;
+            let incompleteCount = 0;
+            
+            for (const validation of validations) {
+                try {
+                    // Usar original_success se disponível, senão success
+                    const actualSuccess = (typeof validation.original_success === 'boolean') 
+                        ? validation.original_success 
+                        : validation.success;
+                        
+                    if (actualSuccess) {
+                        stats.successful++;
+                    } else {
+                        stats.failed++;
+                    }
+                    
+                    // Duração com default seguro
+                    const duration = (typeof validation.duration === 'number') ? validation.duration : 0;
+                    totalDuration += duration;
+                    
+                    // Contadores de errors/warnings com arrays seguros
+                    stats.totalErrors += Array.isArray(validation.errors) ? validation.errors.length : 0;
+                    stats.totalWarnings += Array.isArray(validation.warnings) ? validation.warnings.length : 0;
+                    
+                    // Estatísticas por fase
+                    const phase = validation.phase || 'unknown';
+                    if (!stats.phases[phase]) {
+                        stats.phases[phase] = {
+                            total: 0,
+                            successful: 0,
+                            failed: 0,
+                            avgDuration: 0
+                        };
+                    }
+                    
+                    stats.phases[phase].total++;
+                    if (actualSuccess) {
+                        stats.phases[phase].successful++;
+                    } else {
+                        stats.phases[phase].failed++;
+                    }
+                    
+                    // Detectar dados incompletos
+                    if (!validation.validation_id || !validation.phase) {
+                        incompleteCount++;
+                    }
+                    
+                } catch (validationError) {
+                    console.warn('⚠️ ETL Stats: erro ao processar validação individual:', validationError.message);
+                    incompleteCount++;
+                }
+            }
+            
+            // Calcular médias com verificação de divisão por zero
+            if (stats.total > 0) {
+                stats.avgDuration = Math.round(totalDuration / stats.total);
+                stats.qualityScore = Math.round((stats.successful / stats.total) * 100);
+            }
+            
+            stats.dataIncomplete = incompleteCount > 0;
+            
+            if (stats.dataIncomplete) {
+                console.warn(`⚠️ ETL Stats: ${incompleteCount} registros com dados incompletos`);
+            }
+            
+            console.log(`📈 ETL Stats: Quality Score ${stats.qualityScore}% (${stats.total} validações)`);
+            return stats;
+            
+        } catch (error) {
+            console.error('❌ ETL Stats: Erro ao calcular (retornando stats padrão):', error.message);
+            return {
+                total: 0,
+                successful: 0,
+                failed: 0,
+                phases: {},
+                avgDuration: 0,
+                totalErrors: 0,
+                totalWarnings: 0,
+                qualityScore: 0,
+                dataIncomplete: true,
+                error: error.message
+            };
+        }
+    }
+    
+    /**
+     * Remove validações ETL antigas com handling seguro
+     * @param {number} daysToKeep - Dias de histórico para manter
+     * @returns {Promise<number>} Número de registros removidos (nunca falha)
+     */
+    async cleanupETLValidations(daysToKeep = 30) {
+        try {
+            if (!this.initialized) {
+                await this.initialize();
+            }
+            
+            // Validação de parâmetro
+            let actualDaysToKeep = 30;
+            if (typeof daysToKeep === 'number' && daysToKeep > 0 && daysToKeep <= 365) {
+                actualDaysToKeep = daysToKeep;
+            } else {
+                console.warn(`⚠️ ETL Cleanup: daysToKeep inválido (${daysToKeep}), usando 30`);
+            }
+            
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - actualDaysToKeep);
+            const cutoffTimestamp = cutoffDate.toISOString();
+            
+            const deletedCount = await this.db.etl_validations
+                .where('timestamp')
+                .below(cutoffTimestamp)
+                .delete();
+                
+            if (deletedCount > 0) {
+                console.log(`🧹 ETL Cleanup: ${deletedCount} validações antigas removidas`);
+            } else {
+                console.log('🧹 ETL Cleanup: Nenhuma validação antiga para remover');
+            }
+            
+            return deletedCount;
+            
+        } catch (error) {
+            console.error('❌ ETL Cleanup: Erro na limpeza (continuando):', error.message);
+            return 0;
+        }
+    }
+    
     /**
      * Fecha conexão com o banco
      */
