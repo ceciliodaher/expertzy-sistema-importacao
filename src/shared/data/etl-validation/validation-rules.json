@@ -1,0 +1,158 @@
+{
+  "versao": "2025.1", 
+  "data_atualizacao": "2025-09-29",
+  "fonte": "Sistema Expertzy - ETL Validation Rules",
+
+  "campos_obrigatorios": {
+    "di_basica": [
+      "numero_di",
+      "data_registro",
+      "adicoes", 
+      "importador_cnpj",
+      "importador_nome",
+      "urf_despacho_codigo",
+      "modalidade_codigo"
+    ],
+    "adicao": [
+      "numero_adicao",
+      "ncm",
+      "descricao_mercadoria", 
+      "valor_moeda_negociacao"
+    ],
+    "importador": [
+      "importador_cnpj",
+      "importador_nome"
+    ]
+  },
+
+  "validacao_formatos": {
+    "numero_di": {
+      "tipo": "string",
+      "tamanho_minimo": 10,
+      "pattern": "^\\d{8,12}$",
+      "descricao": "Número da DI deve conter entre 8 e 12 dígitos"
+    },
+    "cnpj": {
+      "tipo": "string", 
+      "tamanho_exato": 14,
+      "pattern": "^\\d{14}$",
+      "descricao": "CNPJ deve conter exatamente 14 dígitos"
+    },
+    "ncm": {
+      "tipo": "string",
+      "tamanho_exato": 8, 
+      "pattern": "^\\d{8}$",
+      "descricao": "NCM deve conter exatamente 8 dígitos"
+    },
+    "uf": {
+      "tipo": "string",
+      "tamanho_exato": 2,
+      "valores_validos": ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"],
+      "descricao": "UF deve ser código válido de estado brasileiro"
+    }
+  },
+
+  "validacao_valores": {
+    "monetarios": {
+      "tipo": "number",
+      "valor_minimo": 0,
+      "valor_maximo": 999999999,
+      "decimais_maximos": 2,
+      "descricao": "Valores monetários devem ser números não-negativos"
+    },
+    "taxa_cambio": {
+      "tipo": "number", 
+      "valor_minimo": 0.0001,
+      "valor_maximo": 100,
+      "decimais_maximos": 8,
+      "descricao": "Taxa de câmbio deve estar dentro de faixa realística"
+    },
+    "conversao_tolerancia": {
+      "percentual": 0.01,
+      "absoluto": 0.01,
+      "descricao": "Tolerância para validação de conversões monetárias"
+    }
+  },
+
+  "operacoes_etl": {
+    "suportadas": [
+      "xml_to_di_processing",
+      "data_transformation", 
+      "storage_validation",
+      "export_preparation"
+    ],
+    "contexto_obrigatorio": [
+      "source",
+      "operation"
+    ]
+  },
+
+  "limites_processamento": {
+    "tamanho_maximo_dados": 52428800,
+    "tamanho_aviso_dados": 10485760,
+    "timeout_validacao_ms": 30000,
+    "max_adicoes_por_di": 999,
+    "descricoes": {
+      "tamanho_maximo_dados": "50MB - Limite máximo de dados para processamento",
+      "tamanho_aviso_dados": "10MB - Limite para aviso de dados grandes",
+      "timeout_validacao_ms": "30 segundos - Timeout para validações",
+      "max_adicoes_por_di": "999 - Máximo de adições por DI"
+    }
+  },
+
+  "mensagens_erro": {
+    "campo_obrigatorio_ausente": "Campo obrigatório ausente: {campo}",
+    "campo_obrigatorio_vazio": "Campo obrigatório está vazio: {campo}",
+    "formato_invalido": "Formato inválido para {campo}: {valor}. {descricao}",
+    "valor_fora_limite": "Valor fora dos limites para {campo}: {valor}. Limite: {min} a {max}",
+    "array_vazio": "{campo} deve conter pelo menos um elemento",
+    "tipo_invalido": "{campo} deve ser {tipo_esperado}, recebido: {tipo_recebido}",
+    "operacao_nao_suportada": "Operação ETL não suportada: {operacao}",
+    "contexto_invalido": "Context deve conter campo obrigatório: {campo}",
+    "limite_dados_excedido": "Dados excedem limite de processamento: {tamanho} > {limite}",
+    "dados_grandes_aviso": "Dados são grandes ({tamanho}MB) - processamento pode ser lento",
+    "inconsistencia_conversao": "Inconsistência na conversão {moeda1}/{moeda2}: esperado {esperado}, recebido {recebido}"
+  },
+
+  "validacao_contexto": {
+    "campos_obrigatorios": ["source", "operation"],
+    "campos_opcionais": ["xmlSource", "extractionSuccess", "requiresDatabase"],
+    "valores_boolean": {
+      "extractionSuccess": [true, false],
+      "requiresDatabase": [true, false]
+    }
+  },
+
+  "tolerancias": {
+    "conversao_monetaria": {
+      "absoluta": 0.01,
+      "descricao": "1 centavo de tolerância para conversões monetárias"
+    },
+    "arredondamento": {
+      "casas_decimais": 2,
+      "metodo": "bankers_rounding"
+    }
+  },
+
+  "configuracao_validacao": {
+    "fase_post_extraction": {
+      "validar_campos_obrigatorios": true,
+      "validar_estrutura_adicoes": true, 
+      "validar_dados_importador": true,
+      "validar_consistencia_monetaria": true,
+      "validar_contexto_extracao": true
+    },
+    "fase_pre_processing": {
+      "validar_estrutura_entrada": true,
+      "validar_contexto_obrigatorio": true,
+      "validar_precondicoes_etl": true,
+      "validar_tamanho_dados": true
+    }
+  },
+
+  "observacoes": {
+    "principios": "NO FALLBACKS - todas as validações falham explicitamente",
+    "nomenclatura": "Usa exclusivamente campos definidos no DIProcessor.js",
+    "arquitetura": "Segue princípios SOLID para extensibilidade"
+  }
+}
