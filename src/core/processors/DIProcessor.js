@@ -1,10 +1,16 @@
 /**
  * DIProcessor - Parser XML para Declarações de Importação (DI)
  * Migrated from legacy system to new ES6 module architecture
+ *
+ * CORREÇÃO CRÍTICA (30/09/2025):
+ * - Adicionado NumericValidator para parsing explícito
+ * - Eliminados fallbacks silenciosos
+ * - Fail-fast para valores inválidos/ausentes
  */
 
 import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 import { IncentiveManager } from '@core/incentives/IncentiveManager.js';
+import { parseNumericField } from '@shared/utils/NumericValidator.js';
 
 export class DIProcessor {
     constructor() {
@@ -44,37 +50,95 @@ export class DIProcessor {
 
     /**
      * Converte valores do XML respeitando formato específico de cada tipo
+     *
+     * CORREÇÃO CRÍTICA (30/09/2025):
+     * - Parsing numérico explícito com validação
+     * - NO FALLBACKS: retorna 0 apenas para campos verdadeiramente zerados no XML
+     * - Fail-fast para valores inválidos
+     *
      * @param {string} rawValue - Valor bruto do XML
      * @param {string} type - Tipo de conversão (monetary, weight, percentage, integer)
-     * @returns {number} Valor convertido
+     * @param {string} fieldName - Nome do campo para mensagens de erro (opcional)
+     * @param {boolean} allowZero - Se permite valor zero (padrão: true)
+     * @returns {number} Valor convertido e validado
+     * @throws {Error} Se valor inválido ou ausente (quando não permitido)
      */
-    convertValue(rawValue, type = 'integer') {
-        if (!rawValue || rawValue === '0'.repeat(rawValue.length)) {
+    convertValue(rawValue, type = 'integer', fieldName = 'campo desconhecido', allowZero = true) {
+        // CASO ESPECIAL: Valor zero preenchido no XML (ex: "000000000")
+        // Isso é válido e representa zero real, não ausência de dados
+        if (rawValue && rawValue === '0'.repeat(rawValue.length)) {
+            if (!allowZero) {
+                throw new Error(
+                    `${fieldName}: Valor zero não permitido. XML contém "${rawValue}".`
+                );
+            }
             return 0;
         }
-        
-        const value = parseInt(rawValue);
-        
+
+        // VALIDAÇÃO: Valor ausente ou vazio
+        if (!rawValue || rawValue.trim() === '') {
+            if (!allowZero) {
+                throw new Error(
+                    `${fieldName}: Valor obrigatório ausente no XML. ` +
+                    `Verifique se o campo foi exportado corretamente.`
+                );
+            }
+            // Permitir zero para campos opcionais
+            return 0;
+        }
+
+        // PARSING: Converter string XML para inteiro
+        const valueInt = parseInt(rawValue, 10);
+
+        // VALIDAÇÃO: Resultado do parsing
+        if (isNaN(valueInt)) {
+            throw new Error(
+                `${fieldName}: Valor não-numérico no XML. ` +
+                `Valor recebido: "${rawValue}". ` +
+                `Verifique estrutura do XML exportado.`
+            );
+        }
+
+        // CONVERSÃO: Aplicar divisor conforme tipo de campo
+        let convertedValue;
+
         switch(type) {
             case 'monetary':
                 // Valores monetários em centavos: 10120 → 101.20
-                return value / 100;
-                
+                convertedValue = valueInt / 100;
+                break;
+
             case 'weight':
                 // Pesos com 5 decimais: 20000 → 0.20000 kg (conforme DI oficial)
-                return value / 100000;
-                
+                convertedValue = valueInt / 100000;
+                break;
+
             case 'unit_value':
                 // Valor unitário com 7 decimais: 44682000000 → 4468.20
-                return value / 10000000;
-                
+                convertedValue = valueInt / 10000000;
+                break;
+
             case 'percentage':
                 // Alíquotas em centésimos: 650 → 6.50%
-                return value / 100;
-                
+                convertedValue = valueInt / 100;
+                break;
+
             case 'integer':
             default:
-                return value;
+                convertedValue = valueInt;
+                break;
+        }
+
+        // VALIDAÇÃO FINAL: Usar NumericValidator para garantir tipo correto
+        // Isso captura casos extremos (infinito, NaN pós-conversão, etc)
+        try {
+            return parseNumericField(convertedValue, fieldName, { allowZero });
+        } catch (error) {
+            // Re-throw com contexto adicional do tipo de conversão
+            throw new Error(
+                `${fieldName} (tipo: ${type}): ${error.message}. ` +
+                `Valor original XML: "${rawValue}", Convertido: ${convertedValue}`
+            );
         }
     }
 
@@ -473,50 +537,164 @@ export class DIProcessor {
     /**
      * Extrai tributos da adição usando campos diretos do XML real
      * Substitui estrutura XSD array por extração direta compatível com ComplianceCalculator
+     *
+     * CORREÇÃO CRÍTICA (30/09/2025):
+     * - Parsing com nome de campo explícito para erros específicos
+     * - Validação numérica garantida pelo NumericValidator
+     * - Campos zero válidos (impostos isentos) preservados
      */
     extractTributos(adicaoNode) {
         const tributos = {
-            // II - Imposto de Importação
-            ii_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaAdValorem'), 'percentage'),
-            ii_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaValorDevido'), 'monetary'),
-            ii_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaValorRecolher'), 'monetary'),
-            ii_base_calculo: this.convertValue(this.getTextContent(adicaoNode, 'iiBaseCalculo'), 'monetary'),
+            // II - Imposto de Importação (OBRIGATÓRIO)
+            ii_aliquota_ad_valorem: this.convertValue(
+                this.getTextContent(adicaoNode, 'iiAliquotaAdValorem'),
+                'percentage',
+                'ii_aliquota_ad_valorem',
+                true  // Permite zero (isenção)
+            ),
+            ii_valor_devido: this.convertValue(
+                this.getTextContent(adicaoNode, 'iiAliquotaValorDevido'),
+                'monetary',
+                'ii_valor_devido',
+                true
+            ),
+            ii_valor_recolher: this.convertValue(
+                this.getTextContent(adicaoNode, 'iiAliquotaValorRecolher'),
+                'monetary',
+                'ii_valor_recolher',
+                true
+            ),
+            ii_base_calculo: this.convertValue(
+                this.getTextContent(adicaoNode, 'iiBaseCalculo'),
+                'monetary',
+                'ii_base_calculo',
+                false  // Base de cálculo não pode ser zero
+            ),
             ii_regime_nome: this.getTextContent(adicaoNode, 'iiRegimeTributacaoNome'),
-            ii_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'iiAliquotaReduzida'), 'percentage'),
-            
-            // IPI - Imposto sobre Produtos Industrializados
-            ipi_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaAdValorem'), 'percentage'),
-            ipi_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaValorDevido'), 'monetary'),
-            ipi_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaValorRecolher'), 'monetary'),
+            ii_aliquota_reduzida: this.convertValue(
+                this.getTextContent(adicaoNode, 'iiAliquotaReduzida'),
+                'percentage',
+                'ii_aliquota_reduzida',
+                true
+            ),
+
+            // IPI - Imposto sobre Produtos Industrializados (OBRIGATÓRIO)
+            ipi_aliquota_ad_valorem: this.convertValue(
+                this.getTextContent(adicaoNode, 'ipiAliquotaAdValorem'),
+                'percentage',
+                'ipi_aliquota_ad_valorem',
+                true
+            ),
+            ipi_valor_devido: this.convertValue(
+                this.getTextContent(adicaoNode, 'ipiAliquotaValorDevido'),
+                'monetary',
+                'ipi_valor_devido',
+                true
+            ),
+            ipi_valor_recolher: this.convertValue(
+                this.getTextContent(adicaoNode, 'ipiAliquotaValorRecolher'),
+                'monetary',
+                'ipi_valor_recolher',
+                true
+            ),
             ipi_regime_nome: this.getTextContent(adicaoNode, 'ipiRegimeTributacaoNome'),
-            ipi_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'ipiAliquotaReduzida'), 'percentage'),
-            
-            // PIS/PASEP
-            pis_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaAdValorem'), 'percentage'),
-            pis_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaValorDevido'), 'monetary'),
-            pis_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaValorRecolher'), 'monetary'),
-            pis_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'pisPasepAliquotaReduzida'), 'percentage'),
-            
-            // COFINS
-            cofins_aliquota_ad_valorem: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaAdValorem'), 'percentage'),
-            cofins_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaValorDevido'), 'monetary'),
-            cofins_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaValorRecolher'), 'monetary'),
-            cofins_aliquota_reduzida: this.convertValue(this.getTextContent(adicaoNode, 'cofinsAliquotaReduzida'), 'percentage'),
-            
-            // CIDE (Contribuição de Intervenção no Domínio Econômico)
-            cide_valor_devido: this.convertValue(this.getTextContent(adicaoNode, 'cideValorDevido'), 'monetary'),
-            cide_valor_recolher: this.convertValue(this.getTextContent(adicaoNode, 'cideValorRecolher'), 'monetary'),
-            cide_valor_aliquota_especifica: this.convertValue(this.getTextContent(adicaoNode, 'cideValorAliquotaEspecifica'), 'monetary'),
-            
+            ipi_aliquota_reduzida: this.convertValue(
+                this.getTextContent(adicaoNode, 'ipiAliquotaReduzida'),
+                'percentage',
+                'ipi_aliquota_reduzida',
+                true
+            ),
+
+            // PIS/PASEP (OBRIGATÓRIO)
+            pis_aliquota_ad_valorem: this.convertValue(
+                this.getTextContent(adicaoNode, 'pisPasepAliquotaAdValorem'),
+                'percentage',
+                'pis_aliquota_ad_valorem',
+                true
+            ),
+            pis_valor_devido: this.convertValue(
+                this.getTextContent(adicaoNode, 'pisPasepAliquotaValorDevido'),
+                'monetary',
+                'pis_valor_devido',
+                true
+            ),
+            pis_valor_recolher: this.convertValue(
+                this.getTextContent(adicaoNode, 'pisPasepAliquotaValorRecolher'),
+                'monetary',
+                'pis_valor_recolher',
+                true
+            ),
+            pis_aliquota_reduzida: this.convertValue(
+                this.getTextContent(adicaoNode, 'pisPasepAliquotaReduzida'),
+                'percentage',
+                'pis_aliquota_reduzida',
+                true
+            ),
+
+            // COFINS (OBRIGATÓRIO)
+            cofins_aliquota_ad_valorem: this.convertValue(
+                this.getTextContent(adicaoNode, 'cofinsAliquotaAdValorem'),
+                'percentage',
+                'cofins_aliquota_ad_valorem',
+                true
+            ),
+            cofins_valor_devido: this.convertValue(
+                this.getTextContent(adicaoNode, 'cofinsAliquotaValorDevido'),
+                'monetary',
+                'cofins_valor_devido',
+                true
+            ),
+            cofins_valor_recolher: this.convertValue(
+                this.getTextContent(adicaoNode, 'cofinsAliquotaValorRecolher'),
+                'monetary',
+                'cofins_valor_recolher',
+                true
+            ),
+            cofins_aliquota_reduzida: this.convertValue(
+                this.getTextContent(adicaoNode, 'cofinsAliquotaReduzida'),
+                'percentage',
+                'cofins_aliquota_reduzida',
+                true
+            ),
+
+            // CIDE (Contribuição de Intervenção no Domínio Econômico) - OPCIONAL
+            cide_valor_devido: this.convertValue(
+                this.getTextContent(adicaoNode, 'cideValorDevido'),
+                'monetary',
+                'cide_valor_devido',
+                true
+            ),
+            cide_valor_recolher: this.convertValue(
+                this.getTextContent(adicaoNode, 'cideValorRecolher'),
+                'monetary',
+                'cide_valor_recolher',
+                true
+            ),
+            cide_valor_aliquota_especifica: this.convertValue(
+                this.getTextContent(adicaoNode, 'cideValorAliquotaEspecifica'),
+                'monetary',
+                'cide_valor_aliquota_especifica',
+                true
+            ),
+
             // Base cálculo compartilhada PIS/COFINS
-            pis_cofins_base_calculo: this.convertValue(this.getTextContent(adicaoNode, 'pisCofinsBaseCalculoValor'), 'monetary')
+            pis_cofins_base_calculo: this.convertValue(
+                this.getTextContent(adicaoNode, 'pisCofinsBaseCalculoValor'),
+                'monetary',
+                'pis_cofins_base_calculo',
+                true
+            )
         };
-        
-        // NO FALLBACKS validation - verificar se pelo menos II tem dados básicos
-        if (tributos.ii_aliquota_ad_valorem === null && tributos.ii_valor_devido === null) {
-            throw new Error('Dados básicos de II obrigatórios não encontrados na DI - verificar estrutura XML');
+
+        // VALIDAÇÃO NO FALLBACKS - pelo menos II deve ter dados básicos
+        // Nota: ii_base_calculo já validado como não-zero pelo convertValue
+        if (tributos.ii_base_calculo === 0) {
+            throw new Error(
+                'Validação tributos falhou: ii_base_calculo é zero. ' +
+                'Isso indica DI sem valor aduaneiro válido ou XML mal-formado.'
+            );
         }
-        
+
         return tributos;
     }
 

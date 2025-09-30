@@ -125,11 +125,40 @@ export class CalculationValidator {
                 throw new Error(`Imposto ${tax.toUpperCase()} ausente no cálculo - obrigatório para validação`);
             }
             
-            // ETAPA 2: Aceitar valores zero como isenção legítima (DI é fonte da verdade)
-            const diValue = adicao.tributos[`${tax}_valor_devido`] ?? 0;        // null/undefined = erro
-            const calculatedValue = calculation.impostos[tax].valor_devido ?? 0; // null/undefined = erro  
-            const diRate = adicao.tributos[`${tax}_aliquota_ad_valorem`] ?? 0;   // null/undefined = erro
-            const calculatedRate = calculation.impostos[tax].aliquota ?? 0;      // null/undefined = erro
+            // ETAPA 2: Validar tipos numéricos - NO FALLBACKS (correção crítica 30/09/2025)
+            // Valores devem ser number (incluindo zero para isenção), nunca null/undefined
+            const diValue = adicao.tributos[`${tax}_valor_devido`];
+            const calculatedValue = calculation.impostos[tax].valor_devido;
+            const diRate = adicao.tributos[`${tax}_aliquota_ad_valorem`];
+            const calculatedRate = calculation.impostos[tax].aliquota;
+
+            // VALIDAÇÃO NO FALLBACKS: Campos devem existir e ser numéricos
+            if (typeof diValue !== 'number') {
+                throw new Error(
+                    `${tax.toUpperCase()}_valor_devido ausente ou inválido na DI (adição ${adicao.numero_adicao}). ` +
+                    `Tipo: ${typeof diValue}. DIProcessor deve garantir tipos numéricos.`
+                );
+            }
+            if (typeof calculatedValue !== 'number') {
+                throw new Error(
+                    `${tax.toUpperCase()}_valor_devido ausente ou inválido no cálculo. ` +
+                    `Tipo: ${typeof calculatedValue}. ComplianceCalculator deve garantir estrutura correta.`
+                );
+            }
+            if (typeof diRate !== 'number') {
+                throw new Error(
+                    `${tax.toUpperCase()}_aliquota_ad_valorem ausente ou inválida na DI (adição ${adicao.numero_adicao}). ` +
+                    `Tipo: ${typeof diRate}. DIProcessor deve garantir tipos numéricos.`
+                );
+            }
+            if (typeof calculatedRate !== 'number') {
+                throw new Error(
+                    `${tax.toUpperCase()}_aliquota ausente ou inválida no cálculo. ` +
+                    `Tipo: ${typeof calculatedRate}. ComplianceCalculator deve garantir estrutura correta.`
+                );
+            }
+
+            // Nota: Zero é válido (isenção), validação acima garante que é number
 
             test.details = {
                 di_valor: diValue,

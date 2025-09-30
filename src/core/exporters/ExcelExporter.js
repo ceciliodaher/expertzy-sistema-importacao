@@ -19,32 +19,21 @@ export class ExcelExporter {
 
     /**
      * Main export method - generates complete multi-sheet workbook using ExcelDataMapper
-     * @param {Object} diData - Complete DI data from DIProcessor.getComprehensiveDIData()
+     * KISS: Aceita apenas numeroDI, dados carregados automaticamente do IndexedDB
+     * @param {string} numeroDI - Número da DI a ser exportada
      */
-    async export(diData) {
-        // Validações sem fallbacks
-        if (!diData) {
-            throw new Error('ExcelExporter: diData é obrigatório');
-        }
-        
-        if (!diData.numero_di) {
-            throw new Error('ExcelExporter: numero_di é obrigatório');
-        }
-        
-        if (!diData.adicoes) {
-            throw new Error('ExcelExporter: adicoes é obrigatório');
-        }
-        
-        if (diData.adicoes.length === 0) {
-            throw new Error('ExcelExporter: DI deve conter pelo menos uma adição');
+    async export(numeroDI) {
+        // Validação KISS - apenas numeroDI obrigatório
+        if (!numeroDI) {
+            throw new Error('ExcelExporter: numeroDI é obrigatório');
         }
 
         console.log('📊 ExcelExporter: Iniciando export usando ExcelDataMapper...');
-        console.log(`📋 DI ${diData.numero_di} possui ${diData.adicoes.length} adições`);
+        console.log(`📋 DI ${numeroDI} será carregada do banco`);
 
         try {
-            // Inicializar ExcelDataMapper com dados consolidados
-            this.mapper = new ExcelDataMapper(diData);
+            // KISS: ExcelDataMapper carrega dados do banco automaticamente
+            this.mapper = new ExcelDataMapper(numeroDI);
             await this.mapper.initialize();
 
             // Obter mapeamentos de todas as abas
@@ -64,7 +53,7 @@ export class ExcelExporter {
             }
             
             // Generate filename with DI number and date
-            const filename = this.generateFilename(diData.numero_di);
+            const filename = this.generateFilename(numeroDI);
             
             // Export file with ExcelJS (full formatting support)
             const arquivoBuffer = await this.workbook.xlsx.writeBuffer();

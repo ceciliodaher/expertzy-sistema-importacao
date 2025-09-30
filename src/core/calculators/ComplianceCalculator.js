@@ -1,17 +1,23 @@
 /**
  * ComplianceCalculator.js - Phase 1: Compliance Tax Calculator
  * Migrated from legacy system to new ES6 module architecture
- * 
+ *
  * Handles ONLY mandatory tax calculations for import compliance
  * Focus: II, IPI, PIS, COFINS, ICMS with correct expense inclusion
  * NO business logic, NO pricing, NO scenario analysis
- * 
+ *
  * CRITICAL FIX: Proper SISCOMEX inclusion in ICMS tax base
  * PERFORMANCE FIX: Single calculation execution (no repetitions)
+ *
+ * CORREÇÃO CRÍTICA (30/09/2025):
+ * - Adicionada validação numérica explícita
+ * - NO FALLBACKS: Fail-fast para valores inválidos
+ * - Garante tipos numéricos em todos os cálculos
  */
 
 import ProductMemoryManager from '@core/memory/ProductMemoryManager.js';
 import IndexedDBManager from '@services/database/IndexedDBManager.js';
+import { isNumericValue } from '@shared/utils/NumericValidator.js';
 
 export class ComplianceCalculator {
     constructor() {
@@ -747,17 +753,47 @@ export class ComplianceCalculator {
 
     /**
      * Calcula II - Imposto de Importação
+     *
+     * CORREÇÃO CRÍTICA (30/09/2025):
+     * - Validação numérica explícita dos tributos
+     * - NO FALLBACKS: Erro explícito se valores ausentes
      */
     calcularII(adicao, valoresBase) {
-        if (!adicao.tributos || adicao.tributos.ii_aliquota_ad_valorem === null || adicao.tributos.ii_aliquota_ad_valorem === undefined) {
-            throw new Error('Dados de II não encontrados na DI');
+        // Validação estrutural
+        if (!adicao.tributos) {
+            throw new Error(`Estrutura tributos ausente na adição ${adicao.numero_adicao}`);
         }
-        
-        // Usar valores já extraídos da DI (conforme POP de Impostos)
+
+        // Validação numérica explícita - NO FALLBACKS
+        if (!isNumericValue(adicao.tributos.ii_aliquota_ad_valorem)) {
+            throw new Error(
+                `ii_aliquota_ad_valorem inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.ii_aliquota_ad_valorem}. ` +
+                `DIProcessor deve garantir parsing numérico.`
+            );
+        }
+
+        if (!isNumericValue(adicao.tributos.ii_valor_devido)) {
+            throw new Error(
+                `ii_valor_devido inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.ii_valor_devido}. ` +
+                `DIProcessor deve garantir parsing numérico.`
+            );
+        }
+
+        if (!isNumericValue(valoresBase.cif_brl)) {
+            throw new Error(
+                `cif_brl inválido nos valores base. ` +
+                `Tipo: ${typeof valoresBase.cif_brl}. ` +
+                `Verifique processamento de valores.`
+            );
+        }
+
+        // Usar valores validados da DI
         const aliquota = adicao.tributos.ii_aliquota_ad_valorem;
         const valorDevido = adicao.tributos.ii_valor_devido;
         const baseCalculo = valoresBase.cif_brl;
-        
+
         return {
             aliquota: aliquota,
             base_calculo: baseCalculo,
@@ -768,18 +804,38 @@ export class ComplianceCalculator {
     }
 
     /**
-     * Calcula IPI 
+     * Calcula IPI
+     *
+     * CORREÇÃO CRÍTICA (30/09/2025):
+     * - Validação numérica explícita dos tributos
+     * - NO FALLBACKS: Erro explícito se valores ausentes
      */
     calcularIPI(adicao, valoresBase, ii) {
-        if (!adicao.tributos || adicao.tributos.ipi_aliquota_ad_valorem === null || adicao.tributos.ipi_aliquota_ad_valorem === undefined) {
-            throw new Error('Dados de IPI não encontrados na DI');
+        // Validação estrutural
+        if (!adicao.tributos) {
+            throw new Error(`Estrutura tributos ausente na adição ${adicao.numero_adicao}`);
         }
-        
-        // Usar valores já extraídos da DI (conforme POP de Impostos)
+
+        // Validação numérica explícita - NO FALLBACKS
+        if (!isNumericValue(adicao.tributos.ipi_aliquota_ad_valorem)) {
+            throw new Error(
+                `ipi_aliquota_ad_valorem inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.ipi_aliquota_ad_valorem}.`
+            );
+        }
+
+        if (!isNumericValue(adicao.tributos.ipi_valor_devido)) {
+            throw new Error(
+                `ipi_valor_devido inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.ipi_valor_devido}.`
+            );
+        }
+
+        // Usar valores validados da DI
         const aliquota = adicao.tributos.ipi_aliquota_ad_valorem;
         const valorDevido = adicao.tributos.ipi_valor_devido;
         const baseCalculo = valoresBase.cif_brl + ii.valor_devido;
-        
+
         return {
             aliquota: aliquota,
             base_calculo: baseCalculo,
@@ -791,17 +847,37 @@ export class ComplianceCalculator {
 
     /**
      * Calcula PIS
+     *
+     * CORREÇÃO CRÍTICA (30/09/2025):
+     * - Validação numérica explícita dos tributos
+     * - NO FALLBACKS: Erro explícito se valores ausentes
      */
     calcularPIS(adicao, valoresBase) {
-        if (!adicao.tributos || adicao.tributos.pis_aliquota_ad_valorem === null || adicao.tributos.pis_aliquota_ad_valorem === undefined) {
-            throw new Error('Dados de PIS não encontrados na DI');
+        // Validação estrutural
+        if (!adicao.tributos) {
+            throw new Error(`Estrutura tributos ausente na adição ${adicao.numero_adicao}`);
         }
-        
-        // Usar valores já extraídos da DI (conforme POP de Impostos)
+
+        // Validação numérica explícita - NO FALLBACKS
+        if (!isNumericValue(adicao.tributos.pis_aliquota_ad_valorem)) {
+            throw new Error(
+                `pis_aliquota_ad_valorem inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.pis_aliquota_ad_valorem}.`
+            );
+        }
+
+        if (!isNumericValue(adicao.tributos.pis_valor_devido)) {
+            throw new Error(
+                `pis_valor_devido inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.pis_valor_devido}.`
+            );
+        }
+
+        // Usar valores validados da DI
         const aliquota = adicao.tributos.pis_aliquota_ad_valorem;
         const valorDevido = adicao.tributos.pis_valor_devido;
         const baseCalculo = valoresBase.cif_brl;
-        
+
         return {
             aliquota: aliquota,
             base_calculo: baseCalculo,
@@ -812,17 +888,37 @@ export class ComplianceCalculator {
 
     /**
      * Calcula COFINS
+     *
+     * CORREÇÃO CRÍTICA (30/09/2025):
+     * - Validação numérica explícita dos tributos
+     * - NO FALLBACKS: Erro explícito se valores ausentes
      */
     calcularCOFINS(adicao, valoresBase) {
-        if (!adicao.tributos || adicao.tributos.cofins_aliquota_ad_valorem === null || adicao.tributos.cofins_aliquota_ad_valorem === undefined) {
-            throw new Error('Dados de COFINS não encontrados na DI');
+        // Validação estrutural
+        if (!adicao.tributos) {
+            throw new Error(`Estrutura tributos ausente na adição ${adicao.numero_adicao}`);
         }
-        
-        // Usar valores já extraídos da DI (conforme POP de Impostos)
+
+        // Validação numérica explícita - NO FALLBACKS
+        if (!isNumericValue(adicao.tributos.cofins_aliquota_ad_valorem)) {
+            throw new Error(
+                `cofins_aliquota_ad_valorem inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.cofins_aliquota_ad_valorem}.`
+            );
+        }
+
+        if (!isNumericValue(adicao.tributos.cofins_valor_devido)) {
+            throw new Error(
+                `cofins_valor_devido inválido na adição ${adicao.numero_adicao}. ` +
+                `Tipo: ${typeof adicao.tributos.cofins_valor_devido}.`
+            );
+        }
+
+        // Usar valores validados da DI
         const aliquota = adicao.tributos.cofins_aliquota_ad_valorem;
         const valorDevido = adicao.tributos.cofins_valor_devido;
         const baseCalculo = valoresBase.cif_brl;
-        
+
         return {
             aliquota: aliquota,
             base_calculo: baseCalculo,

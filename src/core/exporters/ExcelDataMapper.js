@@ -12,41 +12,41 @@
  */
 
 import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
+import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class ExcelDataMapper {
-    constructor(diData) {
-        // Validações sem fallbacks - campos obrigatórios
-        if (!diData) {
-            throw new Error('ExcelDataMapper: diData é obrigatório');
+    constructor(numeroDI) {
+        // KISS: Constructor único recebe apenas numeroDI
+        if (!numeroDI) {
+            throw new Error('ExcelDataMapper: numeroDI é obrigatório');
         }
         
-        if (!diData.numero_di) {
-            throw new Error('ExcelDataMapper: numero_di é obrigatório');
-        }
-        
-        if (!diData.adicoes) {
-            throw new Error('ExcelDataMapper: adicoes é obrigatório');
-        }
-        
-        if (!Array.isArray(diData.adicoes)) {
-            throw new Error('ExcelDataMapper: adicoes deve ser um array');
-        }
-        
-        if (diData.adicoes.length === 0) {
-            throw new Error('ExcelDataMapper: DI deve conter pelo menos uma adição');
-        }
-        
-        this.diData = diData;
+        this.numeroDI = numeroDI;
+        this.diData = null;
         this.config = null;
         this.sheetMappings = [];
     }
     
     /**
-     * Inicializa o mapper carregando configurações
-     * Deve ser chamado antes de usar os métodos de mapeamento
+     * Inicializa o mapper carregando dados do banco e configurações
+     * KISS: Um método, uma responsabilidade completa
      */
     async initialize() {
-        // Carregar configuração do sistema
+        // ETAPA 1: Carregar dados da DI do IndexedDB
+        const dbManager = IndexedDBManager.getInstance();
+        await dbManager.initialize();
+        
+        this.diData = await dbManager.getDI(this.numeroDI);
+        if (!this.diData) {
+            throw new Error(`ExcelDataMapper: DI ${this.numeroDI} não encontrada no banco de dados`);
+        }
+        
+        console.log(`✅ ExcelDataMapper: DI ${this.numeroDI} carregada do banco com ${this.diData.adicoes?.length || 0} adições`);
+        
+        // ETAPA 2: Validação rigorosa - nomenclatura oficial DIProcessor
+        this._validateDIData();
+        
+        // ETAPA 3: Carregar configuração do sistema
         const configLoader = new ConfigLoader();
         const fullConfig = await configLoader.loadConfig('config.json');
         
@@ -66,11 +66,64 @@ export class ExcelDataMapper {
         this.incoterms = fullConfig.incoterms_suportados;
         this.systemInfo = fullConfig.configuracoes_gerais;
         
-        // Validar configurações obrigatórias
+        // ETAPA 4: Validar configurações obrigatórias
         this._validateConfig();
         
-        // Inicializar mapeamentos após carregar config
+        // ETAPA 5: Inicializar mapeamentos após carregar config
         await this._initializeMappings();
+    }
+    
+    /**
+     * Valida estrutura de dados da DI seguindo nomenclatura oficial DIProcessor
+     * PRINCÍPIO NO FALLBACKS: Falha explícita para campos obrigatórios
+     * @private
+     */
+    _validateDIData() {
+        if (!this.diData) {
+            throw new Error('ExcelDataMapper: diData é obrigatório após carregamento do banco');
+        }
+        
+        // Validação número da DI
+        if (!this.diData.numero_di) {
+            throw new Error('ExcelDataMapper: numero_di é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        // Validação IMPORTADOR - nomenclatura oficial DIProcessor (estrutura aninhada)
+        if (!this.diData.importador) {
+            throw new Error('ExcelDataMapper: importador é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        if (!this.diData.importador.cnpj) {
+            throw new Error('ExcelDataMapper: importador.cnpj é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        if (!this.diData.importador.nome) {
+            throw new Error('ExcelDataMapper: importador.nome é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        if (!this.diData.importador.endereco_uf) {
+            throw new Error('ExcelDataMapper: importador.endereco_uf é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        // Validação ADIÇÕES
+        if (!this.diData.adicoes) {
+            throw new Error('ExcelDataMapper: adicoes é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        if (!Array.isArray(this.diData.adicoes)) {
+            throw new Error('ExcelDataMapper: adicoes deve ser um array - nomenclatura oficial DIProcessor');
+        }
+        
+        if (this.diData.adicoes.length === 0) {
+            throw new Error('ExcelDataMapper: DI deve conter pelo menos uma adição');
+        }
+        
+        // Validação valores monetários obrigatórios
+        if (typeof this.diData.valor_aduaneiro_total_brl !== 'number') {
+            throw new Error('ExcelDataMapper: valor_aduaneiro_total_brl deve ser numérico');
+        }
+        
+        console.log(`✅ ExcelDataMapper: Validação rigorosa aprovada para DI ${this.diData.numero_di}`);
     }
     
     /**
@@ -174,12 +227,12 @@ export class ExcelDataMapper {
             throw new Error('ExcelDataMapper: data_registro obrigatório para Capa');
         }
         
-        if (!diData.importador_cnpj) {
-            throw new Error('ExcelDataMapper: importador_cnpj obrigatório para Capa');
+        if (!diData.importador.cnpj) {
+            throw new Error('ExcelDataMapper: importador.cnpj obrigatório para Capa');
         }
         
-        if (!diData.importador_nome) {
-            throw new Error('ExcelDataMapper: importador_nome obrigatório para Capa');
+        if (!diData.importador.nome) {
+            throw new Error('ExcelDataMapper: importador.nome obrigatório para Capa');
         }
         
         if (!this.systemInfo.versao) {
@@ -195,9 +248,9 @@ export class ExcelDataMapper {
                 numero_di: diData.numero_di,
                 data_registro: diData.data_registro,
                 importador: {
-                    cnpj: diData.importador_cnpj,
-                    nome: diData.importador_nome,
-                    uf: diData.importador_endereco_uf
+                    cnpj: diData.importador.cnpj,
+                    nome: diData.importador.nome,
+                    uf: diData.importador.endereco_uf
                 },
                 urf_despacho: {
                     codigo: diData.urf_despacho_codigo,
@@ -224,21 +277,21 @@ export class ExcelDataMapper {
     mapImportadorSheet() {
         const diData = this.diData;
         
-        // Validar campos obrigatórios
-        if (!diData.importador_cnpj) {
-            throw new Error('ExcelDataMapper: importador_cnpj obrigatório');
+        // Validar campos obrigatórios - estrutura aninhada oficial
+        if (!diData.importador.cnpj) {
+            throw new Error('ExcelDataMapper: importador.cnpj obrigatório');
         }
         
-        if (!diData.importador_nome) {
-            throw new Error('ExcelDataMapper: importador_nome obrigatório');
+        if (!diData.importador.nome) {
+            throw new Error('ExcelDataMapper: importador.nome obrigatório');
         }
         
         // Representante é opcional - verificar explicitamente
         let representante = null;
-        if (diData.importador_representante_nome) {
+        if (diData.importador.representante_nome) {
             representante = {
-                nome: diData.importador_representante_nome,
-                cpf: diData.importador_representante_cpf
+                nome: diData.importador.representante_nome,
+                cpf: diData.importador.representante_cpf
             };
         }
         
@@ -247,20 +300,20 @@ export class ExcelDataMapper {
             type: 'importador',
             data: {
                 identificacao: {
-                    cnpj: diData.importador_cnpj,
-                    nome: diData.importador_nome,
-                    telefone: diData.importador_telefone
+                    cnpj: diData.importador.cnpj,
+                    nome: diData.importador.nome,
+                    telefone: diData.importador.telefone
                 },
                 endereco: {
-                    logradouro: diData.importador_endereco_logradouro,
-                    numero: diData.importador_endereco_numero,
-                    complemento: diData.importador_endereco_complemento,
-                    bairro: diData.importador_endereco_bairro,
-                    cidade: diData.importador_endereco_cidade,
-                    municipio: diData.importador_endereco_municipio,
-                    uf: diData.importador_endereco_uf,
-                    cep: diData.importador_endereco_cep,
-                    completo: diData.importador_endereco_completo
+                    logradouro: diData.importador.endereco_logradouro,
+                    numero: diData.importador.endereco_numero,
+                    complemento: diData.importador.endereco_complemento,
+                    bairro: diData.importador.endereco_bairro,
+                    cidade: diData.importador.endereco_cidade,
+                    municipio: diData.importador.endereco_municipio,
+                    uf: diData.importador.endereco_uf,
+                    cep: diData.importador.endereco_cep,
+                    completo: diData.importador.endereco_completo
                 },
                 representante: representante
             }

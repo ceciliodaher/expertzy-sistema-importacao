@@ -7,6 +7,9 @@ import { ExcelProfessionalStyles } from '@shared/utils/excel-professional-styles
 
 export class MultiAdditionExporter {
     constructor(diData) {
+        // Validação rigorosa NO FALLBACKS
+        this._validateDIData(diData);
+        
         this.di = diData;
         this.empresa = 'EXPERTZY';
         this.subtitulo = 'RESUMO MULTI-ADIÇÃO';
@@ -14,6 +17,81 @@ export class MultiAdditionExporter {
         this.versao = '1.0.0';
         
         console.log('📊 MultiAdditionExporter: Inicializando com DI:', diData.numero_di);
+    }
+    
+    /**
+     * Valida dados obrigatórios seguindo nomenclatura oficial
+     * PRINCÍPIO NO FALLBACKS: Falha explícita se dados ausentes
+     * @private
+     */
+    _validateDIData(diData) {
+        if (!diData) {
+            throw new Error('MultiAdditionExporter: diData é obrigatório');
+        }
+        
+        if (!diData.numero_di) {
+            throw new Error('MultiAdditionExporter: numero_di é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        if (!diData.importador || !diData.importador.nome) {
+            throw new Error('MultiAdditionExporter: importador.nome é obrigatório - nomenclatura oficial DIProcessor');
+        }
+        
+        if (!diData.adicoes || !Array.isArray(diData.adicoes)) {
+            throw new Error('MultiAdditionExporter: adicoes deve ser array - nomenclatura oficial DIProcessor');
+        }
+        
+        if (diData.adicoes.length === 0) {
+            throw new Error('MultiAdditionExporter: DI deve conter pelo menos uma adição');
+        }
+        
+        // Validar cada adição
+        diData.adicoes.forEach((adicao, index) => {
+            this._validateAdicao(adicao, index);
+        });
+    }
+    
+    /**
+     * Valida estrutura de uma adição
+     * @private
+     */
+    _validateAdicao(adicao, index) {
+        if (typeof adicao.valor_reais !== 'number') {
+            throw new Error(`MultiAdditionExporter: Adição ${index + 1} - valor_reais deve ser numérico`);
+        }
+        
+        if (typeof adicao.peso_liquido !== 'number') {
+            throw new Error(`MultiAdditionExporter: Adição ${index + 1} - peso_liquido deve ser numérico`);
+        }
+        
+        if (!adicao.tributos) {
+            throw new Error(`MultiAdditionExporter: Adição ${index + 1} - tributos é obrigatório`);
+        }
+        
+        // Validar tributos obrigatórios (valores e alíquotas)
+        const tributosObrigatorios = [
+            'ii_valor_devido', 'ipi_valor_devido', 'pis_valor_devido', 'cofins_valor_devido',
+            'ii_aliquota_ad_valorem', 'ipi_aliquota_ad_valorem', 'pis_aliquota_ad_valorem', 'cofins_aliquota_ad_valorem'
+        ];
+        tributosObrigatorios.forEach(tributo => {
+            if (typeof adicao.tributos[tributo] !== 'number') {
+                throw new Error(`MultiAdditionExporter: Adição ${index + 1} - tributos.${tributo} deve ser numérico`);
+            }
+        });
+        
+        // Validar campos monetários obrigatórios
+        if (typeof adicao.valor_moeda_negociacao !== 'number') {
+            throw new Error(`MultiAdditionExporter: Adição ${index + 1} - valor_moeda_negociacao deve ser numérico`);
+        }
+        
+        // Validar campos de texto obrigatórios (nomenclatura oficial)
+        if (!adicao.fornecedor_nome) {
+            throw new Error(`MultiAdditionExporter: Adição ${index + 1} - fornecedor_nome é obrigatório`);
+        }
+        
+        if (!adicao.condicao_venda_incoterm) {
+            throw new Error(`MultiAdditionExporter: Adição ${index + 1} - condicao_venda_incoterm é obrigatório`);
+        }
     }
     
     /**
@@ -74,7 +152,7 @@ export class MultiAdditionExporter {
         worksheet.addRow(['DI Número:', this.di.numero_di]);
         worksheet.addRow(['Data Registro:', this.di.data_registro]);
         worksheet.addRow(['Total de Adições:', this.di.adicoes.length]);
-        worksheet.addRow(['Importador:', this.di.importador?.nome || 'N/A']);
+        worksheet.addRow(['Importador:', this.di.importador.nome]);
         worksheet.addRow(['']);
         worksheet.addRow(['TOTAIS CONSOLIDADOS']);
         worksheet.addRow(['']);
@@ -88,12 +166,13 @@ export class MultiAdditionExporter {
         let totalCOFINS = 0;
         
         this.di.adicoes.forEach(adicao => {
-            totalCIF += adicao.valor_reais || 0;
-            totalWeight += adicao.peso_liquido || 0;
-            totalII += adicao.tributos?.ii_valor_devido || 0;
-            totalIPI += adicao.tributos?.ipi_valor_devido || 0;
-            totalPIS += adicao.tributos?.pis_valor_devido || 0;
-            totalCOFINS += adicao.tributos?.cofins_valor_devido || 0;
+            // Dados validados no constructor - sem fallbacks
+            totalCIF += adicao.valor_reais;
+            totalWeight += adicao.peso_liquido;
+            totalII += adicao.tributos.ii_valor_devido;
+            totalIPI += adicao.tributos.ipi_valor_devido;
+            totalPIS += adicao.tributos.pis_valor_devido;
+            totalCOFINS += adicao.tributos.cofins_valor_devido;
         });
         
         data.push(
@@ -132,31 +211,30 @@ export class MultiAdditionExporter {
         this.di.adicoes.forEach(adicao => {
             const taxa_cambio = this.di.taxa_cambio;  // CORREÇÃO CRÍTICA: usar taxa única da DI (NO FALLBACKS)
             
-            const totalFederal = (adicao.tributos?.ii_valor_devido || 0) +
-                               (adicao.tributos?.ipi_valor_devido || 0) +
-                               (adicao.tributos?.pis_valor_devido || 0) +
-                               (adicao.tributos?.cofins_valor_devido || 0);
+            const totalFederal = (adicao.tributos.ii_valor_devido ) +
+                               (adicao.tributos.ipi_valor_devido ) +
+                               (adicao.tributos.pis_valor_devido ) +
+                               (adicao.tributos.cofins_valor_devido );
             
             data.push([
                 adicao.numero_adicao,
                 adicao.ncm,
                 adicao.descricao_ncm,
-                adicao.fornecedor?.nome || 'N/A',
-                adicao.valor_moeda_negociacao || 0,
-                adicao.valor_reais || 0,
+                adicao.fornecedor_nome,
+                adicao.valor_moeda_negociacao ,
+                adicao.valor_reais ,
                 taxa_cambio.toFixed(6),
-                adicao.peso_liquido || 0,
-                adicao.tributos?.ii_aliquota_ad_valorem || 0,
-                adicao.tributos?.ii_valor_devido || 0,
-                adicao.tributos?.ipi_aliquota_ad_valorem || 0,
-                adicao.tributos?.ipi_valor_devido || 0,
-                adicao.tributos?.pis_aliquota_ad_valorem || 0,
-                adicao.tributos?.pis_valor_devido || 0,
-                adicao.tributos?.cofins_aliquota_ad_valorem || 0,
-                adicao.tributos?.cofins_valor_devido || 0,
+                adicao.peso_liquido ,
+                adicao.tributos.ii_aliquota_ad_valorem ,
+                adicao.tributos.ii_valor_devido ,
+                adicao.tributos.ipi_aliquota_ad_valorem ,
+                adicao.tributos.ipi_valor_devido ,
+                adicao.tributos.pis_aliquota_ad_valorem ,
+                adicao.tributos.pis_valor_devido ,
+                adicao.tributos.cofins_aliquota_ad_valorem ,
+                adicao.tributos.cofins_valor_devido ,
                 totalFederal,
-                adicao.condicao_venda_incoterm || 'N/A'
-            ]);
+                adicao.condicao_venda_incoterm             ]);
         });
         
         // Add totals row
@@ -184,14 +262,14 @@ export class MultiAdditionExporter {
         ];
         
         let totalCargaTributaria = 0;
-        const totalCIF = this.di.adicoes.reduce((sum, a) => sum + (a.valor_reais || 0), 0);
+        const totalCIF = this.di.adicoes.reduce((sum, a) => sum + (a.valor_reais ), 0);
         
         this.di.adicoes.forEach(adicao => {
-            const cif = adicao.valor_reais || 0;
-            const ii = adicao.tributos?.ii_valor_devido || 0;
-            const ipi = adicao.tributos?.ipi_valor_devido || 0;
-            const pis = adicao.tributos?.pis_valor_devido || 0;
-            const cofins = adicao.tributos?.cofins_valor_devido || 0;
+            const cif = adicao.valor_reais ;
+            const ii = adicao.tributos.ii_valor_devido ;
+            const ipi = adicao.tributos.ipi_valor_devido ;
+            const pis = adicao.tributos.pis_valor_devido ;
+            const cofins = adicao.tributos.cofins_valor_devido ;
             
             const cargaTributaria = ii + ipi + pis + cofins;
             const aliquotaEfetiva = cif > 0 ? (cargaTributaria / cif * 100) : 0;
@@ -243,12 +321,12 @@ export class MultiAdditionExporter {
             }
             
             ncmGroups[ncm].adicoes.push(adicao.numero_adicao);
-            ncmGroups[ncm].totalCIF += adicao.valor_reais || 0;
-            ncmGroups[ncm].totalWeight += adicao.peso_liquido || 0;
-            ncmGroups[ncm].totalII += adicao.tributos?.ii_valor_devido || 0;
-            ncmGroups[ncm].totalIPI += adicao.tributos?.ipi_valor_devido || 0;
-            ncmGroups[ncm].totalPIS += adicao.tributos?.pis_valor_devido || 0;
-            ncmGroups[ncm].totalCOFINS += adicao.tributos?.cofins_valor_devido || 0;
+            ncmGroups[ncm].totalCIF += adicao.valor_reais ;
+            ncmGroups[ncm].totalWeight += adicao.peso_liquido ;
+            ncmGroups[ncm].totalII += adicao.tributos.ii_valor_devido ;
+            ncmGroups[ncm].totalIPI += adicao.tributos.ipi_valor_devido ;
+            ncmGroups[ncm].totalPIS += adicao.tributos.pis_valor_devido ;
+            ncmGroups[ncm].totalCOFINS += adicao.tributos.cofins_valor_devido ;
         });
         
         const data = [
@@ -290,12 +368,13 @@ export class MultiAdditionExporter {
         let totalCOFINS = 0;
         
         this.di.adicoes.forEach(adicao => {
-            totalCIF += adicao.valor_reais || 0;
-            totalWeight += adicao.peso_liquido || 0;
-            totalII += adicao.tributos?.ii_valor_devido || 0;
-            totalIPI += adicao.tributos?.ipi_valor_devido || 0;
-            totalPIS += adicao.tributos?.pis_valor_devido || 0;
-            totalCOFINS += adicao.tributos?.cofins_valor_devido || 0;
+            // Dados validados no constructor - sem fallbacks
+            totalCIF += adicao.valor_reais;
+            totalWeight += adicao.peso_liquido;
+            totalII += adicao.tributos.ii_valor_devido;
+            totalIPI += adicao.tributos.ipi_valor_devido;
+            totalPIS += adicao.tributos.pis_valor_devido;
+            totalCOFINS += adicao.tributos.cofins_valor_devido;
         });
         
         return {
@@ -352,17 +431,17 @@ export class MultiAdditionExporter {
             
             // Additions detail table
             const tableData = this.di.adicoes.map(adicao => {
-                const totalFederal = (adicao.tributos?.ii_valor_devido || 0) +
-                                   (adicao.tributos?.ipi_valor_devido || 0) +
-                                   (adicao.tributos?.pis_valor_devido || 0) +
-                                   (adicao.tributos?.cofins_valor_devido || 0);
+                const totalFederal = (adicao.tributos.ii_valor_devido ) +
+                                   (adicao.tributos.ipi_valor_devido ) +
+                                   (adicao.tributos.pis_valor_devido ) +
+                                   (adicao.tributos.cofins_valor_devido );
                 
                 return [
                     adicao.numero_adicao,
                     adicao.ncm,
                     adicao.descricao_ncm.substring(0, 30) + '...',
-                    `R$ ${(adicao.valor_reais || 0).toFixed(2)}`,
-                    `${(adicao.peso_liquido || 0).toFixed(2)} kg`,
+                    `R$ ${(adicao.valor_reais ).toFixed(2)}`,
+                    `${(adicao.peso_liquido ).toFixed(2)} kg`,
                     `R$ ${totalFederal.toFixed(2)}`
                 ];
             });

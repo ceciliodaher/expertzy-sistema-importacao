@@ -33,8 +33,12 @@ class ProductMemoryManager {
             
             const stored = await this.indexedDBManager.getConfig(this.storageKey);
             if (stored) {
-                this.products = stored.products || [];
-                this.lastSyncTime = stored.lastSyncTime || null;
+                // Validação rigorosa - sem fallbacks
+                if (!Array.isArray(stored.products)) {
+                    throw new Error('ProductMemoryManager: stored.products deve ser array');
+                }
+                this.products = stored.products;
+                this.lastSyncTime = stored.lastSyncTime; // null é válido para primeira inicialização
                 console.log(`✅ ProductMemoryManager: ${this.products.length} produtos carregados`);
             } else {
                 this.products = [];
@@ -66,34 +70,31 @@ class ProductMemoryManager {
             throw new Error('ProductMemoryManager não inicializado - chame initializeStorage() primeiro');
         }
         try {
+            // Validação rigorosa de campos obrigatórios - NO FALLBACKS
+            this._validateProductData(productData);
+            
             // Estrutura database-ready
             const product = {
                 id: this.generateProductId(),
-                di_number: productData.di_number || null,
-                addition_number: productData.addition_number || null,
-                ncm: productData.ncm || null,
-                description: productData.description || '',
-                quantity: productData.quantity || 0,
-                unit: productData.unit || 'UN',
-                weight_kg: productData.weight_kg || 0,
+                di_number: productData.di_number,
+                addition_number: productData.addition_number,
+                ncm: productData.ncm,
+                descricao_mercadoria: productData.descricao_mercadoria,
+                quantidade: productData.quantidade,
+                unidade_medida: productData.unidade_medida,
+                peso_liquido: productData.peso_liquido,
                 
-                // Custos Base (antes de créditos)
+                // Custos Base (antes de créditos) - todos validados
                 base_costs: {
                     cif_brl: this.validateCost(productData.cif_brl, 'CIF BRL'),
                     ii: this.validateCost(productData.ii, 'II'),
                     ipi: this.validateCost(productData.ipi, 'IPI'),
                     pis_import: this.validateCost(productData.pis_import, 'PIS'),
                     cofins_import: this.validateCost(productData.cofins_import, 'COFINS'),
-                    cofins_adicional: productData.cofins_adicional || 0, // Opcional
+                    cofins_adicional: this._validateOptionalCost(productData.cofins_adicional, 'COFINS Adicional'),
                     icms_import: this.validateCost(productData.icms_import, 'ICMS'),
-                    icms_st: productData.icms_st || 0, // Opcional
-                    expenses: {
-                        siscomex: productData.expenses?.siscomex || 0,
-                        afrmm: productData.expenses?.afrmm || 0,
-                        capatazia: productData.expenses?.capatazia || 0,
-                        armazenagem: productData.expenses?.armazenagem || 0,
-                        outras: productData.expenses?.outras || 0
-                    },
+                    icms_st: this._validateOptionalCost(productData.icms_st, 'ICMS ST'),
+                    expenses: this._validateExpenses(productData.expenses),
                     total_base_cost: 0 // Calculado abaixo
                 },
                 
@@ -146,21 +147,26 @@ class ProductMemoryManager {
         
         try {
             for (const [index, addition] of additions.entries()) {
-                // Para cada produto na adição
-                const products = addition.produtos || [addition]; // Se não tiver produtos, usa a própria adição
+                // Validar estrutura da adição - NO FALLBACKS
+                if (!addition.produtos || !Array.isArray(addition.produtos)) {
+                    throw new Error(`ProductMemoryManager: Adição ${index + 1} deve ter array de produtos`);
+                }
                 
-                for (const [prodIndex, product] of products.entries()) {
+                for (const [prodIndex, product] of addition.produtos.entries()) {
+                    // Validação rigorosa de cada produto
+                    this._validateProductFromDI(product, addition, index, prodIndex);
+                    
                     const productData = {
                         di_number: diNumber,
-                        addition_number: addition.numero_adicao || index + 1,
-                        ncm: addition.ncm || product.ncm,
-                        description: product.descricao || addition.descricao || '',
-                        quantity: product.quantidade || 0,
-                        unit: product.unidade || 'UN',
-                        weight_kg: product.peso_liquido || 0,
+                        addition_number: addition.numero_adicao,
+                        ncm: addition.ncm,
+                        description: product.descricao_mercadoria,
+                        quantity: product.quantidade,
+                        unit: product.unidade_medida,
+                        weight_kg: product.peso_liquido,
                         
                         // Custos da adição (rateados se múltiplos produtos)
-                        cif_brl: product.valor_unitario_brl * product.quantidade || 0,
+                        cif_brl: product.valor_unitario_brl * product.quantidade,
                         ii: this.extractTaxValue(calculations, 'ii', index),
                         ipi: this.extractTaxValue(calculations, 'ipi', index),
                         pis_import: this.extractTaxValue(calculations, 'pis', index),
@@ -490,6 +496,109 @@ class ProductMemoryManager {
             throw new Error('Estado da DI ausente - obrigatório para salvar produto');
         }
         return estado;
+    }
+
+    /**
+     * Valida dados obrigatórios do produto - NO FALLBACKS
+     * @private
+     */
+    _validateProductData(productData) {
+        if (!productData) {
+            throw new Error('ProductMemoryManager: productData é obrigatório');
+        }
+        
+        // Campos obrigatórios
+        if (!productData.di_number) {
+            throw new Error('ProductMemoryManager: di_number é obrigatório');
+        }
+        
+        if (!productData.addition_number) {
+            throw new Error('ProductMemoryManager: addition_number é obrigatório');
+        }
+        
+        if (!productData.ncm) {
+            throw new Error('ProductMemoryManager: ncm é obrigatório');
+        }
+        
+        if (!productData.descricao_mercadoria) {
+            throw new Error('ProductMemoryManager: descricao_mercadoria é obrigatório (nomenclatura oficial DIProcessor)');
+        }
+        
+        if (typeof productData.quantidade !== 'number' || productData.quantidade <= 0) {
+            throw new Error('ProductMemoryManager: quantidade deve ser numérico e positivo (nomenclatura oficial DIProcessor)');
+        }
+        
+        if (!productData.unidade_medida) {
+            throw new Error('ProductMemoryManager: unidade_medida é obrigatório (nomenclatura oficial DIProcessor)');
+        }
+        
+        if (typeof productData.peso_liquido !== 'number' || productData.peso_liquido < 0) {
+            throw new Error('ProductMemoryManager: peso_liquido deve ser numérico e não-negativo (nomenclatura oficial DIProcessor)');
+        }
+    }
+    
+    /**
+     * Valida custo opcional - pode ser 0 mas deve ser numérico
+     * @private
+     */
+    _validateOptionalCost(cost, costName) {
+        if (cost === undefined || cost === null) {
+            return 0; // Único caso onde permitimos default
+        }
+        if (typeof cost !== 'number' || cost < 0) {
+            throw new Error(`${costName} deve ser numérico e não-negativo`);
+        }
+        return cost;
+    }
+    
+    /**
+     * Valida estrutura de expenses - NO FALLBACKS
+     * @private
+     */
+    _validateExpenses(expenses) {
+        if (!expenses) {
+            throw new Error('ProductMemoryManager: expenses é obrigatório');
+        }
+        
+        const validatedExpenses = {};
+        const expenseTypes = ['siscomex', 'afrmm', 'capatazia', 'armazenagem', 'outras'];
+        
+        expenseTypes.forEach(type => {
+            if (typeof expenses[type] !== 'number' || expenses[type] < 0) {
+                throw new Error(`ProductMemoryManager: expenses.${type} deve ser numérico e não-negativo`);
+            }
+            validatedExpenses[type] = expenses[type];
+        });
+        
+        return validatedExpenses;
+    }
+    
+    /**
+     * Valida produto individual de DI - NO FALLBACKS
+     * @private
+     */
+    _validateProductFromDI(product, addition, additionIndex, productIndex) {
+        const context = `Adição ${additionIndex + 1}, Produto ${productIndex + 1}`;
+        
+        if (!product.descricao_mercadoria) {
+            throw new Error(`ProductMemoryManager: ${context} - descricao_mercadoria é obrigatório (nomenclatura oficial DIProcessor)`);
+        }
+        
+        if (typeof product.quantidade !== 'number' || product.quantidade <= 0) {
+            throw new Error(`ProductMemoryManager: ${context} - quantidade deve ser numérico e positivo`);
+        }
+        
+        if (!product.unidade_medida) {
+            throw new Error(`ProductMemoryManager: ${context} - unidade_medida é obrigatório (nomenclatura oficial DIProcessor)`);
+        }
+        
+        if (typeof product.peso_liquido !== 'number' || product.peso_liquido < 0) {
+            throw new Error(`ProductMemoryManager: ${context} - peso_liquido deve ser numérico e não-negativo`);
+        }
+        
+        if (typeof product.valor_unitario_brl !== 'number' || product.valor_unitario_brl < 0) {
+            throw new Error(`ProductMemoryManager: ${context} - valor_unitario_brl deve ser numérico e não-negativo`);
+        }
     }
 
     /**

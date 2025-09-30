@@ -873,54 +873,47 @@ class InterfacePrecificacao {
 
     /**
      * Carregar dados da DI do IndexedDB - INTEGRAÇÃO OBRIGATÓRIA
+     *
+     * CORREÇÃO CRÍTICA (30/09/2025):
+     * - Removidos workarounds parseFloat() - dados já validados na origem (DIProcessor)
+     * - Validação apenas de tipo, não conversão
+     * - Confia na Single Source of Truth (DIProcessor como PRIMARY CREATOR)
+     *
      * @param {Object} dadosDI - Dados da DI processados na Fase 1
      */
     carregarDadosDI(dadosDI) {
         this.validarInicializacao();
 
-        // Aplicar parsing numérico nos campos obrigatórios antes da validação
+        // VALIDAÇÃO (não conversão) - dados já devem ser numéricos vindos do DIProcessor
         if (dadosDI.totais) {
-            dadosDI.totais.valor_aduaneiro = parseFloat(dadosDI.totais.valor_aduaneiro);
-            dadosDI.totais.ii_devido = parseFloat(dadosDI.totais.ii_devido);
-            dadosDI.totais.ipi_devido = parseFloat(dadosDI.totais.ipi_devido);
-            dadosDI.totais.pis_devido = parseFloat(dadosDI.totais.pis_devido);
-            dadosDI.totais.cofins_devido = parseFloat(dadosDI.totais.cofins_devido);
-            dadosDI.totais.icms_devido = parseFloat(dadosDI.totais.icms_devido);
-            dadosDI.totais.despesas_aduaneiras = parseFloat(dadosDI.totais.despesas_aduaneiras);
-            
-            // Validar que conversão foi bem-sucedida - falhar se NaN
             const campos = ['valor_aduaneiro', 'ii_devido', 'ipi_devido', 'pis_devido', 'cofins_devido', 'icms_devido', 'despesas_aduaneiras'];
+
             for (const campo of campos) {
-                if (isNaN(dadosDI.totais[campo])) {
-                    throw new Error(`Campo ${campo} obrigatório inválido: deve ser numérico`);
+                // Validar tipo apenas - NO FALLBACKS, NO CONVERSIONS
+                if (typeof dadosDI.totais[campo] !== 'number') {
+                    throw new Error(
+                        `ERRO DE INTEGRAÇÃO: Campo ${campo} não é numérico. ` +
+                        `Tipo recebido: ${typeof dadosDI.totais[campo]}. ` +
+                        `Valor: ${dadosDI.totais[campo]}. ` +
+                        `DIProcessor DEVE garantir tipos numéricos na origem. ` +
+                        `Verifique se DIProcessor.extractTributos() está usando convertValue() corretamente.`
+                    );
+                }
+
+                // Validar que não é NaN ou Infinity
+                if (isNaN(dadosDI.totais[campo]) || !isFinite(dadosDI.totais[campo])) {
+                    throw new Error(
+                        `ERRO DE INTEGRAÇÃO: Campo ${campo} é ${isNaN(dadosDI.totais[campo]) ? 'NaN' : 'Infinity'}. ` +
+                        `Isso indica falha no parsing do DIProcessor.`
+                    );
                 }
             }
         }
 
-        // Aplicar parsing em outros campos numéricos se existirem
-        if (dadosDI.valor_aduaneiro !== undefined) {
-            dadosDI.valor_aduaneiro = parseFloat(dadosDI.valor_aduaneiro);
-            if (isNaN(dadosDI.valor_aduaneiro)) {
-                throw new Error('Campo valor_aduaneiro deve ser numérico');
-            }
-        }
-        if (dadosDI.valor_frete !== undefined) {
-            dadosDI.valor_frete = parseFloat(dadosDI.valor_frete);
-            if (isNaN(dadosDI.valor_frete)) {
-                throw new Error('Campo valor_frete deve ser numérico');
-            }
-        }
-        if (dadosDI.valor_seguro !== undefined) {
-            dadosDI.valor_seguro = parseFloat(dadosDI.valor_seguro);
-            if (isNaN(dadosDI.valor_seguro)) {
-                throw new Error('Campo valor_seguro deve ser numérico');
-            }
-        }
-
-        // Validar estrutura da DI rigorosamente
+        // Validar estrutura da DI rigorosamente (sem conversões)
         this.dadosDI = ValidadorParametros.validarDadosDI(dadosDI);
 
-        console.log(`✅ Dados da DI ${this.dadosDI.numero_di} carregados para precificação`);
+        console.log(`✅ Dados da DI ${this.dadosDI.numero_di} carregados para precificação (tipos validados)`);
     }
 
     /**
