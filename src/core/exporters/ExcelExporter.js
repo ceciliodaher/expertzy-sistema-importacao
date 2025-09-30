@@ -492,8 +492,250 @@ export class ExcelExporter {
         this.createPlaceholderSheet(worksheet, data, 'tributos');
     }
 
+    /**
+     * FASE 3: Cria aba 06A_Resumo_Custos consolidada
+     * Lista todas adições com custos desembolsados completos
+     */
     createResumoCustosSheetFromMapping(worksheet, data) {
-        this.createPlaceholderSheet(worksheet, data, 'resumo_custos');
+        // Validação NO FALLBACKS
+        if (!data || !Array.isArray(data)) {
+            throw new Error('ExcelExporter: data deve ser array de adições para Resumo de Custos');
+        }
+
+        // Obter produtos por adição do mapper
+        const produtosPorAdicao = this.mapper._mapearProdutosIndividuaisPorAdicao();
+
+        // Header principal
+        worksheet.mergeCells('A1:N1');
+        worksheet.getCell('A1').value = 'RESUMO DE CUSTOS DESEMBOLSADOS POR ADIÇÃO';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // Headers da tabela
+        const headers = [
+            'Adição', 'NCM', 'INCOTERM', 'Qtd Produtos',
+            'Valor Mercadoria R$', 'II', 'IPI', 'PIS', 'COFINS',
+            'ICMS Calculado', 'Incentivo ICMS', 'ICMS Desembolsado',
+            'Despesas Rateadas', 'Custo Total Desembolsado'
+        ];
+
+        headers.forEach((header, index) => {
+            const col = String.fromCharCode(65 + index); // A, B, C, ...
+            worksheet.getCell(`${col}${row}`).value = header;
+            worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        });
+        row++;
+
+        // Dados de cada adição
+        const startDataRow = row;
+        let totais = {
+            qtd_produtos: 0,
+            valor_mercadoria: 0,
+            ii: 0,
+            ipi: 0,
+            pis: 0,
+            cofins: 0,
+            icms_calculado: 0,
+            icms_incentivo: 0,
+            icms_desembolsado: 0,
+            despesas: 0,
+            custo_total: 0
+        };
+
+        data.forEach((adicao) => {
+            const dadosAdicao = produtosPorAdicao.get(adicao.numero_adicao);
+
+            if (!dadosAdicao) {
+                throw new Error(`ExcelExporter: Dados da adição ${adicao.numero_adicao} não encontrados`);
+            }
+
+            const rowData = [
+                adicao.numero_adicao,
+                adicao.ncm,
+                adicao.condicao_venda_incoterm,
+                dadosAdicao.produtos.length,
+                dadosAdicao.totais.valor_mercadoria,
+                dadosAdicao.totais.total_ii,
+                dadosAdicao.totais.total_ipi,
+                dadosAdicao.totais.total_pis,
+                dadosAdicao.totais.total_cofins,
+                dadosAdicao.totais.total_icms_calculado,
+                dadosAdicao.totais.total_icms_incentivo,
+                dadosAdicao.totais.total_icms_desembolsado,
+                dadosAdicao.despesas.total,
+                dadosAdicao.totais.custo_total_desembolsado
+            ];
+
+            rowData.forEach((valor, colIndex) => {
+                const col = String.fromCharCode(65 + colIndex);
+                worksheet.getCell(`${col}${row}`).value = valor;
+
+                // Aplicar formatação por coluna
+                if (colIndex === 0 || colIndex === 3) {
+                    // Adição e Qtd Produtos - número simples
+                    worksheet.getCell(`${col}${row}`).style = {
+                        border: this.styles.estilosExpertzy.valorMonetario.border
+                    };
+                } else if (colIndex === 1) {
+                    // NCM - estilo especial
+                    worksheet.getCell(`${col}${row}`).style = {
+                        ...this.styles.estilosExpertzy.valorMonetario,
+                        font: { name: 'Courier New', size: 10 }
+                    };
+                } else if (colIndex === 2) {
+                    // INCOTERM - texto
+                    worksheet.getCell(`${col}${row}`).style = {
+                        border: this.styles.estilosExpertzy.valorMonetario.border
+                    };
+                } else if (colIndex === 10) {
+                    // Incentivo ICMS - verde
+                    worksheet.getCell(`${col}${row}`).style = {
+                        ...this.styles.estilosExpertzy.valorMonetario,
+                        fill: {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFD4EDDA' }
+                        },
+                        font: {
+                            color: { argb: 'FF155724' }
+                        }
+                    };
+                } else if (colIndex === 11) {
+                    // ICMS Desembolsado - negrito
+                    worksheet.getCell(`${col}${row}`).style = {
+                        ...this.styles.estilosExpertzy.valorMonetario,
+                        font: { bold: true }
+                    };
+                } else if (colIndex === 13) {
+                    // Custo Total Desembolsado - azul destaque
+                    worksheet.getCell(`${col}${row}`).style = {
+                        ...this.styles.estilosExpertzy.valorMonetario,
+                        fill: {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFD9E8F5' }
+                        },
+                        font: {
+                            bold: true,
+                            color: { argb: 'FF1F3864' }
+                        }
+                    };
+                } else {
+                    // Outros valores monetários
+                    worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                }
+            });
+
+            // Acumular totais
+            totais.qtd_produtos += dadosAdicao.produtos.length;
+            totais.valor_mercadoria += dadosAdicao.totais.valor_mercadoria;
+            totais.ii += dadosAdicao.totais.total_ii;
+            totais.ipi += dadosAdicao.totais.total_ipi;
+            totais.pis += dadosAdicao.totais.total_pis;
+            totais.cofins += dadosAdicao.totais.total_cofins;
+            totais.icms_calculado += dadosAdicao.totais.total_icms_calculado;
+            totais.icms_incentivo += dadosAdicao.totais.total_icms_incentivo;
+            totais.icms_desembolsado += dadosAdicao.totais.total_icms_desembolsado;
+            totais.despesas += dadosAdicao.despesas.total;
+            totais.custo_total += dadosAdicao.totais.custo_total_desembolsado;
+
+            row++;
+        });
+
+        // Aplicar zebra striping
+        const endDataRow = row - 1;
+        if (endDataRow >= startDataRow) {
+            this.styles.applyZebraStriping(
+                worksheet,
+                startDataRow,
+                endDataRow,
+                0,
+                13  // 14 colunas (A-N)
+            );
+        }
+
+        // Linha de totais
+        row++;
+        const totaisRow = [
+            'TOTAL',
+            '',
+            '',
+            totais.qtd_produtos,
+            totais.valor_mercadoria,
+            totais.ii,
+            totais.ipi,
+            totais.pis,
+            totais.cofins,
+            totais.icms_calculado,
+            totais.icms_incentivo,
+            totais.icms_desembolsado,
+            totais.despesas,
+            totais.custo_total
+        ];
+
+        totaisRow.forEach((valor, colIndex) => {
+            const col = String.fromCharCode(65 + colIndex);
+            worksheet.getCell(`${col}${row}`).value = valor;
+
+            // Aplicar formatação especial para linha de totais
+            if (colIndex === 10) {
+                // Incentivo ICMS - verde com negrito
+                worksheet.getCell(`${col}${row}`).style = {
+                    ...this.styles.estilosExpertzy.valorMonetario,
+                    fill: {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFD4EDDA' }
+                    },
+                    font: {
+                        bold: true,
+                        color: { argb: 'FF155724' }
+                    }
+                };
+            } else if (colIndex === 13) {
+                // Custo Total - azul com negrito
+                worksheet.getCell(`${col}${row}`).style = {
+                    ...this.styles.estilosExpertzy.valorMonetario,
+                    fill: {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'FFD9E8F5' }
+                    },
+                    font: {
+                        bold: true,
+                        color: { argb: 'FF1F3864' }
+                    }
+                };
+            } else if (colIndex >= 4) {
+                // Valores monetários com negrito
+                worksheet.getCell(`${col}${row}`).style = {
+                    ...this.styles.estilosExpertzy.valorMonetario,
+                    font: { bold: true }
+                };
+            } else {
+                // Label "TOTAL" - header secundário
+                worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            }
+        });
+
+        // Ajustar larguras das colunas
+        worksheet.getColumn('A').width = 8;   // Adição
+        worksheet.getColumn('B').width = 12;  // NCM
+        worksheet.getColumn('C').width = 12;  // INCOTERM
+        worksheet.getColumn('D').width = 12;  // Qtd Produtos
+        worksheet.getColumn('E').width = 16;  // Valor Mercadoria
+        worksheet.getColumn('F').width = 12;  // II
+        worksheet.getColumn('G').width = 12;  // IPI
+        worksheet.getColumn('H').width = 11;  // PIS
+        worksheet.getColumn('I').width = 12;  // COFINS
+        worksheet.getColumn('J').width = 14;  // ICMS Calculado
+        worksheet.getColumn('K').width = 14;  // Incentivo ICMS
+        worksheet.getColumn('L').width = 16;  // ICMS Desembolsado
+        worksheet.getColumn('M').width = 16;  // Despesas Rateadas
+        worksheet.getColumn('N').width = 20;  // Custo Total Desembolsado
+
+        console.log(`✅ ExcelExporter: Aba Resumo Custos criada com ${data.length} adições`);
     }
 
     createNCMsSheetFromMapping(worksheet, data) {
