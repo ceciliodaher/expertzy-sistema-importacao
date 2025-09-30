@@ -256,7 +256,11 @@ export class ComplianceCalculator {
         
         // INTEGRAÇÃO: Salvar no IndexedDB (NO FALLBACKS)
         await this.atualizarDISalvaComCalculos(di, totaisConsolidados, despesasConsolidadas);
-        
+
+        // NOVO: Salvar dados consolidados para exportadores (CroquiNFExporter, ExcelExporter)
+        // Inclui produtos_individuais[] completo necessário para gerar croqui de NF
+        await this.salvarCalculoIndexedDB(di.numero_di, totaisConsolidados);
+
         // NOVO: Preparar e processar dados de precificação se PricingAdapter estiver disponível
         if (window.pricingAdapter) {
             try {
@@ -676,17 +680,13 @@ export class ComplianceCalculator {
                 calculo.totais_por_coluna = this.calcularTotaisPorColuna(adicao.adicoes);
             }
             
-            // Salvar cálculo na memória e no IndexedDB
+            // Salvar cálculo na memória
             this.salvarCalculoMemoria(calculo);
             this.lastCalculation = calculo;
-            
-            // NOVO: Salvar no IndexedDB para exportadores lerem
-            const numeroDI = adicao.numero_di || adicao.numeroDI || adicao.numero_adicao;
-            if (!numeroDI) {
-                throw new Error(`Número da DI não encontrado nos dados da adição. Propriedades disponíveis: ${Object.keys(adicao).join(', ')}`);
-            }
-            await this.salvarCalculoIndexedDB(numeroDI, calculo);
-            
+
+            // NOTA: Não salvamos mais cálculos individuais por adição no IndexedDB
+            // Os dados consolidados com produtos_individuais[] são salvos após calcularTodasAdicoes()
+
             console.log('✅ ComplianceCalculator: Cálculo de impostos concluído');
             console.log('📊 Resumo:', {
                 CIF: `R$ ${calculo.valores_base.cif_brl.toFixed(2)}`,

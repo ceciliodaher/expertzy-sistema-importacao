@@ -2,20 +2,20 @@
  * CroquiNFExporter - Módulo de Exportação de Croqui de Nota Fiscal
  * Sistema Expertzy - Importação e Precificação - IndexedDB Version
  * 
- * REFATORADO - SOLID PRINCIPLES:
- * - SINGLE RESPONSIBILITY: Apenas formata e exporta (não calcula)
+ * MIGRADO DO SISTEMA LEGADO PARA INDEXEDDB
+ * PRINCÍPIOS APLICADOS:
  * - NO FALLBACKS: Todas as dependências obrigatórias devem estar disponíveis
- * - READ-ONLY: Lê dados calculados do IndexedDB (não faz cálculos)
+ * - Explicit failures: Lançar exceções claras quando dados ausentes
+ * - IndexedDB-first: Dados persistidos e recuperados via IndexedDB
  * 
  * @author Sistema Expertzy
- * @version 3.0.0 - SOLID Refactoring
+ * @version 2.1.0 - IndexedDB Migration
  * @description Gera croqui de NF em Excel e PDF seguindo padrão brasileiro
  */
 
-import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 export class CroquiNFExporter {
-    constructor(diData) {
+    constructor(diData, calculosData = null, incentiveManager = null) {
         // NO FALLBACKS - validar dados obrigatórios
         if (!diData) {
             throw new Error('Dados da DI não disponíveis - obrigatórios para CroquiNFExporter');
@@ -25,17 +25,9 @@ export class CroquiNFExporter {
             throw new Error('Número da DI ausente - obrigatório para gerar croqui');
         }
         
-        // Validar que diData inclui dados completos do DIProcessor.getComprehensiveDIData()
-        if (!diData.metadata) {
-            throw new Error('metadata ausente - use DIProcessor.getComprehensiveDIData()');
-        }
-        
-        if (!diData.metadata.data_source || diData.metadata.data_source !== 'DIProcessor') {
-            throw new Error('diData deve vir de DIProcessor.getComprehensiveDIData()');
-        }
-        
-        this.di = diData;  // Dados completos já processados pelo DIProcessor
-        this.dbManager = IndexedDBManager.getInstance();  // Para ler dados calculados adicionais se necessário
+        this.di = diData;  // Dados já processados pelo DIProcessor
+        this.calculos = calculosData;  // Cálculos já feitos pelo ComplianceCalculator
+        this.incentiveManager = incentiveManager;  // Para gerar campos CST 51
         this.empresa = 'EXPERTZY';
         this.subtitulo = 'SISTEMA DE IMPORTAÇÃO E PRECIFICAÇÃO';
         this.versao = '2.1.0';
@@ -46,11 +38,11 @@ export class CroquiNFExporter {
         console.log('🏭 CroquiNFExporter v2.1: Inicializando com DI:', diData.numero_di);
         
         this.initializeStyles();
-        this.loadIncentiveConfig().then(async () => {
-            await this.prepareAllData();
-        }).catch(async (error) => {
+        this.loadIncentiveConfig().then(() => {
+            this.prepareAllData();
+        }).catch(error => {
             console.warn('⚠️ Erro ao carregar configuração de incentivos:', error);
-            await this.prepareAllData(); // Continuar sem incentivos
+            this.prepareAllData(); // Continuar sem incentivos
         });
     }
     
@@ -150,10 +142,10 @@ export class CroquiNFExporter {
     
     // ========== PREPARAÇÃO DE DADOS ==========
     
-    async prepareAllData() {
+    prepareAllData() {
         console.log('📊 Preparando dados do croqui...');
         this.header = this.prepareHeader();
-        this.produtos = await this.prepareProdutos();
+        this.produtos = this.prepareProdutos();
         this.totais = this.prepareTotais();
         console.log('✅ Dados preparados:', { 
             produtos: this.produtos.length, 
@@ -206,7 +198,7 @@ export class CroquiNFExporter {
         };
     }
     
-    async prepareProdutos() {
+    prepareProdutos() {
         const produtos = [];
         let itemCounter = 1;
         
@@ -214,34 +206,7 @@ export class CroquiNFExporter {
         if (this.calculos && this.calculos.produtos_individuais && this.calculos.produtos_individuais.length > 0) {
             console.log('📦 Usando produtos individuais já calculados:', this.calculos.produtos_individuais.length);
             
-            for (const produto of this.calculos.produtos_individuais) {
-                // FASE 2: Buscar dados da adição e produto correspondentes - OBRIGATÓRIO
-                const adicaoCorrespondente = this.di.adicoes.find(ad => ad.numero_adicao.toString().padStart(3, '0') === produto.adicao_numero);
-                
-                if (!adicaoCorrespondente) {
-                    throw new Error(`Adição ${produto.adicao_numero} não encontrada na DI - obrigatória para gerar croqui`);
-                }
-                
-                // Buscar produto dentro da adição
-                const produtoDI = adicaoCorrespondente.produtos ? adicaoCorrespondente.produtos.find(p => p.numero_sequencial_item === produto.numero_sequencial_item) : null;
-                
-                if (!produtoDI) {
-                    throw new Error(`Produto ${produto.numero_sequencial_item} da adição ${produto.adicao_numero} não encontrado na DI - obrigatório para croqui`);
-                }
-                
-                // Validar dados críticos
-                if (!adicaoCorrespondente.quantidade_estatistica) {
-                    throw new Error(`Quantidade estatística ausente na adição ${produto.adicao_numero} - obrigatória para croqui`);
-                }
-                
-                if (!adicaoCorrespondente.unidade_estatistica) {
-                    throw new Error(`Unidade estatística ausente na adição ${produto.adicao_numero} - obrigatória para croqui`);
-                }
-                
-                if (!adicaoCorrespondente.peso_liquido) {
-                    throw new Error(`Peso líquido ausente na adição ${produto.adicao_numero} - obrigatório para croqui`);
-                }
-                
+            this.calculos.produtos_individuais.forEach(produto => {
                 const produtoProcessado = {
                     // Identificação
                     adicao: produto.adicao_numero,
@@ -249,18 +214,16 @@ export class CroquiNFExporter {
                     descricao: this.formatDescription(produto.descricao),
                     ncm: produto.ncm,
                     
-                    // CORRIGIDO: Quantidades reais da DI - NO FALLBACKS
-                    peso_kg: adicaoCorrespondente.peso_liquido,
-                    quant_cx: produtoDI.quantidade, // Quantidade real do produto na DI
-                    quant_por_cx: this.extractQuantidadePorCaixa(produtoDI.descricao_mercadoria), // Extrair da descrição
-                    total_un: adicaoCorrespondente.quantidade_estatistica,
-                    unidade_real: await this.mapUnidade(adicaoCorrespondente.unidade_estatistica), // "QUILOGRAMA LIQUIDO" → "KG"
-                    unidade_comercial: await this.mapUnidade(produtoDI.unidade_medida), // Mapeada
+                    // Quantidades 
+                    peso_kg: 0, // Será calculado proporcionalmente
+                    quant_cx: 1,
+                    quant_por_cx: produto.quantidade || 1,
+                    total_un: produto.quantidade || 1,
                     
-                    // CORRIGIDO: Valores monetários reais - NO FALLBACKS
-                    valor_unitario_usd: produtoDI.valor_unitario_usd,
-                    valor_unitario: produtoDI.valor_unitario_brl,
-                    valor_total: produtoDI.valor_total_brl,
+                    // Valores monetários (já em BRL)
+                    valor_unitario_usd: 0, // Não usado no croqui
+                    valor_unitario: produto.valor_unitario_brl,
+                    valor_total: produto.valor_total_brl,
                     
                     // IMPOSTOS JÁ CALCULADOS POR ITEM (ItemCalculator)
                     bc_icms: produto.base_icms_item,
@@ -282,7 +245,7 @@ export class CroquiNFExporter {
                 
                 produtos.push(produtoProcessado);
                 itemCounter++;
-            }
+            });
             
         } else {
             // NO FALLBACKS - produtos individuais são obrigatórios
@@ -293,15 +256,40 @@ export class CroquiNFExporter {
     }
     
     prepareTotais() {
-        // REFATORADO: Não calcula mais, apenas lê dados já calculados
-        // Seguindo princípio Single Responsibility - cálculos movidos para ComplianceCalculator
+        // Calcular totais a partir dos produtos processados
+        const totais = {
+            base_calculo_icms: 0,
+            valor_icms: 0,
+            base_calculo_icms_st: 0,
+            valor_icms_st: 0,
+            valor_total_produtos: 0,
+            valor_frete: this.di.totais?.valor_frete,
+            valor_seguro: this.di.totais?.valor_seguro,
+            valor_desconto: 0,
+            outras_despesas: this.calculos?.despesas?.totais?.geral,
+            valor_ii: this.calculos?.impostos?.ii?.valor_devido,
+            valor_ipi: this.calculos?.impostos?.ipi?.valor_devido,
+            valor_pis: this.calculos?.impostos?.pis?.valor_devido,
+            valor_cofins: this.calculos?.impostos?.cofins?.valor_devido,
+            valor_total_nota: 0
+        };
         
-        if (!this.calculos.totais_relatorio) {
-            throw new Error('Totais do relatório não encontrados - execute ComplianceCalculator.calcularTotaisRelatorio() primeiro');
-        }
+        // Somar valores dos produtos
+        this.produtos.forEach(produto => {
+            totais.base_calculo_icms += produto.bc_icms;
+            totais.valor_icms += produto.valor_icms;
+            totais.valor_total_produtos += produto.valor_total;
+            totais.valor_ipi += produto.valor_ipi;
+            totais.valor_pis += produto.valor_pis;
+            totais.valor_cofins += produto.valor_cofins;
+        });
         
-        // Apenas retorna os totais já calculados
-        return this.calculos.totais_relatorio;
+        // ===== CALCULAR TOTAL DA NOTA CONFORME LEGISLAÇÃO =====
+        // Para importação, total da nota = Base ICMS (que já inclui mercadoria + tributos + despesas)
+        // O ICMS não é cobrado na importação (fica exonerado), mas a base é usada para o total
+        totais.valor_total_nota = totais.base_calculo_icms;
+        
+        return totais;
     }
     
     // ========== INCENTIVOS FISCAIS CST 51 ==========
@@ -528,9 +516,6 @@ export class CroquiNFExporter {
     // ========== GERAÇÃO EXCEL ==========
     
     async generateExcel() {
-        // Carregar dados calculados do IndexedDB se necessário
-        await this.loadCalculatedData();
-        
         try {
             console.log('📝 Iniciando geração do Excel...');
             
@@ -739,54 +724,9 @@ export class CroquiNFExporter {
         return ws;
     }
     
-    // ========== CARREGAR DADOS CALCULADOS ==========
-    
-    /**
-     * Carrega dados calculados do IndexedDB
-     * SOLID: Não calcula, apenas lê dados já calculados
-     */
-    async loadCalculatedData() {
-        try {
-            const numeroDI = this.di.numero_di;
-            
-            // Se já tem cálculos, não precisa buscar
-            if (this.calculos && this.calculos.totais_relatorio && this.calculos.produtos_individuais) {
-                console.log(`✅ CroquiNFExporter: Usando dados calculados já carregados para DI ${numeroDI}`);
-                return;
-            }
-            
-            // Buscar dados calculados no IndexedDB usando getConfig
-            const chave = `calculo_${numeroDI}`;
-            const calculosDB = await this.dbManager.getConfig(chave);
-            
-            if (!calculosDB) {
-                throw new Error(`Dados calculados não encontrados para DI ${numeroDI} - execute ComplianceCalculator primeiro`);
-            }
-            
-            // Validar campos obrigatórios
-            if (!calculosDB.totais_relatorio) {
-                throw new Error('Totais do relatório não encontrados - execute ComplianceCalculator.calcularTotaisRelatorio() primeiro');
-            }
-            
-            if (!calculosDB.produtos_individuais) {
-                throw new Error('Produtos individuais não encontrados - execute ItemCalculator primeiro');
-            }
-            
-            // Atualizar cálculos com dados do IndexedDB
-            this.calculos = calculosDB;
-            
-            console.log(`✅ CroquiNFExporter: Dados calculados carregados do IndexedDB para DI ${numeroDI}`);
-        } catch (error) {
-            console.error('Erro ao carregar dados calculados:', error);
-            throw error;
-        }
-    }
-    
     // ========== GERAÇÃO PDF ==========
     
     async generatePDF() {
-        // Carregar dados calculados do IndexedDB se necessário
-        await this.loadCalculatedData();
         try {
             console.log('📝 Iniciando geração do PDF...');
             
@@ -1051,7 +991,7 @@ export class CroquiNFExporter {
                 p.adicao,
                 p.descricao.substring(0, 35),
                 p.ncm,
-                p.unidade_real, // CORRIGIDO: Unidade real da DI
+                'KG', // Unidade original da DI
                 p.total_un.toFixed(2),
                 p.valor_unitario.toFixed(4),
                 p.valor_total.toFixed(2),
@@ -1062,12 +1002,12 @@ export class CroquiNFExporter {
                 p.aliq_ipi.toFixed(2)
             ]);
             
-            // CORRIGIDO: Usar dados reais da DI
+            // Usar dados diretos do XMLParser (já convertidos corretamente)
             const tableDataCorrected = this.produtos.map(p => [
                 p.adicao,
                 p.descricao.substring(0, 40),
                 p.ncm,
-                p.unidade_real, // CORRIGIDO: Unidade real da DI
+                'KG', // Unidade original da DI
                 p.total_un.toFixed(2), // Quantidade 
                 this.formatCurrency(p.valor_unitario), // Valor unitário formatado
                 this.formatCurrency(p.valor_total), // Valor total formatado
@@ -1326,76 +1266,6 @@ export class CroquiNFExporter {
         }
         throw new Error(`Alíquota IPI não encontrada para NCM ${ncm}`);
     }
-
-    /**
-     * Mapeia unidades de medida para formato padrão (ex: "QUILOGRAMA LIQUIDO" → "KG")
-     * @param {string} unidadeOriginal - Unidade original da DI
-     * @returns {Promise<string>} Unidade mapeada
-     */
-    async mapUnidade(unidadeOriginal) {
-        if (!unidadeOriginal) {
-            throw new Error('Unidade não fornecida - obrigatória para mapeamento');
-        }
-
-        const config = await this.loadUnitsMapping();
-        const mapeamento = config.mapeamento_unidades;
-        
-        const unidadeNormalizada = unidadeOriginal.toUpperCase().trim();
-        const unidadeMapeada = mapeamento[unidadeNormalizada];
-        
-        if (unidadeMapeada) {
-            return unidadeMapeada;
-        }
-        
-        // Se não tem mapeamento, usar a unidade original
-        return unidadeOriginal;
-    }
-
-    /**
-     * Carrega configuração de mapeamento de unidades
-     * @returns {Promise<Object>} Configuração de unidades
-     */
-    async loadUnitsMapping() {
-        if (!this.unitsMapping) {
-            const response = await fetch(new URL('../../shared/data/unidades-medida.json', import.meta.url));
-            if (!response.ok) {
-                throw new Error(`Erro ao carregar unidades-medida.json: ${response.status}`);
-            }
-            this.unitsMapping = await response.json();
-        }
-        return this.unitsMapping;
-    }
-
-    /**
-     * Extrai quantidade por caixa da descrição da mercadoria
-     * @param {string} descricao - Descrição da mercadoria
-     * @returns {number} Quantidade por caixa
-     */
-    extractQuantidadePorCaixa(descricao) {
-        if (!descricao) {
-            throw new Error('Descrição não fornecida - obrigatória para extrair quantidade por caixa');
-        }
-
-        // Padrões para detectar quantidade por caixa/embalagem
-        const patterns = [
-            /(\d+)\s*(?:un|und|unidades|pcs|peças|pçs)[\s\/]*(?:por|p|\/)\s*(?:caixa|cx|embalagem|emb)/i,
-            /(\d+)\s*(?:x|×)\s*\d+/i, // Formato "12x500g"
-            /(\d+)\s*(?:un|und|unidades|pcs|peças|pçs)/i // Quantidade simples
-        ];
-
-        for (const pattern of patterns) {
-            const match = descricao.match(pattern);
-            if (match) {
-                const quantidade = parseInt(match[1]);
-                if (!isNaN(quantidade) && quantidade > 0) {
-                    return quantidade;
-                }
-            }
-        }
-
-        // Se não conseguir extrair, retornar 1 como padrão
-        return 1;
-    }
 }
 
 // ========== FUNÇÕES GLOBAIS PARA INTEGRAÇÃO ==========
@@ -1411,15 +1281,17 @@ window.gerarCroquiPDFNovo = async function(diData, incentiveManager = null) {
         
         // Verificar se há cálculos disponíveis (pode vir de currentCalculation ou IndexedDB)
         let calculationData = window.currentCalculation;
-        
+
         // Se não há currentCalculation, tentar recuperar do IndexedDB
         if (!calculationData && window.dbManager) {
             try {
-                const diProcessadaKey = `di_processed_${diData.numero_di}`;
-                calculationData = await window.dbManager.getConfig(diProcessadaKey);
-                
+                // CORREÇÃO: Usar chave correta salva por ComplianceCalculator
+                const calculoKey = `calculo_${diData.numero_di}`;
+                calculationData = await window.dbManager.getConfig(calculoKey);
+
                 if (calculationData) {
                     console.log('✅ Cálculos recuperados do IndexedDB para gerar croqui');
+                    console.log('📦 Produtos individuais disponíveis:', calculationData.produtos_individuais?.length || 0);
                 }
             } catch (error) {
                 console.warn('⚠️ Erro ao recuperar cálculos do IndexedDB:', error);

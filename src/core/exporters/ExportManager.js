@@ -57,31 +57,50 @@ export class ExportManager {
 
     /**
      * Export to PDF using CroquiNFExporter
+     * Carrega calculosData do IndexedDB para passar ao exporter (legacy signature)
      */
     async exportPDF(diData) {
         try {
-            const croquiExporter = new CroquiNFExporter(diData);
+            // 1. Importar dependências
+            const { StoreKeys } = await import('@core/db/StoreKeyConstants.js');
+            const { IndexedDBManager } = await import('@services/database/IndexedDBManager.js');
+
+            // 2. Carregar calculosData do IndexedDB (NO FALLBACKS)
+            const dbManager = IndexedDBManager.getInstance();
+            const calculosData = await dbManager.getConfig(StoreKeys.CALCULO(diData.numero_di));
+
+            if (!calculosData) {
+                throw new Error(
+                    `Cálculos não encontrados para DI ${diData.numero_di} - ` +
+                    `execute ComplianceCalculator primeiro`
+                );
+            }
+
+            console.log(`✅ ExportManager: Cálculos carregados para DI ${diData.numero_di}`);
+
+            // 3. Instanciar com ambos parâmetros (legacy constructor signature)
+            const croquiExporter = new CroquiNFExporter(diData, calculosData);
             const buffer = await croquiExporter.generatePDF();
-            
+
             // Download do arquivo
             const blob = new Blob([buffer], { type: 'application/pdf' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            
+
             // Nome do arquivo com data
             const hoje = new Date().toISOString().slice(0, 10).replace(/-/g, '');
             a.download = `Croqui_NF_${diData.numero_di}_${hoje}.pdf`;
-            
+
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            
+
             URL.revokeObjectURL(url);
-            
+
             console.log('✅ ExportManager: PDF exportado com sucesso');
             return { success: true, filename: a.download };
-            
+
         } catch (error) {
             console.error('❌ ExportManager: Erro ao exportar PDF:', error);
             throw error;

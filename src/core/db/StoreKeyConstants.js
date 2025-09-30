@@ -23,13 +23,13 @@ export const StoreKeys = {
     /**
      * Chave para cálculos do ComplianceCalculator no store 'configs'
      * @param {string} numeroDI - Número da DI
-     * @returns {string} "calculo{numeroDI}"
+     * @returns {string} "calculo_{numeroDI}"
      */
     CALCULO: (numeroDI) => {
         if (!numeroDI) {
             throw new Error('StoreKeys.CALCULO: numeroDI é obrigatório');
         }
-        return `calculo${numeroDI}`;
+        return `calculo_${numeroDI}`;
     },
 
     /**
@@ -86,7 +86,7 @@ export class StoreKeyValidator {
      * @returns {boolean} true se válida
      */
     static isCalculoKey(key) {
-        return /^calculo\d+$/.test(key);
+        return /^calculo_\d+$/.test(key);
     }
 
     /**
