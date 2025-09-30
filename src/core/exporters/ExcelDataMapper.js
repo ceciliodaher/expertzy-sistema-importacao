@@ -161,7 +161,21 @@ export class ExcelDataMapper {
             throw new Error('ExcelDataMapper: configuracoes_gerais é obrigatório');
         }
     }
-    
+
+    /**
+     * Extrai código INCOTERM do objeto DIProcessor
+     * KISS: Acesso direto ao campo obrigatório
+     * @private
+     * @param {object} incotermData - INCOTERM object do DIProcessor
+     * @returns {string} Código INCOTERM
+     */
+    _extractIncotermCodigo(incotermData) {
+        if (!incotermData?.codigo) {
+            throw new Error('ExcelDataMapper: INCOTERM.codigo obrigatório ausente');
+        }
+        return incotermData.codigo;
+    }
+
     /**
      * Inicializa os mapeamentos de todas as abas
      * @private
@@ -263,7 +277,7 @@ export class ExcelDataMapper {
                 resumo: {
                     total_adicoes: diData.total_adicoes,
                     valor_aduaneiro: diData.valor_aduaneiro_total_brl,
-                    incoterm: diData.incoterm_identificado,
+                    incoterm: this._extractIncotermCodigo(diData.incoterm_identificado),
                     modalidade: diData.modalidade_nome
                 },
                 metadata: {
@@ -376,15 +390,14 @@ export class ExcelDataMapper {
             throw new Error('ExcelDataMapper: valor_aduaneiro_total_brl deve ser numérico');
         }
         
-        if (!diData.incoterm_identificado) {
-            throw new Error('ExcelDataMapper: incoterm_identificado é obrigatório');
-        }
-        
+        // Extrair e validar código INCOTERM
+        const incotermCodigo = this._extractIncotermCodigo(diData.incoterm_identificado);
+
         // Verificar se INCOTERM é suportado
-        if (!this.incoterms[diData.incoterm_identificado]) {
-            throw new Error(`ExcelDataMapper: INCOTERM ${diData.incoterm_identificado} não é suportado`);
+        if (!this.incoterms[incotermCodigo]) {
+            throw new Error(`ExcelDataMapper: INCOTERM ${incotermCodigo} não é suportado`);
         }
-        
+
         return {
             name: this.config.nomes_abas.valores,
             type: 'valores',
@@ -413,8 +426,8 @@ export class ExcelDataMapper {
                     data_conversao: diData.data_registro
                 },
                 incoterm: {
-                    codigo: diData.incoterm_identificado,
-                    descricao: this.incoterms[diData.incoterm_identificado]
+                    codigo: incotermCodigo,
+                    descricao: this.incoterms[incotermCodigo]
                 }
             }
         };
