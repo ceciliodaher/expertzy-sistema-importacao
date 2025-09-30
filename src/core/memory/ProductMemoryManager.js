@@ -223,57 +223,123 @@ class ProductMemoryManager {
     }
 
     /**
-     * Extrai valor de imposto dos cálculos
+     * Extrai valor de imposto dos cálculos - NO FALLBACKS
+     * Valida estrutura e falha explicitamente se dados ausentes
      */
     extractTaxValue(calculations, taxType, additionIndex) {
-        try {
-            if (calculations?.calculos_individuais?.[additionIndex]) {
-                const calc = calculations.calculos_individuais[additionIndex];
-                
-                switch(taxType) {
-                    case 'ii': return calc.impostos?.ii?.valor_devido || 0;
-                    case 'ipi': return calc.impostos?.ipi?.valor_devido || 0;
-                    case 'pis': return calc.impostos?.pis?.valor_devido || 0;
-                    case 'cofins': return calc.impostos?.cofins?.valor_devido || 0;
-                    case 'cofins_adicional': return calc.impostos?.cofins?.adicional || 0;
-                    case 'icms': return calc.impostos?.icms?.valor_devido || 0;
-                    case 'icms_st': return calc.impostos?.icms?.st_valor || 0;
-                    default: return 0;
-                }
-            }
-            return 0;
-        } catch (error) {
-            return 0;
+        // Validação rigorosa da estrutura
+        if (!calculations?.calculos_individuais?.[additionIndex]) {
+            throw new Error(
+                `ProductMemoryManager: Cálculo ausente para adição ${additionIndex} - ` +
+                `execute ComplianceCalculator primeiro`
+            );
         }
+
+        const calc = calculations.calculos_individuais[additionIndex];
+
+        // Validar impostos existem
+        if (!calc.impostos) {
+            throw new Error(
+                `ProductMemoryManager: calc.impostos ausente na adição ${additionIndex}`
+            );
+        }
+
+        // Extrair valor específico com validação
+        let valor;
+        switch(taxType) {
+            case 'ii':
+                valor = calc.impostos.ii?.valor_devido;
+                break;
+            case 'ipi':
+                valor = calc.impostos.ipi?.valor_devido;
+                break;
+            case 'pis':
+                valor = calc.impostos.pis?.valor_devido;
+                break;
+            case 'cofins':
+                valor = calc.impostos.cofins?.valor_devido;
+                break;
+            case 'cofins_adicional':
+                valor = calc.impostos.cofins?.adicional;
+                break;
+            case 'icms':
+                valor = calc.impostos.icms?.valor_devido;
+                break;
+            case 'icms_st':
+                valor = calc.impostos.icms?.st_valor;
+                break;
+            default:
+                throw new Error(
+                    `ProductMemoryManager: taxType '${taxType}' não reconhecido`
+                );
+        }
+
+        // Validação final do valor
+        if (typeof valor !== 'number' || isNaN(valor)) {
+            throw new Error(
+                `ProductMemoryManager: ${taxType} ausente/inválido na adição ${additionIndex} - ` +
+                `esperado número, recebido ${typeof valor}`
+            );
+        }
+
+        return valor;
     }
 
     /**
-     * Extrai valor de despesa dos cálculos
+     * Extrai valor de despesa dos cálculos - NO FALLBACKS
+     * Valida estrutura e falha explicitamente se dados ausentes
      */
     extractExpense(calculations, expenseType, additionIndex) {
-        try {
-            if (calculations?.despesas) {
-                const proporcao = 1 / (calculations.numero_adicoes || 1);
-                
-                switch(expenseType) {
-                    case 'siscomex': 
-                        return (calculations.despesas.automaticas?.siscomex || 0) * proporcao;
-                    case 'afrmm': 
-                        return (calculations.despesas.automaticas?.afrmm || 0) * proporcao;
-                    case 'capatazia': 
-                        return (calculations.despesas.automaticas?.capatazia || 0) * proporcao;
-                    case 'armazenagem': 
-                        return (calculations.despesas.extras?.armazenagem || 0) * proporcao;
-                    case 'outras': 
-                        return (calculations.despesas.extras?.outras || 0) * proporcao;
-                    default: 
-                        return 0;
-                }
-            }
-            return 0;
-        } catch (error) {
-            return 0;
+        // Validação rigorosa da estrutura
+        if (!calculations?.despesas) {
+            throw new Error(
+                `ProductMemoryManager: calculations.despesas ausente - ` +
+                `execute ComplianceCalculator primeiro`
+            );
         }
+
+        // Validar numero_adicoes para proporcao
+        if (typeof calculations.numero_adicoes !== 'number' || calculations.numero_adicoes <= 0) {
+            throw new Error(
+                `ProductMemoryManager: numero_adicoes inválido: ${calculations.numero_adicoes}`
+            );
+        }
+
+        const proporcao = 1 / calculations.numero_adicoes;
+
+        // Extrair valor específico com validação
+        let valor;
+        switch(expenseType) {
+            case 'siscomex':
+                valor = calculations.despesas.automaticas?.siscomex;
+                break;
+            case 'afrmm':
+                valor = calculations.despesas.automaticas?.afrmm;
+                break;
+            case 'capatazia':
+                valor = calculations.despesas.automaticas?.capatazia;
+                break;
+            case 'armazenagem':
+                valor = calculations.despesas.extras?.armazenagem;
+                break;
+            case 'outras':
+                valor = calculations.despesas.extras?.outras;
+                break;
+            default:
+                throw new Error(
+                    `ProductMemoryManager: expenseType '${expenseType}' não reconhecido`
+                );
+        }
+
+        // Validação final do valor (pode ser 0 se não houver despesa)
+        if (typeof valor !== 'number' || isNaN(valor) || valor < 0) {
+            throw new Error(
+                `ProductMemoryManager: ${expenseType} inválido - ` +
+                `esperado número não-negativo, recebido ${typeof valor}`
+            );
+        }
+
+        return valor * proporcao;
     }
 
     /**
