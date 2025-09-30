@@ -18,6 +18,13 @@ class ProductMemoryManager {
      */
     static OPTIONAL_TAX_FIELDS = ['cofins_adicional', 'icms_st'];
 
+    /**
+     * Campos de despesas extras opcionais - informados manualmente via interface
+     * Retornam 0 quando ausentes (comportamento seguro)
+     * Despesas automáticas (siscomex, afrmm, capatazia) são obrigatórias
+     */
+    static OPTIONAL_EXPENSE_FIELDS = ['armazenagem', 'outras'];
+
     constructor() {
         this.storageKey = 'expertzy_products_memory';
         this.products = [];
@@ -311,8 +318,17 @@ class ProductMemoryManager {
     }
 
     /**
-     * Extrai valor de despesa dos cálculos - NO FALLBACKS
-     * Valida estrutura e falha explicitamente se dados ausentes
+     * Extrai valor de despesa dos cálculos
+     * NO FALLBACKS para despesas automáticas obrigatórias
+     * Retorna 0 para despesas extras opcionais (manuais) ausentes
+     *
+     * DESPESAS AUTOMÁTICAS OBRIGATÓRIAS: siscomex, afrmm, capatazia
+     * DESPESAS EXTRAS OPCIONAIS: armazenagem, outras
+     *
+     * @param {Object} calculations - Cálculos do ComplianceCalculator
+     * @param {string} expenseType - Tipo de despesa
+     * @param {number} additionIndex - Índice da adição
+     * @returns {number} Valor da despesa rateado
      */
     extractExpense(calculations, expenseType, additionIndex) {
         // Validação rigorosa da estrutura
@@ -356,7 +372,15 @@ class ProductMemoryManager {
                 );
         }
 
-        // Validação final do valor (pode ser 0 se não houver despesa)
+        // CAMPOS OPCIONAIS: retornar 0 se ausentes (comportamento seguro)
+        if (ProductMemoryManager.OPTIONAL_EXPENSE_FIELDS.includes(expenseType)) {
+            if (typeof valor !== 'number' || isNaN(valor) || valor < 0) {
+                return 0; // Default seguro para despesas extras opcionais
+            }
+            return valor * proporcao;
+        }
+
+        // CAMPOS OBRIGATÓRIOS: falhar se ausentes (NO FALLBACKS)
         if (typeof valor !== 'number' || isNaN(valor) || valor < 0) {
             throw new Error(
                 `ProductMemoryManager: ${expenseType} inválido - ` +
