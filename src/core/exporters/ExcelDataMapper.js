@@ -65,7 +65,9 @@ export class ExcelDataMapper {
         this.config = fullConfig.exportacao.excel_mapper;
         this.incoterms = fullConfig.incoterms_suportados;
         this.systemInfo = fullConfig.configuracoes_gerais;
-        
+        this.systemVersion = fullConfig.versao || null;  // Root level, opcional
+        this.systemName = fullConfig.nome_sistema || 'Sistema de Importação';
+
         // ETAPA 4: Validar configurações obrigatórias
         this._validateConfig();
         
@@ -165,9 +167,9 @@ export class ExcelDataMapper {
      * @private
      */
     async _initializeMappings() {
-        // Mapear apenas abas básicas obrigatórias inicialmente
-        const basicSheets = ['Capa', 'Importador', 'Carga', 'Valores', 'Despesas', 'Tributos'];
-        
+        // Abas básicas obrigatórias - ResumoCustos agora calcula próprios totais
+        const basicSheets = ['Capa', 'Importador', 'Carga', 'Valores', 'Despesas', 'Tributos', 'ResumoCustos'];
+
         this.sheetMappings = [];
         
         // Mapear abas básicas sempre presentes
@@ -234,11 +236,13 @@ export class ExcelDataMapper {
         if (!diData.importador.nome) {
             throw new Error('ExcelDataMapper: importador.nome obrigatório para Capa');
         }
-        
-        if (!this.systemInfo.versao) {
-            throw new Error('ExcelDataMapper: configuracoes_gerais.versao é obrigatório');
+
+        // Versao opcional - warning se ausente
+        if (!this.systemVersion) {
+            console.warn('⚠️ ExcelDataMapper: versao não definida em config.json - usando placeholder');
+            this.systemVersion = 'N/D';
         }
-        
+
         return {
             name: this.config.nomes_abas.capa,
             type: 'capa',
@@ -264,7 +268,7 @@ export class ExcelDataMapper {
                 },
                 metadata: {
                     data_processamento: diData.data_processamento,
-                    versao_sistema: this.systemInfo.versao
+                    versao_sistema: this.systemVersion
                 }
             }
         };
@@ -464,15 +468,17 @@ export class ExcelDataMapper {
      */
     mapResumoCustosSheet() {
         const diData = this.diData;
-        
-        // Verificar se existem totais calculados
-        if (!diData.totais_relatorio && !diData.totais_por_coluna) {
-            throw new Error('ExcelDataMapper: totais_relatorio ou totais_por_coluna é obrigatório para Resumo de Custos');
+
+        // Usar totais de ComplianceCalculator se disponíveis, senão calcular
+        let totais;
+        if (diData.totais_relatorio || diData.totais_por_coluna) {
+            totais = diData.totais_relatorio || diData.totais_por_coluna;
+            console.log('✅ ExcelDataMapper: Usando totais de ComplianceCalculator');
+        } else {
+            totais = this._calcularTotaisRelatorio();
+            console.log('⚠️ ExcelDataMapper: Totais calculados internamente (dados básicos apenas)');
         }
-        
-        // Usar dados calculados disponíveis
-        const totais = diData.totais_relatorio ? diData.totais_relatorio : diData.totais_por_coluna;
-        
+
         return {
             name: this.config.nomes_abas.resumo_custos,
             type: 'resumo_custos',
@@ -488,7 +494,11 @@ export class ExcelDataMapper {
                     com_incentivos: totais.custo_total_com_incentivos,
                     economia_total: totais.economia_total_incentivos
                 },
-                analise_percentual: totais.analise_percentual
+                analise_percentual: totais.analise_percentual,
+                _metadata: totais._calculado_por ? {
+                    calculado_por: totais._calculado_por,
+                    nota: totais._nota
+                } : undefined
             }
         };
     }
@@ -691,15 +701,85 @@ export class ExcelDataMapper {
         });
         
         // Calcular totais
-        tributos.totais.total_federal = 
+        tributos.totais.total_federal =
             tributos.impostos_federais.ii.valor_recolher +
             tributos.impostos_federais.ipi.valor_recolher +
             tributos.impostos_federais.pis.valor_recolher +
             tributos.impostos_federais.cofins.valor_recolher;
-        
+
         return tributos;
     }
-    
+
+    /**
+     * Calcula totais para relatório de custos a partir dos dados da DI
+     * Single Responsibility: ExcelDataMapper calcula o que precisa para Excel
+     * @private
+     * @returns {Object} Totais calculados no formato esperado por ResumoCustos
+     */
+    _calcularTotaisRelatorio() {
+        const diData = this.diData;
+
+        // Validação obrigatória
+        if (typeof diData.valor_aduaneiro_total_brl !== 'number') {
+            throw new Error('ExcelDataMapper: valor_aduaneiro_total_brl obrigatório para cálculo de totais');
+        }
+
+        // Usar método existente para agregar tributos
+        const tributosAgregados = this._agregaTributos();
+
+        // Calcular impostos federais (do XML da DI)
+        const total_impostos_federais =
+            tributosAgregados.impostos_federais.ii.valor_recolher +
+            tributosAgregados.impostos_federais.ipi.valor_recolher +
+            tributosAgregados.impostos_federais.pis.valor_recolher +
+            tributosAgregados.impostos_federais.cofins.valor_recolher;
+
+        // ICMS não está no XML da DI (seria calculado por ComplianceCalculator)
+        // Para Excel básico, consideramos 0
+        const total_impostos_estaduais = 0;
+
+        // Despesas aduaneiras (se configuradas)
+        const total_despesas_aduaneiras = diData.despesas_aduaneiras || 0;
+
+        // Custo total sem incentivos
+        const custo_total_sem_incentivos =
+            diData.valor_aduaneiro_total_brl +
+            total_impostos_federais +
+            total_impostos_estaduais +
+            total_despesas_aduaneiras;
+
+        // Incentivos não disponíveis em DI raw (ComplianceCalculator)
+        const custo_total_com_incentivos = custo_total_sem_incentivos;
+        const economia_total_incentivos = 0;
+
+        // Análise percentual
+        const analise_percentual = {
+            impostos_sobre_aduaneiro: custo_total_sem_incentivos > 0
+                ? (total_impostos_federais / diData.valor_aduaneiro_total_brl * 100)
+                : 0,
+            despesas_sobre_aduaneiro: custo_total_sem_incentivos > 0
+                ? (total_despesas_aduaneiras / diData.valor_aduaneiro_total_brl * 100)
+                : 0
+        };
+
+        console.log('📊 ExcelDataMapper: Totais calculados a partir dos dados da DI');
+        console.log(`   Valor Aduaneiro: R$ ${diData.valor_aduaneiro_total_brl.toFixed(2)}`);
+        console.log(`   Impostos Federais: R$ ${total_impostos_federais.toFixed(2)}`);
+        console.log(`   Custo Total: R$ ${custo_total_sem_incentivos.toFixed(2)}`);
+
+        return {
+            total_impostos_federais,
+            total_impostos_estaduais,
+            total_despesas_aduaneiras,
+            custo_total_sem_incentivos,
+            custo_total_com_incentivos,
+            economia_total_incentivos,
+            analise_percentual,
+            _calculado_por: 'ExcelDataMapper',
+            _nota: 'ICMS e incentivos requerem ComplianceCalculator'
+        };
+    }
+
     /**
      * Analisa NCMs únicos e estatísticas
      * @private
