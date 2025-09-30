@@ -529,13 +529,21 @@ export class ExcelExporter {
         if (!data.numero_adicao) {
             throw new Error('ExcelExporter: numero_adicao é obrigatório para Adição');
         }
-        
+
         if (!data.ncm) {
             throw new Error('ExcelExporter: ncm é obrigatório para Adição');
         }
 
+        // Obter produtos individuais do mapper
+        const produtosPorAdicao = this.mapper._mapearProdutosIndividuaisPorAdicao();
+        const dadosAdicao = produtosPorAdicao.get(data.numero_adicao);
+
+        if (!dadosAdicao) {
+            throw new Error(`ExcelExporter: Dados da adição ${data.numero_adicao} não encontrados no mapper`);
+        }
+
         // Header
-        worksheet.mergeCells('A1:D1');
+        worksheet.mergeCells('A1:J1');
         worksheet.getCell('A1').value = `ADIÇÃO ${data.numero_adicao}`;
         worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
 
@@ -544,68 +552,136 @@ export class ExcelExporter {
         // Informações básicas - nomenclatura oficial DIProcessor
         worksheet.getCell(`A${row}`).value = 'INFORMAÇÕES BÁSICAS';
         worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
-        worksheet.mergeCells(`A${row}:D${row}`);
+        worksheet.mergeCells(`A${row}:J${row}`);
         row++;
 
         const infos = [
             ['Número da Adição', data.numero_adicao],
             ['NCM', data.ncm],
-            ['Descrição NCM', data.descricao_ncm]
+            ['Descrição NCM', data.descricao_ncm],
+            ['INCOTERM', data.condicao_venda_incoterm]
         ];
 
         infos.forEach(([campo, valor]) => {
             if (valor !== undefined && valor !== null) {
                 worksheet.getCell(`A${row}`).value = campo;
                 worksheet.getCell(`B${row}`).value = valor;
-                worksheet.mergeCells(`B${row}:D${row}`);
-                
+                worksheet.mergeCells(`B${row}:J${row}`);
+
                 worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                 worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                 row++;
             }
         });
 
-        // Valores - nomenclatura oficial DIProcessor
+        // Seção PRODUTOS INDIVIDUAIS (FASE 2A)
         row++;
-        worksheet.getCell(`A${row}`).value = 'VALORES';
+        worksheet.getCell(`A${row}`).value = 'PRODUTOS INDIVIDUAIS';
         worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
-        worksheet.mergeCells(`A${row}:D${row}`);
+        worksheet.mergeCells(`A${row}:J${row}`);
         row++;
 
-        const valores = [
-            ['Moeda Negociação', data.moeda_negociacao_nome],
-            ['Valor Moeda Estrangeira', data.valor_moeda_negociacao],
-            ['Valor em Reais', data.valor_reais],
-            ['Frete (R$)', data.frete_valor_reais],
-            ['Seguro (R$)', data.seguro_valor_reais]
+        // Headers da tabela de produtos
+        const produtoHeaders = [
+            'Item', 'Código', 'Descrição', 'NCM', 'Quantidade',
+            'Unidade', 'Valor Unit. USD', 'Valor Total USD',
+            'Valor Unit. R$', 'Valor Total R$'
         ];
 
-        valores.forEach(([campo, valor]) => {
-            if (valor !== undefined && valor !== null) {
-                worksheet.getCell(`A${row}`).value = campo;
-                worksheet.getCell(`B${row}`).value = valor;
-                
-                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
-                
-                if (typeof valor === 'number') {
-                    worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+        produtoHeaders.forEach((header, index) => {
+            const col = String.fromCharCode(65 + index); // A, B, C, ...
+            worksheet.getCell(`${col}${row}`).value = header;
+            worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        });
+        row++;
+
+        // Listar TODOS os produtos da adição
+        const produtosStartRow = row;
+        dadosAdicao.produtos.forEach((produto, index) => {
+            // Truncar descrição se muito longa (max 50 caracteres)
+            const descricaoTruncada = produto.descricao.length > 50
+                ? produto.descricao.substring(0, 47) + '...'
+                : produto.descricao;
+
+            const produtoRow = [
+                index + 1,  // Item sequencial
+                produto.codigo,
+                descricaoTruncada,
+                produto.ncm,
+                produto.quantidade,
+                produto.unidade_medida,
+                produto.valor_unitario_usd,
+                produto.valor_total_usd,
+                produto.valor_unitario_brl,
+                produto.valor_total_brl
+            ];
+
+            produtoRow.forEach((valor, colIndex) => {
+                const col = String.fromCharCode(65 + colIndex);
+                worksheet.getCell(`${col}${row}`).value = valor;
+
+                // Aplicar formatação por tipo
+                if (colIndex === 0) {
+                    // Item - número sequencial
+                    worksheet.getCell(`${col}${row}`).style = {
+                        border: this.styles.estilosExpertzy.valorMonetario.border
+                    };
+                } else if (colIndex === 3) {
+                    // NCM - estilo especial
+                    worksheet.getCell(`${col}${row}`).style = {
+                        ...this.styles.estilosExpertzy.valorMonetario,
+                        font: { name: 'Courier New', size: 10 }
+                    };
+                } else if (colIndex >= 6) {
+                    // Valores monetários (Unit. USD, Total USD, Unit. R$, Total R$)
+                    worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                } else if (colIndex === 4) {
+                    // Quantidade - numérico simples
+                    worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.valorMonetario;
                 } else {
-                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    // Outros campos - texto com borda
+                    worksheet.getCell(`${col}${row}`).style = {
+                        border: this.styles.estilosExpertzy.valorMonetario.border
+                    };
                 }
-                row++;
-            }
+            });
+
+            row++;
         });
 
-        // Impostos - nomenclatura oficial DIProcessor
+        // Aplicar zebra striping na tabela de produtos
+        const produtosEndRow = row - 1;
+        if (produtosEndRow >= produtosStartRow) {
+            this.styles.applyZebraStriping(
+                worksheet,
+                produtosStartRow,
+                produtosEndRow,
+                0,
+                9  // 10 colunas (A-J)
+            );
+        }
+
+        // Totais da tabela de produtos
         row++;
+        worksheet.getCell(`A${row}`).value = 'TOTAL';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+
+        worksheet.getCell(`H${row}`).value = dadosAdicao.totais.valor_total_usd;
+        worksheet.getCell(`H${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+
+        worksheet.getCell(`J${row}`).value = dadosAdicao.totais.valor_total_brl;
+        worksheet.getCell(`J${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+
+        // Impostos - nomenclatura oficial DIProcessor
+        row += 2;
         worksheet.getCell(`A${row}`).value = 'IMPOSTOS';
         worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
         worksheet.mergeCells(`A${row}:D${row}`);
         row++;
 
         // Headers da tabela de impostos
-        const headers = ['Imposto', 'Alíquota (%)', 'Valor Devido', 'Valor a Recolher'];
-        headers.forEach((header, index) => {
+        const impostoHeaders = ['Imposto', 'Alíquota (%)', 'Valor Devido', 'Valor a Recolher'];
+        impostoHeaders.forEach((header, index) => {
             const col = String.fromCharCode(65 + index); // A, B, C, D
             worksheet.getCell(`${col}${row}`).value = header;
             worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
@@ -626,7 +702,7 @@ export class ExcelExporter {
                 worksheet.getCell(`B${row}`).value = aliquota;
                 worksheet.getCell(`C${row}`).value = devido;
                 worksheet.getCell(`D${row}`).value = recolher;
-                
+
                 worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                 worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorPercentual;
                 worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.valorMonetario;
@@ -656,7 +732,7 @@ export class ExcelExporter {
                     worksheet.getCell(`A${row}`).value = campo;
                     worksheet.getCell(`B${row}`).value = valor;
                     worksheet.mergeCells(`B${row}:D${row}`);
-                    
+
                     worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                     worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                     row++;
@@ -683,7 +759,7 @@ export class ExcelExporter {
                     worksheet.getCell(`A${row}`).value = campo;
                     worksheet.getCell(`B${row}`).value = valor;
                     worksheet.mergeCells(`B${row}:D${row}`);
-                    
+
                     worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                     worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                     row++;
@@ -708,18 +784,24 @@ export class ExcelExporter {
             if (valor !== undefined && valor !== null) {
                 worksheet.getCell(`A${row}`).value = campo;
                 worksheet.getCell(`B${row}`).value = valor;
-                
+
                 worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                 worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
                 row++;
             }
         });
 
-        // Ajustar larguras
-        worksheet.getColumn('A').width = 25;
-        worksheet.getColumn('B').width = 20;
-        worksheet.getColumn('C').width = 15;
-        worksheet.getColumn('D').width = 15;
+        // Ajustar larguras otimizadas para produtos individuais
+        worksheet.getColumn('A').width = 6;   // Item
+        worksheet.getColumn('B').width = 15;  // Código
+        worksheet.getColumn('C').width = 40;  // Descrição
+        worksheet.getColumn('D').width = 12;  // NCM
+        worksheet.getColumn('E').width = 10;  // Quantidade
+        worksheet.getColumn('F').width = 8;   // Unidade
+        worksheet.getColumn('G').width = 15;  // Valor Unit. USD
+        worksheet.getColumn('H').width = 15;  // Valor Total USD
+        worksheet.getColumn('I').width = 15;  // Valor Unit. R$
+        worksheet.getColumn('J').width = 15;  // Valor Total R$
     }
 
     /**
