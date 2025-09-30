@@ -751,8 +751,11 @@ export class ExcelDataMapper {
         // Para Excel básico, consideramos 0
         const total_impostos_estaduais = 0;
 
-        // Despesas aduaneiras (se configuradas)
-        const total_despesas_aduaneiras = diData.despesas_aduaneiras || 0;
+        // Despesas aduaneiras - validação rigorosa NO FALLBACKS
+        if (typeof diData.despesas_aduaneiras.total_despesas_aduaneiras !== 'number') {
+            throw new Error('ExcelDataMapper: despesas_aduaneiras.total_despesas_aduaneiras deve ser numérico');
+        }
+        const total_despesas_aduaneiras = diData.despesas_aduaneiras.total_despesas_aduaneiras;
 
         // Custo total sem incentivos
         const custo_total_sem_incentivos =
