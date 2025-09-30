@@ -1031,6 +1031,57 @@ export class ExcelExporter {
             }
         };
 
+        // FASE 4: Seção detalhada de rateio de despesas
+        row += 2;
+        worksheet.getCell(`A${row}`).value = 'RATEIO DE DESPESAS POR ADIÇÃO';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.mergeCells(`A${row}:D${row}`);
+        row++;
+
+        // Headers da tabela de rateio
+        const rateioHeaders = ['Tipo de Despesa', 'Valor Rateado R$', 'Observação', ''];
+        rateioHeaders.forEach((header, index) => {
+            const col = String.fromCharCode(65 + index); // A, B, C, D
+            worksheet.getCell(`${col}${row}`).value = header;
+            worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        });
+        row++;
+
+        // Dados do rateio de despesas
+        const despesas = dadosAdicao.despesas;
+        const rateioData = [
+            ['AFRMM Rateado', despesas.afrmm, 'Adicional ao Frete para Renovação da Marinha Mercante'],
+            ['SISCOMEX Rateado', despesas.siscomex, 'Taxa do Sistema Integrado de Comércio Exterior'],
+            ['Capatazia Rateada', despesas.capatazia, 'Serviços de movimentação portuária'],
+            ['Frete Rateado', despesas.frete, data.condicao_venda_incoterm === 'FOB' ? 'Frete separado (FOB)' : 'Frete embutido (CIF/CFR)'],
+            ['Seguro Rateado', despesas.seguro, data.condicao_venda_incoterm === 'FOB' ? 'Seguro separado (FOB)' : 'Seguro embutido (CIF)']
+        ];
+
+        rateioData.forEach(([tipo, valor, obs]) => {
+            worksheet.getCell(`A${row}`).value = tipo;
+            worksheet.getCell(`B${row}`).value = valor;
+            worksheet.getCell(`C${row}`).value = obs;
+
+            worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+            worksheet.getCell(`C${row}`).style = {
+                border: this.styles.estilosExpertzy.valorMonetario.border,
+                font: { italic: true, size: 9, color: { argb: 'FF666666' } }
+            };
+            row++;
+        });
+
+        // Total do rateio
+        row++;
+        worksheet.getCell(`A${row}`).value = 'TOTAL DESPESAS RATEADAS';
+        worksheet.getCell(`B${row}`).value = despesas.total;
+
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.getCell(`B${row}`).style = {
+            ...this.styles.estilosExpertzy.valorMonetario,
+            font: { bold: true }
+        };
+
         // Impostos - nomenclatura oficial DIProcessor
         row += 2;
         worksheet.getCell(`A${row}`).value = 'IMPOSTOS';
