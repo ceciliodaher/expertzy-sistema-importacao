@@ -13,6 +13,7 @@
 
 import { ConfigLoader } from '@shared/utils/ConfigLoader.js';
 import IndexedDBManager from '@services/database/IndexedDBManager.js';
+import { StoreKeys } from '@core/db/StoreKeyConstants.js';
 
 export class ExcelDataMapper {
     constructor(numeroDI) {
@@ -44,7 +45,7 @@ export class ExcelDataMapper {
         console.log(`✅ ExcelDataMapper: DI ${this.numeroDI} carregada do banco com ${this.diData.adicoes?.length || 0} adições`);
 
         // ETAPA 1B: Carregar dados calculados (opcional - pode não existir ainda)
-        this.calculoData = await dbManager.getConfig(`calculo${this.numeroDI}`);
+        this.calculoData = await dbManager.getConfig(StoreKeys.CALCULO(this.numeroDI));
         if (this.calculoData) {
             console.log(`✅ ExcelDataMapper: Dados calculados encontrados para DI ${this.numeroDI}`);
         } else {
