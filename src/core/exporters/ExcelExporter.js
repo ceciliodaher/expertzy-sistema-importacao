@@ -574,20 +574,21 @@ export class ExcelExporter {
             }
         });
 
-        // Seção PRODUTOS INDIVIDUAIS (FASE 2A + 2B)
+        // Seção PRODUTOS INDIVIDUAIS (FASE 2A + 2B + 2C)
         row++;
         worksheet.getCell(`A${row}`).value = 'PRODUTOS INDIVIDUAIS - CUSTOS DESEMBOLSADOS';
         worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
-        worksheet.mergeCells(`A${row}:Q${row}`);
+        worksheet.mergeCells(`A${row}:R${row}`);
         row++;
 
-        // Headers da tabela de produtos (FASE 2B: incluindo impostos desembolsados)
+        // Headers da tabela de produtos (FASE 2B + 2C: incluindo impostos e custo total)
         const produtoHeaders = [
             'Item', 'Código', 'Descrição', 'NCM', 'Quantidade',
             'Unidade', 'Valor Unit. USD', 'Valor Total USD',
             'Valor Unit. R$', 'Valor Total R$',
             'II', 'IPI', 'PIS', 'COFINS',
-            'ICMS Calculado', 'Incentivo ICMS', 'ICMS Desembolsado'
+            'ICMS Calculado', 'Incentivo ICMS', 'ICMS Desembolsado',
+            'Custo Total Desembolsado'  // FASE 2C
         ];
 
         produtoHeaders.forEach((header, index) => {
@@ -610,6 +611,16 @@ export class ExcelExporter {
                 ? produto.icms_desembolsado_item
                 : (produto.icms_item - (produto.icms_incentivo_item || 0));
 
+            // FASE 2C: Calcular Custo Total Desembolsado por item
+            // Fórmula: Valor Total R$ + II + IPI + PIS + COFINS + ICMS Desembolsado
+            const custoTotalDesembolsado =
+                produto.valor_total_brl +
+                produto.ii_item +
+                produto.ipi_item +
+                produto.pis_item +
+                produto.cofins_item +
+                icmsDesembolsado;
+
             const produtoRow = [
                 index + 1,  // Item sequencial
                 produto.codigo,
@@ -628,7 +639,8 @@ export class ExcelExporter {
                 produto.cofins_item,
                 produto.icms_item,  // ICMS Calculado
                 produto.icms_incentivo_item || 0,  // Incentivo (pode ser zero)
-                icmsDesembolsado  // ICMS Desembolsado
+                icmsDesembolsado,  // ICMS Desembolsado
+                custoTotalDesembolsado  // FASE 2C: Custo Total Desembolsado
             ];
 
             produtoRow.forEach((valor, colIndex) => {
@@ -672,6 +684,20 @@ export class ExcelExporter {
                             bold: true
                         }
                     };
+                } else if (colIndex === 17) {
+                    // FASE 2C: Custo Total Desembolsado - negrito e fundo azul claro para destaque máximo
+                    worksheet.getCell(`${col}${row}`).style = {
+                        ...this.styles.estilosExpertzy.valorMonetario,
+                        fill: {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: { argb: 'FFD9E8F5' }  // Azul claro
+                        },
+                        font: {
+                            bold: true,
+                            color: { argb: 'FF1F3864' }  // Azul escuro
+                        }
+                    };
                 } else if (colIndex === 4) {
                     // Quantidade - numérico simples
                     worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.valorMonetario;
@@ -694,7 +720,7 @@ export class ExcelExporter {
                 produtosStartRow,
                 produtosEndRow,
                 0,
-                16  // 17 colunas (A-Q)
+                17  // FASE 2C: 18 colunas (A-R)
             );
         }
 
@@ -745,6 +771,21 @@ export class ExcelExporter {
             ...this.styles.estilosExpertzy.valorMonetario,
             font: {
                 bold: true
+            }
+        };
+
+        // FASE 2C: Total do Custo Total Desembolsado
+        worksheet.getCell(`R${row}`).value = dadosAdicao.totais.custo_total_desembolsado;
+        worksheet.getCell(`R${row}`).style = {
+            ...this.styles.estilosExpertzy.valorMonetario,
+            fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFD9E8F5' }  // Azul claro
+            },
+            font: {
+                bold: true,
+                color: { argb: 'FF1F3864' }  // Azul escuro
             }
         };
 
@@ -867,24 +908,25 @@ export class ExcelExporter {
             }
         });
 
-        // Ajustar larguras otimizadas para produtos individuais com impostos (FASE 2B)
+        // Ajustar larguras otimizadas para produtos individuais com impostos (FASE 2B + 2C)
         worksheet.getColumn('A').width = 6;   // Item
         worksheet.getColumn('B').width = 15;  // Código
-        worksheet.getColumn('C').width = 35;  // Descrição (reduzida para acomodar mais colunas)
+        worksheet.getColumn('C').width = 30;  // Descrição (reduzida para acomodar mais colunas)
         worksheet.getColumn('D').width = 12;  // NCM
         worksheet.getColumn('E').width = 10;  // Quantidade
         worksheet.getColumn('F').width = 8;   // Unidade
-        worksheet.getColumn('G').width = 14;  // Valor Unit. USD
-        worksheet.getColumn('H').width = 14;  // Valor Total USD
-        worksheet.getColumn('I').width = 14;  // Valor Unit. R$
-        worksheet.getColumn('J').width = 14;  // Valor Total R$
-        worksheet.getColumn('K').width = 12;  // II
-        worksheet.getColumn('L').width = 12;  // IPI
-        worksheet.getColumn('M').width = 12;  // PIS
-        worksheet.getColumn('N').width = 12;  // COFINS
+        worksheet.getColumn('G').width = 13;  // Valor Unit. USD
+        worksheet.getColumn('H').width = 13;  // Valor Total USD
+        worksheet.getColumn('I').width = 13;  // Valor Unit. R$
+        worksheet.getColumn('J').width = 13;  // Valor Total R$
+        worksheet.getColumn('K').width = 11;  // II
+        worksheet.getColumn('L').width = 11;  // IPI
+        worksheet.getColumn('M').width = 11;  // PIS
+        worksheet.getColumn('N').width = 11;  // COFINS
         worksheet.getColumn('O').width = 14;  // ICMS Calculado
         worksheet.getColumn('P').width = 14;  // Incentivo ICMS (verde)
         worksheet.getColumn('Q').width = 15;  // ICMS Desembolsado (negrito)
+        worksheet.getColumn('R').width = 18;  // FASE 2C: Custo Total Desembolsado (azul, destaque)
     }
 
     /**
