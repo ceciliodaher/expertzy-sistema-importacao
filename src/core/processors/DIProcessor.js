@@ -1162,8 +1162,32 @@ export class DIProcessor {
 
         // FASE 3: Validação cross-reference e logs informativos INCOTERM
         this.validateFreteSeguroConsistency(totals);
-        
+
+        // FASE 4: Calcular VALOR ADUANEIRO TOTAL (FOB + Frete + Seguro)
+        // Este é o valor base para cálculo de impostos na importação
+        // Usa valores INCOTERM-aware: frete_calculo e seguro_calculo são 0 se já inclusos no FOB
+        totals.valor_aduaneiro_total_brl = totals.valor_total_fob_brl +
+                                            totals.valor_frete_calculo +
+                                            totals.valor_seguro_calculo;
+
+        // Validação rigorosa NO FALLBACKS
+        if (typeof totals.valor_aduaneiro_total_brl !== 'number' ||
+            isNaN(totals.valor_aduaneiro_total_brl) ||
+            totals.valor_aduaneiro_total_brl < 0) {
+            throw new Error(
+                `DIProcessor: Erro ao calcular valor_aduaneiro_total_brl - ` +
+                `FOB: ${totals.valor_total_fob_brl}, ` +
+                `Frete: ${totals.valor_frete_calculo}, ` +
+                `Seguro: ${totals.valor_seguro_calculo}`
+            );
+        }
+
+        console.log(`💰 Valor Aduaneiro Total: R$ ${totals.valor_aduaneiro_total_brl.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+
         this.diData.totais = totals;
+
+        // Copiar valor_aduaneiro_total_brl para raiz da DI (compatibilidade com validadores e exporters)
+        this.diData.valor_aduaneiro_total_brl = totals.valor_aduaneiro_total_brl;
     }
 
     /**
