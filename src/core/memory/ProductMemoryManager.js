@@ -163,8 +163,8 @@ class ProductMemoryManager {
                         description: product.descricao_mercadoria,
                         quantity: product.quantidade,
                         unit: product.unidade_medida,
-                        weight_kg: product.peso_liquido,
-                        
+                        // weight_kg: REMOVIDO - peso está na adição (adicao.peso_liquido), não no produto
+
                         // Custos da adição (rateados se múltiplos produtos)
                         cif_brl: product.valor_unitario_brl * product.quantidade,
                         ii: this.extractTaxValue(calculations, 'ii', index),
@@ -591,11 +591,9 @@ class ProductMemoryManager {
         if (!product.unidade_medida) {
             throw new Error(`ProductMemoryManager: ${context} - unidade_medida é obrigatório (nomenclatura oficial DIProcessor)`);
         }
-        
-        if (typeof product.peso_liquido !== 'number' || product.peso_liquido < 0) {
-            throw new Error(`ProductMemoryManager: ${context} - peso_liquido deve ser numérico e não-negativo`);
-        }
-        
+
+        // peso_liquido REMOVIDO: campo não existe no XML (peso está na adição, não no produto)
+
         if (typeof product.valor_unitario_brl !== 'number' || product.valor_unitario_brl < 0) {
             throw new Error(`ProductMemoryManager: ${context} - valor_unitario_brl deve ser numérico e não-negativo`);
         }
