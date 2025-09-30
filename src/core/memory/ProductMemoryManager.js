@@ -11,6 +11,13 @@
 import IndexedDBManager from '@services/database/IndexedDBManager.js';
 
 class ProductMemoryManager {
+    /**
+     * Campos tributários opcionais - podem não existir em todas as situações
+     * Retornam 0 quando ausentes (comportamento seguro)
+     * Outros campos são obrigatórios e falham se ausentes (NO FALLBACKS)
+     */
+    static OPTIONAL_TAX_FIELDS = ['cofins_adicional', 'icms_st'];
+
     constructor() {
         this.storageKey = 'expertzy_products_memory';
         this.products = [];
@@ -223,8 +230,18 @@ class ProductMemoryManager {
     }
 
     /**
-     * Extrai valor de imposto dos cálculos - NO FALLBACKS
-     * Valida estrutura e falha explicitamente se dados ausentes
+     * Extrai valor de imposto dos cálculos
+     * NO FALLBACKS para campos obrigatórios
+     * Retorna 0 para campos opcionais ausentes
+     *
+     * CAMPOS OBRIGATÓRIOS: ii, ipi, pis, cofins, icms
+     * CAMPOS OPCIONAIS: cofins_adicional, icms_st
+     *
+     * @param {Object} calculations - Cálculos do ComplianceCalculator
+     * @param {string} taxType - Tipo de imposto
+     * @param {number} additionIndex - Índice da adição
+     * @returns {number} Valor do imposto
+     * @throws {Error} Se campo obrigatório ausente ou estrutura inválida
      */
     extractTaxValue(calculations, taxType, additionIndex) {
         // Validação rigorosa da estrutura
@@ -274,7 +291,15 @@ class ProductMemoryManager {
                 );
         }
 
-        // Validação final do valor
+        // CAMPOS OPCIONAIS: retornar 0 se ausentes (comportamento seguro)
+        if (ProductMemoryManager.OPTIONAL_TAX_FIELDS.includes(taxType)) {
+            if (typeof valor !== 'number' || isNaN(valor)) {
+                return 0; // Default seguro para campos opcionais
+            }
+            return valor;
+        }
+
+        // CAMPOS OBRIGATÓRIOS: falhar se ausentes (NO FALLBACKS)
         if (typeof valor !== 'number' || isNaN(valor)) {
             throw new Error(
                 `ProductMemoryManager: ${taxType} ausente/inválido na adição ${additionIndex} - ` +
