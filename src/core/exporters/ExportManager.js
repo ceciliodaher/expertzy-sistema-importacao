@@ -44,9 +44,15 @@ export class ExportManager {
 
     /**
      * Export to Excel using specialized module
+     * KISS: Extrai numero_di e passa para ExcelExporter que carrega dados do IndexedDB
      */
     async exportExcel(diData) {
-        return this.excelExporter.export(diData);
+        // Validação rigorosa NO FALLBACKS
+        if (!diData || !diData.numero_di) {
+            throw new Error('ExportManager: diData.numero_di é obrigatório para export Excel');
+        }
+        // KISS: Passa apenas numero_di (string) - ExcelExporter carrega dados do IndexedDB
+        return this.excelExporter.export(diData.numero_di);
     }
 
     /**
