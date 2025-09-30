@@ -160,10 +160,10 @@ class ProductMemoryManager {
                         di_number: diNumber,
                         addition_number: addition.numero_adicao,
                         ncm: addition.ncm,
-                        description: product.descricao_mercadoria,
-                        quantity: product.quantidade,
-                        unit: product.unidade_medida,
-                        // weight_kg: REMOVIDO - peso está na adição (adicao.peso_liquido), não no produto
+                        descricao_mercadoria: product.descricao_mercadoria,
+                        quantidade: product.quantidade,
+                        unidade_medida: product.unidade_medida,
+                        peso_liquido: addition.peso_liquido,  // Da adição (produtos não têm peso individual no XML)
 
                         // Custos da adição (rateados se múltiplos produtos)
                         cif_brl: product.valor_unitario_brl * product.quantidade,
