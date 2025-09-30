@@ -35,14 +35,22 @@ export class ExcelDataMapper {
         // ETAPA 1: Carregar dados da DI do IndexedDB
         const dbManager = IndexedDBManager.getInstance();
         await dbManager.initialize();
-        
+
         this.diData = await dbManager.getDI(this.numeroDI);
         if (!this.diData) {
             throw new Error(`ExcelDataMapper: DI ${this.numeroDI} não encontrada no banco de dados`);
         }
-        
+
         console.log(`✅ ExcelDataMapper: DI ${this.numeroDI} carregada do banco com ${this.diData.adicoes?.length || 0} adições`);
-        
+
+        // ETAPA 1B: Carregar dados calculados (opcional - pode não existir ainda)
+        this.calculoData = await dbManager.getConfig(`calculo${this.numeroDI}`);
+        if (this.calculoData) {
+            console.log(`✅ ExcelDataMapper: Dados calculados encontrados para DI ${this.numeroDI}`);
+        } else {
+            console.log(`⚠️ ExcelDataMapper: Dados calculados não encontrados - usando apenas dados básicos da DI`);
+        }
+
         // ETAPA 2: Validação rigorosa - nomenclatura oficial DIProcessor
         this._validateDIData();
         
@@ -482,12 +490,19 @@ export class ExcelDataMapper {
     mapResumoCustosSheet() {
         const diData = this.diData;
 
-        // Usar totais de ComplianceCalculator se disponíveis, senão calcular
+        // PRIORIDADE 1: Usar calculoData (store separado - mais confiável)
         let totais;
-        if (diData.totais_relatorio || diData.totais_por_coluna) {
+        if (this.calculoData?.totais_consolidados) {
+            totais = this._mapearCalculosSalvos(this.calculoData.totais_consolidados);
+            console.log('✅ ExcelDataMapper: Usando totais de ComplianceCalculator (store separado)');
+        }
+        // PRIORIDADE 2: Usar totais salvos na DI (fallback)
+        else if (diData.totais_relatorio || diData.totais_por_coluna) {
             totais = diData.totais_relatorio || diData.totais_por_coluna;
-            console.log('✅ ExcelDataMapper: Usando totais de ComplianceCalculator');
-        } else {
+            console.log('✅ ExcelDataMapper: Usando totais salvos na DI');
+        }
+        // PRIORIDADE 3: Calcular internamente (dados básicos)
+        else {
             totais = this._calcularTotaisRelatorio();
             console.log('⚠️ ExcelDataMapper: Totais calculados internamente (dados básicos apenas)');
         }
@@ -793,6 +808,66 @@ export class ExcelDataMapper {
             analise_percentual,
             _calculado_por: 'ExcelDataMapper',
             _nota: 'ICMS e incentivos requerem ComplianceCalculator'
+        };
+    }
+
+    /**
+     * Mapeia dados calculados salvos do ComplianceCalculator
+     * Converte estrutura totais_consolidados para formato esperado
+     * @private
+     */
+    _mapearCalculosSalvos(totaisConsolidados) {
+        // Validação rigorosa NO FALLBACKS
+        if (!totaisConsolidados) {
+            throw new Error('ExcelDataMapper: totaisConsolidados ausente');
+        }
+
+        const impostos = totaisConsolidados.impostos || {};
+        const despesas = totaisConsolidados.despesas || {};
+        const totais = totaisConsolidados.totais || {};
+
+        // Extrair valores dos impostos (estrutura {valor_devido, detalhamento})
+        const total_impostos_federais =
+            (impostos.ii?.valor_devido || 0) +
+            (impostos.ipi?.valor_devido || 0) +
+            (impostos.pis?.valor_devido || 0) +
+            (impostos.cofins?.valor_devido || 0);
+
+        const total_impostos_estaduais = impostos.icms?.valor_devido || 0;
+
+        const total_despesas_aduaneiras = despesas.totais?.total || 0;
+
+        const custo_total_sem_incentivos = totais.custo_sem_incentivos || 0;
+        const custo_total_com_incentivos = totais.custo_com_incentivos || 0;
+        const economia_total_incentivos = totais.economia_total || 0;
+
+        // Análise percentual
+        const valor_aduaneiro = this.diData.valor_aduaneiro_total_brl;
+        const analise_percentual = {
+            impostos_sobre_aduaneiro: valor_aduaneiro > 0
+                ? ((total_impostos_federais + total_impostos_estaduais) / valor_aduaneiro * 100)
+                : 0,
+            despesas_sobre_aduaneiro: valor_aduaneiro > 0
+                ? (total_despesas_aduaneiras / valor_aduaneiro * 100)
+                : 0
+        };
+
+        console.log('📊 ExcelDataMapper: Totais mapeados de ComplianceCalculator');
+        console.log(`   Impostos Federais: R$ ${total_impostos_federais.toFixed(2)}`);
+        console.log(`   Impostos Estaduais: R$ ${total_impostos_estaduais.toFixed(2)}`);
+        console.log(`   Despesas: R$ ${total_despesas_aduaneiras.toFixed(2)}`);
+        console.log(`   Custo Total: R$ ${custo_total_sem_incentivos.toFixed(2)}`);
+
+        return {
+            total_impostos_federais,
+            total_impostos_estaduais,
+            total_despesas_aduaneiras,
+            custo_total_sem_incentivos,
+            custo_total_com_incentivos,
+            economia_total_incentivos,
+            analise_percentual,
+            _calculado_por: 'ComplianceCalculator',
+            _nota: 'Dados completos com ICMS e incentivos'
         };
     }
 
