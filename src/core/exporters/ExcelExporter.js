@@ -36,6 +36,9 @@ export class ExcelExporter {
             this.mapper = new ExcelDataMapper(numeroDI);
             await this.mapper.initialize();
 
+            // Armazenar referência para diData (usada em generateFilename e outras funções)
+            this.diData = this.mapper.diData;
+
             // Obter mapeamentos de todas as abas
             const sheetMappings = this.mapper.getAllSheetMappings();
             console.log(`📊 ExcelDataMapper: ${sheetMappings.length} abas mapeadas`);
