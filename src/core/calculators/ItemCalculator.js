@@ -346,17 +346,56 @@ export class ItemCalculator {
                 despesasExtras, 
                 adicao.ncm
             );
-            
-            // Adicionar dados do produto
+
+            // Validação rigorosa NO FALLBACKS - campos obrigatórios DIProcessor
+            const camposObrigatorios = {
+                codigo_produto: 'DIProcessor L744',
+                descricao_mercadoria: 'DIProcessor L745',
+                unidade_medida: 'DIProcessor L750',
+                quantidade: 'DIProcessor L749',
+                valor_unitario_usd: 'DIProcessor L756',
+                valor_total_usd: 'DIProcessor L757',
+                valor_unitario_brl: 'DIProcessor L760',
+                valor_total_brl: 'DIProcessor L761'
+            };
+
+            for (const [campo, origem] of Object.entries(camposObrigatorios)) {
+                if (!produto[campo] && produto[campo] !== 0) {
+                    throw new Error(
+                        `ItemCalculator: Campo obrigatório "${campo}" ausente no item ${index + 1} da adição ${adicao.numero_adicao}. ` +
+                        `DIProcessor deve criar este campo (${origem}).`
+                    );
+                }
+            }
+
+            // Mapear produto seguindo NOMENCLATURA OFICIAL DIProcessor
             calculoCompleto.produto = {
                 indice: index + 1,
-                descricao: produto.descricao_mercadoria || adicao.descricao_mercadoria,
-                quantidade: produto.quantidade || adicao.quantidade_estatistica,
-                valor_unitario: produto.valor_unitario_brl || produto.valor_unitario,
+
+                // Mapear nomenclatura: DIProcessor → ComplianceCalculator/ExcelDataMapper
+                codigo: produto.codigo_produto,           // DIProcessor L744
+                descricao: produto.descricao_mercadoria,  // DIProcessor L745
                 ncm: adicao.ncm,
-                peso_kg: adicao.peso_liquido // Peso total da adição (não temos peso individual)
+
+                // Quantidade e unidade
+                quantidade: produto.quantidade,           // DIProcessor L749
+                unidade_medida: produto.unidade_medida,  // DIProcessor L750
+
+                // Valores USD (usados por ExcelDataMapper/ExcelExporter)
+                valor_unitario_usd: produto.valor_unitario_usd,  // DIProcessor L756
+                valor_total_usd: produto.valor_total_usd,        // DIProcessor L757
+
+                // Valores BRL
+                valor_unitario: produto.valor_unitario_brl,     // DIProcessor L760 (nome genérico para compatibilidade)
+                valor_unitario_brl: produto.valor_unitario_brl, // DIProcessor L760 (nome específico)
+                valor_total_brl: produto.valor_total_brl,       // DIProcessor L761
+
+                // Campos adicionais
+                numero_sequencial_item: produto.numero_sequencial_item,  // DIProcessor L741 (usado por CroquiNF)
+                taxa_cambio: produto.taxa_cambio,  // DIProcessor L762
+                peso_kg: adicao.peso_liquido       // Peso da adição
             };
-            
+
             itensCalculados.push(calculoCompleto);
         });
         
