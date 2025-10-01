@@ -146,10 +146,13 @@ export class IncentiveManager {
             }
             
             if (config.requisitos.estados_elegiveis.includes(estado)) {
+                // V2.0: Obter tipo do benefício de entrada
+                const tipoEntrada = config.beneficios?.entrada?.tipo || 'não_especificado';
+
                 programasDisponiveis.push({
                     codigo: codigo,
                     nome: config.nome,
-                    tipo: config.tipo,
+                    tipo: tipoEntrada,
                     descricao: config.descricao || config.nome
                 });
             }
@@ -310,58 +313,58 @@ export class IncentiveManager {
     
     /**
      * Calcula benefícios estimados para um programa
+     * V2.0: Suporta estrutura beneficios.entrada e beneficios.saida
      */
     calculateEstimatedBenefits(programa, config) {
         if (!config.calculo_estimativa) {
             throw new Error(`Configuração de cálculo de estimativa não encontrada para ${programa}`);
         }
-        
+
         const estimativa = config.calculo_estimativa;
         const valorBase = estimativa.valor_base;
         const aliquotaBase = estimativa.aliquota_base;
-        
+
         if (!valorBase || !aliquotaBase) {
             throw new Error(`Parâmetros de estimativa incompletos para ${programa}`);
         }
-        
-        switch (config.tipo) {
+
+        // V2.0: Acessar beneficio de entrada
+        if (!config.beneficios || !config.beneficios.entrada) {
+            throw new Error(`Programa ${programa} não possui estrutura beneficios.entrada (usar v2.0)`);
+        }
+
+        const beneficioEntrada = config.beneficios.entrada;
+
+        if (!beneficioEntrada.aplicavel) {
+            throw new Error(`Benefício de entrada não aplicável para programa ${programa}`);
+        }
+
+        const tipo = beneficioEntrada.tipo;
+
+        switch (tipo) {
             case 'diferimento_parcial':
-                if (!config.fases || !config.fases[0] || config.fases[0].aliquota_antecipacao === undefined) {
+                if (!beneficioEntrada.fases || !beneficioEntrada.fases[0] || beneficioEntrada.fases[0].aliquota_antecipacao === undefined) {
                     throw new Error('Configuração de fases não encontrada para diferimento parcial');
                 }
-                const fase1 = config.fases[0];
+                const fase1 = beneficioEntrada.fases[0];
                 const economia = valorBase * aliquotaBase * (1 - fase1.aliquota_antecipacao);
                 return {
-                    tipo: 'Diferimento parcial',
+                    tipo: 'Diferimento parcial (entrada)',
                     economia_estimada: economia,
-                    percentual_economia: ((economia / (valorBase * aliquotaBase)) * 100).toFixed(1)
+                    percentual_economia: ((economia / (valorBase * aliquotaBase)) * 100).toFixed(1),
+                    _contexto: 'importacao'
                 };
-                
+
             case 'diferimento_total':
                 return {
-                    tipo: 'Diferimento total',
+                    tipo: 'Diferimento total (entrada)',
                     economia_estimada: valorBase * aliquotaBase,
-                    percentual_economia: '100.0'
+                    percentual_economia: '100.0',
+                    _contexto: 'importacao'
                 };
-                
-            case 'credito_outorgado':
-                if (config.credito === undefined) {
-                    throw new Error('Percentual de crédito não configurado');
-                }
-                const aliquotaInterestadual = estimativa.aliquota_interestadual;
-                if (!aliquotaInterestadual) {
-                    throw new Error('Alíquota interestadual não configurada para estimativa');
-                }
-                const credito = valorBase * aliquotaInterestadual * config.credito;
-                const contrapartidas = this.calculateCounterpartsValue(config, credito);
-                return {
-                    tipo: 'Crédito outorgado',
-                    economia_estimada: credito - contrapartidas,
-                    percentual_economia: (((credito - contrapartidas) / (valorBase * aliquotaInterestadual)) * 100).toFixed(1)
-                };
-                
+
             default:
-                throw new Error(`Tipo de programa não suportado: ${config.tipo}`);
+                throw new Error(`Tipo de benefício de entrada não suportado: ${tipo}`);
         }
     }
     
@@ -417,40 +420,51 @@ export class IncentiveManager {
     }
     
     /**
-     * Aplica configuração de NF baseada no tipo do programa
+     * Aplica configuração de NF baseada no tipo do programa v2.0
      */
     applyNFConfiguration(di, programa, config) {
-        const nfConfig = config.nf_config;
-        
+        // V2.0: Validar estrutura entrada
+        if (!config.beneficios || !config.beneficios.entrada) {
+            throw new Error(`Programa ${programa} não possui estrutura beneficios.entrada (usar v2.0)`);
+        }
+
+        const beneficioEntrada = config.beneficios.entrada;
+        const tipo = beneficioEntrada.tipo;
+        const nfConfig = beneficioEntrada.nf_config;
+
         // Calcular valores base
         const subtotal = this.calculateSubtotal(di);
         const aliquotas = this.getAliquotasFromConfig(config);
-        
-        switch (config.tipo) {
+
+        switch (tipo) {
             case 'diferimento_parcial':
                 return this.calculateDiferimentoParcial(di, programa, config, subtotal, aliquotas);
             case 'diferimento_total':
                 return this.calculateDiferimentoTotal(di, programa, config, subtotal, aliquotas);
-            case 'credito_outorgado':
-                return this.calculateCreditoOutorgado(di, programa, config, subtotal);
             default:
-                throw new Error(`Tipo de programa não implementado: ${config.tipo}`);
+                throw new Error(`Tipo de benefício de entrada não implementado: ${tipo}`);
         }
     }
     
     /**
-     * Obtém alíquotas da configuração
+     * Obtém alíquotas da configuração v2.0 (entrada)
      */
     getAliquotasFromConfig(config) {
-        if (!config.aliquotas) {
-            throw new Error('Alíquotas não configuradas no programa');
+        // V2.0: Acessar beneficios.entrada.aliquotas
+        if (!config.beneficios || !config.beneficios.entrada) {
+            throw new Error('Programa não possui estrutura beneficios.entrada (usar v2.0)');
         }
-        
-        const aliquotas = config.aliquotas;
+
+        const beneficioEntrada = config.beneficios.entrada;
+        if (!beneficioEntrada.aliquotas) {
+            throw new Error('Alíquotas não configuradas no benefício de entrada');
+        }
+
+        const aliquotas = beneficioEntrada.aliquotas;
         if (!aliquotas.icms_escrituracao || !aliquotas.icms_calculo) {
             throw new Error('Alíquotas de ICMS incompletas na configuração');
         }
-        
+
         return aliquotas;
     }
     
@@ -525,35 +539,32 @@ export class IncentiveManager {
     }
     
     /**
-     * Calcula campos para crédito outorgado
+     * @deprecated Método obsoleto após migração para v2.0
+     * Em v2.0, crédito outorgado é benefício de SAÍDA, não entrada
+     * GO_COMEXPRODUZIR: entrada=diferimento_total, saída=credito_outorgado
+     * Este método será reimplementado no módulo de vendas (saída)
      */
     calculateCreditoOutorgado(di, programa, config, subtotal) {
-        // COMEXPRODUZIR não altera a NF de entrada (crédito aplicado na saída)
-        return {
-            ...di,
-            nf_fields: {
-                observacao: `${config.nome} - Crédito aplicado na saída`
-            },
-            incentivo_aplicado: {
-                programa: programa,
-                tipo: 'Crédito outorgado na saída',
-                credito_percentual: config.credito * 100,
-                contrapartidas: config.contrapartidas
-            }
-        };
+        throw new Error('calculateCreditoOutorgado obsoleto: crédito outorgado é benefício de SAÍDA (v2.0). Use módulo de vendas.');
     }
     
     /**
-     * Determina fase atual do programa
+     * Determina fase atual do programa v2.0
      */
     getCurrentPhase(config) {
-        if (!config.fases || config.fases.length === 0) {
-            throw new Error('Fases do programa não configuradas');
+        // V2.0: Acessar beneficios.entrada.fases
+        if (!config.beneficios || !config.beneficios.entrada) {
+            throw new Error('Programa não possui estrutura beneficios.entrada (usar v2.0)');
         }
-        
+
+        const beneficioEntrada = config.beneficios.entrada;
+        if (!beneficioEntrada.fases || beneficioEntrada.fases.length === 0) {
+            throw new Error('Fases do benefício de entrada não configuradas');
+        }
+
         // Por simplicidade, retornar primeira fase
         // Em implementação real, seria baseado na data de início do benefício
-        return config.fases[0];
+        return beneficioEntrada.fases[0];
     }
     
     /**

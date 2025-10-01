@@ -1,0 +1,211 @@
+{
+  "versao": "2025.3",
+  "data_atualizacao": "2025-10-01",
+  "fonte": "Resolução GECEX nº 553/2024, alterada pelas Resoluções GECEX nº 645/2024 e nº 785/2025",
+  "descricao": "Lista de Bens Sem Similar Nacional (LESSIN) - CAMEX para aplicação de alíquota diferenciada de ICMS conforme Resolução Senado Federal nº 13/2012",
+
+  "criterios_inclusao": {
+    "inciso_i": "NCM constante no Anexo Único da Resolução GECEX nº 553/2024",
+    "inciso_ii": "Alíquota do Imposto de Importação de até 2%, exceto casos de elevação gradual",
+    "inciso_iii": "Produtos com II de até 2% submetidos a elevação gradual acima de 2% durante vigência do cronograma",
+    "alternativa": "Inexistência de similar nacional atestada pela SECEX no Portal Único Siscomex"
+  },
+
+  "beneficio_fiscal": {
+    "icms_interestadual": {
+      "produtos_sem_similar": ["7%", "12%"],
+      "produtos_com_similar": "4%",
+      "observacao": "Produtos da lista CAMEX podem usar alíquotas de 7% ou 12% em operações interestaduais"
+    }
+  },
+
+  "ncms": [
+    "2902.43.00", "2902.60.00", "2902.90.10", "2902.90.20",
+    "2903.12.00", "2903.13.00",
+    "3901.10.10", "3901.20.10", "3902.10.10", "3902.30.00",
+    "3903.11.00", "3903.19.00", "3904.10.00",
+    "5504.10.00", "5510.11.11",
+    "7202.11.00", "7202.21.00", "7202.49.10", "7202.60.00",
+    "7202.70.00", "7202.92.00", "7204.41.00",
+    "7612.90.20",
+    "8402.11.00", "8407.21.10", "8408.10.10",
+    "8411.11.00", "8411.12.00", "8419.50.21",
+    "8471.30.11", "8471.30.12", "8471.30.19",
+    "8517.12.31", "8517.62.55",
+    "8703.40.00", "8703.50.00", "8703.60.00",
+    "8802.11.00", "8802.12.00", "8802.20.00",
+    "8802.30.00", "8802.40.00",
+    "9018.90.97",
+    "9027.20.11", "9027.20.12", "9027.50.10",
+    "9402.10.00"
+  ],
+
+  "ncms_detalhados": [
+    {
+      "ncm": "2902.43.00",
+      "descricao": "p-Xileno",
+      "capitulo": "29",
+      "categoria": "Produtos químicos orgânicos"
+    },
+    {
+      "ncm": "2902.60.00",
+      "descricao": "Etilbenzeno",
+      "capitulo": "29",
+      "categoria": "Produtos químicos orgânicos"
+    },
+    {
+      "ncm": "3901.10.10",
+      "descricao": "Polietileno de densidade inferior a 0,94, linear",
+      "capitulo": "39",
+      "categoria": "Plásticos"
+    },
+    {
+      "ncm": "3902.10.10",
+      "descricao": "Polipropileno isotático",
+      "capitulo": "39",
+      "categoria": "Plásticos"
+    },
+    {
+      "ncm": "7202.11.00",
+      "descricao": "Ferro-manganês",
+      "capitulo": "72",
+      "categoria": "Ferro e aço"
+    },
+    {
+      "ncm": "7612.90.20",
+      "descricao": "Reservatórios de alumínio",
+      "capitulo": "76",
+      "categoria": "Alumínio",
+      "data_inclusao": "2025-09-01",
+      "vigencia_inicio": "2025-10-01"
+    },
+    {
+      "ncm": "8402.11.00",
+      "descricao": "Caldeiras aquotubulares",
+      "capitulo": "84",
+      "categoria": "Máquinas"
+    },
+    {
+      "ncm": "8471.30.11",
+      "descricao": "Notebooks",
+      "capitulo": "84",
+      "categoria": "Informática"
+    },
+    {
+      "ncm": "8471.30.12",
+      "descricao": "Tablets",
+      "capitulo": "84",
+      "categoria": "Informática"
+    },
+    {
+      "ncm": "8517.12.31",
+      "descricao": "Telefones celulares",
+      "capitulo": "85",
+      "categoria": "Eletrônicos"
+    },
+    {
+      "ncm": "8703.40.00",
+      "descricao": "Veículos elétricos e híbridos",
+      "capitulo": "87",
+      "categoria": "Veículos",
+      "cronograma_elevacao": true
+    },
+    {
+      "ncm": "8802.11.00",
+      "descricao": "Helicópteros até 2.000kg",
+      "capitulo": "88",
+      "categoria": "Aeronaves"
+    },
+    {
+      "ncm": "9018.90.97",
+      "descricao": "Instrumentos médico-cirúrgicos",
+      "capitulo": "90",
+      "categoria": "Instrumentos médicos",
+      "data_inclusao": "2025-09-01",
+      "vigencia_inicio": "2025-10-01"
+    }
+  ],
+
+  "categorias_principais": [
+    {
+      "capitulo": "29",
+      "nome": "Produtos químicos orgânicos",
+      "quantidade_ncms": "50+"
+    },
+    {
+      "capitulo": "39",
+      "nome": "Plásticos e suas obras",
+      "quantidade_ncms": "30+"
+    },
+    {
+      "capitulo": "72",
+      "nome": "Ferro fundido, ferro e aço",
+      "quantidade_ncms": "40+"
+    },
+    {
+      "capitulo": "84",
+      "nome": "Máquinas e aparelhos mecânicos",
+      "quantidade_ncms": "200+"
+    },
+    {
+      "capitulo": "85",
+      "nome": "Máquinas e aparelhos elétricos",
+      "quantidade_ncms": "100+"
+    },
+    {
+      "capitulo": "87",
+      "nome": "Veículos automóveis",
+      "quantidade_ncms": "20+"
+    },
+    {
+      "capitulo": "88",
+      "nome": "Aeronaves e aparelhos espaciais",
+      "quantidade_ncms": "15+"
+    },
+    {
+      "capitulo": "90",
+      "nome": "Instrumentos médico-cirúrgicos",
+      "quantidade_ncms": "80+"
+    }
+  ],
+
+  "ultimas_atualizacoes": [
+    {
+      "data": "2025-09-01",
+      "resolucao": "GECEX 785/2025",
+      "vigencia": "2025-10-01",
+      "alteracoes": [
+        "Inclusão NCM 7612.90.20 (recipientes de alumínio)",
+        "Inclusão NCM 9018.90.97 (instrumentos médico-cirúrgicos)"
+      ]
+    },
+    {
+      "data": "2024-09-19",
+      "resolucao": "GECEX 645/2024",
+      "alteracoes": [
+        "Atualização de NCMs por adaptação ao Sistema Harmonizado"
+      ]
+    },
+    {
+      "data": "2024-02-14",
+      "resolucao": "GECEX 553/2024",
+      "alteracoes": [
+        "Consolidação da lista LESSIN",
+        "Criação de lista positiva no Anexo Único"
+      ]
+    }
+  ],
+
+  "observacoes": [
+    "Esta lista representa os principais produtos. Lista completa disponível no Portal do MDIC",
+    "NCMs com elevação gradual mantêm status de sem similar durante período de elevação",
+    "Verificação oficial deve ser feita no Portal Único Siscomex",
+    "Lista sujeita a atualizações periódicas pelo GECEX/CAMEX"
+  ],
+
+  "links_oficiais": {
+    "portal_mdic": "https://www.gov.br/mdic/pt-br/assuntos/camex/se-camex/strat/lista-de-bens-sem-similar-nacional-lessin",
+    "siscomex": "https://portalunico.siscomex.gov.br/",
+    "download_lista_completa": "https://www.gov.br/mdic/pt-br/assuntos/camex/estrategia-comercial/arquivos-listas/lessin.xlsx"
+  }
+}

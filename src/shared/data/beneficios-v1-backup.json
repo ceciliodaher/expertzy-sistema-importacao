@@ -1,0 +1,204 @@
+{
+  "versao": "2025.1",
+  "data_atualizacao": "2025-01-23",
+  "fonte": "Sistema Expertzy - Módulo de Incentivos Fiscais v1.0",
+
+  "reforma_tributaria_nacional": {
+    "2025": {"mantido": 1.0},
+    "2026": {"mantido": 1.0},
+    "2027": {"mantido": 1.0},
+    "2028": {"mantido": 1.0},
+    "2029": {"mantido": 0.9},
+    "2030": {"mantido": 0.8},
+    "2031": {"mantido": 0.7},
+    "2032": {"mantido": 0.6},
+    "2033": {"mantido": 0.0}
+  },
+
+  "programas": {
+    "SC_TTD_409": {
+      "nome": "TTD 409 Santa Catarina",
+      "tipo": "diferimento_parcial",
+      "descricao": "Diferimento do ICMS na importação com antecipação reduzida",
+      "nf_config": {
+        "cst": "51",
+        "cBenef": "SC830015"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.04
+      },
+      "fases": [
+        {
+          "ate_mes": 36,
+          "aliquota_antecipacao": 0.026,
+          "descricao": "Primeiros 36 meses - 2,6%"
+        },
+        {
+          "apos_mes": 36,
+          "aliquota_antecipacao": 0.01,
+          "descricao": "Após 36 meses - 1,0%"
+        }
+      ],
+      "requisitos": {
+        "estados_elegiveis": ["SC"],
+        "desembaraco_local": true
+      },
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
+      },
+      "reducao_base": 0.949
+    },
+    
+    "SC_TTD_410": {
+      "nome": "TTD 410 Santa Catarina",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total sem antecipação após 24 meses",
+      "nf_config": {
+        "cst": "51",
+        "cBenef": "SC830015"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.04
+      },
+      "requisitos": {
+        "estados_elegiveis": ["SC"],
+        "desembaraco_local": true,
+        "tempo_minimo_meses": 24,
+        "faturamento_minimo_anual": 24000000
+      },
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
+      },
+      "reducao_base": 1.0
+    },
+    
+    "SC_TTD_411": {
+      "nome": "TTD 411 Santa Catarina",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total com garantia obrigatória",
+      "nf_config": {
+        "cst": "51",
+        "cBenef": "SC830015"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.04
+      },
+      "requisitos": {
+        "estados_elegiveis": ["SC"],
+        "desembaraco_local": true,
+        "garantia": {
+          "obrigatoria": true,
+          "tipo": ["real", "fidejussoria"]
+        }
+      },
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
+      },
+      "reducao_base": 1.0
+    },
+    
+    "MG_CORREDOR": {
+      "nome": "Corredor de Importação MG",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total do ICMS na importação",
+      "nf_config": {
+        "cst": "51"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.18,
+        "icms_calculo": 0.18
+      },
+      "requisitos": {
+        "estados_elegiveis": ["MG"],
+        "desembaraco_local": true
+      },
+      "contrapartidas": [],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.18
+      },
+      "reducao_base": 1.0
+    },
+    
+    "ES_INVEST": {
+      "nome": "INVEST-ES Importação",
+      "tipo": "diferimento_total",
+      "descricao": "Diferimento total do ICMS na importação",
+      "nf_config": {
+        "cst": "51"
+      },
+      "aliquotas": {
+        "icms_escrituracao": 0.17,
+        "icms_calculo": 0.17
+      },
+      "requisitos": {
+        "estados_elegiveis": ["ES"],
+        "desembaraco_local": true,
+        "centro_distribuicao": true,
+        "area_minima_m2": 1000
+      },
+      "contrapartidas": [
+        {
+          "tipo": "taxa_administrativa",
+          "percentual": 0.005,
+          "base": "icms_diferido"
+        }
+      ],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.17
+      },
+      "reducao_base": 0.995
+    },
+    
+    "GO_COMEXPRODUZIR": {
+      "nome": "COMEXPRODUZIR Goiás",
+      "tipo": "credito_outorgado",
+      "descricao": "Diferimento integral na importação + Redução de base (21,05%) nas saídas internas + Crédito 65% nas saídas interestaduais",
+      "diferimento_importacao": 1.0,
+      "nf_config": {
+        "observacao": "Diferimento 100% na importação - Crédito 65% na saída interestadual"
+      },
+      "credito_saida": 0.65,
+      "aliquotas": {
+        "icms_interestadual": 0.04,
+        "icms_interno": 0.19
+      },
+      "requisitos": {
+        "estados_elegiveis": ["GO"],
+        "desembaraco_local": true,
+        "percentual_comex_minimo": 0.95,
+        "entrada_fisica_obrigatoria": true
+      },
+      "contrapartidas": [
+        {
+          "fundo": "FUNPRODUZIR",
+          "percentual": 0.05,
+          "base": "credito_outorgado",
+          "obrigatorio": true
+        },
+        {
+          "fundo": "PROTEGE",
+          "percentual": 0.15,
+          "base": "credito_outorgado",
+          "obrigatorio": true
+        }
+      ],
+      "calculo_estimativa": {
+        "valor_base": 250000,
+        "aliquota_base": 0.04,
+        "aliquota_interestadual": 0.04
+      },
+      "reducao_base": 0.2105
+    }
+  }
+}

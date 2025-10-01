@@ -481,15 +481,298 @@ export class ExcelExporter {
 
     // Métodos placeholder para as demais abas
     createCargaSheetFromMapping(worksheet, data) {
-        this.createPlaceholderSheet(worksheet, data, 'carga');
+        // Validação NO FALLBACKS
+        if (!data) {
+            throw new Error('ExcelExporter: data é obrigatório para Carga');
+        }
+
+        // Header principal
+        worksheet.mergeCells('A1:B1');
+        worksheet.getCell('A1').value = 'DADOS DA CARGA';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // PESOS
+        if (data.pesos) {
+            worksheet.getCell(`A${row}`).value = 'PESOS';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:B${row}`);
+            row++;
+
+            const pesos = [
+                ['Peso Bruto (kg)', data.pesos.peso_bruto],
+                ['Peso Líquido (kg)', data.pesos.peso_liquido]
+            ];
+
+            pesos.forEach(([campo, valor]) => {
+                if (valor !== undefined && valor !== null) {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                    row++;
+                }
+            });
+        }
+
+        // TRANSPORTE
+        if (data.transporte) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'TRANSPORTE';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:B${row}`);
+            row++;
+
+            const transporte = [
+                ['Via de Transporte', data.transporte.via_transporte],
+                ['Modalidade', data.transporte.modalidade],
+                ['URF Entrada', data.transporte.urf_entrada],
+                ['Data Chegada', data.transporte.data_chegada]
+            ];
+
+            transporte.forEach(([campo, valor]) => {
+                if (valor !== undefined && valor !== null) {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // CONHECIMENTO
+        if (data.conhecimento) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'CONHECIMENTO DE CARGA';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:B${row}`);
+            row++;
+
+            const conhecimento = [
+                ['Número', data.conhecimento.numero],
+                ['Tipo', data.conhecimento.tipo],
+                ['Data Emissão', data.conhecimento.emissao]
+            ];
+
+            conhecimento.forEach(([campo, valor]) => {
+                if (valor !== undefined && valor !== null) {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // VOLUMES
+        if (data.volumes) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'VOLUMES';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:B${row}`);
+            row++;
+
+            const volumes = [
+                ['Quantidade', data.volumes.quantidade],
+                ['Tipo', data.volumes.tipo],
+                ['Marcação', data.volumes.marcacao]
+            ];
+
+            volumes.forEach(([campo, valor]) => {
+                if (valor !== undefined && valor !== null) {
+                    worksheet.getCell(`A${row}`).value = campo;
+                    worksheet.getCell(`B${row}`).value = valor;
+                    worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                    row++;
+                }
+            });
+        }
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 25;
+        worksheet.getColumn('B').width = 30;
     }
 
     createDespesasSheetFromMapping(worksheet, data) {
-        this.createPlaceholderSheet(worksheet, data, 'despesas');
+        // Validação NO FALLBACKS
+        if (!data || typeof data !== 'object') {
+            throw new Error('ExcelExporter: data deve ser um objeto para Despesas');
+        }
+
+        // Header principal
+        worksheet.mergeCells('A1:B1');
+        worksheet.getCell('A1').value = 'DESPESAS ADUANEIRAS';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // Headers da tabela
+        worksheet.getCell(`A${row}`).value = 'Despesa';
+        worksheet.getCell(`B${row}`).value = 'Valor (R$)';
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        row++;
+
+        // Mapear despesas (excluindo campos de metadados)
+        const despesasMap = {
+            'afrmm': 'AFRMM',
+            'capatazia': 'Capatazia',
+            'armazenagem': 'Armazenagem',
+            'siscomex': 'SISCOMEX',
+            'despachante': 'Despachante',
+            'outras_despesas': 'Outras Despesas'
+        };
+
+        let totalDespesas = 0;
+
+        // Listar despesas
+        Object.entries(despesasMap).forEach(([key, label]) => {
+            if (data[key] !== undefined && data[key] !== null) {
+                worksheet.getCell(`A${row}`).value = label;
+                worksheet.getCell(`B${row}`).value = data[key];
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+
+                if (typeof data[key] === 'number') {
+                    totalDespesas += data[key];
+                }
+                row++;
+            }
+        });
+
+        // Linha do total
+        if (data.total_despesas_aduaneiras !== undefined) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'TOTAL';
+            worksheet.getCell(`B${row}`).value = data.total_despesas_aduaneiras;
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.getCell(`B${row}`).style = {
+                ...this.styles.estilosExpertzy.valorMonetario,
+                font: { bold: true }
+            };
+        }
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 25;
+        worksheet.getColumn('B').width = 20;
     }
 
     createTributosSheetFromMapping(worksheet, data) {
-        this.createPlaceholderSheet(worksheet, data, 'tributos');
+        // Validação NO FALLBACKS
+        if (!data || typeof data !== 'object') {
+            throw new Error('ExcelExporter: data deve ser um objeto para Tributos');
+        }
+
+        // Header principal
+        worksheet.mergeCells('A1:C1');
+        worksheet.getCell('A1').value = 'TRIBUTOS DA IMPORTAÇÃO';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // IMPOSTOS FEDERAIS
+        if (data.impostos_federais) {
+            worksheet.getCell(`A${row}`).value = 'IMPOSTOS FEDERAIS';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:C${row}`);
+            row++;
+
+            // Headers
+            worksheet.getCell(`A${row}`).value = 'Imposto';
+            worksheet.getCell(`B${row}`).value = 'Valor Devido (R$)';
+            worksheet.getCell(`C${row}`).value = 'Valor a Recolher (R$)';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            row++;
+
+            // II
+            if (data.impostos_federais.ii) {
+                worksheet.getCell(`A${row}`).value = 'II - Imposto de Importação';
+                worksheet.getCell(`B${row}`).value = data.impostos_federais.ii.valor_devido || 0;
+                worksheet.getCell(`C${row}`).value = data.impostos_federais.ii.valor_recolher || 0;
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                row++;
+            }
+
+            // IPI
+            if (data.impostos_federais.ipi) {
+                worksheet.getCell(`A${row}`).value = 'IPI - Imposto sobre Produtos Industrializados';
+                worksheet.getCell(`B${row}`).value = data.impostos_federais.ipi.valor_devido || 0;
+                worksheet.getCell(`C${row}`).value = data.impostos_federais.ipi.valor_recolher || 0;
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                row++;
+            }
+
+            // PIS
+            if (data.impostos_federais.pis) {
+                worksheet.getCell(`A${row}`).value = 'PIS - Programa de Integração Social';
+                worksheet.getCell(`B${row}`).value = data.impostos_federais.pis.valor_devido || 0;
+                worksheet.getCell(`C${row}`).value = data.impostos_federais.pis.valor_recolher || 0;
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                row++;
+            }
+
+            // COFINS
+            if (data.impostos_federais.cofins) {
+                worksheet.getCell(`A${row}`).value = 'COFINS - Contribuição para Financiamento da Seguridade Social';
+                worksheet.getCell(`B${row}`).value = data.impostos_federais.cofins.valor_devido || 0;
+                worksheet.getCell(`C${row}`).value = data.impostos_federais.cofins.valor_recolher || 0;
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                row++;
+            }
+        }
+
+        // IMPOSTOS ESTADUAIS
+        if (data.impostos_estaduais) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'IMPOSTOS ESTADUAIS';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.mergeCells(`A${row}:C${row}`);
+            row++;
+
+            // ICMS
+            if (data.impostos_estaduais.icms) {
+                worksheet.getCell(`A${row}`).value = 'ICMS - Imposto sobre Circulação de Mercadorias e Serviços';
+                worksheet.getCell(`B${row}`).value = data.impostos_estaduais.icms.valor_devido || 0;
+                worksheet.getCell(`C${row}`).value = '';
+                worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                worksheet.getCell(`B${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+                worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+                row++;
+            }
+        }
+
+        // TOTAIS
+        if (data.totais) {
+            row++;
+            worksheet.getCell(`A${row}`).value = 'TOTAL FEDERAL';
+            worksheet.getCell(`B${row}`).value = data.totais.total_federal || 0;
+            worksheet.getCell(`C${row}`).value = '';
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.getCell(`B${row}`).style = {
+                ...this.styles.estilosExpertzy.valorMonetario,
+                font: { bold: true }
+            };
+            worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+        }
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 50;
+        worksheet.getColumn('B').width = 20;
+        worksheet.getColumn('C').width = 20;
     }
 
     /**
@@ -739,11 +1022,151 @@ export class ExcelExporter {
     }
 
     createNCMsSheetFromMapping(worksheet, data) {
-        this.createPlaceholderSheet(worksheet, data, 'ncms');
+        // Validação NO FALLBACKS
+        if (!data || typeof data !== 'object') {
+            throw new Error('ExcelExporter: data deve ser um objeto para NCMs');
+        }
+
+        if (!data.ncms_unicos || !Array.isArray(data.ncms_unicos)) {
+            throw new Error('ExcelExporter: data.ncms_unicos deve ser um array');
+        }
+
+        // Header principal
+        worksheet.mergeCells('A1:D1');
+        worksheet.getCell('A1').value = 'ANÁLISE DE NCMs';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // Estatísticas
+        worksheet.getCell(`A${row}`).value = 'Total de NCMs Únicos:';
+        worksheet.getCell(`B${row}`).value = data.total_ncms || data.ncms_unicos.length;
+        worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border, font: { bold: true } };
+        row += 2;
+
+        // Headers da tabela
+        const headers = ['NCM', 'Descrição', 'Qtd Adições', 'Valor Total (R$)'];
+        headers.forEach((header, index) => {
+            const col = String.fromCharCode(65 + index);
+            worksheet.getCell(`${col}${row}`).value = header;
+            worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        });
+        row++;
+
+        // Dados dos NCMs
+        const startDataRow = row;
+        data.ncms_unicos.forEach((ncm) => {
+            worksheet.getCell(`A${row}`).value = ncm.ncm;
+            worksheet.getCell(`B${row}`).value = ncm.descricao;
+            worksheet.getCell(`C${row}`).value = ncm.quantidade_adicoes;
+            worksheet.getCell(`D${row}`).value = ncm.valor_total;
+
+            worksheet.getCell(`A${row}`).style = {
+                ...this.styles.estilosExpertzy.valorMonetario,
+                font: { name: 'Courier New', size: 10 }
+            };
+            worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`D${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+
+            row++;
+        });
+
+        // Aplicar zebra striping
+        const endDataRow = row - 1;
+        if (endDataRow >= startDataRow) {
+            this.styles.applyZebraStriping(worksheet, startDataRow, endDataRow, 0, 3);
+        }
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 12;
+        worksheet.getColumn('B').width = 50;
+        worksheet.getColumn('C').width = 15;
+        worksheet.getColumn('D').width = 20;
     }
 
     createProdutosSheetFromMapping(worksheet, data) {
-        this.createPlaceholderSheet(worksheet, data, 'produtos');
+        // Validação NO FALLBACKS
+        if (!data || typeof data !== 'object') {
+            throw new Error('ExcelExporter: data deve ser um objeto para Produtos');
+        }
+
+        if (!data.lista || !Array.isArray(data.lista)) {
+            throw new Error('ExcelExporter: data.lista deve ser um array');
+        }
+
+        // Header principal
+        worksheet.mergeCells('A1:F1');
+        worksheet.getCell('A1').value = 'PRODUTOS DA IMPORTAÇÃO';
+        worksheet.getCell('A1').style = this.styles.estilosExpertzy.headerPrincipal;
+
+        let row = 3;
+
+        // Estatísticas
+        if (data.totais) {
+            worksheet.getCell(`A${row}`).value = 'Total de Produtos:';
+            worksheet.getCell(`B${row}`).value = data.totais.quantidade_produtos || data.lista.length;
+            worksheet.getCell(`A${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+            worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border, font: { bold: true } };
+
+            if (data.totais.valor_total) {
+                worksheet.getCell(`C${row}`).value = 'Valor Total:';
+                worksheet.getCell(`D${row}`).value = data.totais.valor_total;
+                worksheet.getCell(`C${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+                worksheet.getCell(`D${row}`).style = {
+                    ...this.styles.estilosExpertzy.valorMonetario,
+                    font: { bold: true }
+                };
+            }
+            row += 2;
+        }
+
+        // Headers da tabela
+        const headers = ['Adição', 'Código', 'Descrição', 'NCM', 'Quantidade', 'Valor Total (R$)'];
+        headers.forEach((header, index) => {
+            const col = String.fromCharCode(65 + index);
+            worksheet.getCell(`${col}${row}`).value = header;
+            worksheet.getCell(`${col}${row}`).style = this.styles.estilosExpertzy.headerSecundario;
+        });
+        row++;
+
+        // Dados dos produtos
+        const startDataRow = row;
+        data.lista.forEach((produto) => {
+            worksheet.getCell(`A${row}`).value = produto.adicao_numero;
+            worksheet.getCell(`B${row}`).value = produto.codigo;
+            worksheet.getCell(`C${row}`).value = produto.descricao;
+            worksheet.getCell(`D${row}`).value = produto.ncm;
+            worksheet.getCell(`E${row}`).value = produto.quantidade ? `${produto.quantidade} ${produto.unidade || ''}` : '';
+            worksheet.getCell(`F${row}`).value = produto.valor_total;
+
+            worksheet.getCell(`A${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`B${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`C${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`D${row}`).style = {
+                ...this.styles.estilosExpertzy.valorMonetario,
+                font: { name: 'Courier New', size: 10 }
+            };
+            worksheet.getCell(`E${row}`).style = { border: this.styles.estilosExpertzy.valorMonetario.border };
+            worksheet.getCell(`F${row}`).style = this.styles.estilosExpertzy.valorMonetario;
+
+            row++;
+        });
+
+        // Aplicar zebra striping
+        const endDataRow = row - 1;
+        if (endDataRow >= startDataRow) {
+            this.styles.applyZebraStriping(worksheet, startDataRow, endDataRow, 0, 5);
+        }
+
+        // Ajustar larguras
+        worksheet.getColumn('A').width = 8;
+        worksheet.getColumn('B').width = 15;
+        worksheet.getColumn('C').width = 40;
+        worksheet.getColumn('D').width = 12;
+        worksheet.getColumn('E').width = 15;
+        worksheet.getColumn('F').width = 20;
     }
 
     createMemoriaSheetFromMapping(worksheet, data) {

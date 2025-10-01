@@ -1,7 +1,8 @@
 {
-  "versao": "2025.1",
-  "data_atualizacao": "2025-01-23",
-  "fonte": "Sistema Expertzy - Módulo de Incentivos Fiscais v1.0",
+  "versao": "2025.2",
+  "data_atualizacao": "2025-10-01",
+  "fonte": "Sistema Expertzy - Módulo de Incentivos Fiscais v2.0",
+  "changelog": "Reestruturação completa: separação benefícios entrada/saída",
 
   "reforma_tributaria_nacional": {
     "2025": {"mantido": 1.0},
@@ -18,78 +19,151 @@
   "programas": {
     "SC_TTD_409": {
       "nome": "TTD 409 Santa Catarina",
-      "tipo": "diferimento_parcial",
-      "descricao": "Diferimento do ICMS na importação com antecipação reduzida",
-      "nf_config": {
-        "cst": "51",
-        "cBenef": "SC830015"
-      },
-      "aliquotas": {
-        "icms_escrituracao": 0.17,
-        "icms_calculo": 0.04
-      },
-      "fases": [
-        {
-          "ate_mes": 36,
-          "aliquota_antecipacao": 0.026,
-          "descricao": "Primeiros 36 meses - 2,6%"
-        },
-        {
-          "apos_mes": 36,
-          "aliquota_antecipacao": 0.01,
-          "descricao": "Após 36 meses - 1,0%"
-        }
-      ],
+      "descricao": "Diferimento parcial na importação + Crédito presumido nas saídas",
+
       "requisitos": {
         "estados_elegiveis": ["SC"],
         "desembaraco_local": true
       },
-      "contrapartidas": [],
+
+      "beneficios": {
+        "entrada": {
+          "tipo": "diferimento_parcial",
+          "aplicavel": true,
+          "nf_config": {
+            "cst": "51",
+            "cBenef": "SC830015"
+          },
+          "aliquotas": {
+            "icms_escrituracao": 0.17,
+            "icms_calculo": 0.04
+          },
+          "fases": [
+            {
+              "ate_mes": 36,
+              "aliquota_antecipacao": 0.026,
+              "descricao": "Primeiros 36 meses - 2,6%"
+            },
+            {
+              "apos_mes": 36,
+              "aliquota_antecipacao": 0.01,
+              "descricao": "Após 36 meses - 1,0%"
+            }
+          ],
+          "reducao_base": 0.949
+        },
+
+        "saida": {
+          "aplicavel": true,
+          "tipo": "credito_presumido",
+          "beneficios_por_tipo": {
+            "interna_revenda_camex": {
+              "descricao": "Saída interna para revenda de produtos lista CAMEX",
+              "destaque_icms": 0.12,
+              "aliquota_efetiva": 0.036,
+              "fundo_social": 0.004,
+              "carga_final": 0.04,
+              "condicoes": ["Produto na lista CAMEX", "Destinado à comercialização"]
+            },
+            "interna_industrializacao": {
+              "descricao": "Saída interna para industrialização com mudança NCM",
+              "destaque_icms": 0.10,
+              "aliquota_efetiva": 0.036,
+              "fundo_social": 0.004,
+              "carga_final": 0.04,
+              "condicoes": ["Destinado à industrialização", "Alteração do NCM obrigatória"]
+            },
+            "interestadual_camex": {
+              "descricao": "Saída interestadual de produtos lista CAMEX",
+              "destaque_icms": 0.07,
+              "aliquota_efetiva": 0.021,
+              "fundo_social": 0.004,
+              "carga_final": 0.025,
+              "condicoes": ["Produtos lista CAMEX", "Contribuinte ICMS em outra UF"]
+            }
+          }
+        }
+      },
+
+      "contrapartidas": [
+        {
+          "fundo": "FUNDO_SOCIAL",
+          "nome": "Fundo de Apoio à Educação SC",
+          "percentual": 0.004,
+          "base": "base_calculo_integral",
+          "obrigatorio": true
+        }
+      ],
+
       "calculo_estimativa": {
         "valor_base": 250000,
         "aliquota_base": 0.17
-      },
-      "reducao_base": 0.949
+      }
     },
-    
+
     "SC_TTD_410": {
       "nome": "TTD 410 Santa Catarina",
-      "tipo": "diferimento_total",
-      "descricao": "Diferimento total sem antecipação após 24 meses",
-      "nf_config": {
-        "cst": "51",
-        "cBenef": "SC830015"
-      },
-      "aliquotas": {
-        "icms_escrituracao": 0.17,
-        "icms_calculo": 0.04
-      },
+      "descricao": "Diferimento total na importação + Crédito presumido nas saídas",
+
       "requisitos": {
         "estados_elegiveis": ["SC"],
         "desembaraco_local": true,
         "tempo_minimo_meses": 24,
         "faturamento_minimo_anual": 24000000
       },
+
+      "beneficios": {
+        "entrada": {
+          "tipo": "diferimento_total",
+          "aplicavel": true,
+          "nf_config": {
+            "cst": "51",
+            "cBenef": "SC830015"
+          },
+          "aliquotas": {
+            "icms_escrituracao": 0.17,
+            "icms_calculo": 0.04
+          },
+          "diferimento_percentual": 1.0,
+          "reducao_base": 1.0
+        },
+
+        "saida": {
+          "aplicavel": true,
+          "tipo": "credito_presumido",
+          "beneficios_por_tipo": {
+            "interna_revenda_camex": {
+              "descricao": "Saída interna para revenda de produtos lista CAMEX",
+              "destaque_icms": 0.12,
+              "aliquota_efetiva": 0.036,
+              "fundo_social": 0.004,
+              "carga_final": 0.04,
+              "condicoes": ["Produto na lista CAMEX", "Destinado à comercialização"]
+            },
+            "interestadual_camex": {
+              "descricao": "Saída interestadual de produtos lista CAMEX",
+              "destaque_icms": 0.07,
+              "aliquota_efetiva": 0.021,
+              "fundo_social": 0.004,
+              "carga_final": 0.025,
+              "condicoes": ["Produtos lista CAMEX", "Contribuinte ICMS"]
+            }
+          }
+        }
+      },
+
       "contrapartidas": [],
+
       "calculo_estimativa": {
         "valor_base": 250000,
         "aliquota_base": 0.17
-      },
-      "reducao_base": 1.0
+      }
     },
-    
+
     "SC_TTD_411": {
       "nome": "TTD 411 Santa Catarina",
-      "tipo": "diferimento_total",
-      "descricao": "Diferimento total com garantia obrigatória",
-      "nf_config": {
-        "cst": "51",
-        "cBenef": "SC830015"
-      },
-      "aliquotas": {
-        "icms_escrituracao": 0.17,
-        "icms_calculo": 0.04
-      },
+      "descricao": "Diferimento total com garantia obrigatória (somente entrada)",
+
       "requisitos": {
         "estados_elegiveis": ["SC"],
         "desembaraco_local": true,
@@ -98,54 +172,104 @@
           "tipo": ["real", "fidejussoria"]
         }
       },
+
+      "beneficios": {
+        "entrada": {
+          "tipo": "diferimento_total",
+          "aplicavel": true,
+          "nf_config": {
+            "cst": "51",
+            "cBenef": "SC830015"
+          },
+          "aliquotas": {
+            "icms_escrituracao": 0.17,
+            "icms_calculo": 0.04
+          },
+          "diferimento_percentual": 1.0,
+          "reducao_base": 1.0
+        },
+
+        "saida": {
+          "aplicavel": false
+        }
+      },
+
       "contrapartidas": [],
+
       "calculo_estimativa": {
         "valor_base": 250000,
         "aliquota_base": 0.17
-      },
-      "reducao_base": 1.0
+      }
     },
-    
+
     "MG_CORREDOR": {
       "nome": "Corredor de Importação MG",
-      "tipo": "diferimento_total",
-      "descricao": "Diferimento total do ICMS na importação",
-      "nf_config": {
-        "cst": "51"
-      },
-      "aliquotas": {
-        "icms_escrituracao": 0.18,
-        "icms_calculo": 0.18
-      },
+      "descricao": "Diferimento total do ICMS na importação (somente entrada)",
+
       "requisitos": {
         "estados_elegiveis": ["MG"],
         "desembaraco_local": true
       },
+
+      "beneficios": {
+        "entrada": {
+          "tipo": "diferimento_total",
+          "aplicavel": true,
+          "nf_config": {
+            "cst": "51"
+          },
+          "aliquotas": {
+            "icms_escrituracao": 0.18,
+            "icms_calculo": 0.18
+          },
+          "diferimento_percentual": 1.0,
+          "reducao_base": 1.0
+        },
+
+        "saida": {
+          "aplicavel": false
+        }
+      },
+
       "contrapartidas": [],
+
       "calculo_estimativa": {
         "valor_base": 250000,
         "aliquota_base": 0.18
-      },
-      "reducao_base": 1.0
+      }
     },
-    
+
     "ES_INVEST": {
       "nome": "INVEST-ES Importação",
-      "tipo": "diferimento_total",
-      "descricao": "Diferimento total do ICMS na importação",
-      "nf_config": {
-        "cst": "51"
-      },
-      "aliquotas": {
-        "icms_escrituracao": 0.17,
-        "icms_calculo": 0.17
-      },
+      "descricao": "Diferimento total do ICMS na importação (somente entrada)",
+
       "requisitos": {
         "estados_elegiveis": ["ES"],
         "desembaraco_local": true,
         "centro_distribuicao": true,
         "area_minima_m2": 1000
       },
+
+      "beneficios": {
+        "entrada": {
+          "tipo": "diferimento_total",
+          "aplicavel": true,
+          "nf_config": {
+            "cst": "51"
+          },
+          "aliquotas": {
+            "icms_escrituracao": 0.17,
+            "icms_calculo": 0.17
+          },
+          "diferimento_percentual": 1.0,
+          "reducao_base": 0.995
+        },
+
+        "saida": {
+          "aplicavel": false
+        }
+      },
+
       "contrapartidas": [
         {
           "tipo": "taxa_administrativa",
@@ -153,32 +277,59 @@
           "base": "icms_diferido"
         }
       ],
+
       "calculo_estimativa": {
         "valor_base": 250000,
         "aliquota_base": 0.17
-      },
-      "reducao_base": 0.995
+      }
     },
-    
+
     "GO_COMEXPRODUZIR": {
       "nome": "COMEXPRODUZIR Goiás",
-      "tipo": "credito_outorgado",
-      "descricao": "Diferimento integral na importação + Redução de base (21,05%) nas saídas internas + Crédito 65% nas saídas interestaduais",
-      "diferimento_importacao": 1.0,
-      "nf_config": {
-        "observacao": "Diferimento 100% na importação - Crédito 65% na saída interestadual"
-      },
-      "credito_saida": 0.65,
-      "aliquotas": {
-        "icms_interestadual": 0.04,
-        "icms_interno": 0.19
-      },
+      "descricao": "Diferimento integral na importação + Crédito outorgado 65% nas saídas interestaduais",
+
       "requisitos": {
         "estados_elegiveis": ["GO"],
         "desembaraco_local": true,
         "percentual_comex_minimo": 0.95,
         "entrada_fisica_obrigatoria": true
       },
+
+      "beneficios": {
+        "entrada": {
+          "tipo": "diferimento_total",
+          "aplicavel": true,
+          "nf_config": {
+            "observacao": "Diferimento 100% na importação"
+          },
+          "aliquotas": {
+            "icms_interno": 0.19,
+            "icms_interestadual": 0.04
+          },
+          "diferimento_percentual": 1.0,
+          "reducao_base": 1.0
+        },
+
+        "saida": {
+          "aplicavel": true,
+          "tipo": "credito_outorgado",
+          "beneficios_por_tipo": {
+            "interestadual": {
+              "descricao": "Crédito outorgado 65% nas saídas interestaduais",
+              "credito_percentual": 0.65,
+              "aliquota_interestadual": 0.04,
+              "condicoes": ["Saída interestadual", "Percentual comex > 95%"]
+            },
+            "interna": {
+              "descricao": "Redução de base de cálculo nas saídas internas",
+              "reducao_base": 0.2105,
+              "aliquota_interna": 0.19,
+              "condicoes": ["Saída interna", "Empresa optante pelo programa"]
+            }
+          }
+        }
+      },
+
       "contrapartidas": [
         {
           "fundo": "FUNPRODUZIR",
@@ -193,12 +344,12 @@
           "obrigatorio": true
         }
       ],
+
       "calculo_estimativa": {
         "valor_base": 250000,
         "aliquota_base": 0.04,
         "aliquota_interestadual": 0.04
-      },
-      "reducao_base": 0.2105
+      }
     }
   }
 }
