@@ -951,6 +951,8 @@ export class ExcelDataMapper {
                     despesas: this._obterDespesasRateadasAdicao(numeroAdicao),
                     totais: {
                         quantidade_produtos: 0,
+                        valor_total_usd: 0,
+                        valor_total_brl: 0,
                         valor_mercadoria: 0,
                         total_ii: 0,
                         total_ipi: 0,
@@ -972,6 +974,8 @@ export class ExcelDataMapper {
 
             // Atualizar totais
             adicaoData.totais.quantidade_produtos++;
+            adicaoData.totais.valor_total_usd += produto.valor_total_usd;
+            adicaoData.totais.valor_total_brl += produto.valor_total_brl;
             adicaoData.totais.valor_mercadoria += produto.valor_total_brl;
             adicaoData.totais.total_ii += produto.ii_item;
             adicaoData.totais.total_ipi += produto.ipi_item;
