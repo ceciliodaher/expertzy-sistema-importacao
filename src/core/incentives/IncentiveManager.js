@@ -388,41 +388,37 @@ export class IncentiveManager {
      * Calcula campos da NF com diferimento para CST 51
      * @param {Object} di - Dados da DI processada
      * @param {string} programa - Programa de incentivo aplicado
+     * @param {number} faseIndex - Índice da fase a aplicar (opcional, padrão: 0)
      * @returns {Object} - Campos calculados para a NF
      */
-    calculateNFFields(di, programa) {
+    calculateNFFields(di, programa, faseIndex = 0) {
         if (!di) {
             throw new Error('Dados da DI obrigatórios para cálculo dos campos NF');
         }
-        
+
         if (!programa) {
             return di; // Sem incentivo, retorna dados originais
         }
-        
+
         if (!this.beneficios || !this.beneficios.programas) {
             throw new Error('Configurações de benefícios não carregadas');
         }
-        
+
         const config = this.beneficios.programas[programa];
         if (!config) {
             throw new Error(`Configuração não encontrada para programa ${programa}`);
         }
-        
-        console.log(`📄 Calculando campos NF para programa: ${programa}`);
-        
-        // Verificar se programa tem configuração de NF
-        if (!config.nf_config) {
-            throw new Error(`Configuração de NF não encontrada para programa ${programa}`);
-        }
-        
-        // Aplicar configuração específica por tipo
-        return this.applyNFConfiguration(di, programa, config);
+
+        console.log(`📄 Calculando campos NF para programa: ${programa}${faseIndex > 0 ? ` (fase ${faseIndex})` : ''}`);
+
+        // Aplicar configuração específica por tipo (validação de nf_config feita em applyNFConfiguration)
+        return this.applyNFConfiguration(di, programa, config, faseIndex);
     }
     
     /**
      * Aplica configuração de NF baseada no tipo do programa v2.0
      */
-    applyNFConfiguration(di, programa, config) {
+    applyNFConfiguration(di, programa, config, faseIndex = 0) {
         // V2.0: Validar estrutura entrada
         if (!config.beneficios || !config.beneficios.entrada) {
             throw new Error(`Programa ${programa} não possui estrutura beneficios.entrada (usar v2.0)`);
@@ -432,15 +428,20 @@ export class IncentiveManager {
         const tipo = beneficioEntrada.tipo;
         const nfConfig = beneficioEntrada.nf_config;
 
+        // Validar nf_config
+        if (!nfConfig) {
+            throw new Error(`Configuração de NF não encontrada para programa ${programa} (beneficios.entrada.nf_config)`);
+        }
+
         // Calcular valores base
         const subtotal = this.calculateSubtotal(di);
         const aliquotas = this.getAliquotasFromConfig(config);
 
         switch (tipo) {
             case 'diferimento_parcial':
-                return this.calculateDiferimentoParcial(di, programa, config, subtotal, aliquotas);
+                return this.calculateDiferimentoParcial(di, programa, config, subtotal, aliquotas, nfConfig, faseIndex);
             case 'diferimento_total':
-                return this.calculateDiferimentoTotal(di, programa, config, subtotal, aliquotas);
+                return this.calculateDiferimentoTotal(di, programa, config, subtotal, aliquotas, nfConfig);
             default:
                 throw new Error(`Tipo de benefício de entrada não implementado: ${tipo}`);
         }
@@ -471,35 +472,35 @@ export class IncentiveManager {
     /**
      * Calcula campos para diferimento parcial
      */
-    calculateDiferimentoParcial(di, programa, config, subtotal, aliquotas) {
+    calculateDiferimentoParcial(di, programa, config, subtotal, aliquotas, nfConfig, faseIndex = 0) {
         // Base para escrituração (alíquota normal por dentro)
         const baseEscrituracao = subtotal / (1 - aliquotas.icms_escrituracao);
-        
+
         // Base para cálculo do imposto devido (alíquota reduzida por dentro)
         const baseCalculo = subtotal / (1 - aliquotas.icms_calculo);
-        
+
         // Determinar fase atual
-        const faseAtual = this.getCurrentPhase(config);
+        const faseAtual = this.getCurrentPhase(config, faseIndex);
         if (!faseAtual || faseAtual.aliquota_antecipacao === undefined) {
             throw new Error('Fase atual do programa não determinada ou alíquota ausente');
         }
-        
+
         const vICMSOp = baseEscrituracao * aliquotas.icms_escrituracao;
         const vICMS = baseCalculo * faseAtual.aliquota_antecipacao;
         const vICMSDif = vICMSOp - vICMS;
         const pDif = (vICMSDif / vICMSOp) * 100;
-        
+
         return {
             ...di,
             nf_fields: {
-                cst: config.nf_config.cst,
+                cst: nfConfig.cst,
                 vBC: baseEscrituracao,
                 pICMS: aliquotas.icms_escrituracao * 100,
                 vICMSOp: vICMSOp,
                 vICMS: vICMS,
                 vICMSDif: vICMSDif,
                 pDif: pDif,
-                cBenef: config.nf_config.cBenef,
+                cBenef: nfConfig.cBenef,
                 observacao: `${config.nome} - Antecipação ${(faseAtual.aliquota_antecipacao * 100).toFixed(1)}%`
             },
             incentivo_aplicado: {
@@ -513,21 +514,21 @@ export class IncentiveManager {
     /**
      * Calcula campos para diferimento total
      */
-    calculateDiferimentoTotal(di, programa, config, subtotal, aliquotas) {
+    calculateDiferimentoTotal(di, programa, config, subtotal, aliquotas, nfConfig) {
         const base = subtotal / (1 - aliquotas.icms_escrituracao);
         const vICMSOp = base * aliquotas.icms_escrituracao;
-        
+
         return {
             ...di,
             nf_fields: {
-                cst: config.nf_config.cst,
+                cst: nfConfig.cst,
                 vBC: base,
                 pICMS: aliquotas.icms_escrituracao * 100,
                 vICMSOp: vICMSOp,
                 vICMS: 0, // Diferimento total
                 vICMSDif: vICMSOp,
                 pDif: 100.00,
-                cBenef: config.nf_config.cBenef || null,
+                cBenef: nfConfig.cBenef || null,
                 observacao: `${config.nome} - Diferimento total`
             },
             incentivo_aplicado: {
@@ -550,8 +551,11 @@ export class IncentiveManager {
     
     /**
      * Determina fase atual do programa v2.0
+     * @param {Object} config - Configuração do programa
+     * @param {number} faseIndex - Índice da fase desejada (opcional, padrão: 0)
+     * @returns {Object} - Dados da fase selecionada
      */
-    getCurrentPhase(config) {
+    getCurrentPhase(config, faseIndex = 0) {
         // V2.0: Acessar beneficios.entrada.fases
         if (!config.beneficios || !config.beneficios.entrada) {
             throw new Error('Programa não possui estrutura beneficios.entrada (usar v2.0)');
@@ -562,9 +566,16 @@ export class IncentiveManager {
             throw new Error('Fases do benefício de entrada não configuradas');
         }
 
-        // Por simplicidade, retornar primeira fase
-        // Em implementação real, seria baseado na data de início do benefício
-        return beneficioEntrada.fases[0];
+        // Validar índice
+        if (faseIndex < 0 || faseIndex >= beneficioEntrada.fases.length) {
+            console.warn(`⚠️ faseIndex ${faseIndex} inválido, usando fase 0`);
+            faseIndex = 0;
+        }
+
+        const faseEscolhida = beneficioEntrada.fases[faseIndex];
+        console.log(`📅 Fase selecionada [${faseIndex}]: ${faseEscolhida.descricao}`);
+
+        return faseEscolhida;
     }
     
     /**
