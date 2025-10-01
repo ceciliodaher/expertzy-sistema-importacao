@@ -207,9 +207,11 @@ export class ComplianceCalculator {
                         unidade_medida: item.produto.unidade_medida,   // Real unit from DI
                         valor_unitario_brl: item.produto.valor_unitario,
                         valor_total_brl: item.valorItem,
+                        valor_unitario_usd: item.produto.valor_unitario_usd,  // DIProcessor L756
+                        valor_total_usd: item.produto.valor_total_usd,        // DIProcessor L757
                         quantidade: item.produto.quantidade,
                         ii_item: item.tributos.ii.valor,
-                        ipi_item: item.tributos.ipi.valor, 
+                        ipi_item: item.tributos.ipi.valor,
                         pis_item: item.tributos.pis.valor,
                         cofins_item: item.tributos.cofins.valor,
                         icms_item: item.valorICMS,
