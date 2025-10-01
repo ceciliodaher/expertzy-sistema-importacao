@@ -215,6 +215,8 @@ export class ComplianceCalculator {
                         pis_item: item.tributos.pis.valor,
                         cofins_item: item.tributos.cofins.valor,
                         icms_item: item.valorICMS,
+                        icms_incentivo_item: 0,        // Será preenchido após aplicar benefícios
+                        icms_desembolsado_item: item.valorICMS,  // Default: sem incentivo = valor total
                         base_icms_item: item.baseICMS
                     });
                 });
@@ -550,24 +552,27 @@ export class ComplianceCalculator {
             console.log('📂 ComplianceCalculator: Carregando configurações fiscais...');
             
             // Carregar arquivos de configuração existentes (como no sistema legado)
-            const [aliquotasResponse, beneficiosResponse, configResponse] = await Promise.all([
+            const [aliquotasResponse, beneficiosResponse, ncmsVedadosResponse, configResponse] = await Promise.all([
                 fetch(new URL('../../shared/data/aliquotas.json', import.meta.url)),
                 fetch(new URL('../../shared/data/beneficios.json', import.meta.url)),
+                fetch(new URL('../../shared/data/ncms-vedados.json', import.meta.url)),
                 fetch(new URL('../../shared/data/config.json', import.meta.url))
             ]);
 
-            if (!aliquotasResponse.ok || !beneficiosResponse.ok || !configResponse.ok) {
+            if (!aliquotasResponse.ok || !beneficiosResponse.ok || !ncmsVedadosResponse.ok || !configResponse.ok) {
                 throw new Error('Erro ao carregar arquivos de configuração');
             }
 
             const aliquotas = await aliquotasResponse.json();
             const beneficios = await beneficiosResponse.json();
+            const ncmsVedados = await ncmsVedadosResponse.json();
             const config = await configResponse.json();
 
             // Estruturar configurações no formato esperado
             this.configuracoes = {
                 aliquotas: aliquotas,
                 beneficios: beneficios,
+                ncms_vedados: ncmsVedados,
                 config: config,
                 versao: config.versao || '2025.1'
             };
@@ -575,6 +580,7 @@ export class ComplianceCalculator {
             console.log('✅ Configurações fiscais carregadas:', {
                 aliquotas: aliquotas.versao,
                 beneficios: beneficios.versao,
+                ncms_vedados: ncmsVedados.versao,
                 config: config.versao
             });
             
@@ -649,7 +655,29 @@ export class ComplianceCalculator {
             
             // 6. Aplicar benefícios fiscais se aplicáveis
             calculo.beneficios = this.aplicarBeneficios(calculo);
-            
+
+            // 6.1. Aplicar diferimento ICMS aos produtos individuais desta adição
+            if (calculo.beneficios && calculo.beneficios.aplicado) {
+                console.log(`\n💰 Aplicando diferimento ICMS aos produtos da adição ${adicao.numero_adicao}...`);
+
+                // Atualizar produtos individuais desta adição
+                produtosIndividuais.forEach(produto => {
+                    if (produto.adicao_numero === adicao.numero_adicao) {
+                        // Calcular fator de diferimento para este NCM
+                        const fatorDiferimento = this._calcularFatorDiferimentoImportacao(
+                            calculo.beneficios,
+                            produto.ncm
+                        );
+
+                        // Aplicar diferimento
+                        produto.icms_incentivo_item = produto.icms_item * fatorDiferimento;
+                        produto.icms_desembolsado_item = produto.icms_item - produto.icms_incentivo_item;
+
+                        console.log(`  Produto ${produto.produto_index} (NCM ${produto.ncm}): ICMS R$ ${produto.icms_item.toFixed(2)} - Incentivo R$ ${produto.icms_incentivo_item.toFixed(2)} = Desembolso R$ ${produto.icms_desembolsado_item.toFixed(2)}`);
+                    }
+                });
+            }
+
             // 7. Calcular totais para relatórios (NOVO - movido do CroquiNFExporter)
             // Verificar se há produtos individuais calculados
             if (calculo.produtos_individuais && calculo.produtos_individuais.length > 0) {
@@ -1238,6 +1266,94 @@ export class ComplianceCalculator {
             icms_efetivo: icmsEfetivo,
             economia: economia
         };
+    }
+
+    /**
+     * Calcula fator de diferimento ICMS na importação baseado em beneficios.json
+     * NO HARDCODED DATA - JSON é única fonte de verdade
+     * Verifica vedações de NCM antes de aplicar diferimento
+     * @param {object} beneficios - Benefícios aplicados (resultado de aplicarBeneficios)
+     * @param {string} ncm - Código NCM do produto (8 dígitos)
+     * @returns {number} Fator entre 0 e 1 (ex: 1.0 = 100% diferido, 0.75 = 75% diferido)
+     * @private
+     */
+    _calcularFatorDiferimentoImportacao(beneficios, ncm) {
+        // 1. Sem benefício = zero diferimento (realidade, não fallback)
+        if (!beneficios || !beneficios.aplicado) {
+            return 0;
+        }
+
+        // 2. Validar código obrigatório
+        if (!beneficios.codigo) {
+            throw new Error(
+                'ComplianceCalculator: beneficios.codigo ausente - ' +
+                'obrigatório quando benefício aplicado'
+            );
+        }
+
+        // 3. Verificar se NCM está vedado para este programa
+        if (this._ncmVedadoParaPrograma(beneficios.codigo, ncm)) {
+            console.log(`🚫 NCM ${ncm} vedado para ${beneficios.codigo} - SEM diferimento`);
+            return 0;
+        }
+
+        // 4. Buscar programa no JSON (Single Source of Truth)
+        const programaConfig = this.configuracoes?.beneficios?.programas?.[beneficios.codigo];
+        if (!programaConfig) {
+            throw new Error(
+                `ComplianceCalculator: Programa ${beneficios.codigo} ` +
+                `não encontrado em beneficios.json`
+            );
+        }
+
+        // 5. Se tem diferimento_importacao no JSON, usar
+        if (programaConfig.diferimento_importacao !== undefined) {
+            console.log(`💰 Diferimento importação (${beneficios.codigo}): ${(programaConfig.diferimento_importacao * 100).toFixed(0)}%`);
+            return programaConfig.diferimento_importacao;
+        }
+
+        // 6. Se não tem o campo, significa zero diferimento
+        console.log(`💰 Programa ${beneficios.codigo}: Sem diferimento na importação`);
+        return 0;
+    }
+
+    /**
+     * Verifica se NCM está vedado para um programa de benefício fiscal
+     * NO HARDCODED DATA - Lê de ncms-vedados.json
+     * @param {string} codigoPrograma - Código do programa (ex: "GO_COMEXPRODUZIR")
+     * @param {string} ncm - Código NCM (8 dígitos)
+     * @returns {boolean} true se NCM vedado, false se elegível
+     * @private
+     */
+    _ncmVedadoParaPrograma(codigoPrograma, ncm) {
+        // Buscar vedação no JSON ncms-vedados.json
+        const vedacoes = this.configuracoes?.ncms_vedados;
+        if (!vedacoes) {
+            console.warn('⚠️ ComplianceCalculator: ncms-vedados.json não carregado');
+            return false; // Sem dados de vedação = assumir elegível
+        }
+
+        // Mapear programa → lista de vedação
+        const chaveVedacao = vedacoes.mapeamento_programa_vedacao?.[codigoPrograma];
+        if (!chaveVedacao) {
+            // Programa não tem vedações configuradas
+            return false;
+        }
+
+        const listaVedacao = vedacoes.vedacoes_por_programa?.[chaveVedacao];
+        if (!listaVedacao || !listaVedacao.lista_negativa) {
+            return false;
+        }
+
+        // Verificar se NCM está na lista_negativa (comparar primeiros 4 dígitos)
+        const ncm4 = ncm.substring(0, 4);
+        const isVedado = listaVedacao.lista_negativa.includes(ncm4);
+
+        if (isVedado) {
+            console.log(`🚫 NCM ${ncm} (${ncm4}) encontrado na lista de vedados de ${chaveVedacao}`);
+        }
+
+        return isVedado;
     }
 
     /**

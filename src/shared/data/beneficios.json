@@ -163,11 +163,12 @@
     "GO_COMEXPRODUZIR": {
       "nome": "COMEXPRODUZIR Goiás",
       "tipo": "credito_outorgado",
-      "descricao": "Crédito outorgado de 65% do ICMS interestadual",
+      "descricao": "Diferimento integral na importação + Redução de base (21,05%) nas saídas internas + Crédito 65% nas saídas interestaduais",
+      "diferimento_importacao": 1.0,
       "nf_config": {
-        "observacao": "Crédito aplicado na saída, não altera entrada"
+        "observacao": "Diferimento 100% na importação - Crédito 65% na saída interestadual"
       },
-      "credito": 0.65,
+      "credito_saida": 0.65,
       "aliquotas": {
         "icms_interestadual": 0.04,
         "icms_interno": 0.19
@@ -186,7 +187,7 @@
           "obrigatorio": true
         },
         {
-          "fundo": "PROTEGE", 
+          "fundo": "PROTEGE",
           "percentual": 0.15,
           "base": "credito_outorgado",
           "obrigatorio": true
@@ -197,7 +198,7 @@
         "aliquota_base": 0.04,
         "aliquota_interestadual": 0.04
       },
-      "reducao_base": 0.65
+      "reducao_base": 0.2105
     }
   }
 }
