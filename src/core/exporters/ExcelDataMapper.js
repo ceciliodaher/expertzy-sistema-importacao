@@ -488,47 +488,25 @@ export class ExcelDataMapper {
      * Mapeia dados para a aba Resumo de Custos
      * @returns {Object} Configuração da aba Resumo de Custos
      */
+    /**
+     * Mapeia aba 06A_Resumo_Custos - Lista consolidada de adições com custos desembolsados
+     * FASE 3: Retorna array de adições para createResumoCustosSheetFromMapping()
+     * @returns {Object} Sheet mapping com array de adições
+     */
     mapResumoCustosSheet() {
-        const diData = this.diData;
-
-        // PRIORIDADE 1: Usar calculoData (store separado - mais confiável)
-        let totais;
-        if (this.calculoData?.totais_consolidados) {
-            totais = this._mapearCalculosSalvos(this.calculoData.totais_consolidados);
-            console.log('✅ ExcelDataMapper: Usando totais de ComplianceCalculator (store separado)');
-        }
-        // PRIORIDADE 2: Usar totais salvos na DI (fallback)
-        else if (diData.totais_relatorio || diData.totais_por_coluna) {
-            totais = diData.totais_relatorio || diData.totais_por_coluna;
-            console.log('✅ ExcelDataMapper: Usando totais salvos na DI');
-        }
-        // PRIORIDADE 3: Calcular internamente (dados básicos)
-        else {
-            totais = this._calcularTotaisRelatorio();
-            console.log('⚠️ ExcelDataMapper: Totais calculados internamente (dados básicos apenas)');
+        // Validação rigorosa NO FALLBACKS
+        if (!this.diData.adicoes || !Array.isArray(this.diData.adicoes)) {
+            throw new Error('ExcelDataMapper: diData.adicoes é obrigatório para Resumo de Custos');
         }
 
+        console.log(`✅ ExcelDataMapper: Mapeando ${this.diData.adicoes.length} adições para Resumo de Custos`);
+
+        // Retornar array de adições para ExcelExporter criar tabela consolidada
+        // ExcelExporter irá usar _mapearProdutosIndividuaisPorAdicao() para obter dados detalhados
         return {
             name: this.config.nomes_abas.resumo_custos,
             type: 'resumo_custos',
-            data: {
-                custos_basicos: {
-                    valor_aduaneiro: diData.valor_aduaneiro_total_brl,
-                    impostos_federais: totais.total_impostos_federais,
-                    impostos_estaduais: totais.total_impostos_estaduais,
-                    despesas_aduaneiras: totais.total_despesas_aduaneiras
-                },
-                custo_total: {
-                    sem_incentivos: totais.custo_total_sem_incentivos,
-                    com_incentivos: totais.custo_total_com_incentivos,
-                    economia_total: totais.economia_total_incentivos
-                },
-                analise_percentual: totais.analise_percentual,
-                _metadata: totais._calculado_por ? {
-                    calculado_por: totais._calculado_por,
-                    nota: totais._nota
-                } : undefined
-            }
+            data: this.diData.adicoes  // Array de adições compatível com FASE 3
         };
     }
     
@@ -935,6 +913,239 @@ export class ExcelDataMapper {
     }
     
     /**
+     * Mapeia produtos individuais por adição com custos detalhados e incentivos
+     * Foco: CUSTO DESEMBOLSADO (valores efetivamente pagos)
+     * @private
+     * @returns {Map} Map<numero_adicao, {produtos: Array, despesas: Object, totais: Object}>
+     */
+    _mapearProdutosIndividuaisPorAdicao() {
+        // Validação rigorosa NO FALLBACKS
+        if (!this.calculoData) {
+            throw new Error('ExcelDataMapper: calculoData não disponível - execute ComplianceCalculator primeiro');
+        }
+
+        if (!this.calculoData.produtos_individuais || !Array.isArray(this.calculoData.produtos_individuais)) {
+            throw new Error('ExcelDataMapper: produtos_individuais ausente em calculoData');
+        }
+
+        if (this.calculoData.produtos_individuais.length === 0) {
+            throw new Error('ExcelDataMapper: produtos_individuais está vazio');
+        }
+
+        console.log(`📦 ExcelDataMapper: Mapeando ${this.calculoData.produtos_individuais.length} produtos individuais`);
+
+        // Map para agrupar por adição
+        const produtosPorAdicao = new Map();
+
+        // Processar cada produto individual
+        this.calculoData.produtos_individuais.forEach((produto, index) => {
+            // Validar campos obrigatórios
+            this._validarProdutoIndividual(produto, index);
+
+            const numeroAdicao = produto.adicao_numero;
+
+            // Criar entrada para adição se não existir
+            if (!produtosPorAdicao.has(numeroAdicao)) {
+                produtosPorAdicao.set(numeroAdicao, {
+                    produtos: [],
+                    despesas: this._obterDespesasRateadasAdicao(numeroAdicao),
+                    totais: {
+                        quantidade_produtos: 0,
+                        valor_mercadoria: 0,
+                        total_ii: 0,
+                        total_ipi: 0,
+                        total_pis: 0,
+                        total_cofins: 0,
+                        total_icms_calculado: 0,
+                        total_incentivo_icms: 0,
+                        total_icms_desembolsado: 0,
+                        total_despesas_rateadas: 0,
+                        custo_total_desembolsado: 0
+                    }
+                });
+            }
+
+            const adicaoData = produtosPorAdicao.get(numeroAdicao);
+
+            // Adicionar produto à lista
+            adicaoData.produtos.push(produto);
+
+            // Atualizar totais
+            adicaoData.totais.quantidade_produtos++;
+            adicaoData.totais.valor_mercadoria += produto.valor_total_brl;
+            adicaoData.totais.total_ii += produto.ii_item;
+            adicaoData.totais.total_ipi += produto.ipi_item;
+            adicaoData.totais.total_pis += produto.pis_item;
+            adicaoData.totais.total_cofins += produto.cofins_item;
+            adicaoData.totais.total_icms_calculado += produto.icms_item;
+
+            // Incentivo ICMS: usar zero se não houver (estado sem incentivo)
+            adicaoData.totais.total_incentivo_icms += (produto.icms_incentivo_item || 0);
+
+            // ICMS Desembolsado: se não houver campo específico, usar ICMS calculado - incentivo
+            const icmsDesembolsado = produto.icms_desembolsado_item !== undefined
+                ? produto.icms_desembolsado_item
+                : (produto.icms_item - (produto.icms_incentivo_item || 0));
+            adicaoData.totais.total_icms_desembolsado += icmsDesembolsado;
+        });
+
+        // Calcular custo total desembolsado por adição
+        produtosPorAdicao.forEach((adicaoData, numeroAdicao) => {
+            const totais = adicaoData.totais;
+            const despesas = adicaoData.despesas;
+
+            // Custo Total Desembolsado = Valor Mercadoria + Impostos Pagos + Despesas
+            // ICMS usa valor DESEMBOLSADO (com incentivo aplicado), não o calculado
+            totais.custo_total_desembolsado =
+                totais.valor_mercadoria +
+                totais.total_ii +
+                totais.total_ipi +
+                totais.total_pis +
+                totais.total_cofins +
+                totais.total_icms_desembolsado +  // ← DESEMBOLSADO, não calculado!
+                despesas.total;
+
+            totais.total_despesas_rateadas = despesas.total;
+        });
+
+        console.log(`✅ ExcelDataMapper: ${produtosPorAdicao.size} adições mapeadas com produtos individuais`);
+
+        return produtosPorAdicao;
+    }
+
+    /**
+     * Valida campos obrigatórios de um produto individual
+     * NO FALLBACKS - lança exceções para campos ausentes
+     * @private
+     * @param {Object} produto - Produto a validar
+     * @param {number} index - Índice do produto (para mensagens de erro)
+     */
+    _validarProdutoIndividual(produto, index) {
+        // Campo obrigatório: adicao_numero
+        if (!produto.adicao_numero) {
+            throw new Error(`ExcelDataMapper: adicao_numero ausente no produto ${index + 1}`);
+        }
+
+        // Campos obrigatórios: identificação
+        if (!produto.codigo) {
+            throw new Error(`ExcelDataMapper: codigo ausente no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (!produto.descricao) {
+            throw new Error(`ExcelDataMapper: descricao ausente no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (!produto.ncm) {
+            throw new Error(`ExcelDataMapper: ncm ausente no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        // Campos obrigatórios: quantidade
+        if (typeof produto.quantidade !== 'number') {
+            throw new Error(`ExcelDataMapper: quantidade deve ser numérica no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (!produto.unidade_medida) {
+            throw new Error(`ExcelDataMapper: unidade_medida ausente no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        // Campos obrigatórios: valores
+        if (typeof produto.valor_unitario_usd !== 'number') {
+            throw new Error(`ExcelDataMapper: valor_unitario_usd deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (typeof produto.valor_total_usd !== 'number') {
+            throw new Error(`ExcelDataMapper: valor_total_usd deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (typeof produto.valor_unitario_brl !== 'number') {
+            throw new Error(`ExcelDataMapper: valor_unitario_brl deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (typeof produto.valor_total_brl !== 'number') {
+            throw new Error(`ExcelDataMapper: valor_total_brl deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        // Campos obrigatórios: impostos (podem ser zero, mas devem existir como number)
+        if (typeof produto.ii_item !== 'number') {
+            throw new Error(`ExcelDataMapper: ii_item deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (typeof produto.ipi_item !== 'number') {
+            throw new Error(`ExcelDataMapper: ipi_item deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (typeof produto.pis_item !== 'number') {
+            throw new Error(`ExcelDataMapper: pis_item deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (typeof produto.cofins_item !== 'number') {
+            throw new Error(`ExcelDataMapper: cofins_item deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (typeof produto.icms_item !== 'number') {
+            throw new Error(`ExcelDataMapper: icms_item deve ser numérico no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        // Campos de incentivo ICMS: icms_incentivo_item e icms_desembolsado_item são OPCIONAIS
+        // Se o estado não tiver incentivo, esses campos podem não existir
+        // Quando existirem, devem ser numéricos
+        if (produto.icms_incentivo_item !== undefined && typeof produto.icms_incentivo_item !== 'number') {
+            throw new Error(`ExcelDataMapper: icms_incentivo_item deve ser numérico se presente no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+
+        if (produto.icms_desembolsado_item !== undefined && typeof produto.icms_desembolsado_item !== 'number') {
+            throw new Error(`ExcelDataMapper: icms_desembolsado_item deve ser numérico se presente no produto ${index + 1} (adição ${produto.adicao_numero})`);
+        }
+    }
+
+    /**
+     * Obtém despesas rateadas para uma adição específica
+     * NO FALLBACKS - lança exceções se dados obrigatórios ausentes
+     * @private
+     * @param {string} numeroAdicao - Número da adição
+     * @returns {Object} Despesas rateadas {afrmm, siscomex, capatazia, frete, seguro, total}
+     */
+    _obterDespesasRateadasAdicao(numeroAdicao) {
+        // Validação rigorosa - adicoes_detalhes é obrigatório
+        if (!this.calculoData.adicoes_detalhes) {
+            throw new Error(`ExcelDataMapper: adicoes_detalhes ausente em calculoData - necessário para despesas rateadas da adição ${numeroAdicao}`);
+        }
+
+        if (!Array.isArray(this.calculoData.adicoes_detalhes)) {
+            throw new Error(`ExcelDataMapper: adicoes_detalhes deve ser array - necessário para despesas rateadas da adição ${numeroAdicao}`);
+        }
+
+        // Encontrar adição específica
+        const adicaoDetalhe = this.calculoData.adicoes_detalhes.find(
+            a => a.numero_adicao === numeroAdicao
+        );
+
+        if (!adicaoDetalhe) {
+            throw new Error(`ExcelDataMapper: adição ${numeroAdicao} não encontrada em adicoes_detalhes`);
+        }
+
+        if (!adicaoDetalhe.despesas_rateadas) {
+            throw new Error(`ExcelDataMapper: despesas_rateadas ausentes na adição ${numeroAdicao}`);
+        }
+
+        const despesas = adicaoDetalhe.despesas_rateadas;
+
+        // Validar campos obrigatórios de despesas
+        if (typeof despesas.total !== 'number') {
+            throw new Error(`ExcelDataMapper: despesas_rateadas.total deve ser numérico na adição ${numeroAdicao}`);
+        }
+
+        return {
+            afrmm: despesas.afrmm || 0,           // Pode ser zero (produto isento)
+            siscomex: despesas.siscomex || 0,     // Pode ser zero (produto isento)
+            capatazia: despesas.capatazia || 0,   // Pode ser zero (não aplicável)
+            frete: despesas.frete || 0,           // Pode ser zero (INCOTERM CFR/CIF)
+            seguro: despesas.seguro || 0,         // Pode ser zero (INCOTERM CIF)
+            total: despesas.total                 // Obrigatório validado acima
+        };
+    }
+
+    /**
      * Extrai todos os produtos de todas as adições
      * @private
      */
@@ -942,7 +1153,7 @@ export class ExcelDataMapper {
         const adicoes = this.diData.adicoes;
         const produtos = [];
         let valorTotal = 0;
-        
+
         adicoes.forEach(adicao => {
             if (adicao.produtos && Array.isArray(adicao.produtos)) {
                 // Se houver produtos específicos em cada adição
@@ -972,7 +1183,7 @@ export class ExcelDataMapper {
                 }
             }
         });
-        
+
         return {
             lista: produtos,
             totais: {
